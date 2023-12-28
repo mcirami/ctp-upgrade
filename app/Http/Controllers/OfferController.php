@@ -78,11 +78,7 @@ class OfferController extends Controller
 			$offers = $offers->get();
 		}
 
-		//$paginate = new Paginate(request('rpp', 10), $offers->count());
-		//$offers = $offers->paginate(request('rpp', 10));
-
 		$data = array_merge(compact('offers'), $data);
-
 
 		return view('offer.manage', $data)->with(['data' => $data]);
 	}

@@ -378,7 +378,7 @@
 							}
 						})
 					})
-				}, 5000)
+				}, 3000)
 
 				showItems(currentPage);
 				setupPagination();

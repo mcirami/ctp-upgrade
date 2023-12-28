@@ -2433,3 +2433,47 @@ table.offer_clicks th:first-child {
 	-webkit-border-radius: 4px;
 	-moz-border-radius: 4px;
 }
+
+.info_message {
+	float: left;
+	width: 100%;
+	text-align: center;
+	padding: 10px 20px;
+	background: lightgray;
+	color: red;
+	box-sizing: border-box;
+}
+.info_message p {
+	font-family: 'robotobold', sans-serif;
+}
+.info_message a {
+	color: red;
+}
+
+.info_message a:hover {
+	color: darkred;
+}
+
+.right_panel table.sub_ids .button_wrap {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-orient: horizontal;
+	-webkit-box-direction: normal;
+	-ms-flex-direction: row;
+	flex-direction: row;
+	-ms-flex-wrap: nowrap;
+	flex-wrap: nowrap;
+	justify-content: flex-start;
+	-webkit-justify-content:  flex-start;
+	align-items: center;
+	-webkit-align-items: center;
+}
+
+.right_panel table.sub_ids thead th:first-child {
+	width: 20%;
+}
+
+.right_panel table.sub_ids thead th:last-child {
+	width: 80%;
+}

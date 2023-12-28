@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use LeadMax\TrackYourStats\Clicks\PostBackURLEventHandler;
 use LeadMax\TrackYourStats\Clicks\URLEvents\ClickRegistrationEvent;
 use LeadMax\TrackYourStats\System\Company;
@@ -84,6 +85,17 @@ class IndexController extends Controller
         if ( ! $request->get('repid') && ! $request->get('offerid')) {
             return redirect('404')->setStatusCode('404');
         }
+
+	    $subId = $request->get('sub1');
+
+	    $blocked = DB::table('blocked_sub_ids')
+	                 ->where('rep_idrep', '=', $request->get('repid'))
+	                 ->where('sub_id', '=', $subId)
+	                 ->distinct()->get()->pluck('sub_id');
+	    if (!$blocked->isEmpty()) {
+		    return redirect('404')->setStatusCode('404');
+	    }
+
         $clickRegistrationEvent = new ClickRegistrationEvent($request->get('repid'), $request->get('offerid'),
             $request->query());
         if ( ! $clickRegistrationEvent->fire()) {

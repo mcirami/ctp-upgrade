@@ -1,4 +1,6 @@
 <?php
+use App\Http\Controllers\UserController;
+
 $section = "affiliate-list";
 require('header.php');
 
@@ -250,18 +252,63 @@ $update->dumpPermissionsToJavascript();
 				<span class = "btn_yellow" style = "margin-left:2%;"> <a onclick = "history.go(-1);"
 																		 class = "value_span6-2 value_span2 value_span1-2"
 					>Cancel</a></span>
-				
 
-<!--
-				<span class = "btn_yellow" style = "margin-left:2%;"> <a
-							onclick = "window.location = 'aff_update.php?clearAtt=1&idrep=<?PHP echo $update->selectedUser->idrep; ?>';"
-							class = "value_span6-2 value_span2 value_span1-2"
-					>Clear login attempts.</a></span>
--->	
 		</form>
 		
 		
 		</div>
+		<?php
+		if(\LeadMax\TrackYourStats\System\Session::userType() == \App\Privilege::ROLE_GOD) :
+
+		$userClass = new UserController;
+		$subIds = $userClass->getUserSubIds();
+		?>
+
+		<div class = "heading_holder value_span9">
+			<span class = "lft"><?php echo $update->selectedUser->first_name . " " . $update->selectedUser->last_name; ?>'s Sub Id's</span>
+		</div>
+		<div class="white_box value_span8">
+			<table class="table_01 large_table sub_ids" id="mainTable">
+
+				<thead>
+				<tr>
+					<th class="value_span9">Sub ID</th>
+					<th class="value_span9">Action</th>
+				</tr>
+				</thead>
+				<tbody>
+
+				<?php foreach ($subIds as $subId) : ?>
+					<tr>
+						<td> <?php echo $subId["subId"]; ?> </td>
+						<td class="button_wrap">
+							<?php if ($subId["blocked"]) : ?>
+								<button class="block_sub_id"
+								        disabled="disabled"
+								        data-subid=<?php echo $subId["subId"]; ?>
+								>Blocked</button>
+								<button class="unblock_button value_span6-2 value_span2 value_span1-2"
+								        data-subid=<?php echo $subId["subId"]; ?>
+								>UnBlock</button>
+							<?php else : ?>
+								<button class="block_sub_id value_span6-2 value_span2 value_span1-2"
+								        data-subid=<?php echo $subId["subId"]; ?>
+								>Block ID</button>
+								<button style="display: none;"
+								        disabled="disabled"
+								        class="unblock_button value_span6-2 value_span2 value_span1-2"
+								        data-subid=<?php echo $subId["subId"]; ?>
+								>UnBlock</button>
+							<?php endif; ?>
+
+						</td>
+					</tr>
+				<?php endforeach; ?>
+				</tbody>
+			</table>
+		</div>
+	<?php endif; ?>
+
 		<?php
 		
 		if (\LeadMax\TrackYourStats\System\Session::permissions()->can("edit_aff_payout") && $update->selectedUserType == \App\Privilege::ROLE_AFFILIATE)
@@ -324,7 +371,7 @@ $update->dumpPermissionsToJavascript();
 
 <!--right_panel-->
 
-
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script type = "text/javascript">
 	
 	$("#salaryCheckBox").click(function () {
@@ -336,32 +383,81 @@ $update->dumpPermissionsToJavascript();
 	
 	// A $( document ).ready() block.
 	$(document).ready(function () {
-		
-		console.log("ready!");
+
+		$("#mainTable").tablesorter(
+			{
+				sortList: [[5, 1]],
+				widgets: ['staticRow']
+			});
+
 		if ($('#affRadio').is(':checked'))
 			$("#referralP").show();
 
+		const blockButtons = document.querySelectorAll('.block_sub_id');
+		if (blockButtons) {
+			blockButtons.forEach((button) => {
+				button.addEventListener('click', (e) => {
+					e.preventDefault();
+					const button = e.target;
+					const userID = '<?php echo $idrep; ?>';
+					const subID = button.dataset.subid;
 
-//        jQuery(function ($) {
-//            $("#cell_phone").mask("(999) 999-9999");
-//        });
+					const packets = {
+						user_id: userID,
+						sub_id: subID
+					}
+
+					axios.post('user/block-sub-id', packets).then((response) => {
+						if (response.data.success) {
+							button.innerHTML = "Blocked"
+							button.disabled = true;
+							button.classList.remove("value_span6-2", "value_span2", "value_span1-2");
+							const unblockButton = button.nextElementSibling;
+							unblockButton.disabled = false;
+							unblockButton.style.display = "block"
+						} else {
+							console.log(response);
+						}
+					})
+
+				})
+			});
+		}
+
+		const unblock_buttons = document.querySelectorAll('.unblock_button');
+		if(unblock_buttons) {
+			unblock_buttons.forEach((button) => {
+				button.addEventListener('click', (e) => {
+					e.preventDefault();
+					const button = e.target;
+					const userID = '<?php echo $idrep; ?>';
+					const subID = button.dataset.subid;
+
+					const packets = {
+						user_id: userID,
+						sub_id: subID
+					}
+
+					axios.post('user/unblock-sub-id', packets).then((response) => {
+						if (response.data.success) {
+							button.disabled = true;
+							button.style.display = "none";
+							const blockButton = button.previousElementSibling;
+							blockButton.innerHTML = "Block ID";
+							blockButton.disabled = false;
+							blockButton.classList.add("value_span6-2", "value_span2", "value_span1-2");
+						} else {
+							console.log(response);
+						}
+					})
+				})
+			});
+		}
 	});
 	
 	function setTwoNumberDecimal(event) {
 		this.value = parseFloat(this.value).toFixed(2);
 	}
 
-
-</script>
-
-<script type = "text/javascript">
-	
-	$(document).ready(function () {
-		$("#mainTable").tablesorter(
-			{
-				sortList: [[5, 1]],
-				widgets: ['staticRow']
-			});
-	});
 </script>
 <?php include 'footer.php'; ?>

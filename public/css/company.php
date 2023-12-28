@@ -88,7 +88,7 @@ color: #<?php echo $valueSpan5; ?> ;
 }
 
 .value_span6-2 {
-background: #<?php echo $valueSpan6; ?> ;
+background: #<?php echo $valueSpan6; ?> !important;
 }
 
 .value_span6-3:hover a {

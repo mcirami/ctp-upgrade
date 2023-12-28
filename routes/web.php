@@ -29,6 +29,8 @@ Route::group(['middleware' => 'legacy.auth'], function () {
             'role:0,1,2',
             'permissions:' . Permissions::CREATE_MANAGERS
         ]);
+	    Route::post('/block-sub-id', 'UserController@blockUserSubId')->middleware(['role:0']);
+	    Route::post('/unblock-sub-id', 'UserController@unblockUserSubId')->middleware(['role:0']);
         Route::group(['prefix' => '/{id}/salary', 'middleware' => 'permissions:' . Permissions::EDIT_SALARIES],
             function () {
                 Route::get('create', 'SalaryController@showCreate')->name('salary.create');
