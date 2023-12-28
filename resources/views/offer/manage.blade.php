@@ -1,0 +1,390 @@
+@extends('layouts.master')
+
+@section('content')
+
+	<!--right_panel-->
+	<div class="right_panel">
+		<div class="white_box_outer large_table">
+			<div class="heading_holder">
+				<span class="lft value_span9">Offers</span>
+				@if (\LeadMax\TrackYourStats\System\Session::permissions()->can("create_offers"))
+					<a style='margin-left: 1%; margin-top:.3%;' href="/offer_add.php"
+					   class='btn btn-default btn-sm value_span5-1 value_span6-5 value_span2'>Create New Offer</a>
+				@endif
+			</div>
+
+			@if(\LeadMax\TrackYourStats\System\Session::userType() !== \App\Privilege::ROLE_AFFILIATE)
+				@include('report.options.active')
+			@endif
+
+			@if(\LeadMax\TrackYourStats\System\Session::userType() == \App\Privilege::ROLE_AFFILIATE)
+				<div class='form-group'>
+					<p class='form-control'>
+						Add up to 5 Sub variables as follows: http://domain.com/?repid=1&offerid=1&sub1=XXX&sub2=YYY&sub3=ZZZ&sub4=AAA&sub5=BBB
+					</p>
+
+				</div>
+			@endif
+
+
+			<script type="text/javascript">
+				function handleSelect(elm) {
+					window.location = '/{{request()->path()}}?url=' + elm.value <?= request('adminLogin',
+							null) ? " + '&adminLogin'" : ""?>;
+				}
+			</script>
+
+
+			<div style="margin:0 0 1px 0; padding:5px; width:250px;">
+
+				@if(\LeadMax\TrackYourStats\System\Session::userType() == \App\Privilege::ROLE_AFFILIATE)
+
+					<label class="value_span9">Offer URLS: </label>
+					<select onchange='handleSelect(this);' class="form-control input-sm " id="offer_url"
+							name="offer_url">
+
+
+						@for ($i = 0; $i < count($urls); $i++)
+							@if (request('url',0) == $i) {
+							<option selected value='{{$i}}'> {{$urls[$i]}}</option>
+							@else
+								<option value='{{$i}}'> {{$urls[$i]}}</option>
+							@endif
+						@endfor
+
+					</select>
+
+				@endif
+			</div>
+
+
+			<div class="form-group searchDiv">
+				<input id="searchBox" {{--onkeyup="searchTable(`{{json_encode($offers)}}`)"--}} class="form-control" type="text"
+					   placeholder="Search offers...">
+			</div>
+
+			<div class="clear"></div>
+			<div class="white_box manage_aff white_box_x_scroll large_table value_span8">
+
+
+				<table class="table table-condensed table-bordered table_01" id="mainTable">
+					<thead>
+
+					<tr>
+						<th class="value_span9">Offer ID</th>
+						<th class="value_span9">Offer Name</th>
+						<th class="value_span9">Offer Type</th>
+
+						@if (\LeadMax\TrackYourStats\System\Session::userType() == \App\Privilege::ROLE_AFFILIATE)
+							<th class="value_span9">Offer URL</th>
+						@elseif(\LeadMax\TrackYourStats\System\Session::permissions()->can("create_offers"))
+							<th class="value_span9">Affiliate Access</th>
+						@endif
+
+
+						@if (\LeadMax\TrackYourStats\System\Session::userType() !== \App\Privilege::ROLE_MANAGER)
+							<th class="value_span8">Payout</th>
+						@endif
+
+						<th class="value_span9">Status</th>
+						@if (\LeadMax\TrackYourStats\System\Session::userType() == \App\Privilege::ROLE_AFFILIATE)
+							<th class="value_span9">Postback Options</th>
+						@endif
+
+						@if (\LeadMax\TrackYourStats\System\Session::userType() != \App\Privilege::ROLE_AFFILIATE)
+							<th class="value_span9">Offer Timestamp</th>
+						@endif
+
+						@if (\LeadMax\TrackYourStats\System\Session::userType() != \App\Privilege::ROLE_AFFILIATE)
+							<th class="value_span9">Actions</th>
+						@endif
+					</tr>
+					</thead>
+					<tbody id="offers_container">
+
+
+					@if(isset($requestableOffers))
+						@foreach ($requestableOffers as $offer)
+							<tr>
+								<td>{{$offer->idoffer}}</td>
+								<td>{{$offer->offer_name}}</td>
+								<td>Requires Offer</td>
+								<td>${{$offer->payout}}</td>
+								<td>{{$offer->status}}</td>
+								<td>Requires Offer</td>
+								<td>
+									<button id='btn_{{$offer->idoffer}}' class='btn btn-sm btn-default'
+											onclick='requestOffer({{$offer->idoffer}})'>Request Offer
+									</button>
+								</td>
+							</tr>
+						@endforeach
+					@endif
+
+
+					</tbody>
+				</table>
+
+				<div id="pagination" class="pagination-container"></div>
+
+			</div>
+		</div>
+	</div>
+	<!--right_panel-->
+
+@endsection
+
+@section('footer')
+	<script type="text/javascript">
+		function requestOffer(id) {
+
+
+			$("#btn_" + id).attr('disabled', true);
+
+			$.ajax({
+				url: "/offer/" + id + '/request?' <?= (isset($_GET["adminLogin"])) ? " + '&adminLogin'" : ""?>,
+				success: function (result) {
+
+					$.notify({
+
+								title: 'Successfully',
+								message: ' requested offer!'
+
+							}, {
+								placement: {
+									from: 'top',
+									align: 'center'
+								},
+								type: 'info',
+								animate: {
+									enter: 'animated fadeInDown',
+									exit: 'animated fadeOutUp'
+								},
+							}
+					);
+					console.log(result);
+				},
+
+				error: function (result) {
+					$("#btn_" + id).attr('disabled', false);
+
+					$.notify({
+
+								title: 'Failed to request offer!',
+								message: ' Please try again later or contact an admin.'
+
+							}, {
+								placement: {
+									from: 'top',
+									align: 'center'
+								},
+								type: 'danger',
+								animate: {
+									enter: 'animated fadeInDown',
+									exit: 'animated fadeOutUp'
+								},
+							}
+					);
+				}
+			});
+
+		}
+	</script>
+
+	<script type="text/javascript">
+
+		$(document).ready(function () {
+			$("#mainTable").tablesorter(
+					{
+						sortList: [[1, 0]],
+						widgets: ['staticRow']
+					});
+
+			document.querySelectorAll('.delete_offer').forEach((offer) => {
+				offer.addEventListener('click', (e) =>{
+					e.preventDefault();
+					const offerID = e.target.dataset.offer;
+					confirmSendTo('Are you sure you want to delete this offer?', "/offer/" + offerID + "/delete");
+				})
+			});
+
+			let itemsPerPage = 20;
+			let offersCollection = '<?php echo $offers; ?>';
+			let offers = JSON.parse(offersCollection);
+
+			const paginationContainer = "#pagination";
+
+			document.getElementById('searchBox').addEventListener('input', (e) => {
+				const userInput = e.target.value.trim().toLowerCase();
+				let filteredOffers = offers.filter((offer) => {
+					return offer.offer_name.toLowerCase().includes(userInput);
+				})
+				paginate(filteredOffers, itemsPerPage, paginationContainer);
+			});
+
+			paginate(offers, itemsPerPage, paginationContainer);
+
+			function paginate(items, itemsPerPage, paginationContainer) {
+				let currentPage = 1;
+				const totalPages = Math.ceil(items.length / itemsPerPage);
+
+				function showItems(page) {
+					const startIndex = (page - 1) * itemsPerPage;
+					const endIndex = startIndex + itemsPerPage;
+					const pageItems = items.slice(startIndex, endIndex);
+
+					const itemsContainer = document.querySelector("#offers_container");
+					itemsContainer.innerHTML = "";
+
+					let html = "";
+					let userType = '<?php echo \LeadMax\TrackYourStats\System\Session::userType(); ?>';
+					let url = '<?php echo $urls[request('url',0)]; ?>';
+					let permissions = '<?php echo json_encode(\LeadMax\TrackYourStats\System\Session::permissions()); ?>'
+
+					pageItems.forEach((offer) => {
+						html += "<tr id='offer_row'> " +
+								"<td>" + offer['idoffer'] + "</td>" +
+								"<td>" + offer['offer_name'] + "</td>" +
+								"<td>CPA</td>";
+
+						if (userType == 3) {
+							html +=
+									"<td class='value_span10'>" +
+									"<p  style='display:none;' id='url_" + offer['idoffer'] + "'>http://" + url +
+									"/?repid=" + <?php echo \LeadMax\TrackYourStats\System\Session::userID(); ?> +
+											"&offerid=" + offer["idoffer"] + "&sub1=</p>" +
+									"<button data-url='http://" + url +
+									"/?repid=" + <?php echo \LeadMax\TrackYourStats\System\Session::userID(); ?> +
+											"&offerid=" + offer["idoffer"] + "&sub1=' data-toggle='tooltip' title='Copy My Link' " +
+									/*onclick(handleClick(offer['idoffer'])) +*/
+									"class='copy_button btn btn-default'>Copy My Link" +
+									"</button></td>";
+						}
+
+						if (permissions.includes('create_offers') && userType != 3 ) {
+							html += "<td class='value_span10'>" +
+									"<a target='_blank' class='btn btn-sm btn-default value_span5-1' href='/offer_access.php?id=" +
+									offer["idoffer"] + "'>Affiliate Access</a>" +
+									"</td>";
+						}
+
+						if (userType != 2) {
+							if (userType == 3) {
+								html += "<td class='value_span10'>$" + offer["pivot"]["payout"] + "</td>";
+							} else {
+								html += "<td class='value_span10'>$" + offer["payout"] + "</td>";
+							}
+						}
+
+						html += "<td class='value_span10'>";
+						if (offer['status'] === 1) {
+							html += "Active";
+						} else {
+							html += "Inactive";
+						}
+
+						html += "</td>";
+
+						if (userType == 3) {
+							html += "<td class='value_span10'>" +
+									"<a class='btn btn-default value_span6-1 value_span4' data-toggle='tooltip' title='Offer PostBack Options' " +
+									"href='/offer_edit_pb.php?offid='" + offer["idoffer"] + "'>" +
+									"Edit Post Back</a>" +
+									"</td>";
+						}
+
+						if (userType != 3) {
+							html += "<td class='value_span10'>" + offer['offer_timestamp'] + "</td>";
+						}
+
+						if (userType != 3) {
+							if (permissions.includes('create_offers')) {
+								html += "<td class='value_span10'>" +
+										"<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='Edit Offer' " +
+										"href='/offer_update.php?idoffer=" + offer['idoffer'] + "'>Edit</a>" +
+										"</td>";
+							}
+						}
+
+						if(permissions.includes("edit_offer_rules") && userType != 3) {
+							html += "<td class='value_span10'>" +
+									"<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='Edit Offer Rules' " +
+									"href='/offer_edit_rules.php?offid=" + offer["idoffer"] + "'> Rules</a>" +
+									"</td>";
+						}
+
+						if(userType != 3) {
+							html += "<td class='value_span10'>" +
+									"<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='View Offer' " +
+									"href='/offer_details.php?idoffer=" + offer['idoffer'] + "'> View</a>" +
+									"</td>";
+						} else {
+							html += "<td></td>";
+						}
+
+						if (userType == 0) {
+							html += "<td class='value_span10'>" +
+									"<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='Duplicate Offer' " +
+									"href='/offer/" + offer['idoffer'] + "/dupe'> Duplicate </a>" +
+									"</td>" +
+									"<td class='value_span10'>" +
+									"<a class='delete_offer btn btn-default btn-sm value_span11 value_span4' data-toggle='tooltip' data-offer='" + offer['idoffer'] +"' title='Delete Offer' " +
+									"href='#'>Delete</a>" +
+									"</td>";
+						}
+
+						html += "</tr>";
+						itemsContainer.innerHTML = html;
+					});
+				}
+
+				function setupPagination() {
+					const pagination = document.querySelector(paginationContainer);
+					pagination.innerHTML = "";
+
+					for (let i = 1; i <= totalPages; i++) {
+						const link = document.createElement("a");
+						link.href = "#";
+						link.innerText = i;
+						link.classList.add("value_span2-2", "value_span3-2", "value_span6-1", "value_span2", "value_span6");
+
+						if (i === currentPage) {
+							link.classList.add("value_span4", "active");
+						}
+
+						link.addEventListener("click", (event) => {
+							event.preventDefault();
+							currentPage = i;
+							showItems(currentPage);
+
+							const currentActive = pagination.querySelector(".active");
+							currentActive.classList.remove("active", "value_span4");
+							link.classList.add("active", "value_span4");
+						});
+
+						pagination.appendChild(link);
+					}
+				}
+
+				setTimeout(() => {
+					document.querySelectorAll('.copy_button').forEach((button) => {
+						button.addEventListener("pointerdown", (e) => {
+							const url = e.target.dataset.url;
+							const unsecuredCopyToClipboard = (text) => { const textArea = document.createElement("textarea"); textArea.value=text; document.body.appendChild(textArea); textArea.focus();textArea.select(); try{document.execCommand('copy')}catch(err){console.error('Unable to copy to clipboard',err)}document.body.removeChild(textArea)};
+							if (window.isSecureContext && navigator.clipboard) {
+								navigator.clipboard.writeText(url);
+							} else {
+								unsecuredCopyToClipboard(url);
+							}
+						})
+					})
+				}, 5000)
+
+				showItems(currentPage);
+				setupPagination();
+			}
+
+		});
+	</script>
+@endsection
+
