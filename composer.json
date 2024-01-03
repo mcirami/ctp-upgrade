@@ -20,7 +20,8 @@
     "laravel/framework": "^8.0",
     "laravel/helpers": "^1.7",
     "laravel/tinker": "^2.0",
-    "mobiledetect/mobiledetectlib": "^3.74"
+    "mobiledetect/mobiledetectlib": "^3.74",
+    "ext-pdo": "*"
   },
   "require-dev": {
     "barryvdh/laravel-ide-helper": "^2.4",

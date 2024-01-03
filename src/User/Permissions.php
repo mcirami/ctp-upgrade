@@ -301,7 +301,7 @@ class Permissions
 
     public function can($PERMISSION)
     {
-        if (!array_key_exists($PERMISSION, $this->permissions)) {
+        if (!isset($PERMISSION[$this->permissions])) {
             return false;
         }
 
@@ -324,7 +324,7 @@ class Permissions
 
 
         foreach (self::$permissionsArray as $key => $val) {
-            if (!array_key_exists($key, $list) && $key !== "aff_id") {
+            if (!isset($key[$list]) && $key !== "aff_id") {
                 $list[$key] = 0;
             }
         }

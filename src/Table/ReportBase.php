@@ -91,7 +91,7 @@ class ReportBase
         foreach ($this->report as $key => $row) {
             foreach ($row as $key2 => $val) {
                 if (!in_array($key2, $excludes)) {
-                    if (array_key_exists($key2, $totals) && is_numeric($val)) {
+                    if (isset($totals[$key2]) && is_numeric($val)) {
                         $totals[$key2] += $val;
                     } else {
                         $totals[$key2] = $val;
@@ -128,7 +128,7 @@ class ReportBase
         foreach ($toTotal as $key => $row) {
             foreach ($row as $key2 => $val) {
                 if (!in_array($key2, $excludes)) {
-                    if (array_key_exists($key2, $totals) && is_numeric($val)) {
+                    if (isset($totals[$key2]) && is_numeric($val)) {
                         $totals[$key2] += $val;
                     } else {
                         $totals[$key2] = $val;

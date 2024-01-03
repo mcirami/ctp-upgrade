@@ -14,55 +14,72 @@
 use App\Privilege;
 use Illuminate\Support\Facades\Route;
 use LeadMax\TrackYourStats\User\Permissions;
+use App\Http\Controllers\IndexController;
+use App\Http\Controllers\LanderController;
+use App\Http\Controllers\LegacyLoginController;
+use App\Http\Controllers\RelevanceReactorController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\SalaryController;
+use App\Http\Controllers\Report\ClickReportController;
+use App\Http\Controllers\Report\AggregateReportController;
+use App\Http\Controllers\Report\OfferReportController;
+use App\Http\Controllers\Report\AdvertiserReportController;
+use App\Http\Controllers\Report\BlackListReportController;
+use App\Http\Controllers\Report\AdjustmentsReportController;
+use App\Http\Controllers\Report\ChatLogReportController;
+use App\Http\Controllers\Report\EmployeeReportController;
+use App\Http\Controllers\Report\SubReportController;
+use App\Http\Controllers\Report\PayoutReportController;
 
-Route::get('/', 'IndexController@index');
-Route::post('/', 'IndexController@index');
-Route::any('/resources/landers/{subDomain}/{asset}', 'LanderController@getAsset')->where('asset', '.*');
-Route::get('/logout', 'LegacyLoginController@logout');
-Route::post('email/incoming', 'RelevanceReactorController@incomingEmail');
-Route::post('email/incoming/distribute', 'RelevanceReactorController@distributeEmail');
+Route::get('/', [IndexController::class, 'index']);
+Route::post('/', [IndexController::class, 'index']);
+Route::any('/resources/landers/{subDomain}/{asset}', [LanderController::class, 'getAsset'])->where('asset', '.*');
+Route::get('/logout', [LegacyLoginController::class, 'logout']);
+Route::post('email/incoming', [RelevanceReactorController::class, 'incomingEmail']);
+Route::post('email/incoming/distribute', [RelevanceReactorController::class, 'distributeEmail']);
 Route::group(['middleware' => 'legacy.auth'], function () {
-    Route::get('dashboard', 'DashboardController@home');
+    Route::get('dashboard', [DashboardController::class, 'home']);
     Route::group(['prefix' => 'user'], function () {
-        Route::get('manage', 'UserController@viewManageUsers')->middleware(['role:0,1,2']);
-        Route::get('{id}/affiliates', 'UserController@viewManagersAffiliates')->middleware([
+        Route::get('manage', [UserController::class, 'viewManageUsers'])->middleware(['role:0,1,2']);
+        Route::get('{id}/affiliates', [UserController::class, 'viewManagersAffiliates'])->middleware([
             'role:0,1,2',
             'permissions:' . Permissions::CREATE_MANAGERS
         ]);
-	    Route::post('/block-sub-id', 'UserController@blockUserSubId')->middleware(['role:0']);
-	    Route::post('/unblock-sub-id', 'UserController@unblockUserSubId')->middleware(['role:0']);
+	    Route::post('/block-sub-id', [UserController::class, 'blockUserSubId'])->middleware(['role:0']);
+	    Route::post('/unblock-sub-id', [UserController::class, 'unblockUserSubId'])->middleware(['role:0']);
         Route::group(['prefix' => '/{id}/salary', 'middleware' => 'permissions:' . Permissions::EDIT_SALARIES],
             function () {
-                Route::get('create', 'SalaryController@showCreate')->name('salary.create');
-                Route::post('create', 'SalaryController@create')->name('salary.create');
-                Route::get('update', 'SalaryController@showUpdate')->name('salary.update');
-                Route::post('update', 'SalaryController@update')->name('salary.update');
+                Route::get('create', [SalaryController::class, 'showCreate'])->name('salary.create');
+                Route::post('create', [SalaryController::class, 'create'])->name('salary.create');
+                Route::get('update', [SalaryController::class, 'showUpdate'])->name('salary.update');
+                Route::post('update', [SalaryController::class, 'update'])->name('salary.update');
             });
-        Route::get('{id}/clicks', 'Report\ClickReportController@showUsersClicks')->middleware('role:0,1,2')->name('userClicks');
+        Route::get('{id}/clicks', [ClickReportController::class, 'showUsersClicks'])->middleware('role:0,1,2')->name('userClicks');
     });
     Route::group(['prefix' => 'report'], function () {
-        Route::get('daily', 'Report\AggregateReportController@show');
-        Route::get('offer', 'Report\OfferReportController@show');
+        Route::get('daily', [AggregateReportController::class, 'show']);
+        Route::get('offer', [OfferReportController::class, 'show']);
         Route::group(['middleware' => 'role:' . Privilege::ROLE_GOD], function () {
-            Route::get('advertiser', 'Report\AdvertiserReportController@show');
-            Route::get('blacklist', 'Report\BlackListReportController@show');
+            Route::get('advertiser', [AdvertiserReportController::class, 'show']);
+            Route::get('blacklist', [BlackListReportController::class, 'show']);
         });
-        Route::get('adjustments', 'Report\AdjustmentsReportController@show')->middleware([
+        Route::get('adjustments', [AdjustmentsReportController::class, 'show'])->middleware([
             'permissions:' . Permissions::ADJUST_SALES,
             'role:' . Privilege::ROLE_GOD . ',' . Privilege::ROLE_ADMIN
         ]);
-        Route::get('sale-log', 'Report\ChatLogReportController@affiliate');
+        Route::get('sale-log', [ChatLogReportController::class, 'affiliate']);
         Route::group(['middleware' => 'role:' . Privilege::ROLE_GOD . ',' . Privilege::ROLE_ADMIN . ',' . Privilege::ROLE_MANAGER],
             function () {
-                Route::get('chat-log', 'Report\ChatLogReportController@show');
-                Route::get('affiliate', 'Report\EmployeeReportController@show');
-                Route::get('chat-log/{userId}', 'Report\ChatLogReportController@admin');
+                Route::get('chat-log', [ChatLogReportController::class, 'show']);
+                Route::get('affiliate', [EmployeeReportController::class,'show']);
+                Route::get('chat-log/{userId}', [ChatLogReportController::class, 'admin']);
             });
         Route::group(['middleware' => 'role:' . Privilege::ROLE_AFFILIATE], function () {
-            Route::get('sub', 'Report\SubReportController@show');
+            Route::get('sub', [SubReportController::class,'show']);
             Route::group(['prefix' => 'payout'], function () {
-                Route::get('', 'Report\PayoutReportController@report');
-                Route::get('pdf', 'Report\PayoutReportController@invoice');
+                Route::get('', [PayoutReportController::class, 'report']);
+                Route::get('pdf', [PayoutReportController::class, 'invoice']);
             });
         });
     });
