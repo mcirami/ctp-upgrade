@@ -14,7 +14,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Request as InputRequest;
 use Illuminate\Support\Facades\Session;
 use LeadMax\TrackYourStats\Offer\Campaigns;
 use LeadMax\TrackYourStats\Offer\URLs;
@@ -92,7 +92,7 @@ class OfferController extends Controller
 
 	public function getAssignableUsers()
 	{
-		return User::withRole(Input::get('user_type') === Privilege::ROLE_MANAGER ? Privilege::ROLE_MANAGER : Privilege::ROLE_AFFILIATE)
+		return User::withRole(InputRequest::get('user_type') === Privilege::ROLE_MANAGER ? Privilege::ROLE_MANAGER : Privilege::ROLE_AFFILIATE)
 		           ->myUsers()->select(['rep.idrep as id', 'rep.user_name as name'])->get()->toJson();
 	}
 

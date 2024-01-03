@@ -278,7 +278,3 @@ class Privileges
 
 
 } // end class
-
-?>
-     
-    

@@ -85,22 +85,55 @@ else
 		
 		
 		<link rel = "shortcut icon" type = "image/ico" href = "<?= \LeadMax\TrackYourStats\System\Company::loadFromSession()->getImgDir() ?>/favicon.ico"/>
-		<link rel = "shortcut icon" type = "image/ico" href = "<?= \LeadMax\TrackYourStats\System\Company::loadFromSession()->getImgDir() ?>/favicon.ico"/>
 		
 		<link rel = "stylesheet" type = "text/css" href = "<?php echo $webroot; ?>css/default.css"/>
-		<link rel = "stylesheet" media = "screen" type = "text/css"
-			  href = "<?php echo $webroot; ?>css/company.php"/>
+		<link rel="stylesheet" type="text/css" media="screen" href="<?php echo $webroot; ?>css/company.php"/>
 		<link href = "<?php echo $webroot; ?>css/responsive_table.css" rel = "stylesheet" type = "text/css"/>
 		<link href = "<?php echo $webroot; ?>css/drawer.min.css" rel = "stylesheet">
-		<link rel = "stylesheet" type = "text/css" href = "<?php echo $webroot; ?>css/font-awesome.min.css">
 		<link rel = "stylesheet" href = "<?php echo $webroot; ?>css/magic.min.css">
 		<script type = "text/javascript" src = "<?php echo $webroot; ?>js/jquery_2.1.3_jquery.min.js"></script>
 		<script type = "text/javascript" src = "<?php echo $webroot; ?>js/jscolor.min.js"></script>
-		<script type = "text/javascript"
-				src = "https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/jquery-ui.min.js"></script>
+		<script type = "text/javascript" src = "https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/jquery-ui.min.js"></script>
 		<script type = "text/javascript" src = "<?php echo $webroot; ?>js/main.js"></script>
 		<title><?php echo \LeadMax\TrackYourStats\System\Company::loadFromSession()->getShortHand(); ?></title>
 	</head>
+
+	<style>
+        .white_box {
+            box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            -webkit-box-sizing: border-box;
+            margin-top: 40px;
+        }
+
+        .white_box_outer {
+            float: none;
+            margin: 0 auto;
+            max-width: 400px;
+            box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            -webkit-box-sizing: border-box;
+        }
+
+        @media screen and (max-width: 768px) {
+            .white_box_outer {
+                max-width: none;
+                float: left;
+                width: 100%;
+            }
+        }
+
+        .left_con01 {
+            width: auto;
+            padding: 10px 10px 5px 17px;
+            float: none;
+        }
+
+        .heading_holder {
+            margin: 0px 0px 10px 0px;
+        }
+
+	</style>
 <body style = "background-color:#EAEEF1;">
 	<div class = "top_sec value_span1">
 		<div class = "logo">
@@ -110,43 +143,7 @@ else
 	
 	</div> <!-- top_sec -->
 
-	<style>
-		
-		.white_box {
-        box-sizing: border-box;
-        -moz-box-sizing: border-box;
-        -webkit-box-sizing: border-box;
-			  margin-top: 40px;
-		}
-		
-		.white_box_outer {
-			float: none;
-			margin: 0 auto;
-			max-width: 400px;
-        box-sizing: border-box;
-        -moz-box-sizing: border-box;
-        -webkit-box-sizing: border-box;
-		}
 
-    @media screen and (max-width: 768px) {
-        .white_box_outer {
-            max-width: none;
-            float: left;
-            width: 100%;
-        }
-    }
-		
-		.left_con01 {
-			width: auto;
-			padding: 10px 10px 5px 17px;
-			float: none;
-		}
-		
-		.heading_holder {
-			margin: 0px 0px 10px 0px;
-		}
-
-	</style>
 	<div class="info_message text-center">
 		<p>EFFECTIVE 12/20/23 @ 12pm CST - MoneyLovers has updated tracking software! If your login no longer works,
 			<a href="https://moneylovers.com/contact">Contact Us</a> or <a href="https://stats.moneylovers.com/signup">Signup</a>

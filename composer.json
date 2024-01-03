@@ -8,25 +8,25 @@
   "license": "MIT",
   "type": "project",
   "require": {
-    "php": ">=7.4",
+    "php": "^7.4",
+    "ext-curl": "*",
     "barryvdh/laravel-snappy": "^0.4.3",
     "doctrine/dbal": "^2.8",
     "fideloper/proxy": "4.*",
     "geoip2/geoip2": "^2.8",
-    "guzzlehttp/guzzle": "^6.3",
+    "guzzlehttp/guzzle": "^7.0.1",
     "h4cc/wkhtmltoimage-amd64": "0.12.x",
     "h4cc/wkhtmltopdf-amd64": "0.12.x",
-    "laravel/framework": "6.*",
-    "laravel/tinker": "~1.0",
-    "mobiledetect/mobiledetectlib": "^2.8",
-    "ext-curl": "*"
+    "laravel/framework": "^8.0",
+    "laravel/helpers": "^1.7",
+    "laravel/tinker": "^2.0",
+    "mobiledetect/mobiledetectlib": "^3.74"
   },
   "require-dev": {
     "barryvdh/laravel-ide-helper": "^2.4",
     "filp/whoops": "~2.0",
-    "fzaninotto/faker": "~1.4",
     "mockery/mockery": "0.9.*",
-    "phpunit/phpunit": "~7.0"
+    "phpunit/phpunit": "^9.3"
   },
   "autoload": {
     "classmap": [

@@ -17,8 +17,8 @@ $valueSpan8 = $colors[7];
 $valueSpan9 = $colors[8];
 $valueSpan10 = $colors[9];
 $valueSpan11 = $colors[10];
-
 ?>
+
 .value_span1 {
 background-color: #<?php echo $valueSpan1; ?>;
 }
@@ -127,5 +127,3 @@ color: #999999;
 .value_span11 {
   background: #<?php echo $valueSpan11; ?>;
 }
-
-

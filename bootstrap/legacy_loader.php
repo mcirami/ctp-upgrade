@@ -1,10 +1,12 @@
 <?php
-// composer auto load
-    include $_SERVER["DOCUMENT_ROOT"]."/../vendor/autoload.php";
+use Dotenv\Dotenv;
 
+// composer auto load
+include __DIR__. "/../vendor/autoload.php";
 
 // .env
-$dotEnv = Dotenv\Dotenv::create(__DIR__.'/..');
+
+$dotEnv = Dotenv::createImmutable(__DIR__.'/..');
 $dotEnv->load();
 
 // set default timezone

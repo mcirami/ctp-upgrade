@@ -275,8 +275,8 @@ opacity: 0.4; " -->
 
 							<label class="value_span9">Name:</label>
 							<input name="shortHand" placeholder="Track Your Stats" onfocus="this.placeholder = ''"
-							       onblur="this.placeholder = '<?php echo\LeadMax\TrackYourStats\System\Company::loadFromSession()->getShortHand(); ?>'" type="text"
-							       value="<?php echo\LeadMax\TrackYourStats\System\Company::loadFromSession()->getShortHand(); ?>">
+							       onblur="this.placeholder = '<?php echo \LeadMax\TrackYourStats\System\Company::loadFromSession()->getShortHand(); ?>'" type="text"
+							       value="<?php echo \LeadMax\TrackYourStats\System\Company::loadFromSession()->getShortHand(); ?>">
 							<span class="small_txt value_span10">This name is displayed throughout the application, including all emails, notifications, and in the header.</span>
 
 						</p>
@@ -285,7 +285,7 @@ opacity: 0.4; " -->
 							<label class="value_span9">Skype:</label>
 							<input name="skype" placeholder="" onfocus="this.placeholder = ''"
 							       type="text"
-							       value="<?php echo\LeadMax\TrackYourStats\System\Company::loadFromSession()->getSkype(); ?>">
+							       value="<?php echo \LeadMax\TrackYourStats\System\Company::loadFromSession()->getSkype(); ?>">
 
 						</p>
 						<p>
@@ -293,7 +293,7 @@ opacity: 0.4; " -->
 							<label class="value_span9">Email:</label>
 							<input name="email" placeholder="" onfocus="this.placeholder = ''"
 							       type="text"
-							       value="<?php echo\LeadMax\TrackYourStats\System\Company::loadFromSession()->getEmail(); ?>">
+							       value="<?php echo \LeadMax\TrackYourStats\System\Company::loadFromSession()->getEmail(); ?>">
 
 						</p>
 
@@ -301,14 +301,14 @@ opacity: 0.4; " -->
 							<label class="value_span9">Login URL:</label>
 							<input name="loginURL" placeholder="" onfocus="this.placeholder = ''"
 							       type="text"
-							       value="<?php echo\LeadMax\TrackYourStats\System\Company::loadFromSession()->getLoginURL(); ?>">
+							       value="<?php echo \LeadMax\TrackYourStats\System\Company::loadFromSession()->getLoginURL(); ?>">
 						</p>
 
 						<p>
 							<label class="value_span9">Landing Page:</label>
 							<input name="landingPage" placeholder="" onfocus="this.placeholder = ''"
 							       type="text"
-							       value="<?php echo\LeadMax\TrackYourStats\System\Company::loadFromSession()->getLandingPage(); ?>">
+							       value="<?php echo \LeadMax\TrackYourStats\System\Company::loadFromSession()->getLandingPage(); ?>">
 						</p>
 
 
