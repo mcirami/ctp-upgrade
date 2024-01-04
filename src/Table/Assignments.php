@@ -87,7 +87,7 @@ class Assignments
     public function __get($varName)
     {
 
-        if (!isset($varName[$this->assignments])) {
+        if (!isset($this->assignments[$varName])) {
             //this attribute is not defined!
             throw new \Exception('Undefined variable '.$varName);
         } else {
