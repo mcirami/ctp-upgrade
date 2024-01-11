@@ -55,9 +55,9 @@ Route::group(['middleware' => 'legacy.auth'], function () {
         ]);
 	    Route::post('/block-sub-id', [UserController::class, 'blockUserSubId'])->middleware(['role:0']);
 	    Route::post('/unblock-sub-id', [UserController::class, 'unblockUserSubId'])->middleware(['role:0']);
-	    Route::post('/change-aff-payout', 'UserController@changeAffPayout')->middleware(['role:0']);
-	    Route::post('/update-offer-access', 'UserController@updateAffOfferAccess')->middleware(['role:0']);
-	    Route::get('/offers/{user}', 'UserController@editUserOffers')->middleware(['role:0']);
+	    Route::post('/change-aff-payout', [UserController::class, 'changeAffPayout'])->middleware(['role:0']);
+	    Route::post('/update-offer-access', [UserController::class, 'updateAffOfferAccess'])->middleware(['role:0']);
+	    Route::get('/offers/{user}', [UserController::class, 'editUserOffers'])->middleware(['role:0']);
         Route::group(['prefix' => '/{id}/salary', 'middleware' => 'permissions:' . Permissions::EDIT_SALARIES],
             function () {
                 Route::get('create', [SalaryController::class, 'showCreate'])->name('salary.create');

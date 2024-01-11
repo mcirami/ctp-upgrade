@@ -415,8 +415,11 @@ class View
         $user = new User();
         $userData = User::SelectOne(Session::userID());
 
-        $stmt->bindParam(':left', $userData->lft);
-        $stmt->bindParam(':right', $userData->rgt);
+
+        /*
+         * TODO: DO I NEED THIS NONSENSE?
+         * $stmt->bindParam(':left', $userData->lft);
+        $stmt->bindParam(':right', $userData->rgt);*/
 
         $stmt->execute();
 
