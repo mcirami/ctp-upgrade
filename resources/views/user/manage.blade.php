@@ -36,30 +36,7 @@
                         @endif
                     </tr>
                     </thead>
-                    <tbody>
-                    @foreach($users as $user)
-                        <tr>
-                            <td>{{$user->idrep}}</td>
-                            <td class="username">{{$user->user_name}}</td>
-                            <td class="actions">
-                                @if(\LeadMax\TrackYourStats\System\Session::permissions()->can(\LeadMax\TrackYourStats\User\Permissions::EDIT_AFFILIATES))
-                                    <a class="btn btn-default btn-sm value_span6-1 value_span4 " data-toggle="tooltip" title="Edit User"
-                                       href="/aff_update.php?idrep={{$user->idrep}}">Edit</a>
-                                @endif
-                                @if(\LeadMax\TrackYourStats\System\Session::permissions()->can(\LeadMax\TrackYourStats\User\Permissions::CREATE_AFFILIATES))
-                                    <a class="btn btn-default btn-sm value_span5-1 " data-toggle="tooltip"
-                                       title="Login into this user" href="#" onclick="adminLogin({{$user->idrep}})">Login</a>
-                                @endif
-                                @if(request('role',3) == 2 && \LeadMax\TrackYourStats\System\Session::permissions()->can(\LeadMax\TrackYourStats\User\Permissions::CREATE_MANAGERS))
-                                    <a class="btn btn-sm btn-default value_span5-1" data-toggle="tooltip" title="View Agents"
-                                       href="/user/{{$user->idrep}}/affiliates">View Agents</a>
-                                @endif
-                            </td>
-                            <td>{{$user->referrer->user_name}}</td>
-                            <td>{{\Carbon\Carbon::parse($user->rep_timestamp)->diffForHumans()}}</td>
-                        </tr>
-                    @endforeach
-                    </tbody>
+                    <tbody id="subid_content"></tbody>
                 </table>
             </div>
         </div>
@@ -78,6 +55,53 @@
                     sortList: [[4, 0]],
                     widgets: ['staticRow']
                 });
+
+	        const subIds = JSON.parse('<?php echo json_encode($subIds); ?> ');
+	        const idrep = '<?php echo $idrep; ?>';
+	        displayContent(subIds);
+
+	        document.getElementById('searchBox').addEventListener('input', (e) => {
+		        const userInput = e.target.value.trim().toLowerCase();
+		        let filteredSubIds = subIds.filter((subId) => {
+			        return subId.subId.toLowerCase().includes(userInput);
+		        })
+
+		        displayContent(filteredSubIds);
+
+	        });
+
+	        function displayContent(subIds) {
+
+		        let html = "";
+		        subIds.forEach((subId) => {
+			        html += "<tr>" +
+				        "<td>" + subId['subId'] + "</td>" +
+				        "<td class='button_wrap'>";
+			        if (subId["blocked"]) {
+				        html += "<button class='block_sub_id' disabled='disabled'" +
+					        " data-subid='" + subId["subId"] + "'" +
+					        " data-rep='" + idrep + "'" +
+					        ">Blocked</button>" +
+					        "<button class='unblock_button value_span6-2 value_span2 value_span1-2'" +
+					        " data-subid='" + subId["subId"] + "'" +
+					        " data-rep='" + idrep + "'>UnBlock</button>";
+			        } else {
+				        html += "<button class='block_sub_id value_span6-2 value_span2 value_span1-2'" +
+					        " data-subid='" + subId["subId"] + "'" +
+					        " data-rep='" + idrep + "'>Block ID</button>" +
+					        "<button style='display: none;'" +
+					        " disabled='disabled'" +
+					        " class='unblock_button value_span6-2 value_span2 value_span1-2'" +
+					        " data-subid='" + subId["subId"] + "'" +
+					        " data-rep='" + idrep +"'" +
+					        ">UnBlock</button>";
+			        }
+
+			        html += "</td></tr>";
+		        })
+
+		        document.getElementById('subid_content').innerHTML = html;
+	        }
         });
     </script>
 @endsection
