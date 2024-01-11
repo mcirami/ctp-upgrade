@@ -31,6 +31,13 @@ use App\Http\Controllers\Report\ChatLogReportController;
 use App\Http\Controllers\Report\EmployeeReportController;
 use App\Http\Controllers\Report\SubReportController;
 use App\Http\Controllers\Report\PayoutReportController;
+use App\Http\Controllers\OfferController;
+use App\Http\Controllers\EmailPoolController;
+use App\Http\Controllers\AdjustmentsController;
+use App\Http\Controllers\Sms\SmsApiController;
+use App\Http\Controllers\Sms\SmsController;
+use App\Http\Controllers\Sms\SmsClientController;
+use App\Http\Controllers\ChatLogController;
 
 Route::get('/', [IndexController::class, 'index']);
 Route::post('/', [IndexController::class, 'index']);
@@ -48,6 +55,9 @@ Route::group(['middleware' => 'legacy.auth'], function () {
         ]);
 	    Route::post('/block-sub-id', [UserController::class, 'blockUserSubId'])->middleware(['role:0']);
 	    Route::post('/unblock-sub-id', [UserController::class, 'unblockUserSubId'])->middleware(['role:0']);
+	    Route::post('/change-aff-payout', 'UserController@changeAffPayout')->middleware(['role:0']);
+	    Route::post('/update-offer-access', 'UserController@updateAffOfferAccess')->middleware(['role:0']);
+	    Route::get('/offers/{user}', 'UserController@editUserOffers')->middleware(['role:0']);
         Route::group(['prefix' => '/{id}/salary', 'middleware' => 'permissions:' . Permissions::EDIT_SALARIES],
             function () {
                 Route::get('create', [SalaryController::class, 'showCreate'])->name('salary.create');
@@ -84,59 +94,59 @@ Route::group(['middleware' => 'legacy.auth'], function () {
         });
     });
     Route::group(['prefix' => 'offer'], function () {
-        Route::get('manage', 'OfferController@showManage');
-        Route::get('{id}/request', 'OfferController@requestOffer')->middleware('role:3');
+        Route::get('manage', [OfferController::class, 'showManage']);
+        Route::get('{id}/request', [OfferController::class, 'requestOffer'])->middleware('role:3');
         Route::group(['middleware' => 'role:0'], function () {
-            Route::get('{id}/dupe', 'OfferController@dupe');
-            Route::get('{id}/delete', 'OfferController@delete');
+            Route::get('{id}/dupe', [OfferController::class, 'dupe']);
+            Route::get('{id}/delete', [OfferController::class, 'delete']);
         });
-        Route::get('{id}/clicks', 'Report\ClickReportController@offerClicks')->middleware('role:0,1,2')->name('offerClicks');
+        Route::get('{id}/clicks', [ClickReportController::class, 'offerClicks'])->middleware('role:0,1,2')->name('offerClicks');
         Route::group(['middleware' => ['permissions:' . Permissions::CREATE_OFFERS]], function () {
-            Route::get('create', 'OfferController@showCreate');
-            Route::post('create', 'OfferController@create');
-            Route::get("edit/{id}", 'OfferController@showEdit');
-            Route::get('mass-assign', 'OfferController@showMassAssign');
-            Route::post('mass-assign', 'OfferController@massAssign');
-            Route::get('assignableUsers', 'OfferController@getAssignableUsers');
-            Route::get("assignedUsers/{id}", 'OfferController@getAssignedUsers');
+            Route::get('create', [OfferController::class, 'showCreate']);
+            Route::post('create', [OfferController::class, 'create']);
+            Route::get("edit/{id}", [OfferController::class, 'showEdit']);
+            Route::get('mass-assign', [OfferController::class, 'showMassAssign']);
+            Route::post('mass-assign', [OfferController::class, 'massAssign']);
+            Route::get('assignableUsers', [OfferController::class, 'getAssignableUsers']);
+            Route::get("assignedUsers/{id}", [OfferController::class, 'getAssignedUsers']);
         });
     });
     Route::group(['prefix' => 'email/pools', 'middleware' => "permissions:" . Permissions::EMAIL_POOLS], function () {
-        Route::get('', 'EmailPoolController@showAffiliateEmailPools');
-        Route::get('{id}/download', 'EmailPoolController@downloadEmailPool');
-        Route::get('{id}/claim', 'EmailPoolController@claimEmailPool');
+        Route::get('', [EmailPoolController::class, 'showAffiliateEmailPools']);
+        Route::get('{id}/download', [EmailPoolController::class, 'downloadEmailPool']);
+        Route::get('{id}/claim', [EmailPoolController::class, 'claimEmailPool']);
     });
     Route::group(['prefix' => 'sales', 'middleware' => 'permissions:' . Permissions::ADJUST_SALES], function () {
-        Route::get('add', 'AdjustmentsController@showAddSaleLog');
-        Route::post('add', 'AdjustmentsController@createSale');
-        Route::get('affiliate-offers/{id}', 'AdjustmentsController@getAffiliatesOffers');
-        Route::get('affiliates', 'AdjustmentsController@getAffiliates');
+        Route::get('add', [AdjustmentsController::class, 'showAddSaleLog']);
+        Route::post('add', [AdjustmentsController::class, 'createSale']);
+        Route::get('affiliate-offers/{id}', [AdjustmentsController::class, 'getAffiliatesOffers']);
+        Route::get('affiliates', [AdjustmentsController::class, 'getAffiliates']);
     });
     Route::group(['prefix' => 'sms'], function () {
         Route::group(['prefix' => 'api'], function () {
-            Route::post('messages/send', 'Sms\SmsApiController@sendMessage');
-            Route::get('conversations', 'Sms\SmsApiController@getConversations');
-            Route::get('conversations/{id}', 'Sms\SmsApiController@getConversation');
-            Route::get('conversations/{id}/messages', 'Sms\SmsApiController@getMessages');
-            Route::patch('conversations', 'Sms\SmsApiController@patchConversation');
-            Route::patch('conversations/{conversationId}/read-new-messages', 'Sms\SmsApiController@readNewMessages');
+            Route::post('messages/send', [SmsApiController::class, 'sendMessage']);
+            Route::get('conversations', [SmsApiController::class, 'getConversations']);
+            Route::get('conversations/{id}', [SmsApiController::class, 'getConversation']);
+            Route::get('conversations/{id}/messages', [SmsApiController::class, 'getMessages']);
+            Route::patch('conversations', [SmsApiController::class, 'patchConversation']);
+            Route::patch('conversations/{conversationId}/read-new-messages', [SmsApiController::class, 'readNewMessages']);
         });
-        Route::get('/', 'Sms\SmsController@getChattingPage')->middleware(['role:' . Privilege::ROLE_AFFILIATE]);
+        Route::get('/', [SmsController::class, 'getChattingPage'])->middleware(['role:' . Privilege::ROLE_AFFILIATE]);
         Route::group(['prefix' => 'client', 'middleware' => 'role:' . Privilege::ROLE_GOD], function () {
-            Route::get('add', 'Sms\SmsClientController@create');
-            Route::post('add', 'Sms\SmsClientController@store');
-            Route::get('edit', 'Sms\SmsClientController@edit');
-            Route::post('update', 'Sms\SmsClientController@update');
-            Route::post('create', 'Sms\SmsClientController@createSMSWorker');
+            Route::get('add', [SmsClientController::class, 'create']);
+            Route::post('add', [SmsClientController::class, 'store']);
+            Route::get('edit', [SmsClientController::class, 'edit']);
+            Route::post('update', [SmsClientController::class, 'update']);
+            Route::post('create', [SmsClientController::class, 'createSMSWorker']);
         });
-        Route::get("client", 'Sms\SmsClientController@getUsersClient');
+        Route::get("client", [SmsClientController::class, 'getUsersClient']);
     });
     Route::group(['prefix' => 'chat-log'], function () {
-        Route::get('add/{pendingConversionId}', 'ChatLogController@showUploadChatLog');
-        Route::post('upload', 'ChatLogController@uploadChatLog');
-        Route::get('view/{saleLogId}/{fileName}', 'ChatLogController@getSaleLogImage');
+        Route::get('add/{pendingConversionId}', [ChatLogController::class, 'showUploadChatLog']);
+        Route::post('upload', [ChatLogController::class, 'uploadChatLog']);
+        Route::get('view/{saleLogId}/{fileName}', [ChatLogController::class, 'getSaleLogImage']);
     });
-    Route::get("login/{userId}", 'LegacyLoginController@adminLogin');
+    Route::get("login/{userId}", [LegacyLoginController::class, 'adminLogin']);
 });
 
 

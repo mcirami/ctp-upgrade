@@ -27,7 +27,7 @@ $assign->setGlobals();
 
 
 $na     = new \LeadMax\TrackYourStats\User\User();
-$result = $na->RegisterAndSetPriviliges('/user/manage');
+$result = $na->RegisterAndSetPriviliges('/user/offers');
 
 
 $create->dumpAssignablesToJavaScript();

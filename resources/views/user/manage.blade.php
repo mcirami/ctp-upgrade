@@ -22,19 +22,14 @@
 
             <div class="clear"></div>
             <div class="white_box_x_scroll white_box manage_aff large_table value_span8 ">
-                <table class="table table-striped  table_01  " id="mainTable">
+                <table class="table table-striped  table_01 manage_user_table " id="mainTable">
                     <thead>
                     <tr>
                         <th class="value_span8">User ID</th>
-                        <th class="value_span8">First Name</th>
-                        <th class="value_span8">Last Name</th>
-                        <th class="value_span8">Cell Phone</th>
                         <th class="value_span8">Username</th>
-                        <th class="value_span8">Status</th>
-                        <th class="value_span8">Referrer User Name</th>
-                        <th class="value_span8">Timestamp</th>
                         <th class="value_span8">Actions</th>
-                        <th></th>
+                        <th class="value_span8">Manager</th>
+                        <th class="value_span8">Timestamp</th>
 
                         @if (request('role',3) == 2)
                             <th></th>
@@ -45,36 +40,23 @@
                     @foreach($users as $user)
                         <tr>
                             <td>{{$user->idrep}}</td>
-                            <td>{{$user->first_name}}</td>
-                            <td>{{$user->last_name}}</td>
-                            <td>{{$user->cell_phone}}</td>
-                            <td>{{$user->user_name}}</td>
-                            <td>{{$user->status}}</td>
-                            <td>{{$user->referrer->user_name}}</td>
-                            <td>{{\Carbon\Carbon::parse($user->rep_timestamp)->diffForHumans()}}</td>
-                            @if(\LeadMax\TrackYourStats\System\Session::permissions()->can(\LeadMax\TrackYourStats\User\Permissions::EDIT_AFFILIATES))
-                                <td>
+                            <td class="username">{{$user->user_name}}</td>
+                            <td class="actions">
+                                @if(\LeadMax\TrackYourStats\System\Session::permissions()->can(\LeadMax\TrackYourStats\User\Permissions::EDIT_AFFILIATES))
                                     <a class="btn btn-default btn-sm value_span6-1 value_span4 " data-toggle="tooltip" title="Edit User"
                                        href="/aff_update.php?idrep={{$user->idrep}}">Edit</a>
-                                </td>
-                            @endif
-                            @if(\LeadMax\TrackYourStats\System\Session::permissions()->can(\LeadMax\TrackYourStats\User\Permissions::CREATE_AFFILIATES))
-                                <td><a class="btn btn-default btn-sm value_span5-1 " data-toggle="tooltip"
+                                @endif
+                                @if(\LeadMax\TrackYourStats\System\Session::permissions()->can(\LeadMax\TrackYourStats\User\Permissions::CREATE_AFFILIATES))
+                                    <a class="btn btn-default btn-sm value_span5-1 " data-toggle="tooltip"
                                        title="Login into this user" href="#" onclick="adminLogin({{$user->idrep}})">Login</a>
-                                </td>
-                            @endif
-                            @if(request('role',3) == 2 && \LeadMax\TrackYourStats\System\Session::permissions()->can(\LeadMax\TrackYourStats\User\Permissions::CREATE_MANAGERS))
-                                <td>
+                                @endif
+                                @if(request('role',3) == 2 && \LeadMax\TrackYourStats\System\Session::permissions()->can(\LeadMax\TrackYourStats\User\Permissions::CREATE_MANAGERS))
                                     <a class="btn btn-sm btn-default value_span5-1" data-toggle="tooltip" title="View Agents"
                                        href="/user/{{$user->idrep}}/affiliates">View Agents</a>
-                                </td>
-                            @endif
-                            @if(\LeadMax\TrackYourStats\System\Session::permissions()->can(\LeadMax\TrackYourStats\User\Permissions::BAN_USERS))
-                                <td>
-                                    <a class="btn btn-default btn-sm value_span11 value_span4 " data-toggle="tooltip" title="Ban User"
-                                       href="/ban_user.php?uid={{$user->idrep}}">Ban User</a>
-                                </td>
-                            @endif
+                                @endif
+                            </td>
+                            <td>{{$user->referrer->user_name}}</td>
+                            <td>{{\Carbon\Carbon::parse($user->rep_timestamp)->diffForHumans()}}</td>
                         </tr>
                     @endforeach
                     </tbody>

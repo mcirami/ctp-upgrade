@@ -105,4 +105,90 @@ class UserController extends Controller
 
 		return response()->json(['success' => true]);
 	}
+
+	public function changeAffPayout(Request $request) {
+		$message = null;
+
+		$userID = $request->rep;
+		$offer = $request->offer_id;
+		$payout = $request->payout;
+
+		// TODO: check if already has access or not.
+
+		if(\LeadMax\TrackYourStats\System\Session::userType() != Privilege::ROLE_AFFILIATE) {
+
+			$offerAccess = DB::table('rep_has_offer')
+			                 ->where('rep_idrep', '=', $userID)
+			                 ->where('offer_idoffer', '=', $offer)->get();
+			if (count($offerAccess) > 0) {
+				DB::table('rep_has_offer')
+				  ->where('rep_idrep', '=', $userID)
+				  ->where('offer_idoffer', '=', $offer)
+				  ->update([
+					  'payout' => $payout
+				  ]);
+				$success = true;
+			} else {
+				$success = false;
+				$message = "User does not have access to offer yet!";
+			}
+
+		} else {
+			$success = false;
+			$message = "You don't have permissions to do this!";
+		}
+		return response()->json(['success' => $success, 'message' => $message]);
+	}
+
+	public function updateAffOfferAccess(Request $request) {
+		$userID = $request->rep;
+		$offer = $request->offer_id;
+		$access = $request->access;
+		$message = "";
+
+		if(\LeadMax\TrackYourStats\System\Session::userType() != Privilege::ROLE_AFFILIATE) {
+
+			if ($access) {
+				DB::table('rep_has_offer')->insert([
+					'rep_idrep'     => $userID,
+					'offer_idoffer' => $offer,
+					'payout'        => $request->payout
+				]);
+			} else {
+				DB::table('rep_has_offer')
+				  ->where('rep_idrep', '=', $userID)
+				  ->where('offer_idoffer', '=', $offer)->delete();
+			}
+
+			$success = true;
+		} else {
+			$success = false;
+			$message = "You don't have permissions to do this";
+		}
+
+		return response()->json(['success' => $success, 'message' => $message]);
+	}
+
+	public function editUserOffers(User $user) {
+		$userID = $user->idrep;
+		$userFName = $user->first_name;
+
+		$offers = DB::table('offer')->where('status', '=', 1)->select('idoffer', 'offer_name', 'payout')->get()->toArray();
+
+		foreach($offers as $index => $offer ) {
+			$affHasOffer = DB::table('rep_has_offer')->where('rep_idrep', '=', $userID)->where('offer_idoffer', '=', $offer->idoffer)->get()->toArray();
+
+			if (count($affHasOffer) > 0) {
+				$offers[$index]->has_offer = true;
+				$offers[$index]->reppayout = $affHasOffer[0]->payout;
+			} else {
+				$offers[$index]->has_offer = false;
+				$offers[$index]->reppayout = 1.00;
+			}
+			$offers[$index]->idrep = $userID;
+		}
+
+
+		return view('user.offers')->with(['offers' => $offers, 'name' => $userFName]);
+	}
 }

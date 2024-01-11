@@ -368,7 +368,8 @@
 
 				setTimeout(() => {
 					document.querySelectorAll('.copy_button').forEach((button) => {
-						button.addEventListener("pointerdown", (e) => {
+						button.addEventListener("click", (e) => {
+							e.preventDefault();
 							const url = e.target.dataset.url;
 							const unsecuredCopyToClipboard = (text) => { const textArea = document.createElement("textarea"); textArea.value=text; document.body.appendChild(textArea); textArea.focus();textArea.select(); try{document.execCommand('copy')}catch(err){console.error('Unable to copy to clipboard',err)}document.body.removeChild(textArea)};
 							if (window.isSecureContext && navigator.clipboard) {
@@ -378,7 +379,7 @@
 							}
 						})
 					})
-				}, 3000)
+				}, 2000)
 
 				showItems(currentPage);
 				setupPagination();

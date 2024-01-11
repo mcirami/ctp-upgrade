@@ -667,7 +667,7 @@ class User extends Login
                 die("<h1> ERROR: USER NOT SAVED </h1>".$e->getMessage()); // If there is an error, DIE, escape function
             }
 
-            send_to($redirect_to);  //If there is no errors redirect
+            send_to($redirect_to . "/" . $repID);  //If there is no errors redirect
 
 
         }

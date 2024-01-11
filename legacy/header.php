@@ -39,7 +39,7 @@ $navBar = new \LeadMax\TrackYourStats\System\NavBar(\LeadMax\TrackYourStats\Syst
     <link href="css/animate.css" rel="stylesheet">
 
 
-    <link rel="stylesheet" type="text/css" href="<?php echo $webroot; ?>css/default.css?v=1.2"/>
+    <link rel="stylesheet" type="text/css" href="<?php echo $webroot; ?>css/default.css?v=1.3"/>
     <link rel="stylesheet" type="text/css" href="<?php echo $webroot; ?>css/tablesorter.default.css"/>
 
     <link rel="stylesheet" media="screen" type="text/css"
@@ -58,7 +58,7 @@ $navBar = new \LeadMax\TrackYourStats\System\NavBar(\LeadMax\TrackYourStats\Syst
 
     <script type="text/javascript" src="<?php echo $webroot; ?>js/jscolor.min.js"></script>
     <link rel="stylesheet" href="css/jquery-ui.min.css"/>
-    <script type="text/javascript" src="<?php echo $webroot; ?>js/main.js"></script>
+    <script type="text/javascript" src="<?php echo $webroot; ?>js/main.js?v=2.2"></script>
     <script type="text/javascript" src="<?php echo $webroot; ?>js/drawer.js"></script>
     <script type="text/javascript" src="<?php echo $webroot; ?>js/iscroll.min.js"></script>
 

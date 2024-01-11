@@ -10,7 +10,7 @@
 $webroot = getWebRoot();
 
 $mid = (isset($_GET["mid"]) && $_GET["mid"] != "") ? $_GET["mid"] : "";
-
+$pending = (isset($_GET["pending"]) && $_GET["pending"] != "") ? $_GET["pending"] : 0;
 ?>
 
 <!DOCTYPE html>
@@ -122,7 +122,13 @@ $mid = (isset($_GET["mid"]) && $_GET["mid"] != "") ? $_GET["mid"] : "";
 
 						<div class="action-details">
 							<div class = "heading_holder">
-								<h2 class = " value_span9">Thank you for registering with Money Lovers!</h2>
+								<h2 class = " value_span9">
+									<?php if ($pending) : ?>
+										Your account is still Pending!
+									<?php else : ?>
+										Thank you for registering with Money Lovers!
+									<?php endif; ?>
+								</h2>
 							</div>
 							<h3>Please contact us for approval</h3>
 							<div class="columns_wrap">

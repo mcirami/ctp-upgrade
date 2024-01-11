@@ -32,8 +32,7 @@ if (isset($_POST['button']) && $user->count < 5)
 	
 	$result = $user->login($user_name, $email, $password);
 
-	if ($result == \LeadMax\TrackYourStats\User\Login::RESULT_SUCCESS)
-	{
+	if ($result == \LeadMax\TrackYourStats\User\Login::RESULT_SUCCESS) {
 
 		if (isset($_GET["redirectUri"]))
 		{
@@ -44,9 +43,9 @@ if (isset($_POST['button']) && $user->count < 5)
 			send_to('dashboard');
 		}
 		
-	}
-	else
-	{
+	} else if  ($result == \LeadMax\TrackYourStats\User\Login::RESULT_PENDING){
+		send_to('signup_success.php?pending=1');
+	} else {
 
 		$user->badLoginAttempt();
 
@@ -61,8 +60,6 @@ if (isset($_POST['button']) && $user->count < 5)
 				$error = "This account has been banned. Login attempt has been logged and an administrator will be notified. ";
 			}
 		}
-		
-		
 	}
 }
 else

@@ -2477,3 +2477,135 @@ table.offer_clicks th:first-child {
 .right_panel table.sub_ids thead th:last-child {
 	width: 80%;
 }
+
+#user_info .white_box {
+	max-height: 700px;
+	overflow-y: scroll;
+}
+
+#user_info .left_con01, #user_info .right_con01 {
+	padding: 0;
+}
+
+@media screen and (max-width: 992px) {
+	.right_panel table.sub_ids .button_wrap button {
+		margin-left: 10px
+	}
+}
+
+#user_info .update_aff_payout.updated_animation {
+	animation: pulse 2s;
+}
+
+@keyframes pulse {
+	0% {
+		-moz-box-shadow: 0 0 0 0 rgba(0, 177, 0, .5);
+		box-shadow: 0 0 0 0 rgba(0, 177, 0, .5);
+	}
+
+	50% {
+		-moz-box-shadow: 0 0 10px 8px rgba(0, 177, 0, .5);
+		box-shadow: 0 0 10px 8px rgba(0, 177, 0, .5);
+	}
+
+	75% {
+		-moz-box-shadow: 0 0 10px -4px rgba(0, 177, 0, .5);
+		box-shadow: 0 0 10px -4px rgba(0, 177, 0, .5);
+	}
+
+	100% {
+		-moz-box-shadow: 0 0 10px -8px rgba(0, 177, 0, .5);
+		box-shadow: 0 0 10px -8px rgba(0, 177, 0, .5);
+	}
+}
+
+#user_info td.offer_access {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-orient: horizontal;
+	-webkit-box-direction: normal;
+	-ms-flex-direction: row;
+	flex-direction: row;
+	-ms-flex-wrap: nowrap;
+	flex-wrap: nowrap;
+	justify-content: flex-start;
+	-webkit-justify-content: flex-start;
+	align-items: center;
+	-webkit-align-items: center;
+	gap: 5px;
+}
+#user_info td.offer_access input[type="checkbox"] {
+	display: block;
+	width: auto;
+}
+#user_info td.offer_access label {
+	margin: 0;
+}
+
+#user_info.edit_user_offers {
+	margin-top: 40px;
+}
+
+#error_message {
+	display:none;
+	position: fixed;
+	top: 0;
+	left: 0;
+	background: #fff;
+	width: 100%;
+	-webkit-box-orient: horizontal;
+	-webkit-box-direction: normal;
+	-ms-flex-direction: row;
+	flex-direction: row;
+	-ms-flex-wrap: nowrap;
+	flex-wrap: nowrap;
+	justify-content: center;
+	-webkit-justify-content: center;
+	-webkit-align-items: center;
+	align-items: center;
+	padding: 20px;
+	z-index: 999;
+}
+
+#error_message.active {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+}
+
+#error_message p {
+	color: red;
+	font-size: 2.5rem;
+	font-weight: bold;
+}
+
+.manage_user_table {
+	min-width: unset;
+	width: auto;
+}
+
+.manage_user_table th {
+	width: 20%;
+}
+
+.manage_user_table td.actions {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-orient: horizontal;
+	-webkit-box-direction: normal;
+	-ms-flex-direction: row;
+	flex-direction: row;
+	-ms-flex-wrap: wrap;
+	flex-wrap: wrap;
+	gap: 10px;
+}
+
+.manage_user_table td.actions a {
+	width: 7rem;
+}
+
+.manage_user_table td.username {
+	word-break: break-all;
+}

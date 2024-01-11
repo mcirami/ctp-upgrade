@@ -96,4 +96,166 @@ jQuery(document).ready(function ($) {
         $('#notification_box').toggleClass('open');
     });
 
+    const blockButtons = document.querySelectorAll('.block_sub_id');
+    if (blockButtons) {
+        blockButtons.forEach((button) => {
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
+                const button = e.target;
+                const userID = button.dataset.rep;
+                const subID = button.dataset.subid;
+
+                const packets = {
+                    user_id: userID,
+                    sub_id: subID
+                }
+
+                axios.post('user/block-sub-id', packets).then((response) => {
+                    if (response.data.success) {
+                        button.innerHTML = "Blocked"
+                        button.disabled = true;
+                        button.classList.remove("value_span6-2", "value_span2", "value_span1-2");
+                        const unblockButton = button.nextElementSibling;
+                        unblockButton.disabled = false;
+                        unblockButton.style.display = "block";
+                    } else {
+                        console.log(response);
+                    }
+                })
+
+            })
+        });
+    }
+    const unblock_buttons = document.querySelectorAll('.unblock_button');
+    if(unblock_buttons) {
+        unblock_buttons.forEach((button) => {
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
+                const button = e.target;
+                const userID = button.dataset.rep;
+                const subID = button.dataset.subid;
+
+                const packets = {
+                    user_id: userID,
+                    sub_id: subID
+                }
+
+                axios.post('user/unblock-sub-id', packets).then((response) => {
+                    if (response.data.success) {
+                        button.disabled = true;
+                        button.style.display = "none";
+                        const blockButton = button.previousElementSibling;
+                        blockButton.innerHTML = "Block ID";
+                        blockButton.disabled = false;
+                        blockButton.classList.add("value_span6-2", "value_span2", "value_span1-2");
+                    } else {
+                        console.log(response);
+                    }
+                })
+
+            })
+        });
+    }
+
+    let tabsContainer = document.querySelector("#tabs");
+    if(tabsContainer) {
+        let tabTogglers = tabsContainer.querySelectorAll("#tabs a");
+        tabTogglers.forEach(function(toggler) {
+            toggler.addEventListener("click", function(e) {
+                e.preventDefault();
+
+                let tabName = this.getAttribute("href");
+
+                let tabContents = document.querySelector("#user_info");
+
+                for (let i = 0; i < tabContents.children.length; i++) {
+
+                    tabTogglers[i].parentElement.classList.remove("border-t",
+                        "border-r", "border-l", "-mb-px", "value_span6-1");
+                    tabTogglers[i].classList.remove("value_span2");
+                    tabContents.children[i].classList.remove("hidden");
+                    if ("#" + tabContents.children[i].id === tabName) {
+                        continue;
+                    }
+                    tabContents.children[i].classList.add("hidden");
+
+                }
+
+                e.target.parentElement.classList.add("border-t", "border-r",
+                    "border-l", "-mb-px", "value_span6-1");
+                e.target.classList.add("value_span2");
+            });
+        });
+    }
+
+    const offerPayoutInputs = document.querySelectorAll('.update_aff_payout');
+    if (offerPayoutInputs) {
+        ["keydown", "focusout"].forEach(evt => {
+            offerPayoutInputs.forEach((offer) => {
+                offer.addEventListener(evt, (e) => {
+                    if( (evt === "keydown" && e.keyCode === 13) || evt === "focusout") {
+                        const payout = e.target.value;
+                        const offer = e.target.dataset.offer;
+                        const rep = e.target.dataset.rep;
+
+                        const packets = {
+                            payout: payout,
+                            offer_id: offer,
+                            rep: rep
+                        }
+
+                        axios.post('/user/change-aff-payout', packets).then((response) => {
+                            if (response.data.success) {
+                                e.target.classList.add('updated_animation');
+
+                                setTimeout(() => {
+                                    e.target.classList.remove('updated_animation');
+                                },3000)
+                            } else {
+                                document.querySelector('#error_message p').innerHTML = response.data.message;
+                                document.querySelector('#error_message').classList.add('active');
+                                setTimeout(() => {
+                                    document.querySelector('#error_message').classList.remove('active');
+                                },5000)
+                            }
+                        })
+                    }
+
+                })
+            });
+        })
+    }
+
+    const offerAccessCheck = document.querySelectorAll('.offer_access_check');
+    if (offerAccessCheck) {
+        offerAccessCheck.forEach((check) => {
+            check.addEventListener('change', (e) => {
+
+                const offerID = e.target.dataset.offer;
+                const access = e.target.checked
+                const packets = {
+                    access: access,
+                    rep: e.target.dataset.rep,
+                    offer_id: offerID,
+                }
+
+                if(access) {
+                    packets["payout"] = document.querySelector('#offer_' + offerID).value
+                }
+
+                axios.post('/user/update-offer-access', packets).then((response) => {
+                    if (response.data.success) {
+                        console.log("SUCCESS!");
+                    } else {
+                        document.querySelector('#error_message p').innerHTML = response.data.message;
+                        document.querySelector('#error_message').classList.add('active');
+                        setTimeout(() => {
+                            document.querySelector('#error_message').classList.remove('active');
+                        },5000)
+                    }
+                })
+            })
+        })
+    }
+
 });
