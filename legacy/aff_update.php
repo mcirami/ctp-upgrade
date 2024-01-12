@@ -306,6 +306,9 @@ $update->dumpPermissionsToJavascript();
 						<div class = "heading_holder value_span9">
 							<span class = "lft"><?php echo $update->selectedUser->first_name . " " . $update->selectedUser->last_name; ?>'s Sub Id's</span>
 						</div>
+						<div class="form-group searchDiv">
+							<input id="searchBox" class="form-control" type="text" placeholder="Search Sub Id's..." />
+						</div>
 						<div class="white_box value_span8">
 							<table class="table_01 large_table sub_ids" id="mainTable">
 								<thead>
@@ -314,39 +317,7 @@ $update->dumpPermissionsToJavascript();
 									<th class="value_span9">Action</th>
 								</tr>
 								</thead>
-								<tbody>
-
-								<?php foreach ($subIds as $subId) : ?>
-									<tr>
-										<td> <?php echo $subId["subId"]; ?> </td>
-										<td class="button_wrap">
-											<?php if ($subId["blocked"]) : ?>
-												<button class="block_sub_id"
-												        disabled="disabled"
-												        data-subid=<?php echo $subId["subId"]; ?>
-												        data-rep=<?php echo $idrep; ?>
-												>Blocked</button>
-												<button class="unblock_button value_span6-2 value_span2 value_span1-2"
-												        data-subid=<?php echo $subId["subId"]; ?>
-												        data-rep=<?php echo $idrep; ?>
-												>UnBlock</button>
-											<?php else : ?>
-												<button class="block_sub_id value_span6-2 value_span2 value_span1-2"
-												        data-subid=<?php echo $subId["subId"]; ?>
-												        data-rep=<?php echo $idrep; ?>
-												>Block ID</button>
-												<button style="display: none;"
-												        disabled="disabled"
-												        class="unblock_button value_span6-2 value_span2 value_span1-2"
-												        data-subid=<?php echo $subId["subId"]; ?>
-												        data-rep=<?php echo $idrep; ?>
-												>UnBlock</button>
-											<?php endif; ?>
-
-										</td>
-									</tr>
-								<?php endforeach; ?>
-								</tbody>
+								<tbody id="subid_content"></tbody>
 							</table>
 						</div>
 					</div>
@@ -442,6 +413,53 @@ $update->dumpPermissionsToJavascript();
 
 		if ($('#affRadio').is(':checked'))
 			$("#referralP").show();
+
+		const subIds = JSON.parse('<?php echo json_encode($subIds); ?> ');
+		const idrep = '<?php echo $idrep; ?>';
+		displayContent(subIds);
+
+		document.getElementById('searchBox').addEventListener('input', (e) => {
+			const userInput = e.target.value.trim().toLowerCase();
+			let filteredSubIds = subIds.filter((subId) => {
+				return subId.subId.toLowerCase().includes(userInput);
+			})
+
+			displayContent(filteredSubIds);
+
+		});
+
+		function displayContent(subIds) {
+
+			let html = "";
+			subIds.forEach((subId) => {
+				html += "<tr>" +
+					"<td>" + subId['subId'] + "</td>" +
+					"<td class='button_wrap'>";
+				if (subId["blocked"]) {
+					html += "<button class='block_sub_id' disabled='disabled'" +
+						" data-subid='" + subId["subId"] + "'" +
+						" data-rep='" + idrep + "'" +
+						">Blocked</button>" +
+						"<button class='unblock_button value_span6-2 value_span2 value_span1-2'" +
+						" data-subid='" + subId["subId"] + "'" +
+						" data-rep='" + idrep + "'>UnBlock</button>";
+				} else {
+					html += "<button class='block_sub_id value_span6-2 value_span2 value_span1-2'" +
+						" data-subid='" + subId["subId"] + "'" +
+						" data-rep='" + idrep + "'>Block ID</button>" +
+						"<button style='display: none;'" +
+						" disabled='disabled'" +
+						" class='unblock_button value_span6-2 value_span2 value_span1-2'" +
+						" data-subid='" + subId["subId"] + "'" +
+						" data-rep='" + idrep +"'" +
+						">UnBlock</button>";
+				}
+
+				html += "</td></tr>";
+			})
+
+			document.getElementById('subid_content').innerHTML = html;
+		}
 	});
 
 	function setTwoNumberDecimal(event) {
