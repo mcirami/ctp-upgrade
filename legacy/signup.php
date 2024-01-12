@@ -47,7 +47,7 @@ $mid = (isset($_GET["mid"]) && $_GET["mid"] != "") ? $_GET["mid"] : "";
 	<script type = "text/javascript" src = "<?php echo $webroot; ?>js/bootstrap-notify.min.js"></script>
 	
 	
-	<title><?php echo\LeadMax\TrackYourStats\System\Company::loadFromSession()->getShortHand(); ?></title>
+	<title><?php echo \LeadMax\TrackYourStats\System\Company::loadFromSession()->getShortHand(); ?></title>
 </head>
 <body style = "background-color:#EAEEF1;">
 <div class = "top_sec value_span1">
