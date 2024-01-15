@@ -163,7 +163,7 @@ $navBar = new \LeadMax\TrackYourStats\System\NavBar(\LeadMax\TrackYourStats\Syst
           ?>
         <li>
           <h2 class="label value_span2">Password</h2>
-          <a href="{{$webroot}}aff_update.php?idrep={{$userId}}" class="value_span5 username">Change Password</a>
+          <a href="<?php echo $webroot . 'aff_update.php?idrep=' . $userId; ?>" class="value_span5 username">Change Password</a>
         </li>
       </ul>
 
