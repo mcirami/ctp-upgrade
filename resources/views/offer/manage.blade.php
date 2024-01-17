@@ -218,6 +218,7 @@
 				const userInput = e.target.value.trim().toLowerCase();
 				let filteredOffers = offers.filter((offer) => {
 					return offer.offer_name.toLowerCase().includes(userInput);
+					copyLink();
 				})
 				paginate(filteredOffers, itemsPerPage, paginationContainer);
 			});
@@ -256,7 +257,6 @@
 									"<button data-url='http://" + url +
 									"/?repid=" + <?php echo \LeadMax\TrackYourStats\System\Session::userID(); ?> +
 											"&offerid=" + offer["idoffer"] + "&sub1=' data-toggle='tooltip' title='Copy My Link' " +
-									/*onclick(handleClick(offer['idoffer'])) +*/
 									"class='copy_button btn btn-default'>Copy My Link" +
 									"</button></td>";
 						}
@@ -336,6 +336,10 @@
 						html += "</tr>";
 						itemsContainer.innerHTML = html;
 					});
+
+					setTimeout(() => {
+						copyLink()
+					}, 2000)
 				}
 
 				function setupPagination() {
@@ -367,22 +371,26 @@
 				}
 
 				setTimeout(() => {
-					document.querySelectorAll('.copy_button').forEach((button) => {
-						button.addEventListener("click", (e) => {
-							e.preventDefault();
-							const url = e.target.dataset.url;
-							const unsecuredCopyToClipboard = (text) => { const textArea = document.createElement("textarea"); textArea.value=text; document.body.appendChild(textArea); textArea.focus();textArea.select(); try{document.execCommand('copy')}catch(err){console.error('Unable to copy to clipboard',err)}document.body.removeChild(textArea)};
-							if (window.isSecureContext && navigator.clipboard) {
-								navigator.clipboard.writeText(url);
-							} else {
-								unsecuredCopyToClipboard(url);
-							}
-						})
-					})
+					copyLink();
 				}, 2000)
 
 				showItems(currentPage);
 				setupPagination();
+			}
+
+			function copyLink() {
+				document.querySelectorAll('.copy_button').forEach((button) => {
+					button.addEventListener("click", (e) => {
+						e.preventDefault();
+						const url = e.target.dataset.url;
+						const unsecuredCopyToClipboard = (text) => { const textArea = document.createElement("textarea"); textArea.value=text; document.body.appendChild(textArea); textArea.focus();textArea.select(); try{document.execCommand('copy')}catch(err){console.error('Unable to copy to clipboard',err)}document.body.removeChild(textArea)};
+						if (window.isSecureContext && navigator.clipboard) {
+							navigator.clipboard.writeText(url);
+						} else {
+							unsecuredCopyToClipboard(url);
+						}
+					})
+				})
 			}
 
 		});
