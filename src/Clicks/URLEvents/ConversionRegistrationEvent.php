@@ -9,7 +9,8 @@ use App\Offer;
 use LeadMax\TrackYourStats\Clicks\Conversion;
 use LeadMax\TrackYourStats\Clicks\PendingConversion;
 use LeadMax\TrackYourStats\User\PostBackURLs\ConversionPostBackURL;
-use Symfony\Component\HttpFoundation\JsonResponse;
+//use Symfony\Component\HttpFoundation\JsonResponse;
+use Illuminate\Http\JsonResponse;
 
 class ConversionRegistrationEvent extends URLEvent
 {
@@ -36,10 +37,10 @@ class ConversionRegistrationEvent extends URLEvent
                 return $this->firePostBackURL();
             } else {
 
-                return JsonResponse::create(['status' => 500, 'message' => 'Unknown error.'], 200);
+                return response()->json(['status' => 500, 'message' => 'Unknown error.']);
             }
         } catch (\Exception $e) {
-            return JsonResponse::create(['status' => 500, 'message' => $e->getMessage()], 500);
+            return response()->json(['status' => 500, 'message' => $e->getMessage()], 500);
         }
     }
 
@@ -94,7 +95,7 @@ class ConversionRegistrationEvent extends URLEvent
 
         $urlProcessor->curlURL();
 
-        return JsonResponse::create([
+        return response()->json([
             'status' => 200,
             'message' => 'Conversion registered.',
             'post_back_url' => $urlProcessor->url,

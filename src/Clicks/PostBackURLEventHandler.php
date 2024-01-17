@@ -34,7 +34,7 @@ class PostBackURLEventHandler
             }
         }
 
-        return JsonResponse::create(['status' => 404, 'message' => 'Unknown request.'], 404);
+        return response()->json(['status' => 404, 'message' => 'Unknown request.'], 404);
     }
 
 

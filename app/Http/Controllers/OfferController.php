@@ -27,7 +27,7 @@ class OfferController extends Controller
 	public function requestOffer($id)
 	{
 		$result = \LeadMax\TrackYourStats\Offer\RepHasOffer::requestOffer($id, \LeadMax\TrackYourStats\System\Session::userID());
-		return JsonResponse::create($result);
+		return response()->json($result);
 	}
 
 	public function dupe($id)

@@ -75,7 +75,6 @@ class Click
         if ($prep->execute()) {
             $this->id = $db->lastInsertId();
 
-
             $this->saveSubVariables();
 
             $this->saveGeoData();

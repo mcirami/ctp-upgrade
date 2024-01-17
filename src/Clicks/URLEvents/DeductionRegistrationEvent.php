@@ -33,10 +33,10 @@ class DeductionRegistrationEvent extends URLEvent
             if ($this->registerDeduction()) {
                 return $this->firePostBackURL();
             } else {
-                return JsonResponse::create(['status' => 500, 'message' => 'Unknown error.'], 200);
+                return response()->json(['status' => 500, 'message' => 'Unknown error.'], 200);
             }
         } catch (\Exception $e) {
-            return JsonResponse::create(['status' => 500, 'message' => $e->getMessage()], 500);
+            return response()->json(['status' => 500, 'message' => $e->getMessage()], 500);
         }
     }
 
@@ -74,7 +74,7 @@ class DeductionRegistrationEvent extends URLEvent
 
         $urlProcessor->curlURL();
 
-        return JsonResponse::create([
+        return response()->json([
             'status' => 200,
             'message' => 'Deduction registered.',
             'post_back_url' => $urlProcessor->url,

@@ -35,13 +35,13 @@ class FreeSignUpRegistrationEvent extends URLEvent
             if ($this->registerSignUp()) {
                 return $this->firePostBackURL();
             } else {
-                return JsonResponse::create([
+                return response()->json([
                     'status' => 500,
                     'message' => 'Unknown error.',
                 ], 500);
             }
         } catch (\Exception $e) {
-            return JsonResponse::create(['status' => 500, 'message' => $e->getMessage()], 500);
+            return response()->json(['status' => 500, 'message' => $e->getMessage()], 500);
         }
 
     }
@@ -60,7 +60,7 @@ class FreeSignUpRegistrationEvent extends URLEvent
 
         $urlProcessor->curlURL();
 
-        return JsonResponse::create([
+        return response()->json([
             'status' => 200,
             'message' => 'Free sign up registered.',
             'post_back_url' => $urlProcessor->url,

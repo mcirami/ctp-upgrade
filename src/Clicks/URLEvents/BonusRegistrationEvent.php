@@ -35,13 +35,13 @@ class BonusRegistrationEvent extends URLEvent
     public function fire()
     {
         if (User::find($this->userId)->isBanned()) {
-            return JsonResponse::create(['status' => 400, 'message' => 'User is banned.']);
+            return response()->json(['status' => 400, 'message' => 'User is banned.']);
         }
 
         if ($this->registerBonusToUser()) {
-            return JsonResponse::create(['status' => 200, 'message' => 'Bonus registered.']);
+            return response()->json(['status' => 200, 'message' => 'Bonus registered.']);
         } else {
-            return JsonResponse::create(['status' => 500, 'message' => 'Unknown error.'], 500);
+            return response()->json(['status' => 500, 'message' => 'Unknown error.'], 500);
         }
 
     }

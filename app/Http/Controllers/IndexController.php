@@ -59,7 +59,7 @@ class IndexController extends Controller
             }
 
             if ($request->get("uid") !== Company::loadFromSession()->getUID()) {
-                return JsonResponse::create(['status' => 404, 'message' => 'Unknown UID.'], 404);
+                return response()->json(['status' => 404, 'message' => 'Unknown UID.'], 404);
             }
 
             try {
@@ -69,7 +69,7 @@ class IndexController extends Controller
             } catch (\Exception $e) {
                 LogDB($e, null);
 
-                return JsonResponse::create([
+                return response()->json([
                     'status'  => 500,
                     'message' => $e->getMessage(),
                 ], 500);
