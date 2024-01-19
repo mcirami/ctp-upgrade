@@ -57,6 +57,7 @@ class Reporter
 
     public function between($dateFrom, $dateTo, Formats\Format $format)
     {
+
         $report = $this->repo->between($dateFrom, $dateTo);
 
         $report = $this->filterReport($report);

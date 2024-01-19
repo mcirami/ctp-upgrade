@@ -52,10 +52,6 @@
 <input style='width:100px;' onchange='setCustom();' type="text" id="d_to" name="d_to"
        value='{{request()->query('d_to', \Carbon\Carbon::today('America/Los_Angeles')->format('Y-m-d'))}}'>
 
-@php
-
-
-        @endphp
 <div class="button_wrap">
     <button id='searchBtn' class=" btn btn-default btn-sm"
             onclick="window.location = '/{{request()->path() . "?" . http_build_query(request()->except(['d_from','d_to','dateSelect']))}}' +  processDates()  ">

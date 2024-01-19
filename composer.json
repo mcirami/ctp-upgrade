@@ -24,6 +24,7 @@
   },
   "require-dev": {
     "barryvdh/laravel-ide-helper": "^2.4",
+    "fakerphp/faker": "^1.23",
     "mockery/mockery": "0.9.*",
     "phpunit/phpunit": "^10.0",
     "spatie/laravel-ignition": "^2.4"
@@ -35,7 +36,9 @@
     "psr-4": {
       "LeadMax\\TrackYourStats\\": "src/",
       "App\\": "app/",
-      "Tests\\": "tests/"
+      "Tests\\": "tests/",
+      "Database\\Factories\\": "database/factories/",
+      "Database\\Seeders\\": "database/seeds/"
     },
     "files": [
       "src/System/Functions.php",

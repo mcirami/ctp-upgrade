@@ -2,7 +2,10 @@
 
 namespace App;
 
+use Database\Factories\ClickFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
  * App\Click
@@ -25,6 +28,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Click extends Model
 {
+	use HasFactory;
     const TYPE_UNIQUE = 0;
     const TYPE_RAW = 1;
     const TYPE_BLACKLISTED = 2;
@@ -34,5 +38,12 @@ class Click extends Model
 
     protected $primaryKey = 'idclicks';
 
+	/**
+	 * Create a new factory instance for the model.
+	 */
+	protected static function newFactory(): Factory
+	{
+		return ClickFactory::new();
+	}
 
 }
