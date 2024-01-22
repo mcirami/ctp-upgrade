@@ -94,7 +94,7 @@ transition:right .6s cubic-bezier(.19, 1, .22, 1)
 .drawer-hamburger {
 	position:absolute;
 	z-index:4;
-	top:0;
+	top:50%;
 	display:block;
 	box-sizing:content-box;
 	width:2rem;
@@ -102,8 +102,8 @@ transition:right .6s cubic-bezier(.19, 1, .22, 1)
 padding:18px .75rem 30px;
 -webkit-transition:all .6s cubic-bezier(.19, 1, .22, 1);
 transition:all .6s cubic-bezier(.19, 1, .22, 1);
-	-webkit-transform:translateZ(0);
-	transform:translateZ(0);
+	-webkit-transform:translateY(15%);
+	transform:translateY(15%);
 	border:0;
 	outline:0;
 	background-color:transparent

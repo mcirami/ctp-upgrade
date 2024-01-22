@@ -261,7 +261,7 @@ img {
 
 .top_sec .logo img {
 	width: 100%;
-	max-width: 225px;
+	max-width: 150px;
 }
 
 @media screen and (max-width: 1199px) {
