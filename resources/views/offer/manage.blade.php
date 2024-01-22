@@ -254,7 +254,7 @@
 									"<p  style='display:none;' id='url_" + offer['idoffer'] + "'>http://" + url +
 									"/?repid=" + <?php echo \LeadMax\TrackYourStats\System\Session::userID(); ?> +
 											"&offerid=" + offer["idoffer"] + "&sub1=</p>" +
-									"<button data-url='http://" + url +
+									"<button data-url='https://" + url +
 									"/?repid=" + <?php echo \LeadMax\TrackYourStats\System\Session::userID(); ?> +
 											"&offerid=" + offer["idoffer"] + "&sub1=' data-toggle='tooltip' title='Copy My Link' " +
 									"class='copy_button btn btn-default'>Copy My Link" +
