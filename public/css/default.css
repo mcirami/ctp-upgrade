@@ -2434,6 +2434,26 @@ table.offer_clicks th:first-child {
 	-moz-border-radius: 4px;
 }
 
+.info_message {
+	float: left;
+	width: 100%;
+	text-align: center;
+	padding: 10px 20px;
+	background: lightgray;
+	color: red;
+	box-sizing: border-box;
+}
+.info_message p {
+	font-family: 'robotobold', sans-serif;
+}
+.info_message a {
+	color: red;
+}
+
+.info_message a:hover {
+	color: darkred;
+}
+
 .right_panel table.sub_ids .button_wrap {
 	display: -webkit-box;
 	display: -ms-flexbox;
