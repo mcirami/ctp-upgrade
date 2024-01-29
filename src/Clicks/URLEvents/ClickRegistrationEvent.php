@@ -176,7 +176,6 @@ class ClickRegistrationEvent extends URLEvent
         if ($caps->isOfferCapped()) {
             $caps->sendToRedirectOffer();
         }
-
     }
 
     private function sendUserToOffer()

@@ -53,8 +53,8 @@ function searchTable() {
 
 
 $(function () {
-    $("#d_from").datepicker({dateFormat: 'yy-mm-dd', defaultDate: moment().tz('America/Los_Angeles').format('Y-MM-D')});
-    $("#d_to").datepicker({dateFormat: 'yy-mm-dd', defaultDate: moment().tz('America/Los_Angeles').format('Y-MM-D')});
+    $("#d_from").datepicker({dateFormat: 'yy-mm-dd', defaultDate: moment().tz('America/New_York').format('Y-MM-D')});
+    $("#d_to").datepicker({dateFormat: 'yy-mm-dd', defaultDate: moment().tz('America/New_York').format('Y-MM-D')});
 });
 
 String.prototype.replaceAll = function (str1, str2, ignore) {

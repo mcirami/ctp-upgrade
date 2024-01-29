@@ -13,7 +13,7 @@ require 'lib/phpmailer/src/PHPMailer.php';
 require 'lib/phpmailer/src/SMTP.php';
 
 
-date_default_timezone_set('America/Los_Angeles');
+date_default_timezone_set('America/New_York');
 
 $ip = $_SERVER['REMOTE_ADDR'];
 

@@ -32,8 +32,8 @@ class ClickReportController extends ReportController
         $offer = Offer::findOrFail($id);
         $dates = self::getDates();
 
-	    $start = Carbon::parse( $dates['start'], 'America/Los_Angeles' );
-	    $end   = Carbon::parse( $dates['end'], 'America/Los_Angeles' );
+	    $start = Carbon::parse( $dates['start'], 'America/New_York' );
+	    $end   = Carbon::parse( $dates['end'], 'America/New_York' );
 
 	    $repo          = new OfferClicksRepository( $id, Session::user(),
 		    Session::permissions()->can( Permissions::VIEW_FRAUD_DATA ) );
@@ -108,8 +108,8 @@ class ClickReportController extends ReportController
 
 		$dates = self::getDates();
 		$affClicks = [];
-		$start = Carbon::parse($dates['start'], 'America/Los_Angeles');
-		$end = Carbon::parse($dates['end'], 'America/Los_Angeles');
+		$start = Carbon::parse($dates['start'], 'America/New_York');
+		$end = Carbon::parse($dates['end'], 'America/New_York');
 
 		$managers = User::myUsers()->withRole(Privilege::ROLE_MANAGER)->get();
 		foreach ($managers as $manager) {

@@ -17,14 +17,14 @@ class Date
 
     static function today()
     {
-        $timezone = (isset($_COOKIE["timezone"])) ? $_COOKIE["timezone"] : "America/Los_Angeles";
+        $timezone = (isset($_COOKIE["timezone"])) ? $_COOKIE["timezone"] : "America/New_York";
         $date = Carbon::today($timezone);
 
 
         return $date->format("Y-m-d");
     }
 
-    static function convertDateTimezone($date, $timezone = "America/Los_Angeles", $format = "Y-m-d H:i:s", $newFormat = null)
+    static function convertDateTimezone($date, $timezone = "America/New_York", $format = "Y-m-d H:i:s", $newFormat = null)
     {
         $newFormat = ($newFormat === null) ? $format : $newFormat;
 
@@ -37,7 +37,7 @@ class Date
 
     static function tomorrow()
     {
-        $timezone = (isset($_COOKIE["timezone"])) ? $_COOKIE["timezone"] : "America/Los_Angeles";
+        $timezone = (isset($_COOKIE["timezone"])) ? $_COOKIE["timezone"] : "America/New_York";
         $date = Carbon::tomorrow($timezone);
 
         return $date->format("Y-m-d");
