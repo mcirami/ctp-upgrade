@@ -12,7 +12,7 @@ class ReportController extends Controller
 
     public static function getTimezone()
     {
-        return (isset($_COOKIE["timezone"])) ? $_COOKIE["timezone"] : "America/Los_Angeles";
+        return (isset($_COOKIE["timezone"])) ? $_COOKIE["timezone"] : "America/New_York";
     }
 
     /**

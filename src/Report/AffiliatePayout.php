@@ -22,7 +22,7 @@ class AffiliatePayout
 
     public $dateTo = "";
 
-    private $timezone = "America/Los_Angeles";
+    private $timezone = "America/New_York";
 
     public $conversions = array();
 

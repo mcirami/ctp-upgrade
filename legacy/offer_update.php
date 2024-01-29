@@ -302,7 +302,7 @@ $bonusOffer = \App\BonusOffer::where('offer_id', '=', $idoffer)->first();
 
                         <input class="fixCheckBox" type="checkbox" id="enable_cap" name="enable_cap" value="enable_cap">Enable
                         Offer Cap
-                    <p id="offer_cap_form" style="display:none;">
+                    <span id="offer_cap_form" style="display:none;">
 
                         <span class="small_txt value_span10">Cap Type</span>
                         <select id="cap_type" name="cap_type" disabled>
@@ -346,21 +346,36 @@ $bonusOffer = \App\BonusOffer::where('offer_id', '=', $idoffer)->first();
                             "disabled");
 
                         ?>
+	                    <span class="max_cap">
+		                    <label class="value_span9">Max Cap</label>
+		                    <input class="fixCheckBox" type="checkbox" id="enable_max_cap" name="enable_max_cap"
+		                           <?php if ($offer_cap->getRuleVal("max_cap_status")) : echo " checked"; endif; ?>
+		                    >
+		                    Enable Max Cap
+	                       <span class="max_cap_wrap"
+		                       <?php if(!$offer_cap->getRuleVal("max_cap_status")) : ?>
+			                       style="display:none;"
+		                       <?php endif; ?>
+	                       >
+		                        <span class="small_txt value_span10">Max Cap</span>
+		                        <input type="number" name="max_cap_num" value="<?= $offer_cap->getRuleVal("max_cap") ?>"
+		                               id="max_cap_num" <?php if(!$offer_cap->getRuleVal("max_cap_status")) : ?> disabled <?php endif; ?>/>
+	                       </span>
+	                    </span>
 
-                    </p>
+                    </span>
 
-                    <p>
+                    <!--<p>
                         <label class="value_span9">Bonus Offer</label>
 
-                        <input class="fixCheckBox" type="checkbox" id="enable_bonus_offer"
-                               name="enable_bonus_offer"> Enable
-                    <p id="bonus_offer_div" style="display:none;">
+                        <input class="fixCheckBox" type="checkbox" id="enable_bonus_offer" name="enable_bonus_offer">Enable
+	                <p id="bonus_offer_div" style="display:none;">
                         <label for="required_sales">Required Sales:</label>
                         <input type="number" name="required_sales" id="required_sales"
-                               value="<?= is_null($bonusOffer) ? 0 : $bonusOffer->required_sales ?>"
+                               value="<?php /*= is_null($bonusOffer) ? 0 : $bonusOffer->required_sales */?>"
                                style="width:100px" disabled>
                     </p>
-                    </p>
+                    </p>-->
 
 
                     <?php
@@ -437,7 +452,19 @@ $bonusOffer = \App\BonusOffer::where('offer_id', '=', $idoffer)->first();
     </div>
 
     <script type="text/javascript" src="<?php echo $webroot; ?>js/offer.js"></script>
-
+	<script>
+		$(document).ready(function () {
+			document.querySelector('#enable_max_cap').addEventListener('change', (e) => {
+				if (e.target.checked) {
+					document.querySelector('.max_cap_wrap').style.display = "block";
+					document.querySelector('#max_cap_num').disabled = false;
+				} else {
+					document.querySelector('.max_cap_wrap').style.display = "none";
+					document.querySelector('#max_cap_num').disabled = true;
+				}
+			})
+		});
+	</script>
 
     <!--right_panel-->
 <?php ?>

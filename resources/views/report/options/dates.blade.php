@@ -46,11 +46,11 @@
 <label for='d_from'>From:</label>
 <input style='width:100px;' onchange='setCustom();' type="text" id="d_from"
        name="d_from"
-       value='{{request()->query("d_from", \Carbon\Carbon::today('America/Los_Angeles')->format('Y-m-d'))}}'>
+       value='{{request()->query("d_from", \Carbon\Carbon::today('America/New_York')->format('Y-m-d'))}}'>
 
 <label for='d_to'>To:</label>
 <input style='width:100px;' onchange='setCustom();' type="text" id="d_to" name="d_to"
-       value='{{request()->query('d_to', \Carbon\Carbon::today('America/Los_Angeles')->format('Y-m-d'))}}'>
+       value='{{request()->query('d_to', \Carbon\Carbon::today('America/New_York')->format('Y-m-d'))}}'>
 
 <div class="button_wrap">
     <button id='searchBtn' class=" btn btn-default btn-sm"

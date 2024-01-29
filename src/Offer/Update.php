@@ -3,6 +3,7 @@
 namespace LeadMax\TrackYourStats\Offer;
 
 use App\BonusOffer;
+use Carbon\Carbon;
 use LeadMax\TrackYourStats\System\Session;
 use LeadMax\TrackYourStats\Table\Assignments;
 use LeadMax\TrackYourStats\User\Tree;
@@ -356,7 +357,6 @@ class Update
 
         if ($submit) {
 
-
             $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
 
             $db->beginTransaction();
@@ -518,6 +518,22 @@ class Update
 
                     $options["redirect_offer"] = $_POST["redirect_offer"];
 
+	                if(isset($_POST["enable_max_cap"])) {
+						if(isset($_POST["max_cap_num"])) {
+							$options["max_cap"] = $_POST["max_cap_num"];
+						}
+		                $options["max_cap_status"] = 1;
+		                $tz = 'America/New_York';
+		                $dateToday = \Illuminate\Support\Carbon::today($tz)->format('Y-m-d');
+		                $date = $dateToday . " 23:59:59";
+		                $carbonToday = Carbon::createFromFormat('Y-m-d H:i:s', $date, $tz);
+		                $saveDate = $carbonToday->setTimezone("UTC");
+		                $options["max_cap_date"] = $saveDate;
+
+	                } else {
+		                $options["max_cap_status"] = 0;
+		                $options["max_cap_date"] = null;
+	                }
 
                     $caps->updateOfferRules($options);
 
