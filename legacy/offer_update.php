@@ -37,9 +37,6 @@ if (isset($_GET["noAff"])) {
     $noAffiliates = unserialize(base64_decode($_GET["noAff"]));
 }
 
-
-$bonusOffer = \App\BonusOffer::where('offer_id', '=', $idoffer)->first();
-
 ?>
 
     <!--right_panel-->
@@ -253,11 +250,6 @@ $bonusOffer = \App\BonusOffer::where('offer_id', '=', $idoffer)->first();
 
                                 }
                               });
-                                <?php
-                                if(!is_null($bonusOffer) && $bonusOffer->active == 1) {
-                                    echo "$('#enable_bonus_offer').click();";
-                                }
-                                ?>
                               $('#enable_cap').change(function() {
                                 $('#enable_cap').attr('disabled', 'disabled');
                                 $('#enable_cap').attr('disabled', 'disabled');
@@ -364,19 +356,6 @@ $bonusOffer = \App\BonusOffer::where('offer_id', '=', $idoffer)->first();
 	                    </span>
 
                     </span>
-
-                    <!--<p>
-                        <label class="value_span9">Bonus Offer</label>
-
-                        <input class="fixCheckBox" type="checkbox" id="enable_bonus_offer" name="enable_bonus_offer">Enable
-	                <p id="bonus_offer_div" style="display:none;">
-                        <label for="required_sales">Required Sales:</label>
-                        <input type="number" name="required_sales" id="required_sales"
-                               value="<?php /*= is_null($bonusOffer) ? 0 : $bonusOffer->required_sales */?>"
-                               style="width:100px" disabled>
-                    </p>
-                    </p>-->
-
 
                     <?php
                     $update->findAssigned();
