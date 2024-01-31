@@ -124,6 +124,7 @@ class Clicks extends ReportBase
     {
         $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
 
+		$db->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, FALSE);
 
         $per = Permissions::loadFromSession();
 
