@@ -120,7 +120,7 @@ class Clicks extends ReportBase
     }
 
 
-    public function queryAffiliate($d_from = false, $d_to = false, $repID, $rowCount = false)
+    public function queryAffiliate($d_from = false, $d_to = false, $repID, $items_per_page, $offset, $rowCount = false)
     {
         $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
 
@@ -159,10 +159,10 @@ class Clicks extends ReportBase
 
         $sql .= " ORDER BY clicks.idclicks DESC ";
 
-        /*if ( ! $rowCount) {
+        if ( ! $rowCount) {
             $sql .= "LIMIT $items_per_page ";
             $sql .= "OFFSET {$offset}";
-        }*/
+        }
 
 
         $prep = $db->prepare($sql);
@@ -183,13 +183,13 @@ class Clicks extends ReportBase
     }
 
 
-    public function fetchReport($d_from = false, $d_to = false, $repID)
+    public function fetchReport($d_from = false, $d_to = false, $repID, $items_per_page, $offset)
     {
         if ($this->userType == \App\Privilege::ROLE_AFFILIATE) {
-            $this->report = $this->queryAffiliate($d_from, $d_to, $repID)
+            $this->report = $this->queryAffiliate($d_from, $d_to, $repID, $items_per_page, $offset)
                                  ->fetchAll(PDO::FETCH_ASSOC);
         } else {
-            $this->report = $this->queryEmployee($d_from, $d_to, $repID)
+            $this->report = $this->queryEmployee($d_from, $d_to, $repID, $items_per_page, $offset)
                                  ->fetchAll(PDO::FETCH_ASSOC);
         }
 

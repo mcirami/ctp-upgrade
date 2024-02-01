@@ -10,6 +10,22 @@ namespace LeadMax\TrackYourStats\Clicks;
 
 use GeoIp2\Database\Reader;
 
+function unKnownGeo( array $geo ): array {
+	$geo["isoCode"] = "UNKNOWN";
+
+	$geo["subDivision"] = "UNKNOWN";
+
+	$geo["city"] = "UNKNOWN";
+
+	$geo["postal"] = "UNKNOWN";
+
+	$geo["latitude"] = "UNKNOWN";
+
+	$geo["longitude"] = "UNKNOWN";
+
+	return $geo;
+}
+
 class ClickGeo
 {
 
@@ -20,14 +36,14 @@ class ClickGeo
     {
         $geo = array();
         if ($ip == "") {
-            return $geo;
+	        return unKnownGeo($geo);
         }
 
         $reader = new Reader(env("GEO_IP_DATABASE"));
 
-
         try {
             $record = $reader->city($ip);
+
             $geo["isoCode"] = $record->country->isoCode."\n"; // 'US'
 
             $geo["subDivision"] = $record->mostSpecificSubdivision->name;
@@ -40,23 +56,12 @@ class ClickGeo
 
             $geo["longitude"] = $record->location->longitude;
         } catch (\Exception $e) {
-            $geo["isoCode"] = "UNKNOWN";
 
-            $geo["subDivision"] = "UNKNOWN";
-
-            $geo["city"] = "UNKNOWN";
-
-            $geo["postal"] = "UNKNOWN";
-
-            $geo["latitude"] = "UNKNOWN";
-
-            $geo["longitude"] = "UNKNOWN";
+            $geo = unKnownGeo($geo);
         }
 
 
         return $geo;
 
     }
-
-
 }

@@ -9,6 +9,7 @@ use Illuminate\Support\ServiceProvider;
 use LeadMax\TrackYourStats\System\NavBar;
 use LeadMax\TrackYourStats\System\Notifications;
 use LeadMax\TrackYourStats\System\Session;
+use Illuminate\Pagination\Paginator;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -27,6 +28,11 @@ class AppServiceProvider extends ServiceProvider
             $view->with(['navBar' => $navBar, 'notifications' => $notifications]);
         });
         User::observe(UserObserver::class);
+
+		$d_from = request()->query('d_from');
+	    Paginator::useBootstrapFive();
+	    Paginator::defaultView('vendor/pagination/default');
+	    Paginator::defaultSimpleView('default');
     }
 
     /**

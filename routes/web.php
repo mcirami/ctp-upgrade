@@ -66,6 +66,7 @@ Route::group(['middleware' => 'legacy.auth'], function () {
                 Route::post('update', [SalaryController::class, 'update'])->name('salary.update');
             });
         Route::get('{id}/clicks', [ClickReportController::class, 'showUsersClicks'])->middleware('role:0,1,2')->name('userClicks');
+	    Route::get('{id}/search-clicks', [ClickReportController::class, 'searchClicks'])->middleware('role:0')->name('clicks.search');
     });
     Route::group(['prefix' => 'report'], function () {
         Route::get('daily', [AggregateReportController::class, 'show']);

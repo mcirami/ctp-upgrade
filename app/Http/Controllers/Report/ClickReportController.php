@@ -8,15 +8,20 @@ use App\Services\Repositories\Offer\OfferAffiliateClicksRepository;
 use App\Services\Repositories\Offer\OfferClicksRepository;
 use App\User;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use phpDocumentor\Reflection\Types\Object_;
+use LeadMax\TrackYourStats\Clicks\ClickGeo;
+use LeadMax\TrackYourStats\Clicks\ClickVars;
 use function GuzzleHttp\Psr7\parse_query;
+use phpDocumentor\Reflection\Types\Object_;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 use LeadMax\TrackYourStats\Report\ID\Clicks;
 use LeadMax\TrackYourStats\System\Session;
 use LeadMax\TrackYourStats\Table\Paginate;
 use LeadMax\TrackYourStats\User\Permissions;
+use Illuminate\Contracts\Support\Jsonable;
 
 class ClickReportController extends ReportController
 {
@@ -91,17 +96,57 @@ class ClickReportController extends ReportController
     public function showUsersClicks($userId)
     {
         $dates = self::getDates();
+		$startDate = $dates['originalStart'];
+		$endDate = $dates['originalEnd'];
+		$dateSelect = request()->query('dateSelect');
 
         $user = User::myUsers()->findOrFail($userId);
-        $report = new Clicks($user->getRole(), request());
 
-       /* $paginate = new Paginate(request()->query('rpp', 10),
-            $report->getCount($dates['startDate'], $dates['endDate'], $userId));*/
+	    $reportData = DB::table('clicks')
+	                ->where('rep_idrep', '=', $userId)
+	                ->where('clicks.click_type', '!=', 2)
+	                ->whereBetween('clicks.first_timestamp', [$dates['startDate'], $dates['endDate']])
+	                ->leftJoin('click_vars', 'click_vars.click_id', '=', 'clicks.idclicks')
+	                ->leftJoin('click_geo', 'click_geo.click_id', '=', 'clicks.idclicks')
+	                ->leftJoin('conversions', 'conversions.click_id', '=', 'clicks.idclicks')
+	                ->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
+	                ->select(
+						'clicks.idclicks',
+						'clicks.first_timestamp',
+						'offer.offer_name',
+						'conversions.timestamp',
+						'conversions.paid',
+						'click_vars.url',
+						'click_vars.sub1',
+						'click_vars.sub2',
+		                'click_vars.sub3',
+		                'click_vars.sub4',
+		                'click_vars.sub5',
+						'click_geo.ip',
+						'clicks.offer_idoffer'
+	                )
+	                ->orderBy('clicks.idclicks', 'DESC')->paginate(100);
 
-        $report->fetchReport($dates['startDate'], $dates['endDate'], $userId);
+	    $per = Permissions::loadFromSession();
+		$report = $reportData->items();
 
+	    if ($per->can("view_fraud_data")) {
+		    foreach ($report as $row => $val) {
+			    $geo = ClickGeo::findGeo($val->ip);
 
-        return view('report.clicks.affiliate', compact('report', 'user'));
+			    foreach ($geo as $key => $val2) {
+				    $val->$key = $val2;
+			    }
+		    }
+	    } else {
+		    foreach ($report as $row => $val) {
+			    $geo = ClickGeo::findGeo($val->ip);
+			    $val->isoCode = $geo["isoCode"];
+			    unset($val->ip);
+		    }
+	    }
+
+        return view('report.clicks.affiliate', compact('report', 'user', 'reportData', 'startDate', 'endDate', 'dateSelect'));
     }
 
 	public function showManagersClicks($id) {
@@ -138,6 +183,69 @@ class ClickReportController extends ReportController
 		}
 
 		return $affClicks;
+
+	}
+
+	public function searchClicks(Request $request, $userId) {
+
+		$dates = self::getDates();
+
+		$startDate = $dates['originalStart'];
+		$endDate = $dates['originalEnd'];
+		$dateSelect = request()->query('dateSelect');
+
+		$user = User::myUsers()->findOrFail($userId);
+
+		$reportData = DB::table('clicks')
+		                ->where([
+							['rep_idrep', '=', $userId],
+			                [function ($query) use($request) {
+								if ($s = $request->searchValue) {
+									$query->orWhere('idclicks', 'LIKE', '%' . $s . '%');
+								}
+							}]])
+		                    ->whereBetween('clicks.first_timestamp', [$dates['startDate'], $dates['endDate']])
+		                    ->leftJoin('click_vars', 'click_vars.click_id', '=', 'clicks.idclicks')
+		                    ->leftJoin('click_geo', 'click_geo.click_id', '=', 'clicks.idclicks')
+		                    ->leftJoin('conversions', 'conversions.click_id', '=', 'clicks.idclicks')
+		                    ->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
+		                    ->select(
+								'clicks.idclicks',
+								'clicks.first_timestamp',
+								'offer.offer_name',
+								'conversions.timestamp',
+								'conversions.paid',
+								'click_vars.url',
+								'click_vars.sub1',
+								'click_vars.sub2',
+								'click_vars.sub3',
+								'click_vars.sub4',
+								'click_vars.sub5',
+								'click_geo.ip',
+								'clicks.offer_idoffer'
+		                    )
+		                    ->orderBy('clicks.idclicks', 'DESC')->paginate(100);
+
+		$per = Permissions::loadFromSession();
+		$report = $reportData->items();
+
+		if ($per->can("view_fraud_data")) {
+			foreach ($report as $row => $val) {
+				$geo = ClickGeo::findGeo($val->ip);
+
+				foreach ($geo as $key => $val2) {
+					$val->$key = $val2;
+				}
+			}
+		} else {
+			foreach ($report as $row => $val) {
+				$geo = ClickGeo::findGeo($val->ip);
+				$val->isoCode = $geo["isoCode"];
+				unset($val->ip);
+			}
+		}
+
+		return view('report.clicks.affiliate', compact('report', 'user', 'reportData', 'startDate', 'endDate', 'dateSelect'));
 
 	}
 

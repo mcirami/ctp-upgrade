@@ -9,6 +9,29 @@
 @endsection
 
 @section('table')
+	<div class="form-group searchDiv">
+		@if (\LeadMax\TrackYourStats\System\Session::permissions()->can("view_fraud_data"))
+			<form action="/user/{{$user->idrep}}/search-clicks" method="GET">
+				<input id="searchBox"
+					   class="form-control"
+					   type="text"
+					   name="searchValue"
+					   placeholder="Search Click ID"
+				/>
+				<input type="hidden" name="d_from" value="{{$startDate}}">
+				<input type="hidden" name="d_to" value="{{$endDate}}">
+				<input type="hidden" name="dateSelect" value="{{$dateSelect}}">
+
+				{{--<div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+					<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-400" fill="none"
+						 viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+						<path stroke-linecap="round" stroke-linejoin="round"
+							  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+					</svg>
+				</div>--}}
+			</form>
+		@endif
+	</div>
 	<div class="table_wrap">
 		<table id="clicks" class="table table-condensed table-bordered table_01 tablesorter">
 			<thead>
@@ -30,12 +53,6 @@
 					<th class="value_span9">IP Address</th>
 				@endif
 
-
-				@php
-					$report->printHeaders();
-				@endphp
-
-
 				<th class="value_span9">Iso Code</th>
 				@if (\LeadMax\TrackYourStats\System\Session::permissions()->can("view_fraud_data"))
 					<th class="value_span9">Sub Division</th>
@@ -48,135 +65,47 @@
 			</thead>
 			<tbody>
 
+			@foreach($report as $row)
+				<tr role="row">
+					@if (\LeadMax\TrackYourStats\System\Session::permissions()->can("view_fraud_data"))
+						<td>{{$row->idclicks}}</td>
+					@endif
+					<td>{{$row->first_timestamp}}</td>
+					<td>{{$row->offer_name}}</td>
+					<td>{{$row->timestamp}}</td>
+					<td>{{$row->paid}}</td>
+					<td>{{$row->sub1}}</td>
+					<td>{{$row->sub2}}</td>
+					<td>{{$row->sub3}}</td>
+					<td>{{$row->sub4}}</td>
+					<td>{{$row->sub5}}</td>
+					@if (\LeadMax\TrackYourStats\System\Session::permissions()->can("view_fraud_data"))
+						<td>{{$row->ip}}</td>
+					@endif
+					<td>{{$row->isoCode}}</td>
+					@if (\LeadMax\TrackYourStats\System\Session::permissions()->can("view_fraud_data"))
+						<td>{{$row->isoCode}}</td>
+						<td>{{$row->subDivision}}</td>
+						<td>{{$row->city}}</td>
+						<td>{{$row->postal}}</td>
+						<td>{{$row->latitude}}</td>
+						<td>{{$row->longitude}}</td>
+					@endif
+
+				</tr>
 
 
-			@php
-				$report->process();
-				$report->printR();
-			@endphp
-
+			@endforeach
 			</tbody>
 		</table>
 	</div>
-	<div id="pager" class="pager">
-		<form>
-			<div class="navigation">
-				<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-chevron-bar-left first" viewBox="0 0 16 16">
-					<path fill-rule="evenodd" d="M11.854 3.646a.5.5 0 0 1 0 .708L8.207 8l3.647 3.646a.5.5 0 0 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 0 1 .708 0zM4.5 1a.5.5 0 0 0-.5.5v13a.5.5 0 0 0 1 0v-13a.5.5 0 0 0-.5-.5z"/>
-				</svg>
-				<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-chevron-left prev" viewBox="0 0 16 16">
-					<path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
-				</svg>
-				<!-- the "pagedisplay" can be any element, including an input -->
-				<span class="pagedisplay" data-pager-output-filtered="{startRow:input} &ndash; {endRow} / {filteredRows} of {totalRows} total rows"></span>
-				<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-chevron-right next" viewBox="0 0 16 16">
-					<path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
-				</svg>
-				<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-chevron-bar-right last" viewBox="0 0 16 16">
-					<path fill-rule="evenodd" d="M4.146 3.646a.5.5 0 0 0 0 .708L7.793 8l-3.647 3.646a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708 0zM11.5 1a.5.5 0 0 1 .5.5v13a.5.5 0 0 1-1 0v-13a.5.5 0 0 1 .5-.5z"/>
-				</svg>
-				<select class="pagesize">
-					<option value="10">10</option>
-					<option value="20">20</option>
-					<option value="30">30</option>
-					<option value="40">40</option>
-					<option value="all">All Rows</option>
-				</select>
-			</div>
-		</form>
-	</div>
-    {{--@include('report.options.pagination')--}}
+	{{ $reportData->links() }}
 
 @endsection
 
 @section('footer')
     <script type="text/javascript">
 		$(document).ready(function () {
-
-			// **********************************
-			//  Description of ALL pager options
-			// **********************************
-			var pagerOptions = {
-
-				// target the pager markup - see the HTML block below
-				container: $(".pager"),
-
-				// use this url format "http:/mydatabase.com?page={page}&size={size}&{sortList:col}"
-				ajaxUrl: null,
-
-				// modify the url after all processing has been applied
-				customAjaxUrl: function(table, url) { return url; },
-
-				// ajax error callback from $.tablesorter.showError function
-				// ajaxError: function( config, xhr, settings, exception ) { return exception; };
-				// returning false will abort the error message
-				ajaxError: null,
-
-				// add more ajax settings here
-				// see http://api.jquery.com/jQuery.ajax/#jQuery-ajax-settings
-				ajaxObject: { dataType: 'json' },
-
-				// process ajax so that the data object is returned along with the total number of rows
-				ajaxProcessing: null,
-
-				// Set this option to false if your table data is preloaded into the table, but you are still using ajax
-				processAjaxOnInit: true,
-
-				// output string - default is '{page}/{totalPages}'
-				// possible variables: {size}, {page}, {totalPages}, {filteredPages}, {startRow}, {endRow}, {filteredRows} and {totalRows}
-				// also {page:input} & {startRow:input} will add a modifiable input in place of the value
-				// In v2.27.7, this can be set as a function
-				// output: function(table, pager) { return 'page ' + pager.startRow + ' - ' + pager.endRow; }
-				output: '{startRow:input} – {endRow} / {totalRows} rows',
-
-				// apply disabled classname (cssDisabled option) to the pager arrows when the rows
-				// are at either extreme is visible; default is true
-				updateArrows: true,
-
-				// starting page of the pager (zero based index)
-				page: 0,
-
-				// Number of visible rows - default is 10
-				size: 10,
-
-				// Save pager page & size if the storage script is loaded (requires $.tablesorter.storage in jquery.tablesorter.widgets.js)
-				savePages : true,
-
-				// Saves tablesorter paging to custom key if defined.
-				// Key parameter name used by the $.tablesorter.storage function.
-				// Useful if you have multiple tables defined
-				storageKey:'tablesorter-pager',
-
-				// Reset pager to this page after filtering; set to desired page number (zero-based index),
-				// or false to not change page at filter start
-				pageReset: 0,
-
-				// if true, the table will remain the same height no matter how many records are displayed. The space is made up by an empty
-				// table row set to a height to compensate; default is false
-				fixedHeight: true,
-
-				// remove rows from the table to speed up the sort of large tables.
-				// setting this to false, only hides the non-visible rows; needed if you plan to add/remove rows with the pager enabled.
-				removeRows: false,
-
-				// If true, child rows will be counted towards the pager set size
-				countChildRows: false,
-
-				// css class names of pager arrows
-				cssNext: '.next', // next page arrow
-				cssPrev: '.prev', // previous page arrow
-				cssFirst: '.first', // go to first page arrow
-				cssLast: '.last', // go to last page arrow
-				cssGoto: '.gotoPage', // select dropdown to allow choosing a page
-
-				cssPageDisplay: '.pagedisplay', // location of where the "output" is displayed
-				cssPageSize: '.pagesize', // page size selector - select dropdown that sets the "size" option
-
-				// class added to arrows when at the extremes (i.e. prev/first arrows are "disabled" when on the first page)
-				cssDisabled: 'disabled', // Note there is no period "." in front of this class name
-				cssErrorRow: 'tablesorter-errorRow' // ajax error information row
-
-			};
 
 			$("#clicks")
 
