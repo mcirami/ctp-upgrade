@@ -128,7 +128,7 @@
 
 				// initialize the pager plugin
 				// ****************************
-				.tablesorterPager(pagerOptions);
+				//.tablesorterPager(pagerOptions);
 		});
 
     </script>

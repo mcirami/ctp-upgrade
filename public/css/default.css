@@ -2452,6 +2452,11 @@ table.offer_clicks th:first-child {
 	-moz-border-radius: 4px;
 }
 
+.pagination>.active>a, .pagination>.active>span, .pagination>.active>a:hover, .pagination>.active>span:hover, .pagination>.active>a:focus, .pagination>.active>span:focus, .pagination>li>a, .pagination>li>span {
+	background-color: unset;
+	color: unset;
+}
+
 .info_message {
 	float: left;
 	width: 100%;

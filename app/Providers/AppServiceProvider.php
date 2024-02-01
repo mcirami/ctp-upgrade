@@ -29,8 +29,6 @@ class AppServiceProvider extends ServiceProvider
         });
         User::observe(UserObserver::class);
 
-		$d_from = request()->query('d_from');
-	    Paginator::useBootstrapFive();
 	    Paginator::defaultView('vendor/pagination/default');
 	    Paginator::defaultSimpleView('default');
     }
