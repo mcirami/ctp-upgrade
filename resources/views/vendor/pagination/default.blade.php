@@ -5,8 +5,8 @@
 		$dateSelect = request()->query('dateSelect');
     @endphp
     <nav>
-        <ul class="pagination pagination-container">
-            {{-- Previous Page Link --}}
+        <ul class="pagination-container">
+           {{-- --}}{{-- Previous Page Link --}}{{--
             @if ($paginator->onFirstPage())
                 <li class="disabled" aria-disabled="true" aria-label="@lang('pagination.previous')">
                     <span aria-hidden="true">&lsaquo;</span>
@@ -15,7 +15,7 @@
                 <li>
                     <a href="{{ $paginator->previousPageUrl() }}&d_from={{$d_from}}&d_to={{$d_to}}&dateSelect={{$dateSelect}}" rel="prev" aria-label="@lang('pagination.previous')">&lsaquo;</a>
                 </li>
-            @endif
+            @endif--}}
 
             {{-- Pagination Elements --}}
             @foreach ($elements as $element)
@@ -28,16 +28,16 @@
                 @if (is_array($element))
                     @foreach ($element as $page => $url)
                         @if ($page == $paginator->currentPage())
-                            <li class="active value_span2-2 value_span3-2 value_span6-1 value_span6 value_span4" aria-current="page"><span class="value_span11">{{ $page }}</span></li>
+                            <li class="active" aria-current="page"><a class="disabled active value_span2-2 value_span3-2 value_span6-1 value_span2 value_span6 value_span4">{{ $page }}</a></li>
                         @else
-                            <li><a class="value_span2-2 value_span3-2 value_span6-1 value_span6" href="{{ $url }}&d_from={{$d_from}}&d_to={{$d_to}}&dateSelect={{$dateSelect}}">{{ $page }}</a></li>
+                            <li><a class="value_span2-2 value_span3-2 value_span6-1 value_span2 value_span6" href="{{ $url }}&d_from={{$d_from}}&d_to={{$d_to}}&dateSelect={{$dateSelect}}">{{ $page }}</a></li>
                         @endif
                     @endforeach
                 @endif
             @endforeach
 
             {{-- Next Page Link --}}
-            @if ($paginator->hasMorePages())
+            {{--@if ($paginator->hasMorePages())
                 <li>
                     <a href="{{ $paginator->nextPageUrl() }}&d_from={{$d_from}}&d_to={{$d_to}}&dateSelect={{$dateSelect}}" rel="next" aria-label="@lang('pagination.next')">&rsaquo;</a>
                 </li>
@@ -45,7 +45,7 @@
                 <li class="disabled" aria-disabled="true" aria-label="@lang('pagination.next')">
                     <span aria-hidden="true">&rsaquo;</span>
                 </li>
-            @endif
+            @endif--}}
         </ul>
     </nav>
 @endif
