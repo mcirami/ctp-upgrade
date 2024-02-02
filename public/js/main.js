@@ -48,6 +48,11 @@ jQuery(document).ready(function ($) {
     $(activeDropdown).parent().parent().css('display', 'block').addClass('open');
 */
 
+    axios.defaults.headers.common = {
+        'X-Requested-With': 'XMLHttpRequest',
+        'X-CSRF-TOKEN': window.csrf_token
+    };
+
     $('#default').click(function (e) {
         e.preventDefault();
 
