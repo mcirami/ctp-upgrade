@@ -86,7 +86,7 @@ $navBar = new \LeadMax\TrackYourStats\System\NavBar(\LeadMax\TrackYourStats\Syst
 
 <body class="drawer drawer--top value_span7">
 <script type="text/javascript">
-	window.csrf_token = '<?php echo csrf_token(); ?>
+	window.csrf_token = '<?php echo csrf_token(); ?>'
 </script>
 <header role="banner" class="mobile_nav">
     <button type="button" class="drawer-toggle drawer-hamburger"><span class="sr-only">toggle navigation</span>

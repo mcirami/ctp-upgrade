@@ -231,6 +231,8 @@ jQuery(document).ready(function ($) {
         })
     }
 
+    console.log("axios", axios.defaults.headers.common);
+
     const offerAccessCheck = document.querySelectorAll('.offer_access_check');
     if (offerAccessCheck) {
         offerAccessCheck.forEach((check) => {
