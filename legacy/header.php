@@ -24,21 +24,18 @@ $navBar = new \LeadMax\TrackYourStats\System\NavBar(\LeadMax\TrackYourStats\Syst
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="">
 <head>
 
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <link rel="shortcut icon" type="image/ico"
-          href="<?PHP echo \LeadMax\TrackYourStats\System\Company::loadFromSession()->getImgDir() . "/favicon.ico"; ?>"/>
     <link rel="shortcut icon" type="image/ico"
           href="<?PHP echo \LeadMax\TrackYourStats\System\Company::loadFromSession()->getImgDir() . "/favicon.ico"; ?>"/>
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <!--    <link href="css/bootstrap-theme.min.css" rel="stylesheet">-->
     <link href="css/animate.css" rel="stylesheet">
 
-
+	<meta name="csrf-token" content='<?php echo csrf_token(); ?>'>
     <link rel="stylesheet" type="text/css" href="<?php echo $webroot; ?>css/default.css?v=1.4"/>
     <link rel="stylesheet" type="text/css" href="<?php echo $webroot; ?>css/tablesorter.default.css"/>
 
@@ -58,7 +55,7 @@ $navBar = new \LeadMax\TrackYourStats\System\NavBar(\LeadMax\TrackYourStats\Syst
 
     <script type="text/javascript" src="<?php echo $webroot; ?>js/jscolor.min.js"></script>
     <link rel="stylesheet" href="css/jquery-ui.min.css"/>
-    <script type="text/javascript" src="<?php echo $webroot; ?>js/main.js?v=2.3"></script>
+    <script type="text/javascript" src="<?php echo $webroot; ?>js/main.js?v=2.4"></script>
     <script type="text/javascript" src="<?php echo $webroot; ?>js/drawer.js"></script>
     <script type="text/javascript" src="<?php echo $webroot; ?>js/iscroll.min.js"></script>
 
@@ -85,9 +82,6 @@ $navBar = new \LeadMax\TrackYourStats\System\NavBar(\LeadMax\TrackYourStats\Syst
 </head>
 
 <body class="drawer drawer--top value_span7">
-<script type="text/javascript">
-	window.csrf_token = '<?php echo csrf_token(); ?>'
-</script>
 <header role="banner" class="mobile_nav">
     <button type="button" class="drawer-toggle drawer-hamburger"><span class="sr-only">toggle navigation</span>
         <span class="drawer-hamburger-icon"></span></button>
