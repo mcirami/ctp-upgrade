@@ -19,7 +19,7 @@ trait ClickTraits {
 		if ($per->can("view_fraud_data")) {
 			foreach ($results as $row => $val) {
 
-				$geo = ClickGeo::findGeo($val->ip);
+				$geo = ClickGeo::findGeo($val->ip_address);
 
 				foreach ($geo as $key => $val2) {
 					$val->$key = $val2;
@@ -27,7 +27,7 @@ trait ClickTraits {
 			}
 		} else {
 			foreach ($results as $row => $val) {
-				$geo = ClickGeo::findGeo($val->ip);
+				$geo = ClickGeo::findGeo($val->ip_address);
 				$val->isoCode = $geo["isoCode"];
 				unset($val->ip);
 			}
