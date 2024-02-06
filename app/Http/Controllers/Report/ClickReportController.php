@@ -10,19 +10,9 @@ use App\Services\Repositories\Offer\OfferClicksRepository;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use LeadMax\TrackYourStats\Clicks\ClickGeo;
-use LeadMax\TrackYourStats\Clicks\ClickVars;
-use function GuzzleHttp\Psr7\parse_query;
-use phpDocumentor\Reflection\Types\Object_;
-use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Pagination\Paginator;
-use LeadMax\TrackYourStats\Report\ID\Clicks;
 use LeadMax\TrackYourStats\System\Session;
-use LeadMax\TrackYourStats\Table\Paginate;
 use LeadMax\TrackYourStats\User\Permissions;
-use Illuminate\Contracts\Support\Jsonable;
 use App\Http\Traits\ClickTraits;
 
 class ClickReportController extends ReportController
@@ -53,15 +43,6 @@ class ClickReportController extends ReportController
 		    Session::permissions()->can( Permissions::VIEW_FRAUD_DATA ) );
 	    $reportCollection      = $repo->between( $start, $end );
 		$report                = $reportCollection->items();
-
-		/*if (request()->query('filter') == 'affiliate') {
-
-			$affiliateRepo = new OfferAffiliateClicksRepository( $id, Session::user() );
-			$affiliateReport = $affiliateRepo->between( $start, $end );
-
-		} else {
-			$affiliateReport = $this->showManagersClicks($id);
-		}*/
 
         return view('report.clicks.offer', compact('offer', 'report', 'reportCollection', 'id', 'startDate', 'endDate', 'dateSelect'));
     }
@@ -136,21 +117,27 @@ class ClickReportController extends ReportController
         return view('report.clicks.affiliate', compact('report', 'user', 'reportCollection', 'startDate', 'endDate', 'dateSelect'));
     }
 
-	public function showConversionsByUser(Offer $offer) {
+	public function showConversionsByUser($offerId) {
 
 		$dates = self::getDates();
+		$offer = Offer::findOrFail($offerId);
 
-		$startDate = $dates['originalStart'];
+		/*$startDate = $dates['originalStart'];
 		$endDate = $dates['originalEnd'];
-		$dateSelect = request()->query('dateSelect');
+		$dateSelect = request()->query('dateSelect');*/
 
 		$start = Carbon::parse( $dates['start'], 'America/New_York' );
 		$end   = Carbon::parse( $dates['end'], 'America/New_York' );
 
-		$affiliateRepo = new OfferAffiliateClicksRepository( $offer->idoffer, Session::user() );
+		$affiliateRepo = new OfferAffiliateClicksRepository( $offerId, Session::user() );
 		$affiliateReport = $affiliateRepo->between( $start, $end );
 
+		/*
+		 * if filter is managers
+		 *  $affiliateReport = $this->showManagersClicks($id);
+		*/
 
+		return view('report.offer.conversions', compact('affiliateReport', 'offer'));
 	}
 
 	public function showManagersClicks($id) {

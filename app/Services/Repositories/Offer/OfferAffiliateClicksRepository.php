@@ -70,7 +70,7 @@ class OfferAffiliateClicksRepository implements Repository
             ->leftJoin('conversions as cnvs', 'cnvs.click_id', 'clks.idclicks')
             ->where('offer.idoffer', $this->offerId)
             ->groupBy('rep.user_name', 'rep.idrep', 'offer_id')
-            ->orderBy('clicks', 'DESC');
+            ->orderBy('conversions', 'DESC');
     }
 
     /**
@@ -81,6 +81,6 @@ class OfferAffiliateClicksRepository implements Repository
      */
     public function between(Carbon $start, Carbon $end)
     {
-        return $this->query($start, $end)->get()->toArray();
+        return $this->query($start, $end)->get();
     }
 }

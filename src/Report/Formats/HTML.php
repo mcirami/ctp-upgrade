@@ -34,7 +34,7 @@ class HTML implements Format
     {
 		$params = "";
 		if(isset($_GET['d_from']) && isset($_GET['d_to']) && isset($_GET['dateSelect']) ) {
-			$params = "&d_from=" . $_GET['d_from'] . "&d_to=" . $_GET['d_to'] . "&dateSelect=" . $_GET["dateSelect"];
+			$params = "d_from=" . $_GET['d_from'] . "&d_to=" . $_GET['d_to'] . "&dateSelect=" . $_GET["dateSelect"];
 		}
 
         $report = $this->resetArrayKeys($report);
@@ -49,21 +49,20 @@ class HTML implements Format
             if (empty($this->printTheseArrayKeys)) {
                 foreach ($row as $item => $val) {
 					if($item == "conversions" && $val > 0 && $row["sub"] != "TOTAL") {
-						echo "<td><a href='/report/sub/conversions?subid={$row["sub"]}{$params}'>{$val}</a></td>";
+						echo "<td><a href='/report/sub/conversions?subid={$row["sub"]}". "?" . "{$params}'>{$val}</a></td>";
 					} else {
 						echo "<td>{$val}</td>";
 					}
                 }
             } else {
 
-
                 foreach ($this->printTheseArrayKeys as $toPrint) {
 
                     if (isset($row[$toPrint])) {
 						if($toPrint == "offer_name") {
 							echo "<td><a href='/offer_update.php?idoffer=" . $row['idoffer'] . "'>$row[$toPrint]</a></td>";
-						} elseif ($toPrint == "Conversions" && $row != "TOTAL") {
-							echo "<td><a href='/report/offer/" . $row['idoffer'] . "/user-conversions'>$row[$toPrint]</a></td>";
+						} elseif ($toPrint == "Conversions" && $row[$toPrint] > 0 && (key_exists('idoffer', $row) && $row["idoffer"] != "TOTAL") ) {
+							echo "<td><a href='/report/offer/{$row['idoffer']}/user-conversions?{$params}'>$row[$toPrint]</a></td>";
 						} else {
 							echo "<td>$row[$toPrint]</td>";
 						}
