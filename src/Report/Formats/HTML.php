@@ -48,7 +48,6 @@ class HTML implements Format
 
             if (empty($this->printTheseArrayKeys)) {
                 foreach ($row as $item => $val) {
-
 					if($item == "conversions" && $val > 0 && $row["sub"] != "TOTAL") {
 						echo "<td><a href='/report/sub/conversions?subid={$row["sub"]}{$params}'>{$val}</a></td>";
 					} else {
@@ -56,9 +55,20 @@ class HTML implements Format
 					}
                 }
             } else {
+
+
                 foreach ($this->printTheseArrayKeys as $toPrint) {
+
                     if (isset($row[$toPrint])) {
-                        echo "<td>$row[$toPrint]</td>";
+						if($toPrint == "offer_name") {
+							echo "<td><a href='/offer_update.php?idoffer=" . $row['idoffer'] . "'>$row[$toPrint]</a></td>";
+						} elseif ($toPrint == "Conversions" && $row != "TOTAL") {
+							echo "<td><a href='/report/offer/" . $row['idoffer'] . "/user-conversions'>$row[$toPrint]</a></td>";
+						} else {
+							echo "<td>$row[$toPrint]</td>";
+						}
+
+
                     }
                 }
             }

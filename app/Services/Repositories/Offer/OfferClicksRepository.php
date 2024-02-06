@@ -7,8 +7,11 @@ use App\Services\Repositories\Repository;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
 use LeadMax\TrackYourStats\Clicks\ClickGeo;
+use LeadMax\TrackYourStats\User\Permissions;
+use App\Http\Traits\ClickTraits;
 
 /**
  * Reporting Repository for an Offers clicks.
@@ -16,6 +19,7 @@ use LeadMax\TrackYourStats\Clicks\ClickGeo;
  */
 class OfferClicksRepository implements Repository
 {
+	use ClickTraits;
 
     /**
      * @var
@@ -45,13 +49,15 @@ class OfferClicksRepository implements Repository
         $this->showFraudData = $showFraudData;
     }
 
-    /**
-     * Return the Eloquent query builder.
-     * @param Carbon $start
-     * @param Carbon $end
-     * @return Builder
-     */
-    public function query(Carbon $start, Carbon $end): Builder
+	/**
+	 * Return the Eloquent query builder.
+	 *
+	 * @param Carbon $start
+	 * @param Carbon $end
+	 *
+	 * @return mixed
+	 */
+    public function query(Carbon $start, Carbon $end)
     {
         $select = [];
         if ($this->showFraudData) {
@@ -62,19 +68,27 @@ class OfferClicksRepository implements Repository
             'conversions.timestamp as conversion_timestamp',
             'conversions.paid as paid',
             'click_vars.url as query_string',
+	        'click_vars.url',
+	        'click_vars.sub1',
+	        'click_vars.sub2',
+	        'click_vars.sub3',
+	        'click_vars.sub4',
+	        'click_vars.sub5',
             'clicks.rep_idrep as affiliate_id',
             'clicks.offer_idoffer as offer_id',
             'click_geo.ip as ip_address'
         ]);
-        return Click::select($select)
-            ->leftJoin('click_vars', 'click_vars.click_id', 'clicks.idclicks')
+        return Click::leftJoin('click_vars', 'click_vars.click_id', 'clicks.idclicks')
             ->leftJoin('click_geo', 'click_geo.click_id', 'clicks.idclicks')
             ->leftJoin('conversions', 'conversions.click_id', 'clicks.idclicks')
             ->join('rep', 'rep.idrep', 'clicks.rep_idrep')
             ->where('offer_idoffer', $this->offerId)
             ->where('rep.lft', '>', $this->user->lft)
             ->where('rep.rgt', '<', $this->user->rgt)
-            ->whereBetween('clicks.first_timestamp', [$start, $end]);
+            ->whereBetween('clicks.first_timestamp', [$start, $end])
+            ->select($select)
+            ->orderBy('paid', 'DESC')
+            ->paginate(100);
     }
 
     /**
@@ -85,49 +99,7 @@ class OfferClicksRepository implements Repository
      */
     public function between(Carbon $start, Carbon $end)
     {
-        return $this->formatResults($this->query($start, $end)->get());
-    }
-
-    /**
-     * Apply the default formatting for the Query results, used by between(..)
-     * This is public so if the consumer wishes to modify the original query(..), they can and will be able to use
-     * the default formatting.
-     * @param Collection $results
-     * @return Collection
-     */
-    public function formatResults(Collection $results)
-    {
-        // Apply Geo Information to rows based on Clicks IP
-        $results->transform(function ($row) {
-            $geo = ClickGeo::findGeo($row->ip_address);
-            if ($this->showFraudData && !empty($geo)) {
-                foreach ($geo as $key => $val) {
-                    $row[$key] = $val;
-                }
-            } else {
-                // If we aren't showing fraud data, only show isoCode and unset IP
-                if (isset($geo['isoCode'])) {
-                    $row->isoCode = $geo['isoCode'];
-                }
-                unset($row->ip_address);
-            }
-            return $row;
-        });
-
-        // Parse URL into Sub1-Sub-5, and merge into row
-        $results->transform(function ($row) {
-            parse_str($row->query_string, $subVariables);
-            for ($i = 1; $i <= 5; $i++) {
-                if (!isset($subVariables['sub' . $i])) {
-                    $subVariables['sub' . $i] = '';
-                }
-                $row->{'sub' . $i} = $subVariables['sub' . $i];
-            }
-
-            return $row;
-        });
-
-        return $results;
+        return $this->formatResults($this->query($start, $end));
     }
 
 }

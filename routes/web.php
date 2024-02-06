@@ -71,6 +71,7 @@ Route::group(['middleware' => 'legacy.auth'], function () {
     Route::group(['prefix' => 'report'], function () {
         Route::get('daily', [AggregateReportController::class, 'show']);
         Route::get('offer', [OfferReportController::class, 'show']);
+	    Route::get('offer/{id}/user-conversions', [ClickReportController::class, 'showConversionsByUser']);
         Route::group(['middleware' => 'role:' . Privilege::ROLE_GOD], function () {
             Route::get('advertiser', [AdvertiserReportController::class, 'show']);
             Route::get('blacklist', [BlackListReportController::class, 'show']);
@@ -103,7 +104,8 @@ Route::group(['middleware' => 'legacy.auth'], function () {
             Route::get('{id}/delete', [OfferController::class, 'delete']);
         });
         Route::get('{id}/clicks', [ClickReportController::class, 'offerClicks'])->middleware('role:0,1,2')->name('offerClicks');
-        Route::group(['middleware' => ['permissions:' . Permissions::CREATE_OFFERS]], function () {
+        Route::get('{id}/search-clicks', [ClickReportController::class, 'searchClicks'])->middleware('role:0')->name('clicks.search');
+		Route::group(['middleware' => ['permissions:' . Permissions::CREATE_OFFERS]], function () {
             Route::get('create', [OfferController::class, 'showCreate']);
             Route::post('create', [OfferController::class, 'create']);
             Route::get("edit/{id}", [OfferController::class, 'showEdit']);

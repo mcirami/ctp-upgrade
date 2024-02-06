@@ -21,14 +21,7 @@
 				<input type="hidden" name="d_from" value="{{$startDate}}">
 				<input type="hidden" name="d_to" value="{{$endDate}}">
 				<input type="hidden" name="dateSelect" value="{{$dateSelect}}">
-
-				{{--<div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
-					<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-400" fill="none"
-						 viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-						<path stroke-linecap="round" stroke-linejoin="round"
-							  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-					</svg>
-				</div>--}}
+				<input type="hidden" name="searchType" value="user">
 			</form>
 		@endif
 	</div>
@@ -84,7 +77,6 @@
 					@endif
 					<td>{{$row->isoCode}}</td>
 					@if (\LeadMax\TrackYourStats\System\Session::permissions()->can("view_fraud_data"))
-						<td>{{$row->isoCode}}</td>
 						<td>{{$row->subDivision}}</td>
 						<td>{{$row->city}}</td>
 						<td>{{$row->postal}}</td>
@@ -99,7 +91,7 @@
 			</tbody>
 		</table>
 	</div>
-	{{ $reportData->links() }}
+	{{ $reportCollection->links() }}
 
 @endsection
 
@@ -118,13 +110,13 @@
 
 				// bind to pager events
 				// *********************
-				.bind('pagerChange pagerComplete pagerInitialized pageMoved', function(e, c) {
+				/*.bind('pagerChange pagerComplete pagerInitialized pageMoved', function(e, c) {
 					var msg = '"</span> event triggered, ' + (e.type === 'pagerChange' ? 'going to' : 'now on') +
 						' page <span class="typ">' + (c.page + 1) + '/' + c.totalPages + '</span>';
 					$('#display')
 					.append('<li><span class="str">"' + e.type + msg + '</li>')
 					.find('li:first').remove();
-				})
+				})*/
 
 				// initialize the pager plugin
 				// ****************************

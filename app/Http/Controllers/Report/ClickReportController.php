@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Report;
 
+use App\Click;
 use App\Offer;
 use App\Privilege;
 use App\Services\Repositories\Offer\OfferAffiliateClicksRepository;
@@ -22,9 +23,12 @@ use LeadMax\TrackYourStats\System\Session;
 use LeadMax\TrackYourStats\Table\Paginate;
 use LeadMax\TrackYourStats\User\Permissions;
 use Illuminate\Contracts\Support\Jsonable;
+use App\Http\Traits\ClickTraits;
 
 class ClickReportController extends ReportController
 {
+
+	use ClickTraits;
 
     /**
      * Shows an offers clicks, and affiliates with those clicks.
@@ -35,30 +39,31 @@ class ClickReportController extends ReportController
     public function offerClicks($id)
     {
         $offer = Offer::findOrFail($id);
+
         $dates = self::getDates();
+
+	    $startDate = $dates['originalStart'];
+	    $endDate = $dates['originalEnd'];
+	    $dateSelect = request()->query('dateSelect');
 
 	    $start = Carbon::parse( $dates['start'], 'America/New_York' );
 	    $end   = Carbon::parse( $dates['end'], 'America/New_York' );
 
 	    $repo          = new OfferClicksRepository( $id, Session::user(),
 		    Session::permissions()->can( Permissions::VIEW_FRAUD_DATA ) );
-	    $clickReport     = $repo->between( $start, $end );
-	    $page            = request()->query( 'page', 1 );
-	    $rpp             = request()->query( 'rpp', 10 );
-	    $clickReport     = new LengthAwarePaginator( $clickReport->forPage( $page, $rpp ), $clickReport->count(),
-		    $rpp, $page,
-		    [ 'path' => request()->fullUrlWithQuery( request()->except( 'page' ) ) ] );
+	    $reportCollection      = $repo->between( $start, $end );
+		$report                = $reportCollection->items();
 
-		if (request()->query('filter') == 'affiliate') {
+		/*if (request()->query('filter') == 'affiliate') {
 
 			$affiliateRepo = new OfferAffiliateClicksRepository( $id, Session::user() );
 			$affiliateReport = $affiliateRepo->between( $start, $end );
 
 		} else {
 			$affiliateReport = $this->showManagersClicks($id);
-		}
+		}*/
 
-        return view('report.clicks.offer', compact('offer', 'affiliateReport', 'clickReport'));
+        return view('report.clicks.offer', compact('offer', 'report', 'reportCollection', 'id', 'startDate', 'endDate', 'dateSelect'));
     }
 
     public function showOfferClicks($id)
@@ -102,8 +107,7 @@ class ClickReportController extends ReportController
 
         $user = User::myUsers()->findOrFail($userId);
 
-	    $reportData = DB::table('clicks')
-	                ->where('rep_idrep', '=', $userId)
+	    $reportCollection = Click::where('rep_idrep', '=', $userId)
 	                ->where('clicks.click_type', '!=', 2)
 	                ->whereBetween('clicks.first_timestamp', [$dates['startDate'], $dates['endDate']])
 	                ->leftJoin('click_vars', 'click_vars.click_id', '=', 'clicks.idclicks')
@@ -112,42 +116,42 @@ class ClickReportController extends ReportController
 	                ->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
 	                ->select(
 						'clicks.idclicks',
-						'clicks.first_timestamp',
+						'clicks.first_timestamp  as timestamp',
 						'offer.offer_name',
-						'conversions.timestamp',
-						'conversions.paid',
+						'conversions.timestamp as conversion_timestamp',
+						'conversions.paid as paid',
 						'click_vars.url',
 						'click_vars.sub1',
 						'click_vars.sub2',
 		                'click_vars.sub3',
 		                'click_vars.sub4',
 		                'click_vars.sub5',
-						'click_geo.ip',
-						'clicks.offer_idoffer'
+						'click_geo.ip  as ip_address',
+						'clicks.offer_idoffer  as offer_id'
 	                )
-	                ->orderBy('clicks.idclicks', 'DESC')->paginate(100);
+	                ->orderBy('conversions.paid', 'DESC')->paginate(100);
 
-	    $per = Permissions::loadFromSession();
-		$report = $reportData->items();
+		$report = $this->formatResults($reportCollection);
 
-	    if ($per->can("view_fraud_data")) {
-		    foreach ($report as $row => $val) {
-			    $geo = ClickGeo::findGeo($val->ip);
-
-			    foreach ($geo as $key => $val2) {
-				    $val->$key = $val2;
-			    }
-		    }
-	    } else {
-		    foreach ($report as $row => $val) {
-			    $geo = ClickGeo::findGeo($val->ip);
-			    $val->isoCode = $geo["isoCode"];
-			    unset($val->ip);
-		    }
-	    }
-
-        return view('report.clicks.affiliate', compact('report', 'user', 'reportData', 'startDate', 'endDate', 'dateSelect'));
+        return view('report.clicks.affiliate', compact('report', 'user', 'reportCollection', 'startDate', 'endDate', 'dateSelect'));
     }
+
+	public function showConversionsByUser(Offer $offer) {
+
+		$dates = self::getDates();
+
+		$startDate = $dates['originalStart'];
+		$endDate = $dates['originalEnd'];
+		$dateSelect = request()->query('dateSelect');
+
+		$start = Carbon::parse( $dates['start'], 'America/New_York' );
+		$end   = Carbon::parse( $dates['end'], 'America/New_York' );
+
+		$affiliateRepo = new OfferAffiliateClicksRepository( $offer->idoffer, Session::user() );
+		$affiliateReport = $affiliateRepo->between( $start, $end );
+
+
+	}
 
 	public function showManagersClicks($id) {
 
@@ -186,67 +190,88 @@ class ClickReportController extends ReportController
 
 	}
 
-	public function searchClicks(Request $request, $userId) {
+	public function searchClicks(Request $request, $id) {
 
 		$dates = self::getDates();
 
 		$startDate = $dates['originalStart'];
 		$endDate = $dates['originalEnd'];
 		$dateSelect = request()->query('dateSelect');
+		$searchType = request()->query('searchType');
+		$user = null;
+		$offer = null;
 
-		$user = User::myUsers()->findOrFail($userId);
+		if ($searchType == "user") {
 
-		$reportData = DB::table('clicks')
-		                ->where([
-							['rep_idrep', '=', $userId],
-			                [function ($query) use($request) {
-								if ($s = $request->searchValue) {
-									$query->orWhere('idclicks', 'LIKE', '%' . $s . '%');
-								}
-							}]])
-		                    ->whereBetween('clicks.first_timestamp', [$dates['startDate'], $dates['endDate']])
-		                    ->leftJoin('click_vars', 'click_vars.click_id', '=', 'clicks.idclicks')
-		                    ->leftJoin('click_geo', 'click_geo.click_id', '=', 'clicks.idclicks')
-		                    ->leftJoin('conversions', 'conversions.click_id', '=', 'clicks.idclicks')
-		                    ->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
-		                    ->select(
-								'clicks.idclicks',
-								'clicks.first_timestamp',
-								'offer.offer_name',
-								'conversions.timestamp',
-								'conversions.paid',
-								'click_vars.url',
-								'click_vars.sub1',
-								'click_vars.sub2',
-								'click_vars.sub3',
-								'click_vars.sub4',
-								'click_vars.sub5',
-								'click_geo.ip',
-								'clicks.offer_idoffer'
-		                    )
-		                    ->orderBy('clicks.idclicks', 'DESC')->paginate(100);
-
-		$per = Permissions::loadFromSession();
-		$report = $reportData->items();
-
-		if ($per->can("view_fraud_data")) {
-			foreach ($report as $row => $val) {
-				$geo = ClickGeo::findGeo($val->ip);
-
-				foreach ($geo as $key => $val2) {
-					$val->$key = $val2;
-				}
-			}
+			$user = User::myUsers()->findOrFail( $id );
+			$reportCollection = Click::where([
+				[ 'rep_idrep', '=', $id ],
+				[function ( $query ) use ( $request ) {
+						if ( $s = $request->searchValue ) {
+							$query->orWhere( 'idclicks', 'LIKE', '%' . $s . '%' );
+						}
+					}
+				]])->whereBetween( 'clicks.first_timestamp', [ $dates['startDate'], $dates['endDate'] ] )
+			       ->leftJoin( 'click_vars', 'click_vars.click_id', '=', 'clicks.idclicks' )
+			       ->leftJoin( 'click_geo', 'click_geo.click_id', '=', 'clicks.idclicks' )
+			       ->leftJoin( 'conversions', 'conversions.click_id', '=', 'clicks.idclicks' )
+			       ->leftJoin( 'offer', 'offer.idoffer', '=', 'clicks.offer_idoffer' )
+			       ->select(
+					   'clicks.idclicks',
+				       'clicks.first_timestamp as timestamp',
+				       'offer.offer_name',
+				       'conversions.timestamp  as conversion_timestamp',
+				       'conversions.paid as paid',
+				       'click_vars.url',
+				       'click_vars.sub1',
+				       'click_vars.sub2',
+				       'click_vars.sub3',
+				       'click_vars.sub4',
+				       'click_vars.sub5',
+				       'click_geo.ip as ip_address',
+				       'clicks.offer_idoffer  as offer_id'
+			       )
+			       ->orderBy( 'conversions.paid', 'DESC' )->paginate( 100 );
 		} else {
-			foreach ($report as $row => $val) {
-				$geo = ClickGeo::findGeo($val->ip);
-				$val->isoCode = $geo["isoCode"];
-				unset($val->ip);
-			}
+
+			$offer = Offer::findOrFail($id);
+			$reportCollection = Click::where([
+				[ 'offer_idoffer', '=', $id ],
+				[function ( $query ) use ( $request ) {
+					if ( $s = $request->searchValue ) {
+						$query->orWhere( 'idclicks', 'LIKE', '%' . $s . '%' );
+					}
+				}]])->whereBetween( 'clicks.first_timestamp', [ $dates['startDate'], $dates['endDate'] ] )
+			        ->leftJoin( 'click_vars', 'click_vars.click_id', '=', 'clicks.idclicks' )
+			        ->leftJoin( 'click_geo', 'click_geo.click_id', '=', 'clicks.idclicks' )
+			        ->leftJoin( 'conversions', 'conversions.click_id', '=', 'clicks.idclicks' )
+			        ->leftJoin( 'offer', 'offer.idoffer', '=', 'clicks.offer_idoffer' )
+			        ->select(
+						'clicks.idclicks as id',
+				        'clicks.first_timestamp as timestamp',
+				        'clicks.rep_idrep as affiliate_id',
+				        'conversions.timestamp as conversion_timestamp',
+				        'conversions.paid as paid',
+				        'click_vars.sub1',
+				        'click_vars.sub2',
+				        'click_vars.sub3',
+				        'click_vars.sub4',
+				        'click_vars.sub5',
+				        'click_geo.ip as ip_address',
+				        'clicks.offer_idoffer as offer_id',
+				        'offer.offer_name',
+			        )
+			        ->orderBy( 'conversions.paid', 'DESC' )->paginate( 100 );
 		}
 
-		return view('report.clicks.affiliate', compact('report', 'user', 'reportData', 'startDate', 'endDate', 'dateSelect'));
 
+		$report = $this->formatResults($reportCollection);
+
+		if ($searchType == "user") {
+			return view('report.clicks.affiliate', compact('user', 'report', 'reportCollection', 'startDate', 'endDate', 'dateSelect'));
+		} else {
+			return view('report.clicks.offer', compact('offer', 'report', 'reportCollection', 'startDate', 'endDate', 'dateSelect'));
+		}
 	}
 
 }

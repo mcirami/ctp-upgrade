@@ -4,7 +4,7 @@
 		$d_to = request()->query('d_to');
 		$dateSelect = request()->query('dateSelect');
     @endphp
-    <nav>
+
         <ul class="pagination-container">
            {{-- --}}{{-- Previous Page Link --}}{{--
             @if ($paginator->onFirstPage())
@@ -47,5 +47,5 @@
                 </li>
             @endif--}}
         </ul>
-    </nav>
+
 @endif
