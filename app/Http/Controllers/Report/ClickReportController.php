@@ -97,7 +97,7 @@ class ClickReportController extends ReportController
 	                ->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
 	                ->select(
 						'clicks.idclicks',
-						'clicks.first_timestamp  as timestamp',
+						'clicks.first_timestamp as timestamp',
 						'offer.offer_name',
 						'conversions.timestamp as conversion_timestamp',
 						'conversions.paid as paid',

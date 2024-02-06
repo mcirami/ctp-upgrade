@@ -63,9 +63,9 @@
 					@if (\LeadMax\TrackYourStats\System\Session::permissions()->can("view_fraud_data"))
 						<td>{{$row->idclicks}}</td>
 					@endif
-					<td>{{$row->first_timestamp}}</td>
-					<td>{{$row->offer_name}}</td>
 					<td>{{$row->timestamp}}</td>
+					<td>{{$row->offer_name}}</td>
+					<td>{{$row->conversion_timestamp}}</td>
 					<td>{{$row->paid}}</td>
 					<td>{{$row->sub1}}</td>
 					<td>{{$row->sub2}}</td>
@@ -73,7 +73,7 @@
 					<td>{{$row->sub4}}</td>
 					<td>{{$row->sub5}}</td>
 					@if (\LeadMax\TrackYourStats\System\Session::permissions()->can("view_fraud_data"))
-						<td>{{$row->ip}}</td>
+						<td>{{$row->ip_address}}</td>
 					@endif
 					<td>{{$row->isoCode}}</td>
 					@if (\LeadMax\TrackYourStats\System\Session::permissions()->can("view_fraud_data"))
