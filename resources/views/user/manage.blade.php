@@ -15,9 +15,10 @@
             </div>
 
             <div class="form-group searchDiv">
-
-                <input id="searchBox" onkeyup="searchTable()" class="form-control" type="text"
-                       placeholder="Search Selected User Type!">
+                <input id="searchBox"
+                       class="form-control"
+                       type="text"
+                       placeholder="Search By Username, Email or ID" />
             </div>
 
             <div class="clear"></div>
@@ -36,29 +37,7 @@
                         @endif
                     </tr>
                     </thead>
-                    <tbody>
-                    @foreach($users as $user)
-                        <tr>
-                            <td>{{$user->idrep}}</td>
-                            <td class="username">{{$user->user_name}}</td>
-                            <td class="actions">
-                                @if(\LeadMax\TrackYourStats\System\Session::permissions()->can(\LeadMax\TrackYourStats\User\Permissions::EDIT_AFFILIATES))
-                                    <a class="btn btn-default btn-sm value_span6-1 value_span4 " data-toggle="tooltip" title="Edit User"
-                                       href="/aff_update.php?idrep={{$user->idrep}}">Edit</a>
-                                @endif
-                                @if(\LeadMax\TrackYourStats\System\Session::permissions()->can(\LeadMax\TrackYourStats\User\Permissions::CREATE_AFFILIATES))
-                                    <a class="btn btn-default btn-sm value_span5-1 " data-toggle="tooltip"
-                                       title="Login into this user" href="#" onclick="adminLogin({{$user->idrep}})">Login</a>
-                                @endif
-                                @if(request('role',3) == 2 && \LeadMax\TrackYourStats\System\Session::permissions()->can(\LeadMax\TrackYourStats\User\Permissions::CREATE_MANAGERS))
-                                    <a class="btn btn-sm btn-default value_span5-1" data-toggle="tooltip" title="View Agents"
-                                       href="/user/{{$user->idrep}}/affiliates">View Agents</a>
-                                @endif
-                            </td>
-                            <td>{{$user->referrer->user_name}}</td>
-                            <td>{{\Carbon\Carbon::parse($user->rep_timestamp)->diffForHumans()}}</td>
-                        </tr>
-                    @endforeach
+                    <tbody id="users_container">
                     </tbody>
                 </table>
             </div>
@@ -75,9 +54,57 @@
         $(document).ready(function () {
             $("#mainTable").tablesorter(
                 {
-                    sortList: [[4, 0]],
+                    sortList: [[0, 0]],
                     widgets: ['staticRow']
                 });
+
+	        const EDIT_AFFILIATES = '<?php echo \LeadMax\TrackYourStats\System\Session::permissions()->can(\LeadMax\TrackYourStats\User\Permissions::EDIT_AFFILIATES); ?>';
+	        const CREATE_AFFILIATES = '<?php echo \LeadMax\TrackYourStats\System\Session::permissions()->can(\LeadMax\TrackYourStats\User\Permissions::CREATE_AFFILIATES); ?>';
+	        const CREATE_MANAGERS = '<?php echo \LeadMax\TrackYourStats\System\Session::permissions()->can(\LeadMax\TrackYourStats\User\Permissions::CREATE_MANAGERS); ?>';
+	        const role = '<?php echo request('role',3); ?>';
+
+			let userCollection = '<?php echo $users; ?>';
+            let users = JSON.parse(userCollection);
+
+	        const itemsContainer = document.querySelector("#users_container");
+
+	        document.getElementById('searchBox').addEventListener('input', (e) => {
+		        const userInput = e.target.value.trim().toLowerCase();
+		        let filteredUsers = users.filter((user) => {
+			        return user.email.toLowerCase().includes(userInput) || user.user_name.toLowerCase().includes(userInput) || user.idrep.toString().includes(userInput);
+		        })
+		        showUsers(filteredUsers);
+	        });
+
+	        showUsers(users);
+			function showUsers(users) {
+				let html = "";
+
+				users.forEach((user) => {
+					html += "<tr> " +
+						"<td>" + user['idrep'] + "</td>" +
+						"<td>" + user['user_name'] + "</td>" +
+                        "<td class='actions'>";
+                            if (EDIT_AFFILIATES){
+								html += "<a class='btn btn-default btn-sm value_span6-1 value_span4 ' data-toggle='tooltip' title='Edit User'" +
+                                    " href='/aff_update.php?idrep=" + user['idrep'] + "'>Edit</a>";
+                            }
+							if(CREATE_AFFILIATES) {
+								html += "<a class='btn btn-default btn-sm value_span5-1 ' data-toggle='tooltip' title='Login into this user'" +
+									" href='#' onclick='adminLogin(" + user['idrep'] +")'>Login</a>";
+                            }
+							if(CREATE_MANAGERS && role == 2) {
+								html += "<a class='btn btn-sm btn-default value_span5-1 ' data-toggle='tooltip' title='View Agents'" +
+									" href='/user/" + user['idrep'] + "/affiliates'>View Agents</a>";
+                            }
+                    html +=    "</td>" +
+                        "<td>" + user['referrer']['user_name'] +
+						"<td>" + user['rep_timestamp'] + "</td>" +
+                        "</tr>";
+				})
+
+                itemsContainer.innerHTML = html;
+            }
         });
     </script>
 @endsection

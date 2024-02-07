@@ -59,7 +59,9 @@
 
 
 			<div class="form-group searchDiv">
-				<input id="searchBox" {{--onkeyup="searchTable(`{{json_encode($offers)}}`)"--}} class="form-control" type="text"
+				<input id="searchBox"
+					   class="form-control"
+					   type="text"
 					   placeholder="Search offers...">
 			</div>
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Privilege;
 use App\User;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -42,6 +43,8 @@ class UserController extends Controller
         }
 
         $users = $users->get();
+		$users = $this->getDiffForHumans($users);
+
 
         return view('user.manage', compact('users'));
     }
@@ -190,5 +193,16 @@ class UserController extends Controller
 
 
 		return view('user.offers')->with(['offers' => $offers, 'name' => $userFName]);
+	}
+
+	private function getDiffForHumans($users) {
+
+		foreach($users as $key => $user) {
+			if($user->rep_timestamp) {
+				$user->rep_timestamp = Carbon::parse($user->rep_timestamp)->diffForHumans();
+			}
+		}
+
+		return $users;
 	}
 }
