@@ -52,12 +52,6 @@
 @section('footer')
     <script type="text/javascript">
         $(document).ready(function () {
-            $("#mainTable").tablesorter(
-                {
-                    sortList: [[0, 0]],
-                    widgets: ['staticRow']
-                });
-
 	        const EDIT_AFFILIATES = '<?php echo \LeadMax\TrackYourStats\System\Session::permissions()->can(\LeadMax\TrackYourStats\User\Permissions::EDIT_AFFILIATES); ?>';
 	        const CREATE_AFFILIATES = '<?php echo \LeadMax\TrackYourStats\System\Session::permissions()->can(\LeadMax\TrackYourStats\User\Permissions::CREATE_AFFILIATES); ?>';
 	        const CREATE_MANAGERS = '<?php echo \LeadMax\TrackYourStats\System\Session::permissions()->can(\LeadMax\TrackYourStats\User\Permissions::CREATE_MANAGERS); ?>';
@@ -105,6 +99,12 @@
 
                 itemsContainer.innerHTML = html;
             }
+
+	        $("#mainTable").tablesorter(
+		        {
+			        sortList: [[0, 0]],
+			        widgets: ['staticRow']
+		        });
         });
     </script>
 @endsection

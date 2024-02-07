@@ -164,7 +164,6 @@
 								},
 							}
 					);
-					console.log(result);
 				},
 
 				error: function (result) {
@@ -196,12 +195,6 @@
 	<script type="text/javascript">
 
 		$(document).ready(function () {
-			$("#mainTable").tablesorter(
-					{
-						sortList: [[1, 0]],
-						widgets: ['staticRow']
-					});
-
 			document.querySelectorAll('.delete_offer').forEach((offer) => {
 				offer.addEventListener('click', (e) =>{
 					e.preventDefault();
@@ -395,6 +388,11 @@
 				})
 			}
 
+			$("#mainTable").tablesorter(
+					{
+						sortList: [[1, 0]],
+						widgets: ['staticRow']
+					});
 		});
 	</script>
 @endsection
