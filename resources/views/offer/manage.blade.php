@@ -78,7 +78,7 @@
 						<th class="value_span9">Offer Type</th>
 
 						@if (\LeadMax\TrackYourStats\System\Session::userType() == \App\Privilege::ROLE_AFFILIATE)
-							<th class="value_span9">Offer URL</th>
+							<th class="value_span9">Offer Link</th>
 						@elseif(\LeadMax\TrackYourStats\System\Session::permissions()->can("create_offers"))
 							<th class="value_span9">Affiliate Access</th>
 						@endif
@@ -236,21 +236,26 @@
 					let userType = '<?php echo \LeadMax\TrackYourStats\System\Session::userType(); ?>';
 					let url = '<?php echo $urls[request('url',0)]; ?>';
 					let permissions = '<?php echo json_encode(\LeadMax\TrackYourStats\System\Session::permissions()); ?>'
+					const sessionUser = '<?php echo \LeadMax\TrackYourStats\System\Session::userID(); ?>';
 
 					pageItems.forEach((offer) => {
 						html += "<tr id='offer_row'> " +
 								"<td>" + offer['idoffer'] + "</td>" +
-								"<td>" + offer['offer_name'] + "</td>" +
+								"<td>" + offer['offer_name'] + "<br/><span class='link_label'>Offer Link:</span><br /> " +
+								"<span class='offer_link'>https://" + url +
+								"/?repid=" + sessionUser +
+								"&offerid=" + offer["idoffer"] + "&sub1=</span>" +
+								"</td>" +
 								"<td>CPA</td>";
 
 						if (userType == 3) {
 							html +=
 									"<td class='value_span10'>" +
 									"<p  style='display:none;' id='url_" + offer['idoffer'] + "'>http://" + url +
-									"/?repid=" + <?php echo \LeadMax\TrackYourStats\System\Session::userID(); ?> +
+									"/?repid=" + sessionUser +
 											"&offerid=" + offer["idoffer"] + "&sub1=</p>" +
 									"<button data-url='https://" + url +
-									"/?repid=" + <?php echo \LeadMax\TrackYourStats\System\Session::userID(); ?> +
+									"/?repid=" + sessionUser +
 											"&offerid=" + offer["idoffer"] + "&sub1=' data-toggle='tooltip' title='Copy My Link' " +
 									"class='copy_button btn btn-default'>Copy My Link" +
 									"</button></td>";
@@ -331,10 +336,7 @@
 						html += "</tr>";
 						itemsContainer.innerHTML = html;
 					});
-
-					setTimeout(() => {
-						copyLink()
-					}, 2000)
+					copyLink()
 				}
 
 				function setupPagination() {
@@ -364,10 +366,7 @@
 						pagination.appendChild(link);
 					}
 				}
-
-				setTimeout(() => {
-					copyLink();
-				}, 2000)
+				copyLink();
 
 				showItems(currentPage);
 				setupPagination();

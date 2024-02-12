@@ -2632,3 +2632,11 @@ table.offer_clicks th:first-child {
 .manage_user_table td.username {
 	word-break: break-all;
 }
+
+#offers_container .link_label {
+	font-family: 'Lato-Bold', sans-serif;
+}
+
+#offers_container .offer_link, #offers_container .link_label {
+	font-size: 14px;
+}
