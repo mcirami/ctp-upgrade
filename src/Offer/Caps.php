@@ -8,6 +8,8 @@
  */
 
 use Carbon\Carbon;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 use PDO;
 
 
@@ -322,27 +324,36 @@ class Caps
             if ($prep->rowCount() !== 0) {
                 if ($prep->rowCount() >= $this->cap_rules["interval_cap"]) {
 
+	                if (!$this->cap_rules["max_cap_status"]) {
+		                return true;
+	                }
+
 					if ($this->cap_rules["max_cap_status"] && $this->cap_rules['max_cap_date']) {
 						$tz = 'America/New_York';
-						$dateToday = \Illuminate\Support\Carbon::today($tz)->format('Y-m-d');
-						$date = $dateToday . " 00:00:00";
-						$carbonToday = Carbon::createFromFormat('Y-m-d H:i:s', $date, $tz);
+						$dateToday = \Illuminate\Support\Carbon::today($tz)->startOfDay()->format('Y-m-d');
+						$carbonToday = Carbon::createFromFormat('Y-m-d H:i:s', $dateToday, $tz);
 						$dateNow = $carbonToday->setTimezone("UTC");
+
+						$clicksLog = new Logger('clicks');
+						$clicksLog->pushHandler(new StreamHandler(storage_path('logs/clicks.log')), Logger::INFO);
+						$log = [
+							'now'           => $dateNow,
+							'max_cap_date'  => $this->cap_rules['max_cap_date'],
+							'count'         => $prep->rowCount(),
+							'offerID'       => $this->offerID
+						];
+						$clicksLog->info('Click', $log);
 
 						if($dateNow > $this->cap_rules['max_cap_date']) {
 							$db   = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
 							$sql  = "UPDATE offer_caps SET max_cap_status = 0 WHERE offer_idoffer = :offerID";
 							$prep = $db->prepare( $sql );
-							$prep->bindParam( ":offerID", $this->offerID );
+							$prep->bindParam(":offerID", $this->offerID);
 							$prep->execute();
-
+						} else if ($prep->rowCount() >= $this->cap_rules["max_cap"]) {
 							return true;
 						}
 					}
-
-	                if (!$this->cap_rules["max_cap_status"] || $prep->rowCount() >= $this->cap_rules["max_cap"] ) {
-						return true;
-	                }
                 }
             }
         }

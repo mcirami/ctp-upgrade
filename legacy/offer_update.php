@@ -1,5 +1,6 @@
 <?php
 
+use Carbon\Carbon;
 use LeadMax\TrackYourStats\Offer\Offer;
 
 $section = "offers-list";
@@ -50,7 +51,6 @@ if (isset($_GET["noAff"])) {
                 <input type="hidden" name="idoffer" value="<?php echo $rows->idoffer; ?>">
                 <div class="left_con01">
                     <?php
-
 
                     if (isset($noAffiliates)) {
                         echo "<p><span class='small_txt value_span10'>Managers that don't have affiliates cannot be assigned offers. <br/> ";
