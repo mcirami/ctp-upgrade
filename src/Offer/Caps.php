@@ -268,7 +268,6 @@ class Caps
 
                 return ['dateFrom' => $dateFrom, 'dateTo' => $dateTo, 'query' => $query];
 
-
             case self::monthly:
                 $dateFrom = date("Y-m-01"." 00:00:00");
                 $dateTo = date("Y-");
@@ -321,6 +320,7 @@ class Caps
         }
 
         if ($prep->execute()) {
+
             if ($prep->rowCount() !== 0) {
                 if ($prep->rowCount() >= $this->cap_rules["interval_cap"]) {
 
@@ -346,10 +346,11 @@ class Caps
 
 						if($dateNow > $this->cap_rules['max_cap_date']) {
 							$db   = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
-							$sql  = "UPDATE offer_caps SET max_cap_status = 0 WHERE offer_idoffer = :offerID";
+							$sql  = "UPDATE offer_caps SET max_cap_status = 0, max_cap_date = NULL WHERE offer_idoffer = :offerID";
 							$prep = $db->prepare( $sql );
 							$prep->bindParam(":offerID", $this->offerID);
 							$prep->execute();
+							return false;
 						} else if ($prep->rowCount() >= $this->cap_rules["max_cap"]) {
 							return true;
 						}
