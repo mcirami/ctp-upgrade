@@ -147,7 +147,7 @@ class ClickRegistrationEvent extends URLEvent
 
         $this->getOfferDataFromDatabase($this->offerId);
 
-        if ($this->offerData->status == 1) {
+        if ($this->offerData->status) {
             if ($this->checkOfferRules()) {
                 return true;
             } else {
