@@ -96,67 +96,6 @@ jQuery(document).ready(function ($) {
         $('#notification_box').toggleClass('open');
     });
 
-    const blockButtons = document.querySelectorAll('.block_sub_id');
-    if (blockButtons) {
-        blockButtons.forEach((button) => {
-            button.addEventListener('click', (e) => {
-                e.preventDefault();
-                const button = e.target;
-                const userID = button.dataset.rep;
-                const subID = button.dataset.subid;
-
-                const packets = {
-                    user_id: userID,
-                    sub_id: subID
-                }
-
-                axios.post('user/block-sub-id', packets).then((response) => {
-                    if (response.data.success) {
-                        button.innerHTML = "Blocked"
-                        button.disabled = true;
-                        button.classList.remove("value_span6-2", "value_span2", "value_span1-2");
-                        const unblockButton = button.nextElementSibling;
-                        unblockButton.disabled = false;
-                        unblockButton.style.display = "block";
-                    } else {
-                        console.log(response);
-                    }
-                })
-
-            })
-        });
-    }
-    const unblock_buttons = document.querySelectorAll('.unblock_button');
-    if(unblock_buttons) {
-        unblock_buttons.forEach((button) => {
-            button.addEventListener('click', (e) => {
-                e.preventDefault();
-                const button = e.target;
-                const userID = button.dataset.rep;
-                const subID = button.dataset.subid;
-
-                const packets = {
-                    user_id: userID,
-                    sub_id: subID
-                }
-
-                axios.post('user/unblock-sub-id', packets).then((response) => {
-                    if (response.data.success) {
-                        button.disabled = true;
-                        button.style.display = "none";
-                        const blockButton = button.previousElementSibling;
-                        blockButton.innerHTML = "Block ID";
-                        blockButton.disabled = false;
-                        blockButton.classList.add("value_span6-2", "value_span2", "value_span1-2");
-                    } else {
-                        console.log(response);
-                    }
-                })
-
-            })
-        });
-    }
-
     let tabsContainer = document.querySelector("#tabs");
     if(tabsContainer) {
         let tabTogglers = tabsContainer.querySelectorAll("#tabs a");

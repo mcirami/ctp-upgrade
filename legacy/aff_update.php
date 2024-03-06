@@ -307,7 +307,7 @@ $update->dumpPermissionsToJavascript();
 							<span class = "lft"><?php echo $update->selectedUser->first_name . " " . $update->selectedUser->last_name; ?>'s Sub Id's</span>
 						</div>
 						<div class="form-group searchDiv">
-							<input id="searchBox" class="form-control" type="text" placeholder="Search Sub Id's..." />
+							<input id="searchBox" class="form-control" type="search" placeholder="Search Sub Id's..." />
 						</div>
 						<div class="white_box value_span8">
 							<table class="table_01 large_table sub_ids" id="mainTable">
@@ -403,18 +403,6 @@ $update->dumpPermissionsToJavascript();
 	});
 
 	// A $( document ).ready() block.
-	$(document).ready(function () {
-
-		$("#mainTable").tablesorter(
-			{
-				sortList: [[5, 1]],
-				widgets: ['staticRow']
-			});
-
-		if ($('#affRadio').is(':checked')) {
-			$("#referralP").show();
-		}
-	});
 
 	const subIds = JSON.parse('<?php echo json_encode( $subIds ); ?> ');
 	const idrep = '<?php echo $idrep; ?>';
@@ -461,12 +449,93 @@ $update->dumpPermissionsToJavascript();
 		})
 
 		document.getElementById('subid_content').innerHTML = html;
+		setBlockButtons();
+		setUnblockButtons();
 	}
-
 
 	function setTwoNumberDecimal(event) {
 		this.value = parseFloat(this.value).toFixed(2);
 	}
+
+	function setBlockButtons() {
+		const blockButtons = document.querySelectorAll('.block_sub_id');
+		if (blockButtons) {
+			blockButtons.forEach((button) => {
+				button.addEventListener('click', (e) => {
+					e.preventDefault();
+					const button = e.target;
+					const userID = button.dataset.rep;
+					const subID = button.dataset.subid;
+
+					const packets = {
+						user_id: userID,
+						sub_id: subID
+					}
+
+					axios.post('user/block-sub-id', packets).then((response) => {
+						if (response.data.success) {
+							button.innerHTML = "Blocked"
+							button.disabled = true;
+							button.classList.remove("value_span6-2", "value_span2", "value_span1-2");
+							const unblockButton = button.nextElementSibling;
+							unblockButton.disabled = false;
+							unblockButton.style.display = "block";
+						} else {
+							console.log(response);
+						}
+					})
+
+				})
+			});
+		}
+	}
+
+	function setUnblockButtons() {
+		const unblock_buttons = document.querySelectorAll('.unblock_button');
+		if(unblock_buttons) {
+			unblock_buttons.forEach((button) => {
+				button.addEventListener('click', (e) => {
+					e.preventDefault();
+					const button = e.target;
+					const userID = button.dataset.rep;
+					const subID = button.dataset.subid;
+
+					const packets = {
+						user_id: userID,
+						sub_id: subID
+					}
+
+					axios.post('user/unblock-sub-id', packets).then((response) => {
+						if (response.data.success) {
+							button.disabled = true;
+							button.style.display = "none";
+							const blockButton = button.previousElementSibling;
+							blockButton.innerHTML = "Block ID";
+							blockButton.disabled = false;
+							blockButton.classList.add("value_span6-2", "value_span2", "value_span1-2");
+						} else {
+							console.log(response);
+						}
+					})
+
+				})
+			});
+		}
+	}
+
+	$(document).ready(function () {
+
+		$("#mainTable").tablesorter(
+			{
+				sortList: [[5, 1]],
+				widgets: ['staticRow']
+			});
+
+		if ($('#affRadio').is(':checked')) {
+			$("#referralP").show();
+		}
+
+	});
 
 
 </script>
