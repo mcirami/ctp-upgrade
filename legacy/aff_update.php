@@ -414,57 +414,55 @@ $update->dumpPermissionsToJavascript();
 		if ($('#affRadio').is(':checked')) {
 			$("#referralP").show();
 		}
-
-
-		<?php if( isset($subIds) ) : ?>
-			const subIds = JSON.parse('<?php echo json_encode( $subIds ); ?> ');
-			const idrep = '<?php echo $idrep; ?>';
-			displayContent(subIds);
-
-			document.getElementById('searchBox').addEventListener('input', (e) => {
-				const userInput = e.target.value.trim().toLowerCase();
-				let filteredSubIds = subIds.filter((subId) => {
-					return subId.subId.toLowerCase().includes(userInput);
-				})
-
-				displayContent(filteredSubIds);
-
-			});
-
-			function displayContent(subIds) {
-
-				let html = "";
-				subIds.forEach((subId) => {
-					html += "<tr>" +
-						"<td>" + subId['subId'] + "</td>" +
-						"<td class='button_wrap'>";
-					if (subId["blocked"]) {
-						html += "<button class='block_sub_id' disabled='disabled'" +
-							" data-subid='" + subId["subId"] + "'" +
-							" data-rep='" + idrep + "'" +
-							">Blocked</button>" +
-							"<button class='unblock_button value_span6-2 value_span2 value_span1-2'" +
-							" data-subid='" + subId["subId"] + "'" +
-							" data-rep='" + idrep + "'>UnBlock</button>";
-					} else {
-						html += "<button class='block_sub_id value_span6-2 value_span2 value_span1-2'" +
-							" data-subid='" + subId["subId"] + "'" +
-							" data-rep='" + idrep + "'>Block ID</button>" +
-							"<button style='display: none;'" +
-							" disabled='disabled'" +
-							" class='unblock_button value_span6-2 value_span2 value_span1-2'" +
-							" data-subid='" + subId["subId"] + "'" +
-							" data-rep='" + idrep + "'" +
-							">UnBlock</button>";
-					}
-
-					html += "</td></tr>";
-				})
-
-				document.getElementById('subid_content').innerHTML = html;
-			}
-		<?php endif; ?>
 	});
+
+	const subIds = JSON.parse('<?php echo json_encode( $subIds ); ?> ');
+	const idrep = '<?php echo $idrep; ?>';
+	displayContent(subIds);
+
+	document.getElementById('searchBox').addEventListener('input', (e) => {
+		const userInput = e.target.value.trim().toLowerCase();
+		let filteredSubIds = subIds.filter((subId) => {
+			return subId.subId.toLowerCase().includes(userInput);
+		})
+
+		displayContent(filteredSubIds);
+
+	});
+
+	function displayContent(subIds) {
+
+		let html = "";
+		subIds.forEach((subId) => {
+			html += "<tr>" +
+				"<td>" + subId['subId'] + "</td>" +
+				"<td class='button_wrap'>";
+			if (subId["blocked"]) {
+				html += "<button class='block_sub_id' disabled='disabled'" +
+					" data-subid='" + subId["subId"] + "'" +
+					" data-rep='" + idrep + "'" +
+					">Blocked</button>" +
+					"<button class='unblock_button value_span6-2 value_span2 value_span1-2'" +
+					" data-subid='" + subId["subId"] + "'" +
+					" data-rep='" + idrep + "'>UnBlock</button>";
+			} else {
+				html += "<button class='block_sub_id value_span6-2 value_span2 value_span1-2'" +
+					" data-subid='" + subId["subId"] + "'" +
+					" data-rep='" + idrep + "'>Block ID</button>" +
+					"<button style='display: none;'" +
+					" disabled='disabled'" +
+					" class='unblock_button value_span6-2 value_span2 value_span1-2'" +
+					" data-subid='" + subId["subId"] + "'" +
+					" data-rep='" + idrep + "'" +
+					">UnBlock</button>";
+			}
+
+			html += "</td></tr>";
+		})
+
+		document.getElementById('subid_content').innerHTML = html;
+	}
+
 
 	function setTwoNumberDecimal(event) {
 		this.value = parseFloat(this.value).toFixed(2);
