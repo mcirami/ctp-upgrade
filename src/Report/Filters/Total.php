@@ -56,7 +56,7 @@ class Total implements Filter
                     if (!isset($totals[$name]) || $totals[$name] == '') {
                         $totals[$name] = 0;
                     }
-                    if (is_numeric($value)) {
+                    if (is_int($value)) {
                         $totals[$name] += $value;
                     }
                 }
