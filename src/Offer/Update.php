@@ -524,9 +524,9 @@ class Update
 						}
 		                $options["max_cap_status"] = 1;
 		                $tz = 'America/New_York';
-		                $dateToday = \Illuminate\Support\Carbon::today($tz)->format('Y-m-d');
-		                $date = $dateToday . " 23:59:59";
-		                $carbonToday = Carbon::createFromFormat('Y-m-d H:i:s', $date, $tz);
+		                $dateToday = \Illuminate\Support\Carbon::today($tz)->endOfDay()->format('Y-m-d H:i:s');
+		                //$date = $dateToday . " 23:59:59";
+		                $carbonToday = Carbon::createFromFormat('Y-m-d H:i:s', $dateToday, $tz);
 		                $saveDate = $carbonToday->setTimezone("UTC");
 		                $options["max_cap_date"] = $saveDate;
 

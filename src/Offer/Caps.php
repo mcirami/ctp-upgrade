@@ -330,7 +330,7 @@ class Caps
 
 					if ($this->cap_rules["max_cap_status"] && $this->cap_rules['max_cap_date']) {
 						$tz = 'America/New_York';
-						$dateToday = \Illuminate\Support\Carbon::today($tz)->startOfDay()->format('Y-m-d H:i:s');
+						$dateToday = \Illuminate\Support\Carbon::today($tz)->format('Y-m-d H:i:s');
 						$carbonToday = Carbon::createFromFormat('Y-m-d H:i:s', $dateToday, $tz);
 						$dateNow = $carbonToday->setTimezone("UTC");
 
