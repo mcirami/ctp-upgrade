@@ -2640,3 +2640,23 @@ table.offer_clicks th:first-child {
 #offers_container .offer_link, #offers_container .link_label {
 	font-size: 14px;
 }
+
+.cap_row {
+	width: 100%;
+	display: block;
+	margin-top: 20px;
+}
+
+.time_select_row {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-orient: horizontal;
+	-webkit-box-direction: normal;
+	-ms-flex-direction: row;
+	flex-direction: row;
+	-ms-flex-wrap: nowrap;
+	flex-wrap: nowrap;
+	justify-content: flex-start;
+	-webkit-justify-content: flex-start;
+}

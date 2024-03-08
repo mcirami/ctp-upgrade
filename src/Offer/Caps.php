@@ -41,6 +41,7 @@ class Caps
     const weekly = 1;
     const monthly = 2;
     const total = 3;
+	const range = 4;
 
 
     public $offerID = -1;
@@ -152,7 +153,7 @@ class Caps
 
 
         $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
-        $sql = "UPDATE offer_caps SET type = :type, time_interval = :time_interval, interval_cap = :interval_cap, redirect_offer = :redirect_offer, max_cap = :max_cap, max_cap_status = :max_cap_status, max_cap_date = :max_cap_date, status = 1 WHERE offer_idoffer = :offerID";
+        $sql = "UPDATE offer_caps SET type = :type, time_interval = :time_interval, interval_cap = :interval_cap, redirect_offer = :redirect_offer, max_cap = :max_cap, max_cap_status = :max_cap_status, max_cap_date = :max_cap_date, status = 1, time_block_status = :time_block_status, block_start_time = :block_start_time, block_end_time = :block_end_time WHERE offer_idoffer = :offerID";
         $prep = $db->prepare($sql);
 
         $prep->bindParam(":type", $options["type"]);
@@ -162,6 +163,9 @@ class Caps
 	    $prep->bindParam(":max_cap", $options["max_cap"]);
 	    $prep->bindParam(":max_cap_status", $options["max_cap_status"]);
 	    $prep->bindParam(":max_cap_date", $options["max_cap_date"]);
+	    $prep->bindParam(":time_block_status", $options["time_block_status"]);
+		$prep->bindParam(":block_start_time", $options["block_start_time"]);
+		$prep->bindParam(":block_end_time", $options["block_end_time"]);
         $prep->bindParam(":offerID", $this->offerID);
 
 
@@ -284,6 +288,17 @@ class Caps
         if ($this->cap_rules == false) {
             return false;
         }
+
+		if ($this->cap_rules["time_block_status"]) {
+			$now = Carbon::now(new \DateTimeZone('America/New_York'))->toTimeString();
+			$start = $this->cap_rules["block_start_time"];
+			$end = $this->cap_rules["block_end_time"];
+
+			if ($now > $start && $now < $end) {
+				return true;
+			}
+		}
+
 
         $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
 

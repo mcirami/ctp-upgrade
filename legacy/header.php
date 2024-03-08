@@ -36,7 +36,7 @@ $navBar = new \LeadMax\TrackYourStats\System\NavBar(\LeadMax\TrackYourStats\Syst
     <link href="css/animate.css" rel="stylesheet">
 
 	<meta name="csrf-token" content='<?php echo csrf_token(); ?>'>
-    <link rel="stylesheet" type="text/css" href="<?php echo $webroot; ?>css/default.css?v=1.4"/>
+    <link rel="stylesheet" type="text/css" href="<?php echo $webroot; ?>css/default.css?v=1.5"/>
     <link rel="stylesheet" type="text/css" href="<?php echo $webroot; ?>css/tablesorter.default.css"/>
 
     <link rel="stylesheet" media="screen" type="text/css"
@@ -48,21 +48,21 @@ $navBar = new \LeadMax\TrackYourStats\System\NavBar(\LeadMax\TrackYourStats\Syst
 
     <link rel="stylesheet" type="text/css" href="<?php echo $webroot; ?>css/font-awesome/css/all.css">
     <link rel="stylesheet" href="<?php echo $webroot; ?>css/magic.min.css">
+	<link rel="stylesheet" href="css/jquery-ui.min.css"/>
+	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.css">
 
     <script type="text/javascript" src="<?php echo $webroot; ?>js/moment.js"></script>
     <script type="text/javascript" src="<?php echo $webroot; ?>js/jquery_2.1.3_jquery.min.js"></script>
     <script type="text/javascript" src="<?php echo $webroot; ?>js/jquery-ui.min.js"></script>
-
     <script type="text/javascript" src="<?php echo $webroot; ?>js/jscolor.min.js"></script>
-    <link rel="stylesheet" href="css/jquery-ui.min.css"/>
     <script type="text/javascript" src="<?php echo $webroot; ?>js/main.js?v=2.5"></script>
     <script type="text/javascript" src="<?php echo $webroot; ?>js/drawer.js"></script>
     <script type="text/javascript" src="<?php echo $webroot; ?>js/iscroll.min.js"></script>
-
     <script type="text/javascript" src="<?php echo $webroot; ?>js/tables.js"></script>
     <script type="text/javascript" src="<?php echo $webroot; ?>js/bootstrap-notify.min.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js" defer></script>
 
-    <?php
+	<?php
     if (!env('APP_DEBUG') && env('APP_ENV') == 'production') {
         echo "
            <!-- Global site tag (gtag.js) - Google Analytics -->

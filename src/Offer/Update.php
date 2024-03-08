@@ -519,9 +519,9 @@ class Update
                     $options["redirect_offer"] = $_POST["redirect_offer"];
 
 	                if(isset($_POST["enable_max_cap"])) {
-						if(isset($_POST["max_cap_num"])) {
-							$options["max_cap"] = $_POST["max_cap_num"];
-						}
+		                if(isset($_POST["max_cap_num"])) {
+			                $options["max_cap"] = $_POST["max_cap_num"];
+		                }
 		                $options["max_cap_status"] = 1;
 		                $tz = 'America/New_York';
 		                $dateToday = \Illuminate\Support\Carbon::today($tz)->endOfDay()->format('Y-m-d H:i:s');
@@ -535,14 +535,29 @@ class Update
 		                $options["max_cap_date"] = null;
 	                }
 
-                    $caps->updateOfferRules($options);
-
+					//$caps->updateOfferRules($options);
                 } else {
-                    $caps->disableCap();
+	                $options["max_cap_status"]  = 0;
+					//$caps->disableCap();
                 }
+	            $now = Carbon::now(new \DateTimeZone('America/New_York'))->toTimeString();
+	            if(isset($_POST["enable_time_block"])) {
+		            $postStart = str_replace(" ", ":00 ", $_POST["block_start_time"]);
+		            $postEnd = str_replace(" ", ":00 ", $_POST["block_end_time"]);
+		            $start = Carbon::createFromFormat('H:i a', $postStart)->toTimeString();
+		            $end = Carbon::createFromFormat('H:i a', $postEnd)->toTimeString();
 
+		            if(isset($_POST["block_start_time"]) && isset($_POST["block_end_time"]) ) {
+			            $options["block_start_time"]    = $start;
+			            $options["block_end_time"]      = $end;
+			            $options["time_block_status"]   = 1;
+		            }
+	            } else {
+		            $options["time_block_status"]  = 0;
+	            }
 
-//                $stmt2->debugDumpParams();
+	            $caps->updateOfferRules($options);
+//              $stmt2->debugDumpParams();
 
                 $db->commit();
 

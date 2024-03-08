@@ -338,7 +338,7 @@ if (isset($_GET["noAff"])) {
                             "disabled");
 
                         ?>
-	                    <span class="max_cap">
+	                    <span class="max_cap cap_row">
 		                    <label class="value_span9">Max Cap</label>
 		                    <input class="fixCheckBox" type="checkbox" id="enable_max_cap" name="enable_max_cap"
 		                           <?php if ($offer_cap->getRuleVal("max_cap_status")) : echo " checked"; endif; ?>
@@ -352,6 +352,43 @@ if (isset($_GET["noAff"])) {
 		                        <span class="small_txt value_span10">Max Cap</span>
 		                        <input type="number" name="max_cap_num" value="<?= $offer_cap->getRuleVal("max_cap") ?>"
 		                               id="max_cap_num" <?php if(!$offer_cap->getRuleVal("max_cap_status")) : ?> disabled <?php endif; ?>/>
+	                       </span>
+	                    </span>
+
+	                    <span class="range_block cap_row">
+		                    <label for="enable_time_block" class="value_span9">Block Time Range</label>
+		                    <input class="fixCheckBox" type="checkbox" id="enable_time_block" name="enable_time_block"
+		                           <?php if ($offer_cap->getRuleVal("time_block_status")) : echo " checked"; endif; ?>
+		                    >
+		                    Enable Block Time Range
+	                       <span class="time_block_wrap"
+		                       <?php if(!$offer_cap->getRuleVal("time_block_status")) : ?>
+			                       style="display:none;"
+		                       <?php endif; ?>
+	                       >
+		                       <?php
+		                            $startTime = Carbon::createFromFormat('H:i:s', $offer_cap->getRuleVal("block_start_time"))->format('g:i A');
+									$endTime = Carbon::createFromFormat('H:i:s', $offer_cap->getRuleVal("block_end_time"))->format('g:i A');
+		                       ?>
+		                       <span class="small_txt value_span10">Time Range To Block</span>
+		                       <span class="time_select_row">
+			                       <span>
+				                       <label for='block_start_time'>From:</label>
+										<input style='width:100px;'
+										       id="block_start_time"
+										       name="block_start_time"
+										       value="<?= $startTime; ?>"
+										/>
+			                       </span>
+			                       <span>
+				                       <label for='block_end_time'>To:</label>
+				                       <input style='width:100px;'
+				                              id="block_end_time"
+				                              name="block_end_time"
+				                              value="<?= $endTime ?>"
+				                       />
+			                       </span>
+		                       </span>
 	                       </span>
 	                    </span>
 
@@ -442,6 +479,30 @@ if (isset($_GET["noAff"])) {
 					document.querySelector('#max_cap_num').disabled = true;
 				}
 			})
+
+			document.querySelector('#enable_time_block').addEventListener('change', (e) => {
+				if (e.target.checked) {
+					document.querySelector('.time_block_wrap').style.display = "block";
+				} else {
+					document.querySelector('.time_block_wrap').style.display = "none";
+				}
+			})
+			$('#block_start_time').timepicker({
+				timeFormat: 'h:mm a',
+				interval: 30,
+				minTime: '12:00am',
+				maxTime: '11:59pm',
+				dropdown: true,
+				scrollbar: true
+			});
+			$('#block_end_time').timepicker({
+				timeFormat: 'h:mm a',
+				interval: 30,
+				minTime: '12:00am',
+				maxTime: '11:59pm',
+				dropdown: true,
+				scrollbar: true
+			});
 		});
 	</script>
 
