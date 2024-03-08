@@ -289,15 +289,16 @@ class Caps
             return false;
         }
 
-		if ($this->cap_rules["time_block_status"]) {
-			$now = Carbon::now(new \DateTimeZone('America/New_York'))->toTimeString();
+		/*if ($this->cap_rules["time_block_status"]) {
+			new \DateTimeZone('America/New_York');
+			$now = Carbon::now()->toTimeString();
 			$start = $this->cap_rules["block_start_time"];
 			$end = $this->cap_rules["block_end_time"];
 
 			if ($now > $start && $now < $end) {
 				return true;
 			}
-		}
+		}*/
 
 
         $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();

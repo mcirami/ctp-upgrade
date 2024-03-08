@@ -540,7 +540,6 @@ class Update
 	                $options["max_cap_status"]  = 0;
 					//$caps->disableCap();
                 }
-	            $now = Carbon::now(new \DateTimeZone('America/New_York'))->toTimeString();
 	            if(isset($_POST["enable_time_block"])) {
 		            $postStart = str_replace(" ", ":00 ", $_POST["block_start_time"]);
 		            $postEnd = str_replace(" ", ":00 ", $_POST["block_end_time"]);
