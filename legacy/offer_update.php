@@ -367,8 +367,12 @@ if (isset($_GET["noAff"])) {
 		                       <?php endif; ?>
 	                       >
 		                       <?php
-		                            $startTime = Carbon::createFromFormat('H:i:s', $offer_cap->getRuleVal("block_start_time"))->format('g:i A');
-									$endTime = Carbon::createFromFormat('H:i:s', $offer_cap->getRuleVal("block_end_time"))->format('g:i A');
+		                            $start = $offer_cap->getRuleVal("block_start_time");
+									$end = $offer_cap->getRuleVal("block_end_time");
+		                            $CarbonStartTime = Carbon::createFromFormat('H:i:s', $start);
+									$CarbonEndTime = Carbon::createFromFormat('H:i:s', $end);
+		                            $startTime = $CarbonStartTime->format('g:i A');
+									$endTime = $CarbonEndTime->format('g:i A');
 		                       ?>
 		                       <span class="small_txt value_span10">Time Range To Block</span>
 		                       <span class="time_select_row">

@@ -543,9 +543,10 @@ class Update
 	            if(isset($_POST["enable_time_block"])) {
 		            $postStart = str_replace(" ", ":00 ", $_POST["block_start_time"]);
 		            $postEnd = str_replace(" ", ":00 ", $_POST["block_end_time"]);
-		            $start = Carbon::createFromFormat('H:i a', $postStart)->toTimeString();
-		            $end = Carbon::createFromFormat('H:i a', $postEnd)->toTimeString();
-
+		            $CarbonStart = Carbon::createFromFormat('H:i:s a', $postStart);
+		            $CarbonEnd = Carbon::createFromFormat('H:i:s a', $postEnd);
+		            $start = $CarbonStart->toTimeString();
+					$end = $CarbonEnd->toTimeString();
 		            if(isset($_POST["block_start_time"]) && isset($_POST["block_end_time"]) ) {
 			            $options["block_start_time"]    = $start;
 			            $options["block_end_time"]      = $end;
