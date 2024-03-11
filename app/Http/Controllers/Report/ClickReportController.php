@@ -84,12 +84,14 @@ class ClickReportController extends ReportController
         $dates = self::getDates();
 		$startDate = $dates['originalStart'];
 		$endDate = $dates['originalEnd'];
+
 		$dateSelect = request()->query('dateSelect');
 
         $user = User::myUsers()->findOrFail($userId);
 
 	    $reportCollection = Click::where('rep_idrep', '=', $userId)
-	                ->whereBetween('clicks.first_timestamp', [$dates['startDate'], $dates['endDate']])
+	                ->where('clicks.click_type', '!=', 2)
+	                ->whereBetween('clicks.first_timestamp', [$dates['start'], $dates['end']])
 	                ->leftJoin('click_vars', 'click_vars.click_id', '=', 'clicks.idclicks')
 	                ->leftJoin('click_geo', 'click_geo.click_id', '=', 'clicks.idclicks')
 	                ->leftJoin('conversions', 'conversions.click_id', '=', 'clicks.idclicks')
