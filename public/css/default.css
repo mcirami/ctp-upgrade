@@ -2660,3 +2660,7 @@ table.offer_clicks th:first-child {
 	justify-content: flex-start;
 	-webkit-justify-content: flex-start;
 }
+
+.ui-timepicker-container {
+	position: fixed !important;
+}

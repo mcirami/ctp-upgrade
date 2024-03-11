@@ -376,7 +376,7 @@ if (isset($_GET["noAff"])) {
 										$endTime   = Carbon::createFromFormat( 'H:i:s', $end )->format( 'g:i A' );
 									}
 		                       ?>
-		                       <span class="small_txt value_span10">Time Range To Block</span>
+		                       <span class="small_txt value_span10">Time Range To Block (EST)</span>
 		                       <span class="time_select_row">
 			                       <span>
 				                       <label for='block_start_time'>From:</label>

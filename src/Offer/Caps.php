@@ -290,8 +290,7 @@ class Caps
         }
 
 		if ($this->cap_rules["time_block_status"]) {
-			new \DateTimeZone('America/New_York');
-			$now = Carbon::now()->toTimeString();
+			$now = Carbon::now('America/New_York')->toTimeString();
 			$start = $this->cap_rules["block_start_time"];
 			$end = $this->cap_rules["block_end_time"];
 
