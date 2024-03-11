@@ -89,7 +89,6 @@ class ClickReportController extends ReportController
         $user = User::myUsers()->findOrFail($userId);
 
 	    $reportCollection = Click::where('rep_idrep', '=', $userId)
-	                ->where('clicks.click_type', '!=', 2)
 	                ->whereBetween('clicks.first_timestamp', [$dates['startDate'], $dates['endDate']])
 	                ->leftJoin('click_vars', 'click_vars.click_id', '=', 'clicks.idclicks')
 	                ->leftJoin('click_geo', 'click_geo.click_id', '=', 'clicks.idclicks')
