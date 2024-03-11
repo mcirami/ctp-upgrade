@@ -57,7 +57,6 @@
 			</tr>
 			</thead>
 			<tbody>
-
 			@foreach($report as $row)
 				<tr role="row">
 					@if (\LeadMax\TrackYourStats\System\Session::permissions()->can("view_fraud_data"))

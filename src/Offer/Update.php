@@ -527,8 +527,7 @@ class Update
 		                $dateToday = \Illuminate\Support\Carbon::today($tz)->endOfDay()->format('Y-m-d H:i:s');
 		                //$date = $dateToday . " 23:59:59";
 		                $carbonToday = Carbon::createFromFormat('Y-m-d H:i:s', $dateToday, $tz);
-		                $saveDate = $carbonToday->setTimezone("UTC");
-		                $options["max_cap_date"] = $saveDate;
+		                $options["max_cap_date"]  = $carbonToday->setTimezone("UTC");
 
 	                } else {
 		                $options["max_cap_status"] = 0;

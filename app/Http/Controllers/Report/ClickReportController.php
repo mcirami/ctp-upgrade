@@ -36,8 +36,8 @@ class ClickReportController extends ReportController
 	    $endDate = $dates['originalEnd'];
 	    $dateSelect = request()->query('dateSelect');
 
-	    $start = Carbon::parse( $dates['start'], 'America/New_York' );
-	    $end   = Carbon::parse( $dates['end'], 'America/New_York' );
+	    $start = Carbon::parse( $dates['startDate'], 'America/New_York' );
+	    $end   = Carbon::parse( $dates['endDate'], 'America/New_York' );
 
 	    $repo          = new OfferClicksRepository( $id, Session::user(),
 		    Session::permissions()->can( Permissions::VIEW_FRAUD_DATA ) );
@@ -88,6 +88,7 @@ class ClickReportController extends ReportController
 
         $user = User::myUsers()->findOrFail($userId);
 
+
 	    $reportCollection = Click::where('rep_idrep', '=', $userId)
 	                ->where('clicks.click_type', '!=', 2)
 	                ->whereBetween('clicks.first_timestamp', [$dates['startDate'], $dates['endDate']])
@@ -110,7 +111,8 @@ class ClickReportController extends ReportController
 						'click_geo.ip  as ip_address',
 						'clicks.offer_idoffer  as offer_id'
 	                )
-	                ->orderBy('conversions.paid', 'DESC')->paginate(100);
+	                ->orderBy('paid', 'DESC')->paginate(100);
+
 
 		$report = $this->formatResults($reportCollection);
 
@@ -126,8 +128,8 @@ class ClickReportController extends ReportController
 		$endDate = $dates['originalEnd'];
 		$dateSelect = request()->query('dateSelect');*/
 
-		$start = Carbon::parse( $dates['start'], 'America/New_York' );
-		$end   = Carbon::parse( $dates['end'], 'America/New_York' );
+		$start = Carbon::parse( $dates['startDate'], 'America/New_York' );
+		$end   = Carbon::parse( $dates['endDate'], 'America/New_York' );
 
 		$affiliateRepo = new OfferAffiliateClicksRepository( $offerId, Session::user() );
 		$affiliateReport = $affiliateRepo->between( $start, $end );
@@ -144,8 +146,8 @@ class ClickReportController extends ReportController
 
 		$dates = self::getDates();
 		$affClicks = [];
-		$start = Carbon::parse($dates['start'], 'America/New_York');
-		$end = Carbon::parse($dates['end'], 'America/New_York');
+		$start = Carbon::parse($dates['startDate'], 'America/New_York');
+		$end = Carbon::parse($dates['endDate'], 'America/New_York');
 
 		$managers = User::myUsers()->withRole(Privilege::ROLE_MANAGER)->get();
 		foreach ($managers as $manager) {
