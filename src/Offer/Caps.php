@@ -41,7 +41,7 @@ class Caps
     const weekly = 1;
     const monthly = 2;
     const total = 3;
-	const range = 4;
+	const hourly = 4;
 
 
     public $offerID = -1;
@@ -131,7 +131,7 @@ class Caps
         }
 
         $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
-        $sql = "UPDATE offer_caps SET status = 0, max_cap_status = 0 WHERE offer_idoffer = :offerID";
+        $sql = "UPDATE offer_caps SET status = 0, max_cap_status = 0, time_block_status = 0 WHERE offer_idoffer = :offerID";
         $prep = $db->prepare($sql);
 
         $prep->bindParam(":offerID", $this->offerID);
@@ -278,7 +278,17 @@ class Caps
                 $dateTo .= (date("m") + 1)."-31 23:59:59";
 
                 return ['dateFrom' => $dateFrom, 'dateTo' => $dateTo, 'query' => $query];
+	        case self::hourly:
+		        $tz = 'America/New_York';
+		        $timeNow = \Illuminate\Support\Carbon::now($tz);
+				$fromTime = $timeNow->format('Y-m-d') . " " . $timeNow->hour . ":00:00";
+		        $toTime = $timeNow->format('Y-m-d') . " " . $timeNow->hour . ":59:59";
+		        $carbonFrom = Carbon::createFromFormat('Y-m-d H:i:s', $fromTime, $tz);
+		        $carbonTo = Carbon::createFromFormat('Y-m-d H:i:s', $toTime, $tz);
+				$dateFrom = $carbonFrom->setTimezone('UTC');
+		        $dateTo = $carbonTo->setTimezone('UTC');
 
+		        return ['dateFrom' => $dateFrom, 'dateTo' => $dateTo, 'query' => $query];
         }
     }
 

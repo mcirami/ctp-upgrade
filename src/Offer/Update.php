@@ -498,7 +498,6 @@ class Update
                         $options["type"] = 1;
                     }
 
-
                     if ($_POST["cap_interval"] == "daily") {
                         $options["time_interval"] = 0;
                     }
@@ -509,10 +508,13 @@ class Update
                         $options["time_interval"] = 2;
                     }
 
+	                if ($_POST["cap_interval"] == "hourly") {
+		                $options["time_interval"] = 4;
+	                }
+
                     if ($_POST["cap_interval"] == "total") {
                         $options["time_interval"] = Caps::total;
                     }
-
 
                     $options["interval_cap"] = $_POST["cap_num"];
 
@@ -525,7 +527,6 @@ class Update
 		                $options["max_cap_status"] = 1;
 		                $tz = 'America/New_York';
 		                $dateToday = \Illuminate\Support\Carbon::today($tz)->endOfDay()->format('Y-m-d H:i:s');
-		                //$date = $dateToday . " 23:59:59";
 		                $carbonToday = Carbon::createFromFormat('Y-m-d H:i:s', $dateToday, $tz);
 		                $options["max_cap_date"]  = $carbonToday->setTimezone("UTC");
 
@@ -534,28 +535,27 @@ class Update
 		                $options["max_cap_date"] = null;
 	                }
 
-					//$caps->updateOfferRules($options);
+	                if(isset($_POST["enable_time_block"]) && isset($_POST["block_start_time"]) && isset($_POST["block_end_time"])) {
+		                $postStart = str_replace(" ", ":00 ", $_POST["block_start_time"]);
+		                $postEnd = str_replace(" ", ":00 ", $_POST["block_end_time"]);
+		                $CarbonStart = Carbon::createFromFormat('H:i:s a', $postStart);
+		                $CarbonEnd = Carbon::createFromFormat('H:i:s a', $postEnd);
+		                $start = $CarbonStart->toTimeString();
+		                $end = $CarbonEnd->toTimeString();
+
+		                $options["block_start_time"]    = $start;
+		                $options["block_end_time"]      = $end;
+		                $options["time_block_status"]   = 1;
+
+	                } else {
+		                $options["time_block_status"]  = 0;
+	                }
+
+					$caps->updateOfferRules($options);
                 } else {
-	                $options["max_cap_status"]  = 0;
-					//$caps->disableCap();
+					$caps->disableCap();
                 }
-	            if(isset($_POST["enable_time_block"]) && isset($_POST["block_start_time"]) && isset($_POST["block_end_time"])) {
-		            $postStart = str_replace(" ", ":00 ", $_POST["block_start_time"]);
-		            $postEnd = str_replace(" ", ":00 ", $_POST["block_end_time"]);
-		            $CarbonStart = Carbon::createFromFormat('H:i:s a', $postStart);
-		            $CarbonEnd = Carbon::createFromFormat('H:i:s a', $postEnd);
-		            $start = $CarbonStart->toTimeString();
-					$end = $CarbonEnd->toTimeString();
 
-		            $options["block_start_time"]    = $start;
-		            $options["block_end_time"]      = $end;
-		            $options["time_block_status"]   = 1;
-
-	            } else {
-		            $options["time_block_status"]  = 0;
-	            }
-
-	            $caps->updateOfferRules($options);
 //              $stmt2->debugDumpParams();
 
                 $db->commit();

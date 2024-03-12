@@ -308,6 +308,9 @@ if (isset($_GET["noAff"])) {
 
                         <span class="small_txt value_span10">Cap Interval</span>
                         <select id="cap_interval" name="cap_interval" disabled>
+	                        <option<?php if ($offer_cap->getRuleVal("time_interval") == \LeadMax\TrackYourStats\Offer\Caps::hourly) echo " selected " ?>
+                                    value="hourly">Hourly
+                            </option>
                             <option<?php if ($offer_cap->getRuleVal("time_interval") == \LeadMax\TrackYourStats\Offer\Caps::daily) echo " selected " ?>
                                     value="daily">Daily
                             </option>
