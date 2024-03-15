@@ -131,7 +131,7 @@ class Caps
         }
 
         $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
-        $sql = "UPDATE offer_caps SET status = 0, max_cap_status = 0, time_block_status = 0 WHERE offer_idoffer = :offerID";
+        $sql = "UPDATE offer_caps SET status = 0, max_cap_status = 0, time_block_status = 0, hourly_cap_status = 0 WHERE offer_idoffer = :offerID";
         $prep = $db->prepare($sql);
 
         $prep->bindParam(":offerID", $this->offerID);
@@ -153,7 +153,7 @@ class Caps
 
 
         $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
-        $sql = "UPDATE offer_caps SET type = :type, time_interval = :time_interval, interval_cap = :interval_cap, redirect_offer = :redirect_offer, max_cap = :max_cap, max_cap_status = :max_cap_status, max_cap_date = :max_cap_date, status = 1, time_block_status = :time_block_status, block_start_time = :block_start_time, block_end_time = :block_end_time WHERE offer_idoffer = :offerID";
+        $sql = "UPDATE offer_caps SET type = :type, time_interval = :time_interval, interval_cap = :interval_cap, redirect_offer = :redirect_offer, max_cap = :max_cap, max_cap_status = :max_cap_status, max_cap_date = :max_cap_date, status = 1, time_block_status = :time_block_status, block_start_time = :block_start_time, block_end_time = :block_end_time, hourly_cap_status = :hourly_cap_status, hourly_cap = :hourly_cap WHERE offer_idoffer = :offerID";
         $prep = $db->prepare($sql);
 
         $prep->bindParam(":type", $options["type"]);
@@ -166,6 +166,8 @@ class Caps
 	    $prep->bindParam(":time_block_status", $options["time_block_status"]);
 		$prep->bindParam(":block_start_time", $options["block_start_time"]);
 		$prep->bindParam(":block_end_time", $options["block_end_time"]);
+	    $prep->bindParam(":hourly_cap_status", $options["hourly_cap_status"]);
+	    $prep->bindParam(":hourly_cap", $options["hourly_cap"]);
         $prep->bindParam(":offerID", $this->offerID);
 
 
@@ -224,10 +226,8 @@ class Caps
 
     }
 
-    private function calculateTimeInterval()
+    private function calculateTimeInterval($type = null)
     {
-
-
         if ($this->cap_rules["time_interval"] !== self::total) {
             switch ($this->cap_rules["type"]) {
 
@@ -243,59 +243,60 @@ class Caps
             }
         }
 
+		if($type == 'hourly') {
+			$tz = 'America/New_York';
+			$timeNow = \Illuminate\Support\Carbon::now($tz);
+			$fromTime = $timeNow->format('Y-m-d') . " " . $timeNow->hour . ":00:00";
+			$toTime = $timeNow->format('Y-m-d') . " " . $timeNow->hour . ":59:59";
+			$carbonFrom = Carbon::createFromFormat('Y-m-d H:i:s', $fromTime, $tz);
+			$carbonTo = Carbon::createFromFormat('Y-m-d H:i:s', $toTime, $tz);
+			$dateFrom = $carbonFrom->setTimezone('UTC');
+			$dateTo = $carbonTo->setTimezone('UTC');
 
-        switch ($this->cap_rules["time_interval"]) {
-            case self::total:
-                return ['dateFrom' => null, 'dateTo' => null, 'query' => ''];
+			return ['dateFrom' => $dateFrom, 'dateTo' => $dateTo, 'query' => $query];
+		} else {
+			switch ($this->cap_rules["time_interval"]) {
+				case self::total:
+					return ['dateFrom' => null, 'dateTo' => null, 'query' => ''];
 
-            case self::daily:
-	            $tz = 'America/New_York';
-	            $timeNow = \Illuminate\Support\Carbon::today($tz)->format('Y-m-d');
-	            $from = $timeNow . " 00:00:00";
-	            $to = $timeNow . " 23:59:59";
+				case self::daily:
+					$tz = 'America/New_York';
+					$timeNow = \Illuminate\Support\Carbon::today($tz)->format('Y-m-d');
+					$from = $timeNow . " 00:00:00";
+					$to = $timeNow . " 23:59:59";
 
-	            $carbonFrom = Carbon::createFromFormat('Y-m-d H:i:s', $from, $tz);
-	            $carbonTo = Carbon::createFromFormat('Y-m-d H:i:s', $to, $tz);
-	            $dateFrom = $carbonFrom->setTimezone("UTC");
-	            $dateTo = $carbonTo->setTimezone("UTC");
+					$carbonFrom = Carbon::createFromFormat('Y-m-d H:i:s', $from, $tz);
+					$carbonTo = Carbon::createFromFormat('Y-m-d H:i:s', $to, $tz);
+					$dateFrom = $carbonFrom->setTimezone("UTC");
+					$dateTo = $carbonTo->setTimezone("UTC");
 
-                return ['dateFrom' => $dateFrom, 'dateTo' => $dateTo, 'query' => $query];
+					return ['dateFrom' => $dateFrom, 'dateTo' => $dateTo, 'query' => $query];
 
-            case self::weekly:
-                $date = new \DateTime(date("Y-m-d"));
-                $daysToSubtract = date("N");
-                $daysToSubtract--; //subtract one so it hits monday
-                $date->sub(new \DateInterval('P'.$daysToSubtract.'D'));
+				case self::weekly:
+					$date = new \DateTime(date("Y-m-d"));
+					$daysToSubtract = date("N");
+					$daysToSubtract--; //subtract one so it hits monday
+					$date->sub(new \DateInterval('P'.$daysToSubtract.'D'));
 
-                $dateFrom = $date->format("Y-m-d")." 00:00:00";
-                $dateTo = date("Y-m-d"." 23:59:59");
+					$dateFrom = $date->format("Y-m-d")." 00:00:00";
+					$dateTo = date("Y-m-d"." 23:59:59");
 
-                return ['dateFrom' => $dateFrom, 'dateTo' => $dateTo, 'query' => $query];
+					return ['dateFrom' => $dateFrom, 'dateTo' => $dateTo, 'query' => $query];
 
-            case self::monthly:
-                $dateFrom = date("Y-m-01"." 00:00:00");
-                $dateTo = date("Y-");
-                $dateTo .= (date("m") + 1)."-31 23:59:59";
+				case self::monthly:
+					$dateFrom = date("Y-m-01"." 00:00:00");
+					$dateTo = date("Y-");
+					$dateTo .= (date("m") + 1)."-31 23:59:59";
 
-                return ['dateFrom' => $dateFrom, 'dateTo' => $dateTo, 'query' => $query];
-	        case self::hourly:
-		        $tz = 'America/New_York';
-		        $timeNow = \Illuminate\Support\Carbon::now($tz);
-				$fromTime = $timeNow->format('Y-m-d') . " " . $timeNow->hour . ":00:00";
-		        $toTime = $timeNow->format('Y-m-d') . " " . $timeNow->hour . ":59:59";
-		        $carbonFrom = Carbon::createFromFormat('Y-m-d H:i:s', $fromTime, $tz);
-		        $carbonTo = Carbon::createFromFormat('Y-m-d H:i:s', $toTime, $tz);
-				$dateFrom = $carbonFrom->setTimezone('UTC');
-		        $dateTo = $carbonTo->setTimezone('UTC');
-
-		        return ['dateFrom' => $dateFrom, 'dateTo' => $dateTo, 'query' => $query];
-        }
+					return ['dateFrom' => $dateFrom, 'dateTo' => $dateTo, 'query' => $query];
+			}
+		}
     }
 
 
-    public function isOfferCapped()
+    public function isOfferCapped($type = null)
     {
-        if ($this->cap_rules == false) {
+        if ( ! $this->cap_rules ) {
             return false;
         }
 
@@ -331,56 +332,67 @@ class Caps
                 return false;
         }
 
+		if ($type == 'hourly') {
+			$calculated = $this->calculateTimeInterval('hourly');
+		} else {
+			$calculated = $this->calculateTimeInterval();
+		}
 
-        $calculated = $this->calculateTimeInterval();
-        $sql .= $calculated["query"];
 
-        $prep = $db->prepare($sql);
+	    $sql .= $calculated["query"];
 
-        $prep->bindParam(":offerID", $this->offerID);
+	    $prep = $db->prepare($sql);
 
-        if ($this->cap_rules["time_interval"] !== self::total) {
-            $prep->bindParam(":dateFrom", $calculated["dateFrom"]);
-            $prep->bindParam(":dateTo", $calculated["dateTo"]);
-        }
+	    $prep->bindParam(":offerID", $this->offerID);
+
+	    if ($this->cap_rules["time_interval"] !== self::total) {
+		    $prep->bindParam(":dateFrom", $calculated["dateFrom"]);
+		    $prep->bindParam(":dateTo", $calculated["dateTo"]);
+	    }
 
         if ($prep->execute()) {
 
             if ($prep->rowCount() !== 0) {
-                if ($prep->rowCount() >= $this->cap_rules["interval_cap"]) {
+				if ($type == "hourly") {
+					if ($prep->rowCount() >= $this->cap_rules["hourly_cap"]) {
+						return true;
+					}
+				} else {
+					if ($prep->rowCount() >= $this->cap_rules["interval_cap"]) {
 
-	                if (!$this->cap_rules["max_cap_status"]) {
-		                return true;
-	                }
-
-					if ($this->cap_rules["max_cap_status"] && $this->cap_rules['max_cap_date']) {
-						$tz = 'America/New_York';
-						$dateToday = \Illuminate\Support\Carbon::today($tz)->format('Y-m-d H:i:s');
-						$carbonToday = Carbon::createFromFormat('Y-m-d H:i:s', $dateToday, $tz);
-						$dateNow = $carbonToday->setTimezone("UTC");
-
-						$clicksLog = new Logger('clicks');
-						$clicksLog->pushHandler(new StreamHandler(storage_path('logs/clicks.log')), Logger::INFO);
-						$log = [
-							'now'           => $dateNow,
-							'max_cap_date'  => $this->cap_rules['max_cap_date'],
-							'count'         => $prep->rowCount(),
-							'offerID'       => $this->offerID
-						];
-						$clicksLog->info('Click', $log);
-
-						if($dateNow > $this->cap_rules['max_cap_date']) {
-							$db   = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
-							$sql  = "UPDATE offer_caps SET max_cap_status = 0, max_cap_date = NULL WHERE offer_idoffer = :offerID";
-							$prep = $db->prepare( $sql );
-							$prep->bindParam(":offerID", $this->offerID);
-							$prep->execute();
-							return false;
-						} else if ($prep->rowCount() >= $this->cap_rules["max_cap"]) {
+						if (!$this->cap_rules["max_cap_status"]) {
 							return true;
 						}
+
+						if ($this->cap_rules["max_cap_status"] && $this->cap_rules['max_cap_date']) {
+							$tz = 'America/New_York';
+							$dateToday = \Illuminate\Support\Carbon::today($tz)->format('Y-m-d H:i:s');
+							$carbonToday = Carbon::createFromFormat('Y-m-d H:i:s', $dateToday, $tz);
+							$dateNow = $carbonToday->setTimezone("UTC");
+
+							/*$clicksLog = new Logger('clicks');
+							$clicksLog->pushHandler(new StreamHandler(storage_path('logs/clicks.log')), Logger::INFO);
+							$log = [
+								'now'           => $dateNow,
+								'max_cap_date'  => $this->cap_rules['max_cap_date'],
+								'count'         => $prep->rowCount(),
+								'offerID'       => $this->offerID
+							];
+							$clicksLog->info('Click', $log);*/
+
+							if ($dateNow > $this->cap_rules['max_cap_date']) {
+								$db   = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+								$sql  = "UPDATE offer_caps SET max_cap_status = 0, max_cap_date = NULL WHERE offer_idoffer = :offerID";
+								$prep = $db->prepare( $sql );
+								$prep->bindParam(":offerID", $this->offerID);
+								$prep->execute();
+								return false;
+							} else if ($prep->rowCount() >= $this->cap_rules["max_cap"]) {
+								return true;
+							}
+						}
 					}
-                }
+				}
             }
         }
 

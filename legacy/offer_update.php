@@ -308,9 +308,6 @@ if (isset($_GET["noAff"])) {
 
                         <span class="small_txt value_span10">Cap Interval</span>
                         <select id="cap_interval" name="cap_interval" disabled>
-	                        <option<?php if ($offer_cap->getRuleVal("time_interval") == \LeadMax\TrackYourStats\Offer\Caps::hourly) echo " selected " ?>
-                                    value="hourly">Hourly
-                            </option>
                             <option<?php if ($offer_cap->getRuleVal("time_interval") == \LeadMax\TrackYourStats\Offer\Caps::daily) echo " selected " ?>
                                     value="daily">Daily
                             </option>
@@ -341,6 +338,23 @@ if (isset($_GET["noAff"])) {
                             "disabled");
 
                         ?>
+
+	                    <span class="cap_row">
+		                    <label for="enable_hourly_cap" class="value_span9">Hourly Cap</label>
+		                    <input class="fixCheckBox" type="checkbox" id="enable_hourly_cap" name="enable_hourly_cap"
+		                           <?php if ($offer_cap->getRuleVal("hourly_cap_status")) : echo " checked"; endif; ?>
+		                    >
+		                    Enable Hourly Cap
+		                    <span class="hourly_cap_wrap"
+		                     <?php if(!$offer_cap->getRuleVal("hourly_cap_status")) : ?>
+			                     style="display:none;"
+		                     <?php endif; ?>
+		                    >
+			                    <span class="small_txt value_span10">Hourly Cap</span>
+		                        <input type="number" name="hourly_cap_num" value="<?= $offer_cap->getRuleVal("hourly_cap") ?>"
+		                               id="hourly_cap_num" <?php if(!$offer_cap->getRuleVal("hourly_cap_status")) : ?> disabled <?php endif; ?>/>
+		                    </span>
+	                    </span>
 	                    <span class="max_cap cap_row">
 		                    <label class="value_span9">Max Cap</label>
 		                    <input class="fixCheckBox" type="checkbox" id="enable_max_cap" name="enable_max_cap"
@@ -357,6 +371,8 @@ if (isset($_GET["noAff"])) {
 		                               id="max_cap_num" <?php if(!$offer_cap->getRuleVal("max_cap_status")) : ?> disabled <?php endif; ?>/>
 	                       </span>
 	                    </span>
+
+
 
 	                    <span class="range_block cap_row">
 		                    <label for="enable_time_block" class="value_span9">Block Time Range</label>
@@ -486,6 +502,16 @@ if (isset($_GET["noAff"])) {
 				} else {
 					document.querySelector('.max_cap_wrap').style.display = "none";
 					document.querySelector('#max_cap_num').disabled = true;
+				}
+			})
+
+			document.querySelector('#enable_hourly_cap').addEventListener('change', (e) => {
+				if (e.target.checked) {
+					document.querySelector('.hourly_cap_wrap').style.display = "block";
+					document.querySelector('#hourly_cap_num').disabled = false;
+				} else {
+					document.querySelector('.hourly_cap_wrap').style.display = "none";
+					document.querySelector('#hourly_cap_num').disabled = true;
 				}
 			})
 

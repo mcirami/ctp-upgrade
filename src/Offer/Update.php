@@ -551,6 +551,14 @@ class Update
 		                $options["time_block_status"]  = 0;
 	                }
 
+	                if(isset($_POST["enable_hourly_cap"])) {
+		                $options["hourly_cap_status"]   = 1;
+		                $options["hourly_cap"]          = $_POST["hourly_cap_num"];
+
+	                } else {
+		                $options["hourly_cap_status"]  = 0;
+	                }
+
 					$caps->updateOfferRules($options);
                 } else {
 					$caps->disableCap();

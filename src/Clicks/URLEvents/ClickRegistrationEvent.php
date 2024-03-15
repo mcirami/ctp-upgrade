@@ -175,7 +175,11 @@ class ClickRegistrationEvent extends URLEvent
 
         if ($caps->isOfferCapped()) {
             $caps->sendToRedirectOffer();
+        } else if ($caps->cap_rules && $caps->cap_rules['hourly_cap_status'] && $caps->isOfferCapped('hourly')) {
+	        $caps->sendToRedirectOffer();
         }
+
+	    return false;
     }
 
     private function sendUserToOffer()
