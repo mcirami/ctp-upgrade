@@ -18,6 +18,8 @@ use LeadMax\TrackYourStats\Offer\Offer;
 use LeadMax\TrackYourStats\Offer\RepHasOffer;
 use LeadMax\TrackYourStats\Offer\Rules;
 use LeadMax\TrackYourStats\System\IPBlackList;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 
 class ClickRegistrationEvent extends URLEvent
 {
@@ -77,7 +79,7 @@ class ClickRegistrationEvent extends URLEvent
             }
 
             $click = new Click();
-	        if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+	       /* if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
 		        $ip = $_SERVER['HTTP_CLIENT_IP'];
 		        if ( str_contains( $ip, ',' ) ) {
 			        $ip = substr($ip, 0, strpos($ip, ","));
@@ -92,11 +94,15 @@ class ClickRegistrationEvent extends URLEvent
 		        if ( str_contains( $ip, ',' ) ) {
 			        $ip = substr($ip, 0, strpos($ip, ","));
 		        }
-	        }
+	        }*/
 
+	        $clicksLog = new Logger('clicks');
+	        $clicksLog->pushHandler(new StreamHandler(storage_path('logs/clicks.log')));
+	        $log = [$_SERVER];
+	        $clicksLog->info('Click', $log);
 
 	        $click->first_timestamp = date("Y-m-d H:i:s");
-            $click->ip_address = $ip; //$_SERVER["REMOTE_ADDR"];
+            $click->ip_address = $_SERVER["REMOTE_ADDR"];
             $click->browser_agent = $_SERVER["HTTP_USER_AGENT"];
 
             $click->rep_idrep = $this->userId;
