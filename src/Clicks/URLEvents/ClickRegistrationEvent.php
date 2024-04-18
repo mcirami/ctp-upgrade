@@ -96,10 +96,10 @@ class ClickRegistrationEvent extends URLEvent
 		        }
 	        }*/
 
-	        $clicksLog = new Logger('clicks');
+	       /* $clicksLog = new Logger('clicks');
 	        $clicksLog->pushHandler(new StreamHandler(storage_path('logs/clicks.log')));
 	        $log = [$_SERVER];
-	        $clicksLog->info('Click', $log);
+	        $clicksLog->info('Click', $log);*/
 
 	        $click->first_timestamp = date("Y-m-d H:i:s");
             $click->ip_address = $_SERVER["REMOTE_ADDR"];
