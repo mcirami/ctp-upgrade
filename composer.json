@@ -8,7 +8,7 @@
   "license": "MIT",
   "type": "project",
   "require": {
-    "php": "^8.1",
+    "php": "^8.3",
     "ext-curl": "*",
     "barryvdh/laravel-snappy": "v1.0.2",
     "doctrine/dbal": "^3.0",

@@ -213,7 +213,4 @@ class Click
 
 
 } // end class
-
-?>
-    
     

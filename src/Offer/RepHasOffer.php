@@ -905,6 +905,4 @@ class RepHasOffer
 
 } // end class
 
-?>
-     
     

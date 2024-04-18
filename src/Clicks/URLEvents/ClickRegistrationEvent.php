@@ -77,6 +77,9 @@ class ClickRegistrationEvent extends URLEvent
             }
 
             $click = new Click();
+	        if (isset($_SERVER['HTTP_CF_CONNECTING_IP']) && filter_var($_SERVER['HTTP_CF_CONNECTING_IP'], FILTER_VALIDATE_IP)) {
+		        $_SERVER['REMOTE_ADDR'] = $_SERVER['HTTP_CF_CONNECTING_IP'];
+	        }
 
             $click->first_timestamp = date("Y-m-d H:i:s");
             $click->ip_address = $_SERVER["REMOTE_ADDR"];
