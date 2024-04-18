@@ -77,16 +77,26 @@ class ClickRegistrationEvent extends URLEvent
             }
 
             $click = new Click();
-	        /*if (isset($_SERVER['HTTP_CF_CONNECTING_IP']) && filter_var($_SERVER['HTTP_CF_CONNECTING_IP'], FILTER_VALIDATE_IP)) {
-		        $_SERVER['REMOTE_ADDR'] = $_SERVER['HTTP_CF_CONNECTING_IP'];
-	        }*/
+	        if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+		        $ip = $_SERVER['HTTP_CLIENT_IP'];
+		        if ( str_contains( $ip, ',' ) ) {
+			        $ip = substr($ip, 0, strpos($ip, ","));
+		        }
+	        } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+		        $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+		        if ( str_contains( $ip, ',' ) ) {
+			        $ip = substr($ip, 0, strpos($ip, ","));
+		        }
+	        } else {
+		        $ip = $_SERVER['REMOTE_ADDR'];
+		        if ( str_contains( $ip, ',' ) ) {
+			        $ip = substr($ip, 0, strpos($ip, ","));
+		        }
+	        }
 
-	        /*if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-		        $_SERVER['REMOTE_ADDR'] = $_SERVER['HTTP_X_FORWARDED_FOR'];
-	        }*/
 
-            $click->first_timestamp = date("Y-m-d H:i:s");
-            $click->ip_address = $_SERVER["REMOTE_ADDR"];
+	        $click->first_timestamp = date("Y-m-d H:i:s");
+            $click->ip_address = $ip; //$_SERVER["REMOTE_ADDR"];
             $click->browser_agent = $_SERVER["HTTP_USER_AGENT"];
 
             $click->rep_idrep = $this->userId;
