@@ -81,9 +81,9 @@ class ClickRegistrationEvent extends URLEvent
 		        $_SERVER['REMOTE_ADDR'] = $_SERVER['HTTP_CF_CONNECTING_IP'];
 	        }*/
 
-	        if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+	        /*if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
 		        $_SERVER['REMOTE_ADDR'] = $_SERVER['HTTP_X_FORWARDED_FOR'];
-	        }
+	        }*/
 
             $click->first_timestamp = date("Y-m-d H:i:s");
             $click->ip_address = $_SERVER["REMOTE_ADDR"];
