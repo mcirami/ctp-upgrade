@@ -79,7 +79,7 @@ class ClickRegistrationEvent extends URLEvent
             }
 
             $click = new Click();
-	       /* if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+	        if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
 		        $ip = $_SERVER['HTTP_CLIENT_IP'];
 		        if ( str_contains( $ip, ',' ) ) {
 			        $ip = substr($ip, 0, strpos($ip, ","));
@@ -94,7 +94,7 @@ class ClickRegistrationEvent extends URLEvent
 		        if ( str_contains( $ip, ',' ) ) {
 			        $ip = substr($ip, 0, strpos($ip, ","));
 		        }
-	        }*/
+	        }
 
 	       /* $clicksLog = new Logger('clicks');
 	        $clicksLog->pushHandler(new StreamHandler(storage_path('logs/clicks.log')));
@@ -102,7 +102,7 @@ class ClickRegistrationEvent extends URLEvent
 	        $clicksLog->info('Click', $log);*/
 
 	        $click->first_timestamp = date("Y-m-d H:i:s");
-            $click->ip_address = $_SERVER["REMOTE_ADDR"];
+            $click->ip_address = $ip; //$_SERVER["REMOTE_ADDR"];
             $click->browser_agent = $_SERVER["HTTP_USER_AGENT"];
 
             $click->rep_idrep = $this->userId;
@@ -121,7 +121,7 @@ class ClickRegistrationEvent extends URLEvent
 
             if ($this->offerData->offer_type == Offer::TYPE_CPC && $click->click_type == Click::TYPE_UNIQUE) {
 
-                $customPrice = isset($_GET["price"]) ? $_GET["price"] : false;
+                $customPrice = $_GET["price"] ?? false;
 
                 $conversion = new Conversion($click->id);
 
@@ -144,7 +144,7 @@ class ClickRegistrationEvent extends URLEvent
     {
         $this->getUserDataFromDatabase($this->userId);
 
-        if ($this->userData == false) {
+        if ( ! $this->userData ) {
             return false;
         }
 
