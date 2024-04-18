@@ -102,7 +102,7 @@ class ClickRegistrationEvent extends URLEvent
 	        $clicksLog->info('Click', $log);*/
 
 	        $click->first_timestamp = date("Y-m-d H:i:s");
-            $click->ip_address = $_SERVER["REMOTE_ADDR"];
+            $click->ip_address = $ip; //$_SERVER["REMOTE_ADDR"];
             $click->browser_agent = $_SERVER["HTTP_USER_AGENT"];
 
             $click->rep_idrep = $this->userId;
