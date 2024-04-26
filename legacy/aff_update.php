@@ -301,6 +301,7 @@ $update->dumpPermissionsToJavascript();
 
 					$userClass = new UserController;
 					$subIds = $userClass->getUserSubIds();
+
 					?>
 					<div id="sub_ids" class="hidden p-4 columns-1">
 						<div class = "heading_holder value_span9">
@@ -404,7 +405,7 @@ $update->dumpPermissionsToJavascript();
 
 	// A $( document ).ready() block.
 
-	const subIds = JSON.parse('<?php echo json_encode( $subIds ); ?> ');
+	const subIds = JSON.parse('<?php echo $subIds; ?>');
 	const idrep = '<?php echo $idrep; ?>';
 	displayContent(subIds);
 

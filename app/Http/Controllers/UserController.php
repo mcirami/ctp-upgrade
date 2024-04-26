@@ -82,7 +82,7 @@ class UserController extends Controller
 			array_push($data, $object);
 		}
 
-		return $data;
+		return json_encode($data);
 
 	}
 
