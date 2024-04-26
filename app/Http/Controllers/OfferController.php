@@ -78,8 +78,11 @@ class OfferController extends Controller
 			$offers = $offers->get();
 		}
 
-		$data = array_merge(compact('offers'), $data);
+		foreach ($offers as $offer) {
+			$offer["offer_name"] = htmlspecialchars($offer["offer_name"]);
+		}
 
+		$data = array_merge(compact('offers'), $data);
 		return view('offer.manage', $data)->with(['data' => $data]);
 	}
 

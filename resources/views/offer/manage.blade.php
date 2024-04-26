@@ -213,7 +213,6 @@
 				const userInput = e.target.value.trim().toLowerCase();
 				let filteredOffers = offers.filter((offer) => {
 					return offer.offer_name.toLowerCase().includes(userInput);
-					copyLink();
 				})
 				paginate(filteredOffers, itemsPerPage, paginationContainer);
 			});
@@ -237,103 +236,103 @@
 					let url = '<?php echo $urls[request('url',0)]; ?>';
 					let permissions = '<?php echo json_encode(\LeadMax\TrackYourStats\System\Session::permissions()); ?>'
 					const sessionUser = '<?php echo \LeadMax\TrackYourStats\System\Session::userID(); ?>';
-
+					console.log("offerName: ");
 					pageItems.forEach((offer) => {
-						html += "<tr id='offer_row'> " +
-								"<td>" + offer['idoffer'] + "</td>" +
-								"<td>" + offer['offer_name'] + "<br/><span class='link_label'>Offer Link:</span><br /> " +
-								"<span class='offer_link'>https://" + url +
-								"/?repid=" + sessionUser +
-								"&offerid=" + offer["idoffer"] + "&sub1=</span>" +
-								"</td>" +
-								"<td>CPA</td>";
+						html += `<tr id='offer_row'>` +
+								`<td>` + offer['idoffer'] + `</td>` +
+								`<td>` + offer['offer_name'] + `<br/><span class='link_label'>Offer Link:</span><br /> ` +
+								`<span class='offer_link'>https://` + url +
+								`/?repid=` + sessionUser +
+								`&offerid=` + offer['idoffer'] + `&sub1=</span>` +
+								`</td>` +
+								`<td>CPA</td>`;
 
 						if (userType == 3) {
 							html +=
-									"<td class='value_span10'>" +
-									"<p  style='display:none;' id='url_" + offer['idoffer'] + "'>http://" + url +
-									"/?repid=" + sessionUser +
-											"&offerid=" + offer["idoffer"] + "&sub1=</p>" +
-									"<button data-url='https://" + url +
-									"/?repid=" + sessionUser +
-											"&offerid=" + offer["idoffer"] + "&sub1=' data-toggle='tooltip' title='Copy My Link' " +
-									"class='copy_button btn btn-default'>Copy My Link" +
-									"</button></td>";
+									`<td class='value_span10'>` +
+									`<p  style='display:none;' id='url_` + offer['idoffer'] + `'>http://` + url +
+									`/?repid=` + sessionUser +
+											`&offerid=` + offer['idoffer'] + `&sub1=</p>` +
+									`<button data-url='https://` + url +
+									`/?repid=` + sessionUser +
+											`&offerid=` + offer['idoffer'] + `&sub1=' data-toggle='tooltip' title='Copy My Link' ` +
+									`class='copy_button btn btn-default'>Copy My Link` +
+									`</button></td>`;
 						}
 
 						if (permissions.includes('create_offers') && userType != 3 ) {
-							html += "<td class='value_span10'>" +
-									"<a target='_blank' class='btn btn-sm btn-default value_span5-1' href='/offer_access.php?id=" +
-									offer["idoffer"] + "'>Affiliate Access</a>" +
-									"</td>";
+							html += `<td class='value_span10'>` +
+									`<a target='_blank' class='btn btn-sm btn-default value_span5-1' href='/offer_access.php?id=` +
+									offer['idoffer'] + `'>Affiliate Access</a>` +
+									`</td>`;
 						}
 
 						if (userType != 2) {
 							if (userType == 3) {
-								html += "<td class='value_span10'>$" + offer["pivot"]["payout"] + "</td>";
+								html += `<td class='value_span10'>$` + offer['pivot']['payout'] + `</td>`;
 							} else {
-								html += "<td class='value_span10'>$" + offer["payout"] + "</td>";
+								html += `<td class='value_span10'>$` + offer['payout'] + `</td>`;
 							}
 						}
 
-						html += "<td class='value_span10'>";
+						html += `<td class='value_span10'>`;
 						if (offer['status'] === 1) {
-							html += "Active";
+							html += `Active`;
 						} else {
-							html += "Inactive";
+							html += `Inactive`;
 						}
 
-						html += "</td>";
+						html += `</td>`;
 
 						if (userType == 3) {
-							html += "<td class='value_span10'>" +
-									"<a class='btn btn-default value_span6-1 value_span4' data-toggle='tooltip' title='Offer PostBack Options' " +
-									"href='/offer_edit_pb.php?offid='" + offer["idoffer"] + "'>" +
-									"Edit Post Back</a>" +
-									"</td>";
+							html += `<td class='value_span10'>` +
+									`<a class='btn btn-default value_span6-1 value_span4' data-toggle='tooltip' title='Offer PostBack Options' ` +
+									`href='/offer_edit_pb.php?offid='` + offer['idoffer'] + `'>` +
+									`Edit Post Back</a>` +
+									`</td>`;
 						}
 
 						if (userType != 3) {
-							html += "<td class='value_span10'>" + offer['offer_timestamp'] + "</td>";
+							html += `<td class='value_span10'>` + offer['offer_timestamp'] + `</td>`;
 						}
 
 						if (userType != 3) {
 							if (permissions.includes('create_offers')) {
-								html += "<td class='value_span10'>" +
-										"<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='Edit Offer' " +
-										"href='/offer_update.php?idoffer=" + offer['idoffer'] + "'>Edit</a>" +
-										"</td>";
+								html += `<td class='value_span10'>` +
+										`<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='Edit Offer' ` +
+										`href='/offer_update.php?idoffer=` + offer['idoffer'] + `'>Edit</a>` +
+										`</td>`;
 							}
 						}
 
 						if(permissions.includes("edit_offer_rules") && userType != 3) {
-							html += "<td class='value_span10'>" +
-									"<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='Edit Offer Rules' " +
-									"href='/offer_edit_rules.php?offid=" + offer["idoffer"] + "'> Rules</a>" +
-									"</td>";
+							html += `<td class='value_span10'>` +
+									`<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='Edit Offer Rules' ` +
+									`href='/offer_edit_rules.php?offid=` + offer[`idoffer`] + `'> Rules</a>` +
+									`</td>`;
 						}
 
 						if(userType != 3) {
-							html += "<td class='value_span10'>" +
-									"<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='View Offer' " +
-									"href='/offer_details.php?idoffer=" + offer['idoffer'] + "'> View</a>" +
-									"</td>";
+							html += `<td class='value_span10'>` +
+									`<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='View Offer' ` +
+									`href='/offer_details.php?idoffer=` + offer['idoffer'] + `'> View</a>` +
+									`</td>`;
 						} else {
-							html += "<td></td>";
+							html += `<td></td>`;
 						}
 
 						if (userType == 0) {
-							html += "<td class='value_span10'>" +
-									"<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='Duplicate Offer' " +
-									"href='/offer/" + offer['idoffer'] + "/dupe'> Duplicate </a>" +
-									"</td>" +
-									"<td class='value_span10'>" +
-									"<a class='delete_offer btn btn-default btn-sm value_span11 value_span4' data-toggle='tooltip' data-offer='" + offer['idoffer'] +"' title='Delete Offer' " +
-									"href='#'>Delete</a>" +
-									"</td>";
+							html += `<td class='value_span10'>` +
+									`<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='Duplicate Offer' ` +
+									`href='/offer/` + offer['idoffer'] + `/dupe'> Duplicate </a>` +
+									`</td>` +
+									`<td class='value_span10'>` +
+									`<a class='delete_offer btn btn-default btn-sm value_span11 value_span4' data-toggle='tooltip' data-offer='` + offer['idoffer'] +`' title='Delete Offer' ` +
+									`href='#'>Delete</a>` +
+									`</td>`;
 						}
 
-						html += "</tr>";
+						html += `</tr>`;
 						itemsContainer.innerHTML = html;
 					});
 					copyLink()
