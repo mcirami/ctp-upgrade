@@ -236,7 +236,6 @@
 					let url = '<?php echo $urls[request('url',0)]; ?>';
 					let permissions = '<?php echo json_encode(\LeadMax\TrackYourStats\System\Session::permissions()); ?>'
 					const sessionUser = '<?php echo \LeadMax\TrackYourStats\System\Session::userID(); ?>';
-					console.log("offerName: ");
 					pageItems.forEach((offer) => {
 						html += `<tr id='offer_row'>` +
 								`<td>` + offer['idoffer'] + `</td>` +
