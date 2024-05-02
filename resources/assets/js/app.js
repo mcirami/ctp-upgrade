@@ -13,7 +13,7 @@ require('./bootstrap');
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-window.Event = new Vue();
+/*window.Event = new Vue();
 
 Vue.component('chat-box', require('./components/ChatBox'));
 
@@ -23,5 +23,5 @@ Vue.component('user-offer-assignment', require('./components/UserOfferAssignment
 
 const app = new Vue({
   el: '#app',
-});
+});*/
 

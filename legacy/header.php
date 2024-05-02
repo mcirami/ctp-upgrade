@@ -63,7 +63,7 @@ $navBar = new \LeadMax\TrackYourStats\System\NavBar(\LeadMax\TrackYourStats\Syst
 	<script src="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js" defer></script>
 
 	<?php
-    if (!env('APP_DEBUG') && env('APP_ENV') == 'production') {
+/*    if (!env('APP_DEBUG') && env('APP_ENV') == 'production') {
         echo "
            <!-- Global site tag (gtag.js) - Google Analytics -->
            <script async src=\"https://www.googletagmanager.com/gtag/js?id=UA-127417577-1\"></script><script>window.dataLayer = window.dataLayer || [];function gtag()
@@ -75,7 +75,7 @@ $navBar = new \LeadMax\TrackYourStats\System\NavBar(\LeadMax\TrackYourStats\Syst
             gtag('config', 'UA-127417577-1');</script>
            ";
     }
-    ?>
+    */?>
 
 
     <title><?php echo \LeadMax\TrackYourStats\System\Company::loadFromSession()->getShortHand(); ?></title>
