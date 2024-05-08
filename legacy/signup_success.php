@@ -52,8 +52,12 @@ $pending = (isset($_GET["pending"]) && $_GET["pending"] != "") ? $_GET["pending"
 <body style = "background-color:#EAEEF1;">
 <div class = "top_sec value_span1">
 	<div class = "logo">
-		<a href = "<?php echo $webroot ?>"><img src = "<?=\LeadMax\TrackYourStats\System\Company::loadFromSession()->getImgDir() ?>/logo.png" alt = "TRACK YOUR STATS"
-												title = "TRACK YOUR STATS"/></a>
+		<a href = "<?php echo $webroot ?>">
+			<img src = "<?=\LeadMax\TrackYourStats\System\Company::loadFromSession()->getImgDir() ?>/logo.png"
+			     alt = "TRACK YOUR STATS"
+			     title = "TRACK YOUR STATS"
+			/>
+		</a>
 	</div>
 
 </div> <!-- top_sec -->
@@ -109,7 +113,7 @@ $pending = (isset($_GET["pending"]) && $_GET["pending"] != "") ? $_GET["pending"
 				?>
 
 				<?php
-					if ($mid == true) {
+					if ($mid) {
 				?>
 					<div class = "heading_holder">
 						<h3 class = " value_span9">Congratulations!</h3>
