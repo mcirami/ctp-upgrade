@@ -84,23 +84,33 @@ $update->dumpPermissionsToJavascript();
 <div class = "right_panel">
 	<div class = "white_box_outer">
 		<div class="rounded mx-auto mt-10 columns-1">
-			<!-- Tabs -->
-			<ul id="tabs" class="inline-flex pt-2 px-1 w-full border-b">
-				<li class="px-10 py-4 font-semibold rounded-t-xl -mb-px value_span6-1 value_span4">
-					<a class="value_span2" id="default-tab" href="#account">Account</a>
-				</li>
-				<?php if(\LeadMax\TrackYourStats\System\Session::userType() == \App\Privilege::ROLE_GOD) : ?>
-					<li class="px-10 py-4 rounded-t-xl value_span4">
-						<a href="#sub_ids">Sub ID's</a>
+			<div class="top_section_user_edit border-b">
+				<!-- Tabs -->
+				<ul id="tabs" class="inline-flex pt-2 px-1">
+					<li class="px-10 py-4 font-semibold rounded-t-xl -mb-px value_span6-1 value_span4">
+						<a class="value_span2" id="default-tab" href="#account">Account</a>
 					</li>
+					<?php if(\LeadMax\TrackYourStats\System\Session::userType() == \App\Privilege::ROLE_GOD) : ?>
+						<li class="px-10 py-4 rounded-t-xl value_span4">
+							<a href="#sub_ids">Sub ID's</a>
+						</li>
+					<?php endif; ?>
+					<?php if (\LeadMax\TrackYourStats\System\Session::permissions()->can("edit_aff_payout") && $update->selectedUserType == \App\Privilege::ROLE_AFFILIATE) : ?>
+						<li class="px-10 py-4 rounded-t-xl value_span4">
+							<a href="#offers">Offers</a>
+						</li>
+					<?php endif; ?>
+				</ul>
+				<?php if(\LeadMax\TrackYourStats\System\Session::userType() != \App\Privilege::ROLE_AFFILIATE) : ?>
+					<a class="btn btn-default btn-sm value_span4 value_span6-1 value_span2"
+					   data-toggle='tooltip'
+					   title="Login into this user"
+					   href="#"
+					   onclick="adminLogin('<?php echo $idrep; ?>')">
+						Login
+					</a>
 				<?php endif; ?>
-				<?php if (\LeadMax\TrackYourStats\System\Session::permissions()->can("edit_aff_payout") && $update->selectedUserType == \App\Privilege::ROLE_AFFILIATE) : ?>
-					<li class="px-10 py-4 rounded-t-xl value_span4">
-						<a href="#offers">Offers</a>
-					</li>
-				<?php endif; ?>
-			</ul>
-
+			</div>
 			<!-- Tab Contents -->
 			<div id="user_info" class="columns-1">
 				<div id="account" class="p-4 columns-1">
