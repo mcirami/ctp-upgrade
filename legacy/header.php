@@ -36,7 +36,7 @@ $navBar = new \LeadMax\TrackYourStats\System\NavBar(\LeadMax\TrackYourStats\Syst
     <link href="css/animate.css" rel="stylesheet">
 
 	<meta name="csrf-token" content='<?php echo csrf_token(); ?>'>
-    <link rel="stylesheet" type="text/css" href="<?php echo $webroot; ?>css/default.css?v=1.5"/>
+    <link rel="stylesheet" type="text/css" href="<?php echo $webroot; ?>css/default.css?v=1.6"/>
     <link rel="stylesheet" type="text/css" href="<?php echo $webroot; ?>css/tablesorter.default.css"/>
 
     <link rel="stylesheet" media="screen" type="text/css"

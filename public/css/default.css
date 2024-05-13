@@ -2664,3 +2664,28 @@ table.offer_clicks th:first-child {
 .ui-timepicker-container {
 	position: fixed !important;
 }
+
+.right_panel .top_section_user_edit {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-orient: horizontal;
+	-webkit-box-direction: normal;
+	-ms-flex-direction: row;
+	flex-direction: row;
+	-ms-flex-wrap: nowrap;
+	flex-wrap: nowrap;
+	justify-content: flex-start;
+	-webkit-justify-content: flex-start;
+	align-items: center;
+	-webkit-align-items: center;
+}
+
+.right_panel .top_section_user_edit .btn {
+	border-radius: 6px;
+	-webkit-border-radius: 6px;
+	-moz-border-radius: 6px;
+	padding: 8px 25px 10px;
+	font-size: 14px;
+	margin-left: auto;
+}
