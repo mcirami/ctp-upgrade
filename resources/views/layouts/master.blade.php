@@ -46,7 +46,7 @@
 
     <script type="text/javascript" src="<?php echo $webroot; ?>js/tables.js?v=1.1"></script>
     <script type="text/javascript" src="<?php echo $webroot; ?>js/bootstrap-notify.min.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
 @if(!env('APP_DEBUG') && env('APP_ENV') == 'production')
     <!-- Global site tag (gtag.js) - Google Analytics -->
