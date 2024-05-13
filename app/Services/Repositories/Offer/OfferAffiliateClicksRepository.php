@@ -57,8 +57,8 @@ class OfferAffiliateClicksRepository implements Repository
             ->join('rep', function ($jc) {
                 /* @var $jc JoinClause */
                 $jc->on('rep.idrep', 'rho.rep_idrep');
-                $jc->where('rep.lft', '>', $this->user->lft);
-                $jc->where('rep.rgt', '<', $this->user->rgt);
+               /* $jc->where('rep.lft', '>', $this->user->lft);
+                $jc->where('rep.rgt', '<', $this->user->rgt);*/
             })
             ->join('offer', 'rho.offer_idoffer', 'offer.idoffer')
             ->join('clicks as clks', function ($jc) use ($start, $end) {
