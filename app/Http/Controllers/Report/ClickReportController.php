@@ -134,6 +134,7 @@ class ClickReportController extends ReportController
 		$affiliateRepo = new OfferAffiliateClicksRepository( $offerId, Session::user() );
 		$affiliateReport = $affiliateRepo->between( $start, $end );
 
+		//dd($affiliateReport);
 		/*
 		 * if filter is managers
 		 *  $affiliateReport = $this->showManagersClicks($id);

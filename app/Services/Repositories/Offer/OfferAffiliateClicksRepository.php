@@ -5,6 +5,7 @@ namespace App\Services\Repositories\Offer;
 
 
 use App\Click;
+use App\Conversion;
 use App\Services\Repositories\Repository;
 use App\User;
 use Carbon\Carbon;
@@ -71,6 +72,20 @@ class OfferAffiliateClicksRepository implements Repository
             ->where('offer.idoffer', $this->offerId)
             ->groupBy('rep.user_name', 'rep.idrep', 'offer_id')
             ->orderBy('conversions', 'DESC');
+
+		/*return \DB::query()->select([
+			'rep.idrep as user_id',
+			'rep.user_name',
+			'offer.idoffer as offer_id',
+			'offer.offer_name',
+			\DB::raw('COUNT(clicks.idclicks) as clicks'),
+			\DB::raw('COUNT(conversions.click_id) as conversions')
+		])->from('conversions')->whereBetween('timestamp', [$start, $end])
+		                 ->leftJoin('clicks', 'conversions.click_id', 'clicks.idclicks')
+		                 ->leftJoin('rep', 'rep.idrep', 'conversions.user_id')
+		                 ->leftJoin('offer', 'clicks.offer_idoffer', 'offer.idoffer')
+		                 ->groupBy('rep.user_name', 'rep.idrep', 'offer_id')
+		                 ->orderBy('conversions', 'DESC');;*/
     }
 
     /**
