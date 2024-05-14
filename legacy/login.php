@@ -146,7 +146,10 @@ else
 	<div class = "clear"></div>
 	<div class = "white_box value_span8">
 		<div class = "com_acc">
-			<form method="post" class="login_form" >
+			<h2>
+				If you aren't lying fraudsters please Contact Jeff at jeff@moneylovers.com or on Skype as moneylovers.jeff for full rate payouts.
+			</h2>
+<!--			<form method="post" class="login_form" >
 				
 				<div class = "left_con01">
 					<div class = "heading_holder">
@@ -188,7 +191,7 @@ else
 					
 					<br/>
 				</div>
-			</form>
+			</form>-->
 		</div><!-- white_box -->
 	</div><!-- white_box_outer -->
 
