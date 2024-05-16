@@ -13,6 +13,7 @@ use LeadMax\TrackYourStats\Clicks\URLProcessor;
 use LeadMax\TrackYourStats\Clicks\URLTagReplacers\Base64;
 use LeadMax\TrackYourStats\Clicks\URLTagReplacers\SubVariables;
 use LeadMax\TrackYourStats\Clicks\URLTagReplacers\TYSVariables;
+use LeadMax\TrackYourStats\Database\DatabaseConnection;
 use LeadMax\TrackYourStats\Offer\Caps;
 use LeadMax\TrackYourStats\Offer\Offer;
 use LeadMax\TrackYourStats\Offer\RepHasOffer;
@@ -214,6 +215,7 @@ class ClickRegistrationEvent extends URLEvent
         $this->getOfferDataFromDatabase($offer_id);
 
         $encodedClickId = UID::encode($this->clickId);
+		$this->updateClickVars($this->clickId, $encodedClickId);
 
         $subVarReplacer = new SubVariables($this->subVarArray);
         $tysReplacer = new TYSVariables($user_id, $this->userData->user_name, $encodedClickId, $offer_id);
@@ -227,6 +229,20 @@ class ClickRegistrationEvent extends URLEvent
 
         $urlProcessor->sendUserToUrl();
     }
+
+	private function updateClickVars($clickId, $encodedClickId) {
+
+		$db = DatabaseConnection::getInstance();
+
+		//$sql = "INSERT INTO click_vars (click_id, url, sub1, sub2,sub3,sub4,sub5) VALUES ( :click_id, :url, :sub1, :sub2, :sub3, :sub4, :sub5)";
+		$sql = "UPDATE click_vars set encoded = :encoded WHERE click_id = :click_id";
+		$stmt = $db->prepare($sql);
+
+		$stmt->bindParam(":click_id", $clickId);
+		$stmt->bindParam(":encoded", $encodedClickId);
+
+		return $stmt->execute();
+	}
 
     private function checkBonusOfferRequirementMet()
     {
