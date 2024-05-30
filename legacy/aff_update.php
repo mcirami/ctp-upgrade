@@ -71,7 +71,6 @@ $update->dumpPermissionsToJavascript();
 
 ?>
 <script type = "text/javascript" src = "js/aff.js"></script>
-<script src="https://cdn.tailwindcss.com"></script>
 
 <div id="error_message">
 	<svg  style="color: red" width="34" height="34" viewBox="0 0 24 24" fill="red" xmlns="http://www.w3.org/2000/svg">
