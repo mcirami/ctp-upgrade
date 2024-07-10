@@ -44,12 +44,8 @@
 										<input type="password" class="form-control" id="password" name="txt_password">
 									</div>
 									<button type="submit" class="btn btn-primary d-block text-center w-100">Sign In</button>
-									<a href="aff_help.php">Forgot Password?</a>
+									<!--<a href="aff_help.php">Forgot Password?</a>-->
 								</form>
-								<div class="contact_info">
-									<p>Contact Galaxy Web Revenue Owner on Skype to Join:</p>
-									<a href="">Click Here</a>
-								</div>
 							</div>
 						</div>
 					</div>
