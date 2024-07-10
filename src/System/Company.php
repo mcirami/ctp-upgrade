@@ -31,7 +31,7 @@ class Company
 
     public $colors = false;
 
-
+	public $login_theme = 'galaxywebrevenue';
 
     function __construct()
     {
@@ -193,7 +193,7 @@ class Company
 
     public function getImgDir()
     {
-        return "images/" . $this->subDomain;
+        return "images/". $this->subDomain;
     }
 
     public function getColors()

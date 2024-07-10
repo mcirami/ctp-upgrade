@@ -7,7 +7,8 @@ $webroot = getWebRoot();
 
 
 $user = new \LeadMax\TrackYourStats\User\User;
-
+$company =  \LeadMax\TrackYourStats\System\Company::loadFromSession();
+$company->reloadSettings();
 
 //checks if the User is already logged in
 if ($user->is_loggedin())
@@ -71,8 +72,17 @@ else
 		
 	}
 }
+
+if($company->login_theme != '') {
+	$filePath = __DIR__ . '/../public/login_themes/' . $company->login_theme . '/index.php';
+	if (file_exists($filePath)){
+		include($filePath);
+		die;
+	}
+}
+
 ?>
-	
+
 	
 	<!DOCTYPE html>
 	<html>
