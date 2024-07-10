@@ -73,13 +73,13 @@ else
 	}
 }
 
-if($company->login_theme != '') {
+/*if($company->login_theme != '') {
 	$filePath = __DIR__ . '/../public/login_themes/' . $company->login_theme . '/index.php';
 	if (file_exists($filePath)){
 		include($filePath);
 		die;
 	}
-}
+}*/
 
 ?>
 

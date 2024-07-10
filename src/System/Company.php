@@ -31,7 +31,7 @@ class Company
 
     public $colors = false;
 
-	public $login_theme = 'galaxywebrevenue';
+	public $login_theme = '';
 
     function __construct()
     {
