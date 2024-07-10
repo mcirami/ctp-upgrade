@@ -20,32 +20,47 @@
             <th class="value_span9">Free Sign Ups</th>
             <th class="value_span9">Pending Conversions</th>
             <th class="value_span9">Conversions</th>
-            <th class="value_span9  headers ">Sales Revenue</th>
-            <th class="value_span9  ">Deductions</th>
-            <th class="value_span9">EPC</th>
-            <th class="value_span9">Bonus Revenue</th>
-            <th class="value_span9">Referral Revenue</th>
-            <th class="value_span9">TOTAL</th>
+            @if(\LeadMax\TrackYourStats\System\Session::userType() == \App\Privilege::ROLE_ADMIN || \LeadMax\TrackYourStats\System\Session::userType() == \App\Privilege::ROLE_GOD)
+                <th class="value_span9  headers ">Sales Revenue</th>
+                <th class="value_span9  ">Deductions</th>
+                <th class="value_span9">EPC</th>
+                <th class="value_span9">Bonus Revenue</th>
+                <th class="value_span9">Referral Revenue</th>
+                <th class="value_span9">TOTAL</th>
+            @endif
         </tr>
         </thead>
         <tbody>
         @php
+            if (\LeadMax\TrackYourStats\System\Session::userType() == \App\Privilege::ROLE_ADMIN || \LeadMax\TrackYourStats\System\Session::userType() == \App\Privilege::ROLE_GOD) {
+				$array = [
+                    'idrep',
+                    'user_name',
+                    'Clicks',
+                    'UniqueClicks',
+                    'FreeSignUps',
+                    'PendingConversions',
+                    'Conversions',
+                    'Revenue',
+                    'Deductions',
+                    'EPC',
+                    'BonusRevenue',
+                    'ReferralRevenue',
+                    'TOTAL'
+                ];
+            } else {
+				$array = [
+                    'idrep',
+                    'user_name',
+                    'Clicks',
+                    'UniqueClicks',
+                    'FreeSignUps',
+                    'PendingConversions',
+                    'Conversions',
+                ];
+            }
             $reporter->between($dates['startDate'], $dates['endDate'],
-            new \LeadMax\TrackYourStats\Report\Formats\HTML(true, [
-                'idrep',
-                'user_name',
-                'Clicks',
-                'UniqueClicks',
-                'FreeSignUps',
-                'PendingConversions',
-                'Conversions',
-                'Revenue',
-                'Deductions',
-                'EPC',
-                'BonusRevenue',
-                'ReferralRevenue',
-                'TOTAL'
-            ]));
+            new \LeadMax\TrackYourStats\Report\Formats\HTML(true, $array));
         @endphp
         </tbody>
     </table>

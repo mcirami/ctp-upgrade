@@ -114,7 +114,7 @@ class NavBar
             ],
 
 
-            "Payout Report" => ['url' => '/report/payout', "required_user_types" => [\App\Privilege::ROLE_AFFILIATE]],
+            /*"Payout Report" => ['url' => '/report/payout', "required_user_types" => [\App\Privilege::ROLE_AFFILIATE]],*/
 
             "Blacklist Report" => ["url" => "/report/blacklist", "required_user_types" => [\App\Privilege::ROLE_GOD]],
 

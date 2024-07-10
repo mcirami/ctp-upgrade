@@ -19,10 +19,6 @@
             <th class="value_span9">Free Sign Ups</th>
             <th class="value_span9">Pending Conversions</th>
             <th class="value_span9">Conversions</th>
-            <th class="value_span9">Revenue</th>
-            <th class="value_span9">Deductions</th>
-            <th class="value_span9">EPC</th>
-            <th class="value_span9">TOTAL</th>
         </tr>
         </thead>
         <tbody>
@@ -35,10 +31,6 @@
                 'FreeSignUps',
                 'PendingConversions',
                 'Conversions',
-                'Revenue',
-                'Deductions',
-                'EPC',
-                'TOTAL',
             ]));
         @endphp
         </tbody>

@@ -20,18 +20,26 @@
             <th class="value_span9">Free Sign Ups</th>
             <th class="value_span9">Pending Conversion</th>
             <th class="value_span9">Conversion</th>
-            <th class="value_span9">Revenue</th>
-            <th class="value_span9">Deductions</th>
-            <th class="value_span9">EPC</th>
+            @if(\LeadMax\TrackYourStats\System\Session::userType() !== \App\Privilege::ROLE_MANAGER)
+                <th class="value_span9">Revenue</th>
+                <th class="value_span9">Deductions</th>
+                <th class="value_span9">EPC</th>
+            @endif
 
 
         </tr>
         </thead>
         <tbody>
         @php
+            if (LeadMax\TrackYourStats\System\Session::userType() == \App\Privilege::ROLE_MANAGER) {
+				$array = ['idoffer', 'offer_name', 'Clicks', 'UniqueClicks', 'FreeSignUps', 'PendingConversions', 'Conversions'];
+            } else {
+				$array = ['idoffer', 'offer_name', 'Clicks', 'UniqueClicks', 'FreeSignUps', 'PendingConversions', 'Conversions', 'Revenue', 'Deductions', 'EPC'];
+            }
+
             $reporter->between($dates['startDate'], $dates['endDate'],
              new LeadMax\TrackYourStats\Report\Formats\HTML(true,
-              ['idoffer', 'offer_name', 'Clicks', 'UniqueClicks', 'FreeSignUps', 'PendingConversions', 'Conversions', 'Revenue', 'Deductions', 'EPC']));
+              $array));
         @endphp
 
         </tbody>

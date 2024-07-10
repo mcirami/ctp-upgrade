@@ -51,13 +51,15 @@ class HTML implements Format
 					if($item == "conversions" && $val > 0 && (key_exists('sub', $row) && $row["sub"] != "TOTAL") ) {
 						echo "<td><a href='/report/sub/conversions?subid={$row["sub"]}". "&" . "{$params}'>{$val}</a></td>";
 					} else {
-						echo "<td>{$val}</td>";
+						if($item !== "revenue") {
+							echo "<td>{$val}</td>";
+						}
+
 					}
                 }
             } else {
 
                 foreach ($this->printTheseArrayKeys as $toPrint) {
-
                     if (isset($row[$toPrint])) {
 						if($toPrint == "offer_name") {
 							echo "<td><a href='/offer_update.php?idoffer=" . $row['idoffer'] . "'>$row[$toPrint]</a></td>";

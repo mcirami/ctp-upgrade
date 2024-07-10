@@ -46,9 +46,8 @@ class OfferReportController extends ReportController
 
         $reporter
             ->addFilter(new Filters\DeductionColumnFilter())
-            ->addFilter(new Filters\Total(['Clicks', 'UniqueClicks', 'FreeSignUps', 'PendingConversions', 'Conversions', 'Revenue', 'Deductions']))
+            ->addFilter(new Filters\Total(['Clicks', 'UniqueClicks', 'FreeSignUps', 'PendingConversions', 'Conversions']))
             ->addFilter(new Filters\EarningPerClick('UniqueClicks', 'Revenue'))
-            ->addFilter(new Filters\DollarSign(['Revenue', 'Deductions', 'EPC']))
             ->addFilter(new Filters\ClickLink(request()));
 
         return view('report.offer.admin', compact('reporter', 'dates'));

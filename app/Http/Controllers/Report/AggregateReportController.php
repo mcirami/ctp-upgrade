@@ -14,9 +14,6 @@ use LeadMax\TrackYourStats\System\Session;
 class AggregateReportController extends ReportController
 {
 
-    /**
-     * @return array
-     */
     public function show()
     {
         $dates = static::getDates(false);
@@ -24,7 +21,7 @@ class AggregateReportController extends ReportController
         $repo->setUser(Session::user());
         $reporter = new Reporter($repo);
         $reporter->addFilter(new DollarSign(['revenue', 'deductions']));
-        $report = $reporter->fetchReport($dates['start'], $dates['end']);
+        $report = $reporter->fetchReport($dates['startDate'], $dates['endDate']);
 
         return view('report.daily', compact('report'));
     }
