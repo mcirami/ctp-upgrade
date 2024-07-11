@@ -155,7 +155,7 @@ switch ($result)
 								;
 							</select>
 						</p>
-						<p>
+						<p class="value_span9">
 							<label class = "value_span9">Account Type</label>
 							<?php $create->printRadios(); ?>
 

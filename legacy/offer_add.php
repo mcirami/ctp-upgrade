@@ -250,7 +250,7 @@ if ($assignType == 0) {
 
                         </script>
 
-                        <p>
+                        <p class="value_span9">
                             <label class="value_span9">Offer Cap</label>
 
                             <input class="fixCheckBox value_span9" type="checkbox" id="enable_cap" name="enable_cap"> Offer Cap
@@ -297,7 +297,7 @@ if ($assignType == 0) {
                         </p>
 
                         </p>
-                        <p>
+                        <p class="value_span9">
                             <label class="value_span9">Bonus Offer</label>
 
                             <input class="fixCheckBox value_span9" type="checkbox" id="enable_bonus_offer"
@@ -309,7 +309,7 @@ if ($assignType == 0) {
                         </p>
                         </p>
 
-                        <p>
+                        <p class="value_span9">
 
                             <?php $create->printRadios(); ?>
 
