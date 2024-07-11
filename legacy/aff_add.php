@@ -171,7 +171,7 @@ switch ($result)
 						<?php
 						if (\LeadMax\TrackYourStats\System\Session::permissions()->can("edit_referrals"))
 						{
-							echo "<p id=\"referralP\" style=\"display:none;\">
+							echo "<p class='value_span9' id=\"referralP\" style=\"display:none;\">
                           <label  class=\"value_span9\">Referrals</label>
                           <input class=\"fixCheckBox value_span9\" type=\"checkbox\" id=\"referralCheckBox\"  name=\"referralCheckBox\"> Enable
                       <p id=\"referralForm\" style=\"display:none;\">";
@@ -213,7 +213,7 @@ switch ($result)
 
 						</p>
 
-						<p id = "permissionsP">
+						<p class='value_span9' id = "permissionsP">
 
 
 						</p>
