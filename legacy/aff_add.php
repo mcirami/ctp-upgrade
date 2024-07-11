@@ -78,7 +78,7 @@ switch ($result)
 
 				<div class="column_wrap">
 					<div class = "left_con01 value_span7">
-						<h3>User Details</h3>
+						<h3 class="value_span9">User Details</h3>
 						<p>
 							<label class = "value_span9">First Name</label>
 
@@ -137,7 +137,7 @@ switch ($result)
 						-->
 					</div><!-- left_con01 -->
 					<div class = "right_con01 value_span7">
-						<h3>Account Details</h3>
+						<h3 class="value_span9">Account Details</h3>
 						<p>
 							<label class = "value_span9">Username</label>
 
@@ -173,11 +173,11 @@ switch ($result)
 						{
 							echo "<p id=\"referralP\" style=\"display:none;\">
                           <label  class=\"value_span9\">Referrals</label>
-                          <input class=\"fixCheckBox\" type=\"checkbox\" id=\"referralCheckBox\"  name=\"referralCheckBox\"> Enable
+                          <input class=\"fixCheckBox value_span9\" type=\"checkbox\" id=\"referralCheckBox\"  name=\"referralCheckBox\"> Enable
                       <p id=\"referralForm\" style=\"display:none;\">";
 
 
-							echo " <label style=\"font-size:12px;\" for=\"referralSelectBox\">Referrer</label>
+							echo " <label class='value_span9' style=\"font-size:12px;\" for=\"referralSelectBox\">Referrer</label>
                           <select class=\"form-control\" id=\"referralSelectBox\" name=\"referralSelectBox\" disabled required>
                               ";
 
@@ -185,22 +185,22 @@ switch ($result)
 
 							echo "</select>
   
-                          <label style=\"font-size:12px;\"  for=\"start_date\">Start Date</label>
+                          <label class='value_span9' style=\"font-size:12px;\"  for=\"start_date\">Start Date</label>
                           <input id=\"start_date\" name=\"start_date\" type=\"date\" disabled required>
   
-                          <label style=\"font-size:12px;\"  for=\"end_date\">End Date (Empty for Indefinite)</label>
+                          <label class='value_span9' style=\"font-size:12px;\"  for=\"end_date\">End Date (Empty for Indefinite)</label>
                           <input id=\"end_date\" name=\"end_date\" type=\"date\"  disabled>
   
   
   
-                          <label style=\"font-size:12px;\"  for=\"referral_type\">Flat Fee / Percentage</label>
+                          <label class='value_span9' style=\"font-size:12px;\"  for=\"referral_type\">Flat Fee / Percentage</label>
                           <select id=\"referral_type\" name=\"referral_type\" class=\"form-control\" disabled required>
                               <option value=\"flat\" id=\"flat_fee\">Flat Fee</option>
                               <option value=\"percentage\" id=\"percentage\">Percentage</option>
                           </select>
   
   
-                          <label style=\"font-size:12px;\"  for=\"amount\">Amount / Percentage</label>
+                          <label class='value_span9' style=\"font-size:12px;\"  for=\"amount\">Amount / Percentage</label>
                           <input id=\"amount\" name=\"amount\" type=\"number\" value=\"0\" disabled required>
   
   

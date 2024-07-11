@@ -294,7 +294,7 @@ class Permissions
             $isChecked = $this->can($permission) ? ", 'checked':'checked'" : "";
         }
 
-        echo " $('<input/>').attr({type:'checkbox',name:'permissions[]', class:'fixCheckBox', value:'{$permission}' {$isChecked} }).appendTo('#permissionsP');
+        echo " $('<input/>').attr({type:'checkbox',name:'permissions[]', class:'fixCheckBox value_span9', value:'{$permission}' {$isChecked} }).appendTo('#permissionsP');
          p.append(\"".self::$permissionsArray[$permission]["description"]." <br/>\");";
     }
 
