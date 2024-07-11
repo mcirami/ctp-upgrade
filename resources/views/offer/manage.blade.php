@@ -79,19 +79,20 @@
 
 						@if (\LeadMax\TrackYourStats\System\Session::userType() == \App\Privilege::ROLE_AFFILIATE)
 							<th class="value_span9">Offer Link</th>
-						@elseif(\LeadMax\TrackYourStats\System\Session::permissions()->can("create_offers"))
+						@else
 							<th class="value_span9">Affiliate Access</th>
 						@endif
 
 
-						@if (\LeadMax\TrackYourStats\System\Session::userType() !== \App\Privilege::ROLE_MANAGER)
+						@if (\LeadMax\TrackYourStats\System\Session::userType() !== \App\Privilege::ROLE_MANAGER && \LeadMax\TrackYourStats\System\Session::userType() !== \App\Privilege::ROLE_AFFILIATE)
 							<th class="value_span8">Payout</th>
 						@endif
-
-						<th class="value_span9">Status</th>
-						@if (\LeadMax\TrackYourStats\System\Session::userType() == \App\Privilege::ROLE_AFFILIATE)
-							<th class="value_span9">Postback Options</th>
+						@if (\LeadMax\TrackYourStats\System\Session::userType() !== \App\Privilege::ROLE_AFFILIATE)
+							<th class="value_span9">Status</th>
 						@endif
+						{{--@if (\LeadMax\TrackYourStats\System\Session::userType() == \App\Privilege::ROLE_AFFILIATE)
+							<th class="value_span9">Postback Options</th>
+						@endif--}}
 
 						@if (\LeadMax\TrackYourStats\System\Session::userType() != \App\Privilege::ROLE_AFFILIATE)
 							<th class="value_span9">Offer Timestamp</th>
@@ -239,7 +240,8 @@
 					pageItems.forEach((offer) => {
 						html += `<tr id='offer_row'>` +
 								`<td>` + offer['idoffer'] + `</td>` +
-								`<td>` + offer['offer_name'] + `<br/><span class='link_label'>Offer Link:</span><br /> ` +
+								`<td>` + offer['offer_name'] +
+								`<br/><span class='link_label'>Offer Link:</span><br /> ` +
 								`<span class='offer_link'>https://` + url +
 								`/?repid=` + sessionUser +
 								`&offerid=` + offer['idoffer'] + `&sub1=</span>` +
@@ -251,86 +253,83 @@
 									`<td class='value_span10'>` +
 									`<p  style='display:none;' id='url_` + offer['idoffer'] + `'>http://` + url +
 									`/?repid=` + sessionUser +
-											`&offerid=` + offer['idoffer'] + `&sub1=</p>` +
+									`&offerid=` + offer['idoffer'] + `&sub1=</p>` +
 									`<button data-url='https://` + url +
 									`/?repid=` + sessionUser +
-											`&offerid=` + offer['idoffer'] + `&sub1=' data-toggle='tooltip' title='Copy My Link' ` +
+									`&offerid=` + offer['idoffer'] +
+									`&sub1=' data-toggle='tooltip' title='Copy My Link' ` +
 									`class='copy_button btn btn-default'>Copy My Link` +
 									`</button></td>`;
 						}
 
-						if (permissions.includes('create_offers') && userType != 3 ) {
+						if (permissions.includes('create_offers') && userType != 3) {
 							html += `<td class='value_span10'>` +
 									`<a target='_blank' class='btn btn-sm btn-default value_span5-1' href='/offer_access.php?id=` +
 									offer['idoffer'] + `'>Affiliate Access</a>` +
 									`</td>`;
 						}
 
-						if (userType != 2) {
-							if (userType == 3) {
+						if (userType != 2 && userType != 3) {
+							/*if (userType == 3) {
 								html += `<td class='value_span10'>$` + offer['pivot']['payout'] + `</td>`;
+							} else {*/
+							html += `<td class='value_span10'>$` + offer['payout'] + `</td>`;
+							/*}*/
+						}
+
+						if (userType != 3) {
+							html += `<td class='value_span10'>`;
+							if (offer['status'] === 1) {
+								html += `Active`;
 							} else {
-								html += `<td class='value_span10'>$` + offer['payout'] + `</td>`;
+								html += `Inactive`;
 							}
+
+							html += `</td>`;
 						}
 
-						html += `<td class='value_span10'>`;
-						if (offer['status'] === 1) {
-							html += `Active`;
-						} else {
-							html += `Inactive`;
-						}
-
-						html += `</td>`;
-
-						if (userType == 3) {
+						/*if (userType == 3) {
 							html += `<td class='value_span10'>` +
 									`<a class='btn btn-default value_span6-1 value_span4' data-toggle='tooltip' title='Offer PostBack Options' ` +
 									`href='/offer_edit_pb.php?offid='` + offer['idoffer'] + `'>` +
 									`Edit Post Back</a>` +
 									`</td>`;
-						}
+						}*/
 
 						if (userType != 3) {
 							html += `<td class='value_span10'>` + offer['offer_timestamp'] + `</td>`;
 						}
-
+						if (permissions.includes("edit_offer_rules") && userType != 3) {
+							html += `<td class='value_span10 action_column'>`;
+						}
 						if (userType != 3) {
 							if (permissions.includes('create_offers')) {
-								html += `<td class='value_span10'>` +
-										`<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='Edit Offer' ` +
-										`href='/offer_update.php?idoffer=` + offer['idoffer'] + `'>Edit</a>` +
-										`</td>`;
+								html += `<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='Edit Offer' ` +
+										`href='/offer_update.php?idoffer=` + offer['idoffer'] + `'>Edit</a>`;
 							}
 						}
 
 						if(permissions.includes("edit_offer_rules") && userType != 3) {
-							html += `<td class='value_span10'>` +
-									`<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='Edit Offer Rules' ` +
-									`href='/offer_edit_rules.php?offid=` + offer[`idoffer`] + `'> Rules</a>` +
-									`</td>`;
+							html += `<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='Edit Offer Rules' ` +
+									`href='/offer_edit_rules.php?offid=` + offer[`idoffer`] + `'> Rules</a>`;
 						}
 
 						if(userType != 3) {
-							html += `<td class='value_span10'>` +
-									`<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='View Offer' ` +
-									`href='/offer_details.php?idoffer=` + offer['idoffer'] + `'> View</a>` +
-									`</td>`;
-						} else {
+							html += `<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='View Offer' ` +
+									`href='/offer_details.php?idoffer=` + offer['idoffer'] + `'> View</a>`;
+						}/* else {
 							html += `<td></td>`;
-						}
+						}*/
 
 						if (userType == 0) {
-							html += `<td class='value_span10'>` +
-									`<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='Duplicate Offer' ` +
+							html += `<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='Duplicate Offer' ` +
 									`href='/offer/` + offer['idoffer'] + `/dupe'> Duplicate </a>` +
-									`</td>` +
-									`<td class='value_span10'>` +
 									`<a class='delete_offer btn btn-default btn-sm value_span11 value_span4' data-toggle='tooltip' data-offer='` + offer['idoffer'] +`' title='Delete Offer' ` +
-									`href='#'>Delete</a>` +
-									`</td>`;
+									`href='#'>Delete</a>`;
 						}
-
+						if (permissions.includes("edit_offer_rules") && userType != 3) {
+							html += `</td>`;
+						}
 						html += `</tr>`;
 						itemsContainer.innerHTML = html;
 					});
