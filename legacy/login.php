@@ -106,11 +106,15 @@ else
 	</head>
 
 	<style>
+		body {
+			background: url('<?= \LeadMax\TrackYourStats\System\Company::loadFromSession()->getImgDir() ?>/main-bg.jpg') no-repeat;
+			background-size: cover;
+		}
         .white_box {
             box-sizing: border-box;
             -moz-box-sizing: border-box;
             -webkit-box-sizing: border-box;
-            margin-top: 40px;
+            margin-top: 20px;
         }
 
         .white_box_outer {
@@ -120,6 +124,36 @@ else
             box-sizing: border-box;
             -moz-box-sizing: border-box;
             -webkit-box-sizing: border-box;
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-orient: vertical;
+            -webkit-box-direction: normal;
+            -ms-flex-direction: column;
+            flex-direction: column;
+            -ms-flex-wrap: nowrap;
+            flex-wrap: nowrap;
+	        justify-content: center;
+	        -webkit-justify-content: center;
+	        -webkit-align-items: center;
+	        align-items: center;
+	        width: 100%;
+	        height: 100%;
+        }
+
+        .logo img {
+	        width: 100%;
+            border-radius: 4px;
+            -webkit-border-radius: 4px;
+            -moz-border-radius: 4px;
+        }
+
+        .btn_yellow {
+	        width: 100%;
+        }
+        .btn_yellow input[type="submit"] {
+	        width: 100%;
+	        padding: 15px 25px;
         }
 
         @media screen and (max-width: 768px) {
@@ -141,21 +175,25 @@ else
         }
 
 	</style>
-<body style = "background-color:#EAEEF1;">
-	<div class = "top_sec value_span1">
+<body>
+	<!--<div class = "top_sec value_span1">
 		<div class = "logo">
-			<a href = "<?php echo $webroot ?>"><img src = "<?= \LeadMax\TrackYourStats\System\Company::loadFromSession()->getImgDir() ?>/logo.png" alt = "<?php echo \LeadMax\TrackYourStats\System\Company::loadFromSession()->getShortHand(); ?>"
-													title = "<?php echo \LeadMax\TrackYourStats\System\Company::loadFromSession()->getShortHand(); ?>"/></a>
+			<a href = "<?php /*echo $webroot */?>"><img src = "<?php /*= \LeadMax\TrackYourStats\System\Company::loadFromSession()->getImgDir() */?>/logo.png" alt = "<?php /*echo \LeadMax\TrackYourStats\System\Company::loadFromSession()->getShortHand(); */?>"
+													title = "<?php /*echo \LeadMax\TrackYourStats\System\Company::loadFromSession()->getShortHand(); */?>"/></a>
 		</div>
 	
-	</div> <!-- top_sec -->
+	</div>--> <!-- top_sec -->
 
 		   <!--right_panel-->
 <div class = "white_box_outer">
-	
+	<div class = "logo">
+		<a href = "<?php echo $webroot ?>"><img src = "<?= \LeadMax\TrackYourStats\System\Company::loadFromSession()->getImgDir() ?>/logo.png" alt = "<?php echo \LeadMax\TrackYourStats\System\Company::loadFromSession()->getShortHand(); ?>"
+		                                        title = "<?php echo \LeadMax\TrackYourStats\System\Company::loadFromSession()->getShortHand(); ?>"/></a>
+	</div>
 	<div class = "clear"></div>
 	<div class = "white_box value_span8">
 		<div class = "com_acc">
+
 			<form method="post" class="login_form" >
 				
 				<div class = "left_con01">
@@ -186,9 +224,9 @@ else
 						<input type = "password" name = "txt_password" placeholder = "Enter Password"
 							   required/>
 					</p>
-					<p>
-						<a class = "small_txt value_span10" style = "font-size:14px;float:left;" href = "aff_help.php"><?php echo env('FORGOT_PASS_LINK_TEXT'); ?></a>
-					</p>
+					<!--<p>
+						<a class = "small_txt value_span10" style = "font-size:14px;float:left;" href = "aff_help.php"><?php /*echo env('FORGOT_PASS_LINK_TEXT'); */?></a>
+					</p>-->
 					<span class = "btn_yellow btn_wrap">
 						<input type = "submit" name = "button"
 						       class = "value_span5-1 value_span2 value_span4"

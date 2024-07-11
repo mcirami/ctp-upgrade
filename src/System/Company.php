@@ -193,7 +193,7 @@ class Company
 
     public function getImgDir()
     {
-        return "images/". $this->subDomain;
+        return "images/galaxywebrevenue"; //. $this->subDomain;
     }
 
     public function getColors()
@@ -270,6 +270,7 @@ class Company
 
             $this->login_url = $company["login_url"]  ?? '';
 
+	        $this->login_theme = $company['login_theme'] ?? '';
 
             $this->loaded();
 
