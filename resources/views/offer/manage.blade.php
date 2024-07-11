@@ -94,11 +94,11 @@
 							<th class="value_span9">Postback Options</th>
 						@endif--}}
 
-						@if (\LeadMax\TrackYourStats\System\Session::userType() != \App\Privilege::ROLE_AFFILIATE)
+						@if (\LeadMax\TrackYourStats\System\Session::userType() != \App\Privilege::ROLE_AFFILIATE && \LeadMax\TrackYourStats\System\Session::userType() !== \App\Privilege::ROLE_MANAGER)
 							<th class="value_span9">Offer Timestamp</th>
 						@endif
 
-						@if (\LeadMax\TrackYourStats\System\Session::userType() != \App\Privilege::ROLE_AFFILIATE)
+						@if (\LeadMax\TrackYourStats\System\Session::userType() != \App\Privilege::ROLE_AFFILIATE && \LeadMax\TrackYourStats\System\Session::userType() !== \App\Privilege::ROLE_MANAGER)
 							<th class="value_span9">Actions</th>
 						@endif
 					</tr>
@@ -296,25 +296,25 @@
 									`</td>`;
 						}*/
 
-						if (userType != 3) {
+						if (userType != 3 && userType != 2) {
 							html += `<td class='value_span10'>` + offer['offer_timestamp'] + `</td>`;
 						}
-						if (permissions.includes("edit_offer_rules") && userType != 3) {
+						if (permissions.includes("edit_offer_rules") && userType != 3 && userType != 2) {
 							html += `<td class='value_span10 action_column'>`;
 						}
-						if (userType != 3) {
+						if (userType != 3 && userType != 2) {
 							if (permissions.includes('create_offers')) {
 								html += `<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='Edit Offer' ` +
 										`href='/offer_update.php?idoffer=` + offer['idoffer'] + `'>Edit</a>`;
 							}
 						}
 
-						if(permissions.includes("edit_offer_rules") && userType != 3) {
+						if(permissions.includes("edit_offer_rules") && userType != 3 && userType != 2) {
 							html += `<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='Edit Offer Rules' ` +
 									`href='/offer_edit_rules.php?offid=` + offer[`idoffer`] + `'> Rules</a>`;
 						}
 
-						if(userType != 3) {
+						if(userType != 3 && userType != 2) {
 							html += `<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='View Offer' ` +
 									`href='/offer_details.php?idoffer=` + offer['idoffer'] + `'> View</a>`;
 						}/* else {
@@ -327,7 +327,7 @@
 									`<a class='delete_offer btn btn-default btn-sm value_span11 value_span4' data-toggle='tooltip' data-offer='` + offer['idoffer'] +`' title='Delete Offer' ` +
 									`href='#'>Delete</a>`;
 						}
-						if (permissions.includes("edit_offer_rules") && userType != 3) {
+						if (permissions.includes("edit_offer_rules") && userType != 3 && userType != 2) {
 							html += `</td>`;
 						}
 						html += `</tr>`;
