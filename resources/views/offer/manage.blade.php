@@ -1,3 +1,4 @@
+@php use LeadMax\TrackYourStats\System\Session; @endphp
 @extends('layouts.master')
 
 @section('content')
@@ -7,17 +8,17 @@
 		<div class="white_box_outer large_table">
 			<div class="heading_holder">
 				<span class="lft value_span9">Offers</span>
-				@if (\LeadMax\TrackYourStats\System\Session::permissions()->can("create_offers"))
+				@if (Session::permissions()->can("create_offers"))
 					<a style='margin-left: 1%; margin-top:.3%;' href="/offer_add.php"
 					   class='btn btn-default btn-sm value_span5-1 value_span6-5 value_span2'>Create New Offer</a>
 				@endif
 			</div>
 
-			@if(\LeadMax\TrackYourStats\System\Session::userType() !== \App\Privilege::ROLE_AFFILIATE)
+			@if(Session::userType() !== \App\Privilege::ROLE_AFFILIATE)
 				@include('report.options.active')
 			@endif
 
-			@if(\LeadMax\TrackYourStats\System\Session::userType() == \App\Privilege::ROLE_AFFILIATE)
+			@if(Session::userType() == \App\Privilege::ROLE_AFFILIATE)
 				<div class='form-group'>
 					<p class='form-control'>
 						Add up to 5 Sub variables as follows: http://domain.com/?repid=1&offerid=1&sub1=XXX&sub2=YYY&sub3=ZZZ&sub4=AAA&sub5=BBB
@@ -29,15 +30,16 @@
 
 			<script type="text/javascript">
 				function handleSelect(elm) {
-					window.location = '/{{request()->path()}}?url=' + elm.value <?= request('adminLogin',
-							null) ? " + '&adminLogin'" : ""?>;
+					window.location = '/{{request()->path()}}?url=' + elm.value
+					<?= request( 'adminLogin',
+							null ) ? " + '&adminLogin'" : "" ?>;
 				}
 			</script>
 
 
 			<div style="margin:0 0 1px 0; padding:5px; width:250px;">
 
-				@if(\LeadMax\TrackYourStats\System\Session::userType() == \App\Privilege::ROLE_AFFILIATE)
+				@if(Session::userType() == \App\Privilege::ROLE_AFFILIATE)
 
 					<label class="value_span9">Offer URLS: </label>
 					<select onchange='handleSelect(this);' class="form-control input-sm " id="offer_url"
@@ -45,8 +47,9 @@
 
 
 						@for ($i = 0; $i < count($urls); $i++)
-							@if (request('url',0) == $i) {
-							<option selected value='{{$i}}'> {{$urls[$i]}}</option>
+							@if (request('url',0) == $i)
+								{
+								<option selected value='{{$i}}'> {{$urls[$i]}}</option>
 							@else
 								<option value='{{$i}}'> {{$urls[$i]}}</option>
 							@endif
@@ -77,28 +80,37 @@
 						<th class="value_span9">Offer Name</th>
 						<th class="value_span9">Offer Type</th>
 
-						@if (\LeadMax\TrackYourStats\System\Session::userType() == \App\Privilege::ROLE_AFFILIATE)
+						@if (Session::userType() == \App\Privilege::ROLE_AFFILIATE)
 							<th class="value_span9">Offer Link</th>
 						@else
 							<th class="value_span9">Affiliate Access</th>
 						@endif
 
 
-						@if (\LeadMax\TrackYourStats\System\Session::userType() !== \App\Privilege::ROLE_MANAGER && \LeadMax\TrackYourStats\System\Session::userType() !== \App\Privilege::ROLE_AFFILIATE)
+						@if (Session::userType() !== \App\Privilege::ROLE_MANAGER &&
+Session::userType() !== \App\Privilege::ROLE_AFFILIATE &&
+Session::userType() !== \App\Privilege::ROLE_ADMIN)
 							<th class="value_span8">Payout</th>
 						@endif
-						@if (\LeadMax\TrackYourStats\System\Session::userType() !== \App\Privilege::ROLE_AFFILIATE)
+						@if (Session::userType() !== \App\Privilege::ROLE_AFFILIATE &&
+Session::userType() !== \App\Privilege::ROLE_MANAGER &&
+Session::userType() !== \App\Privilege::ROLE_ADMIN)
 							<th class="value_span9">Status</th>
 						@endif
 						{{--@if (\LeadMax\TrackYourStats\System\Session::userType() == \App\Privilege::ROLE_AFFILIATE)
 							<th class="value_span9">Postback Options</th>
 						@endif--}}
 
-						@if (\LeadMax\TrackYourStats\System\Session::userType() != \App\Privilege::ROLE_AFFILIATE && \LeadMax\TrackYourStats\System\Session::userType() !== \App\Privilege::ROLE_MANAGER)
+						@if (Session::userType() != \App\Privilege::ROLE_AFFILIATE &&
+Session::userType() !== \App\Privilege::ROLE_MANAGER &&
+Session::userType() !== \App\Privilege::ROLE_ADMIN)
 							<th class="value_span9">Offer Timestamp</th>
 						@endif
 
-						@if (\LeadMax\TrackYourStats\System\Session::userType() != \App\Privilege::ROLE_AFFILIATE && \LeadMax\TrackYourStats\System\Session::userType() !== \App\Privilege::ROLE_MANAGER)
+						@if (Session::userType() != \App\Privilege::ROLE_AFFILIATE &&
+Session::userType() !== \App\Privilege::ROLE_MANAGER &&
+Session::userType() !== \App\Privilege::ROLE_ADMIN
+)
 							<th class="value_span9">Actions</th>
 						@endif
 					</tr>
@@ -141,12 +153,11 @@
 	<script type="text/javascript">
 		function requestOffer(id) {
 
-
 			$("#btn_" + id).attr('disabled', true);
 
 			$.ajax({
-				url: "/offer/" + id + '/request?' <?= (isset($_GET["adminLogin"])) ? " + '&adminLogin'" : ""?>,
-				success: function (result) {
+				url: "/offer/" + id + '/request?' <?= ( isset( $_GET["adminLogin"] ) ) ? " + '&adminLogin'" : "" ?>,
+				success: function(result) {
 
 					$.notify({
 
@@ -167,7 +178,7 @@
 					);
 				},
 
-				error: function (result) {
+				error: function(result) {
 					$("#btn_" + id).attr('disabled', false);
 
 					$.notify({
@@ -195,9 +206,9 @@
 
 	<script type="text/javascript">
 
-		$(document).ready(function () {
+		$(document).ready(function() {
 			document.querySelectorAll('.delete_offer').forEach((offer) => {
-				offer.addEventListener('click', (e) =>{
+				offer.addEventListener('click', (e) => {
 					e.preventDefault();
 					const offerID = e.target.dataset.offer;
 					confirmSendTo('Are you sure you want to delete this offer?', "/offer/" + offerID + "/delete");
@@ -233,10 +244,10 @@
 					itemsContainer.innerHTML = "";
 
 					let html = "";
-					let userType = '<?php echo \LeadMax\TrackYourStats\System\Session::userType(); ?>';
-					let url = '<?php echo $urls[request('url',0)]; ?>';
-					let permissions = '<?php echo json_encode(\LeadMax\TrackYourStats\System\Session::permissions()); ?>'
-					const sessionUser = '<?php echo \LeadMax\TrackYourStats\System\Session::userID(); ?>';
+					let userType = '<?php echo Session::userType(); ?>';
+					let url = '<?php echo $urls[ request( 'url', 0 ) ]; ?>';
+					let permissions = '<?php echo json_encode( Session::permissions() ); ?>'
+					const sessionUser = '<?php echo Session::userID(); ?>';
 					pageItems.forEach((offer) => {
 						html += `<tr id='offer_row'>` +
 								`<td>` + offer['idoffer'] + `</td>` +
@@ -269,7 +280,7 @@
 									`</td>`;
 						}
 
-						if (userType != 2 && userType != 3) {
+						if (userType != 2 && userType != 3 && userType != 1) {
 							/*if (userType == 3) {
 								html += `<td class='value_span10'>$` + offer['pivot']['payout'] + `</td>`;
 							} else {*/
@@ -277,7 +288,7 @@
 							/*}*/
 						}
 
-						if (userType != 3) {
+						if (userType != 3 && userType != 1 && userType != 2) {
 							html += `<td class='value_span10'>`;
 							if (offer['status'] === 1) {
 								html += `Active`;
@@ -296,25 +307,25 @@
 									`</td>`;
 						}*/
 
-						if (userType != 3 && userType != 2) {
+						if (userType != 3 && userType != 2 && userType != 1) {
 							html += `<td class='value_span10'>` + offer['offer_timestamp'] + `</td>`;
 						}
-						if (permissions.includes("edit_offer_rules") && userType != 3 && userType != 2) {
+						if (permissions.includes("edit_offer_rules") && userType != 3 && userType != 2 && userType != 1) {
 							html += `<td class='value_span10 action_column'>`;
 						}
-						if (userType != 3 && userType != 2) {
+						if (userType != 3 && userType != 2 && userType != 1) {
 							if (permissions.includes('create_offers')) {
 								html += `<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='Edit Offer' ` +
 										`href='/offer_update.php?idoffer=` + offer['idoffer'] + `'>Edit</a>`;
 							}
 						}
 
-						if(permissions.includes("edit_offer_rules") && userType != 3 && userType != 2) {
+						if (permissions.includes("edit_offer_rules") && userType != 3 && userType != 2 && userType != 1) {
 							html += `<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='Edit Offer Rules' ` +
 									`href='/offer_edit_rules.php?offid=` + offer[`idoffer`] + `'> Rules</a>`;
 						}
 
-						if(userType != 3 && userType != 2) {
+						if (userType != 3 && userType != 2 && userType != 1) {
 							html += `<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='View Offer' ` +
 									`href='/offer_details.php?idoffer=` + offer['idoffer'] + `'> View</a>`;
 						}/* else {
@@ -324,10 +335,11 @@
 						if (userType == 0) {
 							html += `<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='Duplicate Offer' ` +
 									`href='/offer/` + offer['idoffer'] + `/dupe'> Duplicate </a>` +
-									`<a class='delete_offer btn btn-default btn-sm value_span11 value_span4' data-toggle='tooltip' data-offer='` + offer['idoffer'] +`' title='Delete Offer' ` +
+									`<a class='delete_offer btn btn-default btn-sm value_span11 value_span4' data-toggle='tooltip' data-offer='` +
+									offer['idoffer'] + `' title='Delete Offer' ` +
 									`href='#'>Delete</a>`;
 						}
-						if (permissions.includes("edit_offer_rules") && userType != 3 && userType != 2) {
+						if (permissions.includes("edit_offer_rules") && userType != 3 && userType != 2 && userType != 1) {
 							html += `</td>`;
 						}
 						html += `</tr>`;
@@ -344,7 +356,8 @@
 						const link = document.createElement("a");
 						link.href = "#";
 						link.innerText = i;
-						link.classList.add("value_span2-2", "value_span3-2", "value_span6-1", "value_span2", "value_span6");
+						link.classList.add("value_span2-2", "value_span3-2", "value_span6-1", "value_span2",
+								"value_span6");
 
 						if (i === currentPage) {
 							link.classList.add("value_span4", "active");
@@ -363,6 +376,7 @@
 						pagination.appendChild(link);
 					}
 				}
+
 				copyLink();
 
 				showItems(currentPage);
@@ -374,7 +388,19 @@
 					button.addEventListener("click", (e) => {
 						e.preventDefault();
 						const url = e.target.dataset.url;
-						const unsecuredCopyToClipboard = (text) => { const textArea = document.createElement("textarea"); textArea.value=text; document.body.appendChild(textArea); textArea.focus();textArea.select(); try{document.execCommand('copy')}catch(err){console.error('Unable to copy to clipboard',err)}document.body.removeChild(textArea)};
+						const unsecuredCopyToClipboard = (text) => {
+							const textArea = document.createElement("textarea");
+							textArea.value = text;
+							document.body.appendChild(textArea);
+							textArea.focus();
+							textArea.select();
+							try {
+								document.execCommand('copy')
+							} catch (err) {
+								console.error('Unable to copy to clipboard', err)
+							}
+							document.body.removeChild(textArea)
+						};
 						if (window.isSecureContext && navigator.clipboard) {
 							navigator.clipboard.writeText(url);
 						} else {

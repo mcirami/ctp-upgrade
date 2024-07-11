@@ -1,3 +1,4 @@
+@php use LeadMax\TrackYourStats\System\Session; @endphp
 @extends('report.template')
 
 @section('report-title')
@@ -20,7 +21,7 @@
             <th class="value_span9">Free Sign Ups</th>
             <th class="value_span9">Pending Conversions</th>
             <th class="value_span9">Conversions</th>
-            @if(\LeadMax\TrackYourStats\System\Session::userType() == \App\Privilege::ROLE_ADMIN || \LeadMax\TrackYourStats\System\Session::userType() == \App\Privilege::ROLE_GOD)
+            @if(Session::userType() == \App\Privilege::ROLE_GOD)
                 <th class="value_span9  headers ">Sales Revenue</th>
                 <th class="value_span9  ">Deductions</th>
                 <th class="value_span9">EPC</th>
@@ -32,7 +33,7 @@
         </thead>
         <tbody>
         @php
-            if (\LeadMax\TrackYourStats\System\Session::userType() == \App\Privilege::ROLE_ADMIN || \LeadMax\TrackYourStats\System\Session::userType() == \App\Privilege::ROLE_GOD) {
+            if (Session::userType() == \App\Privilege::ROLE_GOD) {
 				$array = [
                     'idrep',
                     'user_name',
@@ -68,12 +69,12 @@
 
 @section('footer')
     <script type="text/javascript">
-        $(document).ready(function () {
-            $("#mainTable").tablesorter(
-                {
-                    sortList: [[7, 1]],
-                    widgets: ['staticRow']
-                });
-        });
+		$(document).ready(function() {
+			$("#mainTable").tablesorter(
+				{
+					sortList: [[7, 1]],
+					widgets: ['staticRow']
+				});
+		});
     </script>
 @endsection

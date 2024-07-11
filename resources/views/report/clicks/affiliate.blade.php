@@ -1,3 +1,5 @@
+@php use LeadMax\TrackYourStats\System\Session; @endphp
+
 @extends('report.template')
 
 @section('report-title')
@@ -35,7 +37,9 @@
 				<th class="value_span9">Timestamp</th>
 				<th class="value_span9">Offer Name</th>
 				<th class="value_span9">Conversion Timestamp</th>
-				<th class="value_span9">Paid</th>
+				@if(Session::userType() == \App\Privilege::ROLE_GOD)
+					<th class="value_span9">Paid</th>
+				@endif
 				<th class="value_span9">Sub 1</th>
 				<th class="value_span9">Sub 2</th>
 				<th class="value_span9">Sub 3</th>
@@ -65,7 +69,9 @@
 					<td>{{$row->timestamp}}</td>
 					<td>{{$row->offer_name}}</td>
 					<td>{{$row->conversion_timestamp}}</td>
-					<td>{{$row->paid}}</td>
+					@if(Session::userType() == \App\Privilege::ROLE_GOD)
+						<td>{{$row->paid}}</td>
+					@endif
 					<td>{{$row->sub1}}</td>
 					<td>{{$row->sub2}}</td>
 					<td>{{$row->sub3}}</td>
