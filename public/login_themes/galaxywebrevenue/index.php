@@ -1,3 +1,81 @@
+<?php
+
+$domain = $_SERVER["HTTP_HOST"];
+
+
+$webroot = getWebRoot();
+
+
+$user = new \LeadMax\TrackYourStats\User\User;
+$company =  \LeadMax\TrackYourStats\System\Company::loadFromSession();
+$company->reloadSettings();
+
+//checks if the User is already logged in
+if ($user->is_loggedin())
+{
+	if ($user->verify_login_session())
+	{
+		send_to('dashboard');
+	}
+}
+
+
+$user->checkLoginAttempts();
+
+
+//POST to login.php (self),
+//if count is < 5, continue, else, too many attempts for today
+if (isset($_POST['button']) && $user->count < 5)
+{
+	$user_name = $_POST['txt_uname_email'];
+	$email     = $_POST['txt_uname_email'];
+	$password  = $_POST['txt_password'];
+
+	$result = $user->login($user_name, $email, $password);
+
+	if ($result == \LeadMax\TrackYourStats\User\Login::RESULT_SUCCESS) {
+
+		if (isset($_GET["redirectUri"]))
+		{
+			send_to(urldecode($_GET["redirectUri"]));
+		}
+		else
+		{
+			send_to('dashboard');
+		}
+
+	} else if  ($result == \LeadMax\TrackYourStats\User\Login::RESULT_PENDING){
+		send_to('signup_success.php?pending=1');
+	} else {
+
+		$user->badLoginAttempt();
+
+		if ($result == \LeadMax\TrackYourStats\User\Login::RESULT_INVALID_CRED)
+		{
+			$error = "Wrong Details ! <p>You have {$user->count} / 5 login attempts remaining. </p>";
+		}
+		else
+		{
+			if ($result == \LeadMax\TrackYourStats\User\Login::RESULT_BANNED)
+			{
+				$error = "This account has been banned. Login attempt has been logged and an administrator will be notified. ";
+			}
+		}
+	}
+}
+else
+{
+	if (isset($_POST["button"]))
+	{
+
+		$error = "You have {$user->count} / 5 login attempts remaining. Please wait until tomorrow or contact an admin to reset your login attempt and/or password.";
+
+	}
+}
+
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 	<head>

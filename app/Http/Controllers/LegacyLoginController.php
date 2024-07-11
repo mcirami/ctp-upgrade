@@ -8,7 +8,12 @@ use LeadMax\TrackYourStats\User\User;
 class LegacyLoginController extends Controller
 {
 
-    public function logout()
+	public function __construct()
+	{
+		$this->middleware('auth');
+	}
+
+	public function logout()
     {
         if (isset($_GET["adminLogin"])) {
             unset($_SESSION["adminLogin"]);
