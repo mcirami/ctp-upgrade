@@ -7,8 +7,8 @@ $webroot = getWebRoot();
 
 
 $user = new \LeadMax\TrackYourStats\User\User;
-/*$company =  \LeadMax\TrackYourStats\System\Company::loadFromSession();
-$company->reloadSettings();*/
+$company =  \LeadMax\TrackYourStats\System\Company::loadFromSession();
+$company->reloadSettings();
 
 //checks if the User is already logged in
 if ($user->is_loggedin())
