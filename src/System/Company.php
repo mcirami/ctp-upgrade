@@ -193,7 +193,7 @@ class Company
 
     public function getImgDir()
     {
-        return "images/galaxywebrevenue"; //. $this->subDomain;
+        return "images/" . $this->subDomain;
     }
 
     public function getColors()
