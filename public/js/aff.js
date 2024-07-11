@@ -32,7 +32,7 @@ function manager()
 
 function appendToPermissions()
 {
-    $('<input/>').attr({type:'checkbox',name:'permissions[]', class:'fixCheckBox'}).appendTo('#permissionsP');
+    $('<input/>').attr({type:'checkbox',name:'permissions[]', class:'fixCheckBox value_span9'}).appendTo('#permissionsP');
     $("#permissionsP").append("ASDF");
 }
 //

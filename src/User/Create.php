@@ -93,16 +93,16 @@ class Create
 
         switch (Session::userType()) {
             case \App\Privilege::ROLE_GOD:
-                echo "<input {$this->type["is_rep"]} onclick=\"manager();appendAffiliate();\" class=\"fixCheckBox\" type=\"radio\" name=\"priv\" value=\"".\App\Privilege::ROLE_AFFILIATE."\">Agent
-                    <input {$this->type["is_manager"]} onclick=\"admin();appendManager();\" class=\"fixCheckBox\" type=\"radio\" name=\"priv\" value=\"".\App\Privilege::ROLE_MANAGER."\">" . env('ACCOUNT_TYPE_TEXT') .
-                    "<input {$this->type["is_admin"]} onclick=\"god();appendAdmin();\" class=\"fixCheckBox\" type=\"radio\" name=\"priv\" value=\"".Privilege::ROLE_ADMIN."\">Admin";
+                echo "<input {$this->type["is_rep"]} onclick=\"manager();appendAffiliate();\" class=\"fixCheckBox value_span9\" type=\"radio\" name=\"priv\" value=\"".\App\Privilege::ROLE_AFFILIATE."\">Agent
+                    <input {$this->type["is_manager"]} onclick=\"admin();appendManager();\" class=\"fixCheckBox value_span9\" type=\"radio\" name=\"priv\" value=\"".\App\Privilege::ROLE_MANAGER."\">" . env('ACCOUNT_TYPE_TEXT') .
+                    "<input {$this->type["is_admin"]} onclick=\"god();appendAdmin();\" class=\"fixCheckBox value_span9\" type=\"radio\" name=\"priv\" value=\"".Privilege::ROLE_ADMIN."\">Admin";
                 break;
 
             case \App\Privilege::ROLE_ADMIN:
-                echo "<input {$this->type["is_rep"]} onclick=\"manager();appendAffiliate();\" class=\"fixCheckBox\" type=\"radio\" name=\"priv\" value=\"".\App\Privilege::ROLE_AFFILIATE."\">Agent
-                    <input {$this->type["is_manager"]} onclick=\"admin();appendManager();\" class=\"fixCheckBox\" type=\"radio\" name=\"priv\" value=\"".\App\Privilege::ROLE_MANAGER."\">" . env( 'ACCOUNT_TYPE_TEXT' );
+                echo "<input {$this->type["is_rep"]} onclick=\"manager();appendAffiliate();\" class=\"fixCheckBox value_span9\" type=\"radio\" name=\"priv\" value=\"".\App\Privilege::ROLE_AFFILIATE."\">Agent
+                    <input {$this->type["is_manager"]} onclick=\"admin();appendManager();\" class=\"fixCheckBox value_span9\" type=\"radio\" name=\"priv\" value=\"".\App\Privilege::ROLE_MANAGER."\">" . env( 'ACCOUNT_TYPE_TEXT' );
                 if (\LeadMax\TrackYourStats\System\Session::permissions()->can("create_admins")) {
-                    echo "<input {$this->type["is_admin"]} onclick=\"god();appendAdmin();\" class=\"fixCheckBox\" type=\"radio\" name=\"priv\" value=\"".Privilege::ROLE_ADMIN."\">Admin";
+                    echo "<input {$this->type["is_admin"]} onclick=\"god();appendAdmin();\" class=\"fixCheckBox value_span9\" type=\"radio\" name=\"priv\" value=\"".Privilege::ROLE_ADMIN."\">Admin";
                 }
 
                 break;
@@ -110,10 +110,10 @@ class Create
             case \App\Privilege::ROLE_MANAGER:
 
                 if (\LeadMax\TrackYourStats\System\Session::permissions()->can("create_affiliates")) {
-                    echo "<input {$this->type["is_rep"]} onclick=\"manager();appendAffiliate();\" class=\"fixCheckBox\" type=\"radio\" name=\"priv\" value=\"".\App\Privilege::ROLE_AFFILIATE."\">Agent ";
+                    echo "<input {$this->type["is_rep"]} onclick=\"manager();appendAffiliate();\" class=\"fixCheckBox value_span9\" type=\"radio\" name=\"priv\" value=\"".\App\Privilege::ROLE_AFFILIATE."\">Agent ";
                 }
                 if (\LeadMax\TrackYourStats\System\Session::permissions()->can("create_managers")) {
-                    echo "<input {$this->type["is_manager"]} onclick=\"admin();appendManager();\" class=\"fixCheckBox\" type=\"radio\" name=\"priv\" value=\"".\App\Privilege::ROLE_MANAGER."\">" . env( 'ACCOUNT_TYPE_TEXT' );
+                    echo "<input {$this->type["is_manager"]} onclick=\"admin();appendManager();\" class=\"fixCheckBox value_span9\" type=\"radio\" name=\"priv\" value=\"".\App\Privilege::ROLE_MANAGER."\">" . env( 'ACCOUNT_TYPE_TEXT' );
                 }
                 break;
         }
