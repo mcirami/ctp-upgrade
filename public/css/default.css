@@ -2626,7 +2626,7 @@ table.offer_clicks th:first-child {
 }
 
 .manage_user_table td.actions a {
-	width: 7rem;
+	width: auto;
 }
 
 .manage_user_table td.username {
