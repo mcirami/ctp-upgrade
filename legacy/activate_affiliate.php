@@ -160,7 +160,7 @@ $create->dumpPermissionsToJavascript();
 
 					</p>
 
-					<p id = "permissionsP">
+					<p class='value_span9' id = "permissionsP">
 
 
 					</p>
