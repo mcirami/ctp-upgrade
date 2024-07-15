@@ -8,6 +8,7 @@
  */
 
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use PDO;
@@ -45,6 +46,7 @@ class Caps
 
 
     public $offerID = -1;
+	public $userID = 0;
 
     public $type;
     public $time_interval;
@@ -57,9 +59,10 @@ class Caps
 
     private $updating = false;
 
-    public function __construct($offerID, $updating = false)
+    public function __construct($offerID, $userID = null, $updating = false)
     {
         $this->offerID = $offerID;
+		$this->userID = $userID;
         $this->updating = $updating;
         $this->getOfferCapRules();
     }
@@ -300,6 +303,10 @@ class Caps
             return false;
         }
 
+	    if ($this->checkUserCap()) {
+		    return true;
+	    }
+
 		if ($this->cap_rules["time_block_status"]) {
 			$now = Carbon::now('America/New_York')->toTimeString();
 			$start = $this->cap_rules["block_start_time"];
@@ -309,7 +316,6 @@ class Caps
 				return true;
 			}
 		}
-
 
         $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
 
@@ -399,5 +405,28 @@ class Caps
         return false;
     }
 
+	private function checkUserCap() {
+		$offerId = $this->offerID;
+		$userId = $this->userID;
+
+		$capped = false;
+
+		$userCapRules = DB::table('user_offer_caps')->where('rep_idrep', '=', $userId)->where('offer_idoffer', '=', $offerId)->first();
+		if($userCapRules && $userCapRules->status) {
+			$this->cap_rules["time_interval"] = self::daily;
+			$time = $this->calculateTimeInterval();
+			$userConversionsToday = DB::table('clicks')
+			                          ->where('rep_idrep', '=', $userId)
+			                          ->where('offer_idoffer', '=', $offerId)
+			                          ->whereBetween('first_timestamp', [$time['dateFrom'], $time['dateTo']])
+			                          ->rightJoin('conversions', 'conversions.click_id', '=', 'clicks.idclicks')->count();
+			if ($userConversionsToday >= $userCapRules->cap) {
+				$capped = true;
+			}
+		}
+
+		return $capped;
+
+	}
 
 }

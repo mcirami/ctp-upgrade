@@ -1,5 +1,6 @@
 <?php
 use App\Http\Controllers\UserController;
+use LeadMax\TrackYourStats\System\Session;
 
 $section = "affiliate-list";
 require('header.php');
@@ -9,7 +10,7 @@ $assign = new \LeadMax\TrackYourStats\Table\Assignments(
 	[
 		"offerid"  => -1,
 		"out"      => -1,
-		"!idrep"   => \LeadMax\TrackYourStats\System\Session::userID(),
+		"!idrep"   => Session::userID(),
 		"clearAtt" => -1
 	]
 );
@@ -20,18 +21,18 @@ $assign->setGlobals();
 $idrep = (int)$idrep;
 
 //checks to see if this User is a child of logged in User, if not redirect
-if (\LeadMax\TrackYourStats\System\Session::userID() !== $idrep)
+if ( Session::userID() !== $idrep)
 {
-	if (!$user->hasRep($idrep) && \LeadMax\TrackYourStats\System\Session::userType() == \App\Privilege::ROLE_MANAGER)
+	if (!$user->hasRep($idrep) && Session::userType() == \App\Privilege::ROLE_MANAGER)
 	{
 		send_to("home.php");
 	}
 }
 
-if ($idrep !== \LeadMax\TrackYourStats\System\Session::userID())
+if ($idrep !== Session::userID())
 {
 
-	if (!\LeadMax\TrackYourStats\System\Session::permissions()->can("edit_affiliates"))
+	if (! Session::permissions()->can("edit_affiliates"))
 	{
 		send_to("home.php");
 	}
@@ -46,7 +47,7 @@ $update->selectUser();
 
 
 //run update
-if (\LeadMax\TrackYourStats\System\Session::userType() == \App\Privilege::ROLE_GOD || \LeadMax\TrackYourStats\System\Session::userType() == \App\Privilege::ROLE_ADMIN)
+if ( Session::userType() == \App\Privilege::ROLE_GOD || Session::userType() == \App\Privilege::ROLE_ADMIN)
 {
 	$ezGawd = true;
 }
@@ -71,7 +72,6 @@ $update->dumpPermissionsToJavascript();
 
 ?>
 <script type = "text/javascript" src = "js/aff.js"></script>
-<script src="https://cdn.tailwindcss.com"></script>
 
 <div id="error_message">
 	<svg  style="color: red" width="34" height="34" viewBox="0 0 24 24" fill="red" xmlns="http://www.w3.org/2000/svg">
@@ -90,18 +90,18 @@ $update->dumpPermissionsToJavascript();
 					<li class="px-10 py-4 font-semibold rounded-t-xl -mb-px value_span6-1 value_span4">
 						<a class="value_span2" id="default-tab" href="#account">Account</a>
 					</li>
-					<?php if(\LeadMax\TrackYourStats\System\Session::userType() == \App\Privilege::ROLE_GOD) : ?>
+					<?php if( Session::userType() == \App\Privilege::ROLE_GOD) : ?>
 						<li class="px-10 py-4 rounded-t-xl value_span4">
 							<a href="#sub_ids">Sub ID's</a>
 						</li>
 					<?php endif; ?>
-					<?php if (\LeadMax\TrackYourStats\System\Session::permissions()->can("edit_aff_payout") && $update->selectedUserType == \App\Privilege::ROLE_AFFILIATE) : ?>
+					<?php if ( Session::permissions()->can("edit_aff_payout") && $update->selectedUserType == \App\Privilege::ROLE_AFFILIATE) : ?>
 						<li class="px-10 py-4 rounded-t-xl value_span4">
 							<a href="#offers">Offers</a>
 						</li>
 					<?php endif; ?>
 				</ul>
-				<?php if(\LeadMax\TrackYourStats\System\Session::userType() != \App\Privilege::ROLE_AFFILIATE) : ?>
+				<?php if( Session::userType() != \App\Privilege::ROLE_AFFILIATE) : ?>
 					<a class="btn btn-default btn-sm value_span4 value_span6-1 value_span2"
 					   data-toggle='tooltip'
 					   title="Login into this user"
@@ -171,7 +171,7 @@ $update->dumpPermissionsToJavascript();
 							<div class = "right_con01">
 
 								<?php
-								if (\LeadMax\TrackYourStats\System\Session::userType() == \App\Privilege::ROLE_GOD)
+								if ( Session::userType() == \App\Privilege::ROLE_GOD)
 								{
 									echo "
                                    <p>
@@ -213,14 +213,14 @@ $update->dumpPermissionsToJavascript();
 
 								<?php
 
-								if (\LeadMax\TrackYourStats\System\Session::userType() == \App\Privilege::ROLE_GOD || \LeadMax\TrackYourStats\System\Session::userType() == \App\Privilege::ROLE_ADMIN)
+								if ( Session::userType() == \App\Privilege::ROLE_GOD || Session::userType() == \App\Privilege::ROLE_ADMIN)
 								{
 									$update->printReferrer();
 								}
 								?>
 								<?php
 
-								if (\LeadMax\TrackYourStats\System\Session::permissions()->can("edit_referrals") && $update->selectedUserType == \App\Privilege::ROLE_AFFILIATE)
+								if ( Session::permissions()->can("edit_referrals") && $update->selectedUserType == \App\Privilege::ROLE_AFFILIATE)
 								{
 									echo " <p id=\"referralP\">
 
@@ -307,7 +307,7 @@ $update->dumpPermissionsToJavascript();
 					</div>
 				</div>
 				<?php
-				if(\LeadMax\TrackYourStats\System\Session::userType() == \App\Privilege::ROLE_GOD) :
+				if( Session::userType() == \App\Privilege::ROLE_GOD) :
 
 					$userClass = new UserController;
 					$subIds = $userClass->getUserSubIds();
@@ -337,7 +337,7 @@ $update->dumpPermissionsToJavascript();
 
 				<?php
 
-				if (\LeadMax\TrackYourStats\System\Session::permissions()->can("edit_aff_payout") && $update->selectedUserType == \App\Privilege::ROLE_AFFILIATE)
+				if ( Session::permissions()->can("edit_aff_payout") && $update->selectedUserType == \App\Privilege::ROLE_AFFILIATE)
 				{
 
 					echo " <div id=\"offers\" class=\"hidden p-4 columns-1\"><div class=\"heading_holder value_span9\"><span
@@ -357,14 +357,19 @@ $update->dumpPermissionsToJavascript();
 				                        <th class=\"value_span9\">Offer Payout</th>";
 
 
-					if (\LeadMax\TrackYourStats\System\Session::permissions()->can("edit_aff_payout"))
+					if ( Session::permissions()->can("edit_aff_payout"))
 					{
 						echo "<th class=\"value_span9\">Change Aff Payout</th>";
 					}
 
-					if (\LeadMax\TrackYourStats\System\Session::permissions()->can("edit_aff_payout"))
+					if ( Session::permissions()->can("edit_aff_payout"))
 					{
 						echo "<th class=\"value_span9\">Offer Access</th>";
+					}
+
+					if (Session::userType() == \App\Privilege::ROLE_GOD) {
+						echo "<th class=\"value_span9\">Offer Cap</th>
+								<th class=\"value_span9\">Daily Max Conversions</th>";
 					}
 
 					echo "
@@ -374,7 +379,7 @@ $update->dumpPermissionsToJavascript();
 				                    <tbody>";
 
 
-					$update->getaffiliatePayouts();
+					$update->getAffiliateOfferInfo();
 
 
 					echo "</tbody>
