@@ -197,4 +197,65 @@ jQuery(document).ready(function ($) {
         })
     }
 
+    const userOfferCapCheck = document.querySelectorAll('.enable_offer_cap')
+    if(userOfferCapCheck) {
+        userOfferCapCheck.forEach((check) => {
+            check.addEventListener('change', (e) => {
+                const offerID = e.target.dataset.offer;
+                const user = e.target.dataset.rep;
+
+                const packets = {
+                    offer_id: offerID,
+                    rep: user,
+                    status: e.target.checked
+                }
+
+                axios.post('/user/enable-user-offer-cap', packets).then((response) => {
+                    if (response.data.success) {
+                        console.log("SUCCESS!");
+                    } else {
+                        document.querySelector('#error_message p').innerHTML = response.data.message;
+                        document.querySelector('#error_message').classList.add('active');
+                        setTimeout(() => {
+                            document.querySelector('#error_message').classList.remove('active');
+                        },5000)
+                    }
+                });
+            });
+        })
+    }
+
+    const userOffCap = document.querySelectorAll('.user_offer_cap')
+    if(userOffCap) {
+        ["keydown", "focusout"].forEach(evt => {
+            userOffCap.forEach((cap) => {
+                cap.addEventListener(evt, (e) => {
+                    if( (evt === "keydown" && e.keyCode === 13) || evt === "focusout") {
+
+                        const packets = {
+                            offer_id: e.target.dataset.offer,
+                            rep: e.target.dataset.rep,
+                            cap: e.target.value
+                        }
+
+                        axios.post('/user/set-user-offer-cap', packets).then((response) => {
+                            if (response.data.success) {
+                                e.target.classList.add('updated_animation');
+
+                                setTimeout(() => {
+                                    e.target.classList.remove('updated_animation');
+                                },3000)
+                            } else {
+                                document.querySelector('#error_message p').innerHTML = response.data.message;
+                                document.querySelector('#error_message').classList.add('active');
+                                setTimeout(() => {
+                                    document.querySelector('#error_message').classList.remove('active');
+                                },5000)
+                            }
+                        });
+                    }
+                });
+            })
+        })
+    }
 });

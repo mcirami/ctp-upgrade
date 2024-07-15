@@ -9,6 +9,7 @@
 namespace LeadMax\TrackYourStats\User;
 
 use App\Privilege;
+use Illuminate\Support\Facades\DB;
 use LeadMax\TrackYourStats\System\Session;
 use PDO;
 
@@ -231,7 +232,7 @@ class Update
         }
     }
 
-    public function getaffiliatePayouts()
+    public function getAffiliateOfferInfo()
     {
 
 	    if ($this->selectedUserType != Privilege::ROLE_AFFILIATE) {
@@ -250,20 +251,24 @@ class Update
 	    $result = $prep->fetchAll(PDO::FETCH_ASSOC);
 
 	    foreach($result as $index => $row ) {
-		    $affHasOffer = "SELECT rep_has_offer.payout FROM rep_has_offer WHERE rep_has_offer.rep_idrep = :repID AND rep_has_offer.offer_idoffer = :offerID";
-		    $prepHasOffer = $db->prepare($affHasOffer);
-		    $prepHasOffer->bindParam(":repID", $this->selectedUser->idrep);
-		    $prepHasOffer->bindParam(":offerID", $row['idoffer']);
-		    $prepHasOffer->execute();
-		    $resultHasOffer = $prepHasOffer->fetchAll(PDO::FETCH_ASSOC);
-
+		    $resultHasOffer = DB::table('rep_has_offer')
+		                        ->where('rep_has_offer.rep_idrep', '=', $this->selectedUser->idrep)
+		                        ->where('rep_has_offer.offer_idoffer', '=', $row['idoffer'])
+		                        ->select('rep_has_offer.payout')
+		                        ->get();
+		    $userCapStatus = DB::table('user_offer_caps')
+		                       ->where('offer_idoffer', '=', $row['idoffer'])
+		                       ->where('rep_idrep', '=', $this->selectedUser->idrep)->select('status', 'cap')->first();
 		    if (count($resultHasOffer) > 0) {
 			    $result[$index]["has_offer"] = true;
-			    $result[$index]["repPayout"] = $resultHasOffer[0]["payout"];
+			    $result[$index]["repPayout"] = $resultHasOffer[0]->payout;
 		    } else {
 			    $result[$index]["has_offer"] = false;
 			    $result[$index]["repPayout"] = 1.00;
 		    }
+
+		    $result[$index]["cap"] = $userCapStatus ? $userCapStatus->cap : 0;
+		    $result[$index]["status"] = $userCapStatus ? $userCapStatus->status : 0;
 	    }
 
 	    foreach ($result as $row) {
@@ -290,23 +295,59 @@ class Update
 		    }
 
 		    if($this->userType != Privilege::ROLE_AFFILIATE) {
-			    $hasAccess = $row['has_offer'] ? "checked" : "";
-			    echo '<td class="offer_access">
-						<input 
-						class="offer_access_check" 
-						type="checkbox" 
-						id="offer_access"
-						data-rep="'. $this->selectedUser->idrep . '"
-						data-offer="' . $row["idoffer"] .'"
-						name="offer_access"' .
-			         $hasAccess . '>
-						<label for="offer_access">Allow Access</label>
-					</td>';
+			    $this->getUserOfferAccess($row);
+		    }
+
+		    if($this->userType == Privilege::ROLE_GOD) {
+				$this->getUserOfferCaps($row);
 		    }
 
 		    echo "</tr>";
 	    }
     }
+
+	private function getUserOfferAccess($row) {
+		$hasAccess = $row['has_offer'] ? "checked" : "";
+		echo '<td>
+					<span class="offer_access">
+						<input 
+						class="offer_access_check" 
+						type="checkbox" 
+						data-rep="'. $this->selectedUser->idrep . '"
+						data-offer="' . $row["idoffer"] .'"
+						name="offer_access"' . $hasAccess . '>
+						<label for="offer_access">Allow Access</label>
+					</span>
+				</td>';
+	}
+
+	private function getUserOfferCaps($row) {
+		$capped = $row['status'] ? "checked" : "";
+		 echo '<td>
+					<span class="enable_offer_cap">
+						<input 
+						class="enable_offer_cap" 
+						type="checkbox" 
+						data-rep="'. $this->selectedUser->idrep . '"
+						data-offer="' . $row["idoffer"] .'"
+						name="enable_offer_cap"'
+						. $capped . '>
+						<label for="enable_offer_cap">Enable</label>
+					</span>
+				</td>
+				<td>	
+					<span>
+						<input 
+						class="user_offer_cap" 
+						type="number" 
+						step="1"
+						data-rep="'. $this->selectedUser->idrep . '"
+						data-offer="' . $row["idoffer"] .'"
+						value="'. $row["cap"]  . '"
+						name="user_offer_cap">
+					</span>
+				</td>';
+	}
 
     public function updateAffiliatePayout()
     {

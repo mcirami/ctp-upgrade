@@ -195,6 +195,68 @@ class UserController extends Controller
 		return view('user.offers')->with(['offers' => $offers, 'name' => $userFName]);
 	}
 
+	public function enableUserOfferCap(Request $request) {
+		$userID = $request->rep;
+		$offer = $request->offer_id;
+		$status = $request->status;
+		$message = "";
+
+		if(\LeadMax\TrackYourStats\System\Session::userType() == Privilege::ROLE_GOD) {
+			$userOfferCap = DB::table('user_offer_caps')->where("rep_idrep", $userID)->where('offer_idoffer', $offer)->first();
+
+			if($userOfferCap) {
+				DB::table('user_offer_caps')->where("rep_idrep", $userID)->where('offer_idoffer', $offer)->update( [
+					'status' => $status
+				] );
+
+			} else {
+				DB::table('user_offer_caps')->insert([
+					'rep_idrep'     => $userID,
+					'offer_idoffer' => $offer,
+					'status'        => $status
+				]);
+			}
+
+			$success = true;
+		} else {
+			$success = false;
+			$message = "You don't have permissions to do this";
+		}
+
+		return response()->json(['success' => $success, 'message' => $message]);
+
+	}
+
+	public function setUserOfferCap(Request $request) {
+		$userID = $request->rep;
+		$offer = $request->offer_id;
+		$cap = $request->cap;
+		$message = "";
+		if(\LeadMax\TrackYourStats\System\Session::userType() == Privilege::ROLE_GOD) {
+			$userOfferCap = DB::table('user_offer_caps')->where("rep_idrep", $userID)->where('offer_idoffer', $offer)->first();
+			if($userOfferCap) {
+				DB::table('user_offer_caps')->where("rep_idrep", $userID)->where('offer_idoffer', $offer)->update( [
+					'cap' => $cap
+				] );
+
+			} else {
+				DB::table('user_offer_caps')->insert([
+					'rep_idrep'     => $userID,
+					'offer_idoffer' => $offer,
+					'cap' => $cap
+				]);
+			}
+
+			$success = true;
+
+		} else {
+			$success = false;
+			$message = "You don't have permissions to do this";
+		}
+
+		return response()->json(['success' => $success, 'message' => $message]);
+	}
+
 	private function getDiffForHumans($users) {
 
 		foreach($users as $key => $user) {
