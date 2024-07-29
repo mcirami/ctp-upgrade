@@ -2,8 +2,9 @@
 
 namespace LeadMax\TrackYourStats\Report\Repositories\Offer;
 
-
+use App\User;
 use LeadMax\TrackYourStats\Report\Repositories\Repository;
+use LeadMax\TrackYourStats\System\Session;
 
 class AdminOfferRepository extends Repository
 {
@@ -43,6 +44,9 @@ class AdminOfferRepository extends Repository
 
     private function getClicks($dateFrom, $dateTo)
     {
+
+        $managers = User::where('referrer_repid', Session::user()->idrep)->pluck('idrep')->toArray();
+
         $db = $this->getDB();
         $sql = "
 				SELECT
@@ -59,7 +63,6 @@ class AdminOfferRepository extends Repository
                 LEFT JOIN pending_conversions pc
                     ON pc.click_id = rawClicks.idclicks  
 					AND pc.converted = 0
-                
                 WHERE
 					rawClicks.first_timestamp BETWEEN :dateFrom AND :dateTo  and rawClicks.click_type !=2
 			 GROUP BY offer.idoffer, rawClicks.offer_idoffer
@@ -84,6 +87,7 @@ class AdminOfferRepository extends Repository
 
     private function getConversions($dateFrom, $dateTo)
     {
+        $managers = User::where('referrer_repid', Session::user()->idrep)->pluck('idrep')->toArray();
         $db = $this->getDB();
         $sql = "
 				SELECT

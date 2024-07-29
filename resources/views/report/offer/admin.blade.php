@@ -29,6 +29,7 @@
         </thead>
         <tbody>
         @php
+
             $reporter->between($dates['startDate'], $dates['endDate'],
              new LeadMax\TrackYourStats\Report\Formats\HTML(true,
               ['idoffer', 'offer_name', 'Clicks', 'UniqueClicks', 'FreeSignUps', 'PendingConversions', 'Conversions', 'Revenue', 'Deductions', 'EPC']));
