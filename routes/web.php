@@ -58,6 +58,9 @@ Route::group(['middleware' => 'legacy.auth'], function () {
 	    Route::post('/change-aff-payout', [UserController::class, 'changeAffPayout'])->middleware(['role:0']);
 	    Route::post('/update-offer-access', [UserController::class, 'updateAffOfferAccess'])->middleware(['role:0']);
 	    Route::get('/offers/{user}', [UserController::class, 'editUserOffers'])->middleware(['role:0']);
+	    Route::post('/enable-user-offer-cap', [UserController::class, 'enableUserOfferCap'])->middleware(['role:0']);
+	    Route::post('/set-user-offer-cap', [UserController::class, 'setUserOfferCap'])->middleware(['role:0']);
+
         Route::group(['prefix' => '/{id}/salary', 'middleware' => 'permissions:' . Permissions::EDIT_SALARIES],
             function () {
                 Route::get('create', [SalaryController::class, 'showCreate'])->name('salary.create');

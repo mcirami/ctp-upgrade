@@ -2516,7 +2516,7 @@ table.offer_clicks th:first-child {
 	}
 }
 
-#user_info .update_aff_payout.updated_animation {
+#user_info .updated_animation {
 	animation: pulse 2s;
 }
 
@@ -2542,7 +2542,7 @@ table.offer_clicks th:first-child {
 	}
 }
 
-#user_info td.offer_access {
+#user_info td .offer_access {
 	display: -webkit-box;
 	display: -ms-flexbox;
 	display: flex;
@@ -2558,17 +2558,50 @@ table.offer_clicks th:first-child {
 	-webkit-align-items: center;
 	gap: 5px;
 }
-#user_info td.offer_access input[type="checkbox"] {
+#user_info td .offer_access input[type="checkbox"] {
 	display: block;
 	width: auto;
 }
-#user_info td.offer_access label {
+
+#user_info td .update_aff_payout {
+	padding: 0 5px;
+}
+#user_info td .offer_access label {
 	margin: 0;
 }
 
+#user_info td .enable_offer_cap {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-orient: horizontal;
+	-webkit-box-direction: normal;
+	-ms-flex-direction: row;
+	flex-direction: row;
+	-ms-flex-wrap: nowrap;
+	flex-wrap: nowrap;
+	justify-content: flex-start;
+	-webkit-justify-content: flex-start;
+	align-items: center;
+	-webkit-align-items: center;
+	gap: 5px;
+}
+
+#user_info td .enable_offer_cap input {
+	width: auto;
+}
+
+#user_info td .enable_offer_cap label {
+	margin: 0;
+}
+#user_info td .user_offer_cap {
+	padding: 0 5px;
+}
 #user_info.edit_user_offers {
 	margin-top: 40px;
 }
+
+
 
 #error_message {
 	display:none;

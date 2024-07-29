@@ -486,7 +486,7 @@ class Update
                 }
 
 
-                $caps = new Caps($id, true);
+                $caps = new Caps($id, null, true);
                 if (isset($_POST["enable_cap"])) {
 
 

@@ -195,7 +195,7 @@ class ClickRegistrationEvent extends URLEvent
 
     private function checkIfOfferCappedAndSendToRedirectIfCapped()
     {
-        $caps = new Caps($this->offerId);
+        $caps = new Caps($this->offerId, $this->userId);
 
         if ($caps->isOfferCapped()) {
             $caps->sendToRedirectOffer();
