@@ -56,13 +56,12 @@ class Total implements Filter
                     if (!isset($totals[$name]) || $totals[$name] == '') {
                         $totals[$name] = 0;
                     }
-                    if (is_int($value)) {
+                    if (is_int($value) || is_float($value) || $name == "UniqueClicks") {
                         $totals[$name] += $value;
                     }
                 }
             }
         }
-
 
         array_push($report, $totals);
 
