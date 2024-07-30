@@ -13,10 +13,35 @@ use LeadMax\TrackYourStats\Report\Repositories\Offer\ManagerOfferRepository;
 use LeadMax\TrackYourStats\System\Session;
 
 use LeadMax\TrackYourStats\Report\Filters;
+use LeadMax\TrackYourStats\Report\Repositories\Offer\GodOfferRepository;
 
 class OfferReportController extends ReportController
 {
 
+    public function god() {
+        $dates = self::getDates();
+        $repo = new GodOfferRepository(\DB::getPdo());
+
+        $reporter = new Reporter($repo);
+
+
+        $reporter
+            ->addFilter(new Filters\DeductionColumnFilter())
+            ->addFilter(new Filters\Total([
+                'Clicks', 
+                'UniqueClicks', 
+                'FreeSignUps', 
+                'PendingConversions', 
+                'Conversions', 
+                'Revenue', 
+                'Deductions'
+            ]))
+            ->addFilter(new Filters\EarningPerClick('UniqueClicks', 'Revenue'))
+            ->addFilter(new Filters\DollarSign(['Revenue', 'Deductions', 'EPC']))
+            ->addFilter(new Filters\ClickLink(request()));
+
+        return view('report.offer.admin', compact('reporter', 'dates'));
+    }
 
     public function admin()
     {
@@ -90,6 +115,8 @@ class OfferReportController extends ReportController
     {
         switch (Session::userType()) {
             case Privilege::ROLE_GOD:
+                return $this->god();
+                
             case Privilege::ROLE_ADMIN:
                 return $this->admin();
 
