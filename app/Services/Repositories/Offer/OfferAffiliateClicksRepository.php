@@ -175,7 +175,7 @@ class OfferAffiliateClicksRepository implements Repository
             ->orderBy('conversions', 'DESC');
     }
 
-    public function getOfferConversionsForGod() {
+    public function getOfferConversionsForGod($start, $end) {
         return \DB::query()->select([
             'rep.idrep as user_id',
             'rep.user_name',
