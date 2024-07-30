@@ -50,6 +50,7 @@ class Reporter
     {
         $report = $this->repo->between($dateFrom, $dateTo);
 
+        
         $report = $this->filterReport($report);
 
         return $report;
