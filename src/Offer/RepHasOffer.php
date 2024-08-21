@@ -767,6 +767,7 @@ class RepHasOffer
 
                 if (Session::userType() == \App\Privilege::ROLE_GOD) {
                     $campaign_id = post('campaign');
+                    dd($campaign_id);
                 } else {
                     $campaign_id = Campaigns::getDefaultCampaignId();
                 }
@@ -874,7 +875,7 @@ class RepHasOffer
                 }
 
 
-                //$stmt2->debugDumpParams();
+                $stmt2->debugDumpParams();
 
                 $db->commit();
 
