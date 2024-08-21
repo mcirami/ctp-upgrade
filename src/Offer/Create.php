@@ -106,13 +106,12 @@ class Create
 
         $per = Permissions::loadFromSession();
 
-
         if ($per->can("create_managers")) {
             echo "
                 <input {$man} 
                     onchange=\"changeAssignType('managers');\"
                     type=\"radio\"
-                    name=\"assi nToType\" value=\"man\" style=\"width:2%;\"> Managers";
+                    name=\"assignToType\" value=\"man\" style=\"width:2%;\"> Managers";
         }
 
         if ($per->can("create_managers")) {
