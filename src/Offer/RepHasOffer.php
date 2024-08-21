@@ -767,7 +767,6 @@ class RepHasOffer
 
                 if (Session::userType() == \App\Privilege::ROLE_GOD) {
                     $campaign_id = post('campaign');
-                    dd($campaign_id);
                 } else {
                     $campaign_id = Campaigns::getDefaultCampaignId();
                 }
@@ -892,7 +891,7 @@ class RepHasOffer
 //                echo "ERROR = " . $e->getMessage();
                 //Rollback the transaction.
                 $db->rollBack();
-                dd($e);
+
                 die("<h1> ERROR: OFFER NOT SAVED </h1>".$e->getMessage()); // If there is an error, DIE, escape function
             }
 
