@@ -875,7 +875,7 @@ class RepHasOffer
                 }
 
 
-                $stmt2->debugDumpParams();
+                //$stmt2->debugDumpParams();
 
                 $db->commit();
 
@@ -892,7 +892,7 @@ class RepHasOffer
 //                echo "ERROR = " . $e->getMessage();
                 //Rollback the transaction.
                 $db->rollBack();
-
+                dd($e);
                 die("<h1> ERROR: OFFER NOT SAVED </h1>".$e->getMessage()); // If there is an error, DIE, escape function
             }
 
