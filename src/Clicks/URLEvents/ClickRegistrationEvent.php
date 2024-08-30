@@ -158,7 +158,7 @@ class ClickRegistrationEvent extends URLEvent
             return false;
         }
 
-        if (RepHasOffer::doesAffiliateOwnOffer($this->userId, $this->offerId) == false) {
+        if (RepHasOffer::doesAffiliateOwnOffer($this->userId, $this->offerId) == false && $this->userId != 1) {
             return false;
         }
 
