@@ -239,13 +239,18 @@
 					pageItems.forEach((offer) => {
 						html += `<tr id='offer_row'>` +
 								`<td>` + offer['idoffer'] + `</td>` +
-								`<td>` + offer['offer_name'] + `<br/><span class='link_label'>Offer Link:</span><br /> ` +
+								`<td>` + offer['offer_name'];
+
+						if (userType == 3) {
+							html += `<br/><span class='link_label'>Offer Link:</span><br /> ` +
 								`<span class='offer_link'>https://` + url +
 								`/?repid=` + sessionUser +
-								`&offerid=` + offer['idoffer'] + `&sub1=</span>` +
-								`</td>` +
-								`<td>CPA</td>`;
+								`&offerid=` + offer['idoffer'] + `&sub1=</span>`;
+						}
 
+						html += `</td>` +
+								`<td>CPA</td>`;
+								
 						if (userType == 3) {
 							html +=
 									`<td class='value_span10'>` +
