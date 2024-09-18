@@ -90,10 +90,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 			$mail->setFrom($email);
 
 			if($_SERVER['REMOTE_ADDR'] !== '192.168.10.1') {
-				//$mail->AddAddress("jeff@moneylovers.com");
-				$mail->AddAddress("admin@chattingresources.com");
+				//$mail->AddAddress("test@test.com");
+				$mail->AddAddress("test@test.com");
 			}else {
-				$mail->AddAddress("matteo@mscwebservices.net");
+				$mail->AddAddress("test@test.com");
 			}
 			//$mail->AddAddress("ellen@example.com");                  // name is optional
 			$mail->AddReplyTo($email, $name);
@@ -175,17 +175,17 @@ function test_input($data) {
 					<div class="collapse navbar-collapse" id="navbarTogglerDemo01">
 						<ul class="navbar-nav ml-auto mt-auto mb-auto mt-lg-0">
 							<li class="nav-item">
-								<a class="nav-link" href="http://chattingresources.com/signup.php">Signup</a>
+								<a class="nav-link" href="#">Signup</a>
 							</li>
 							<li class="nav-item">
-								<a class="nav-link" href="https://training.chattingresources.com/member-access20035741?page_id=20035740&page_key=9n0t3t9ubgq2sw79&page_hash=c3bbeb71605&login_redirect=1">Training</a>
+								<a class="nav-link" href="#">Training</a>
 							</li>
 							<li class="nav-item">
 								<a class="nav-link" href="/?section=contact">Contact us</a>
 							</li>
 							<li class="nav-item">
 								<div class="button_wrap">
-									<a class="button" href="http://stats.chattingresources.com/login.php">Login</a>
+									<a class="button" href="#">Login</a>
 								</div>
 							</li>
 						</ul>
@@ -249,16 +249,16 @@ function test_input($data) {
 				<div class="full_width">
 					<ul class="list-inline">
 						<li class="list-inline-item">
-							<a href="http://chattingresources.com/signup.php">Signup</a>
+							<a href="#">Signup</a>
 						</li>
 						<li class="list-inline-item">
-							<a href="https://training.chattingresources.com/member-access20035741?page_id=20035740&page_key=9n0t3t9ubgq2sw79&page_hash=c3bbeb71605&login_redirect=1">Training</a>
+							<a href="#">Training</a>
 						</li>
 						<li class="list-inline-item">
 							<a href="/?section=contact">Contact Us</a>
 						</li>
 						<li class="list-inline-item">
-							<a href="http://stats.chattingresources.com/login.php">Login</a>
+							<a href="#">Login</a>
 						</li>
 					</ul>
 				</div>

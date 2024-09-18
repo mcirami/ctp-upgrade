@@ -83,17 +83,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 			$mail->IsSMTP(); // set mailer to use SMTP
 			$mail->Host = "smtp.gmail.com";  // specify main and backup server
 			$mail->SMTPAuth = true;     // turn on SMTP authentication
-			$mail->Username = "admin@chattingresources.com";  // SMTP username
+			$mail->Username = "test@test.com";  // SMTP username
 			$mail->Password = "J7#us73@20s"; // SMTP password
 			$mail->SMTPSecure = "tls";
 			$mail->Port = 587;
 			$mail->setFrom($email);
 
 			if($_SERVER['REMOTE_ADDR'] !== '192.168.10.1') {
-				//$mail->AddAddress("jeff@moneylovers.com");
-				$mail->AddAddress("admin@chattingresources.com");
+				//$mail->AddAddress("test@test.com");
+				$mail->AddAddress("test@test.com");
 			}else {
-				$mail->AddAddress("matteo@mscwebservices.net");
+				$mail->AddAddress("test@test.com");
 			}
 			//$mail->AddAddress("ellen@example.com");                  // name is optional
 			$mail->AddReplyTo($email, $name);
@@ -249,21 +249,21 @@ function test_input($data) {
 				<div class="full_width">
 					<ul class="list-inline">
 						<li class="list-inline-item">
-							<a href="http://chattingresources.com/signup.php">Signup</a>
+							<a href="#">Signup</a>
 						</li>
 						<li class="list-inline-item">
-							<a href="https://training.chattingresources.com/member-access20035741?page_id=20035740&page_key=9n0t3t9ubgq2sw79&page_hash=c3bbeb71605&login_redirect=1">Training</a>
+							<a href="#">Training</a>
 						</li>
 						<li class="list-inline-item">
-							<a href="/?section=contact">Contact Us</a>
+							<a href="#">Contact Us</a>
 						</li>
 						<li class="list-inline-item">
-							<a href="http://stats.chattingresources.com/login.php">Login</a>
+							<a href="#">Login</a>
 						</li>
 					</ul>
 				</div>
 				<div class="full_width">
-					<p>Copyright 2018 chattingresources.com. All rights reserved.</p>
+					<p>Copyright 2018 test.com. All rights reserved.</p>
 				</div>
 			</div>
 		</div>

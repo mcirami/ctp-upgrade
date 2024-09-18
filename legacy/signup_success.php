@@ -128,44 +128,13 @@ $pending = (isset($_GET["pending"]) && $_GET["pending"] != "") ? $_GET["pending"
 							<div class = "heading_holder">
 								<h2 class = " value_span9">
 									<?php if ($pending) : ?>
-										Your account is still Pending!
+										Your account is not Active!
 									<?php else : ?>
-										Thank you for registering with Money Lovers!
+										Thank you for registering!
 									<?php endif; ?>
 								</h2>
 							</div>
-							<h3>Please contact us for approval</h3>
-							<div class="columns_wrap">
-								<div class="column">
-									<h4>Jeff:</h4>
-									<p>
-										<span>Skype:</span>
-										<a href="skype:moneylovers.jeff?add">moneylovers.jeff</a>
-									</p>
-									<p>
-										<span>Email: </span>
-										<a href="mailto:jeff@moneylovers.com">jeff@moneylovers.com</a></p>
-									<p>
-										<span>Telegram:</span>
-										<a href="https://t.me/jefftoch">jefftoch</a>
-									</p>
-								</div>
-								<div class="column">
-									<h4>Matteo</h4>
-									<p>
-										<span>Skype:</span>
-										<a href="skype:moneylovers.matteo?add">moneylovers.matteo</a>
-									</p>
-									<p>
-										<span>Email:</span>
-										<a href="mailto:matteo@moneylovers.com">matteo@moneylovers.com</a>
-									</p>
-									<p>
-										<span>Telegram:</span>
-										<a href="https://t.me/moneylovers_matteo">moneylovers_matteo</a>
-									</p>
-								</div>
-							</div>
+							<h3 style="text-align: center;">Please contact your administrator for assistance!</h3>
 						</div>
 				<?php
 					}
