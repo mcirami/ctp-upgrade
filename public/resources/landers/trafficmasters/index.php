@@ -151,39 +151,7 @@
             <h2 class="wow fadeInUp animated">Contact Us</h2>
             <p class="wow fadeInLeft animated">Please use one of the options below for customer support. All inquiries will be answered in the order they are received and as quickly and diligently as possible.</p>
             <div class="block2">
-                <div class="sub wow fadeInLeft animated">              
-                    <h2>Jason Vujnich</h2>
-                    <div class="icons_wrap">
-                        <img src="resources/landers/trafficmasters/images/icon-email.png" alt="">
-                        <h3><a href="mailto:jason@trafficmasters.com">jason@trafficmasters.com</a></h3>
-                    </div>
-                     <div class="icons_wrap">
-                        <img src="resources/landers/trafficmasters/images/icon-skype.png" alt="">
-                        <h3><a href="skype:moneylovers.jason?add">moneylovers.jason</a></h3>
-                    </div>
-                </div>
-                <div class="sub wow fadeInUp animated careers">
-                    <h2>Chris Gravagna</h2>
-                    <div class="icons_wrap">
-                        <img src="resources/landers/trafficmasters/images/icon-email.png" alt="">
-                        <h3><a href="mailto:chris@trafficmasters.com">chris@trafficmasters.com</a></h3>
-                    </div>
-                     <div class="icons_wrap">
-                        <img src="resources/landers/trafficmasters/images/icon-skype.png" alt="">
-                        <h3><a href="skype:christopher.gravagna2?add">christopher.gravagna2</a></h3>
-                    </div>
-                </div>
-                <div class="sub wow fadeInRight animated">
-                    <h2>Jamie Lopes</h2>
-                    <div class="icons_wrap">
-                        <img src="resources/landers/trafficmasters/images/icon-email.png" alt="">
-                        <h3><a href="mailto:jamie@trafficmasters.com">jamie@trafficmasters.com</a></h3>
-                    </div>
-                     <div class="icons_wrap">
-                        <img src="resources/landers/trafficmasters/images/icon-skype.png" alt="">
-                        <h3><a href="skype:moneylovers.jamie?add">moneylovers.jamie</a></h3>
-                    </div>
-                </div>
+                
             </div>
         </div>
     </section>
