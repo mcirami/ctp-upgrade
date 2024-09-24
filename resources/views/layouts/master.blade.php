@@ -109,12 +109,23 @@
             echo "<a class=\"value_span11 value_span2 value_span4\" href=\"/logout\">Logout</a>";
 
             ?>
-
-
         </div>
     </div>
+    
 </div> <!-- top_sec -->
-
+<div class="info_bar">
+    <div class="icon_wrap">
+        <img src={{ asset('/images/warning.png') }}
+            alt="warning"
+            title="warning"/>
+    </div>
+    <p>Sales made with <span>ILLEGAL OR STOLEN PROFILES</span> will <span>NOT</span> be paid </p>
+    <div class="icon_wrap">
+        <img src={{ asset('/images/warning.png') }}
+        alt="warning"
+        title="warning"/>
+    </div>
+</div>
 <div class="panels_wrap">
 
     <div class="left_panel value_span3">
@@ -156,7 +167,9 @@
     <div id="app">
 
     </div>
+    
     @yield('content')
+    
     @if(isset($notify))
         <?php \LeadMax\TrackYourStats\System\Notify::info($notify, ''); ?>
     @endif
