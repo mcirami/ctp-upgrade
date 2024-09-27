@@ -46,7 +46,7 @@ class NavBar
 
             "Pending Users" => [
                 'url' => '/view_pending_affiliates.php',
-                'required_permissions' => ['approve_affiliate_sign_ups'],
+                "required_user_types" => [\App\Privilege::ROLE_GOD],
             ],
 
             "Banned Users" => [

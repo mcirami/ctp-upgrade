@@ -74,7 +74,7 @@ class EarningPerClick implements Filter
 
             if (isset($key[$clicks]) && isset($key[$revenue])) {
 
-                if ($key[$clicks] != 0 && $key[$revenue] !== null) {
+                if ($key[$clicks] != 0 && $key[$revenue] != null) {
                     $report [$row]["EPC"] = $this->roundEPC(($report[$row][$revenue] / $key[$clicks]));
                 } else {
                     $report [$row]["EPC"] = 0;
