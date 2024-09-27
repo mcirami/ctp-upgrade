@@ -82,7 +82,7 @@
 
 						@if (Session::userType() == \App\Privilege::ROLE_AFFILIATE)
 							<th class="value_span9">Offer Link</th>
-						@else
+						@elseif(Session::userType() != \App\Privilege::ROLE_MANAGER)
 							<th class="value_span9">Affiliate Access</th>
 						@endif
 
@@ -273,7 +273,7 @@ Session::userType() !== \App\Privilege::ROLE_ADMIN
 									`</button></td>`;
 						}
 
-						if (permissions.includes('create_offers') && userType != 3) {
+						if (permissions.includes('create_offers') && userType != 3 && userType != 2) {
 							html += `<td class='value_span10'>` +
 									`<a target='_blank' class='btn btn-sm btn-default value_span5-1' href='/offer_access.php?id=` +
 									offer['idoffer'] + `'>Affiliate Access</a>` +
