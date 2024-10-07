@@ -73,7 +73,7 @@ if ($file !== "/") {
 
 
     if (file_exists($file)) {
-        include($faile);
+        include($file);
         die();
     }
 }
