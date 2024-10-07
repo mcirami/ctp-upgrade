@@ -90,12 +90,12 @@ $update->dumpPermissionsToJavascript();
 					<li class="px-10 py-4 font-semibold rounded-t-xl -mb-px value_span6-1 value_span4">
 						<a class="value_span2" id="default-tab" href="#account">Account</a>
 					</li>
-					<?php if( Session::userType() == \App\Privilege::ROLE_GOD) : ?>
+					<?php if( Session::permissions()->can("edit_affiliates")) : ?>
 						<li class="px-10 py-4 rounded-t-xl value_span4">
 							<a href="#sub_ids">Sub ID's</a>
 						</li>
 					<?php endif; ?>
-					<?php if ( Session::permissions()->can("edit_aff_payout") && $update->selectedUserType == \App\Privilege::ROLE_AFFILIATE) : ?>
+					<?php if ( Session::permissions()->can("edit_affiliates")) : ?>
 						<li class="px-10 py-4 rounded-t-xl value_span4">
 							<a href="#offers">Offers</a>
 						</li>
@@ -307,7 +307,7 @@ $update->dumpPermissionsToJavascript();
 					</div>
 				</div>
 				<?php
-				if( Session::userType() == \App\Privilege::ROLE_GOD) :
+				if( Session::permissions()->can("edit_affiliates")) :
 
 					$userClass = new UserController;
 					$subIds = $userClass->getUserSubIds();
@@ -337,7 +337,7 @@ $update->dumpPermissionsToJavascript();
 
 				<?php
 
-				if ( Session::permissions()->can("edit_aff_payout") && $update->selectedUserType == \App\Privilege::ROLE_AFFILIATE)
+				if ( Session::permissions()->can("edit_affiliates"))
 				{
 
 					echo " <div id=\"offers\" class=\"hidden p-4 columns-1\"><div class=\"heading_holder value_span9\"><span
@@ -362,7 +362,7 @@ $update->dumpPermissionsToJavascript();
 						echo "<th class=\"value_span9\">Change Aff Payout</th>";
 					}
 
-					if ( Session::permissions()->can("edit_aff_payout"))
+					if ( Session::userType() == \App\Privilege::ROLE_GOD)
 					{
 						echo "<th class=\"value_span9\">Offer Access</th>";
 					}
