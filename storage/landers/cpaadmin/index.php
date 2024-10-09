@@ -43,11 +43,7 @@
 									</li>
 									<li class="nav-item">
 										<a class="nav-link" href="#faq">FAQ</a>
-<!--									</li>
-									<li class="nav-item">
-										<a href="#contact" class="nav-link">Contact</a>
 									</li>
--->
 								</ul>
 								<div class="buttons_wrap">
 									<a class="button blue" href="https://cpaadmin.com/login.php">Sign In</a>
@@ -64,10 +60,9 @@
 			<div class="bg_wrap">
 				<article>
 					<h2>Private Network for<br /><span>Owners & Managers</span></h2>
-					<p>Do you manage a Team, Office, or Multiple Offices?<br />
-					   Join our Exclusive Network with over 50 years<br />
-					   of combined experience in CPA marketing. </p>
-					<div class="buttons_wrap">
+					<p>Our Exclusive Network has over 50 years<br />
+					   of combined experience in CPA marketing.</p>
+					<!-- <div class="buttons_wrap">
 						<a class="button blue with_arrow" href="/contact-us">
 							Contact Us
 							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
@@ -80,12 +75,12 @@
 								<path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
 							</svg>
 						</a>
-					</div>
+					</div> -->
 				</article>
 				<div class="grid_wrap">
 					<article>
 						<div class="content">
-							<h4>Private and Custom Offers FOOL</h4>
+							<h4>Private and Custom Offers</h4>
 							<ul>
 								<li>
 									<div class="icon_wrap">
@@ -190,7 +185,7 @@
 		</div>
 	</section>
 
-	<section id="how_it_works">
+	<!-- <section id="how_it_works">
 		<div class="container">
 			<h2 class="title">Getting Started</h2>
 			<div class="grid_wrap">
@@ -223,7 +218,7 @@
 				</article>
 			</div>
 		</div>
-	</section>
+	</section> -->
 
 	<section id="faq">
 		<div class="container">
