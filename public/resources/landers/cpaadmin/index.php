@@ -68,12 +68,6 @@
 					<p>Our Exclusive Network has over 50 years<br />
 					   of combined experience in CPA marketing. </p>
 					<div class="buttons_wrap">
-						<!-- <a class="button blue with_arrow" href="/contact-us">
-							Contact Us
-							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
-								<path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
-							</svg>
-						</a> -->
 						<a class="button green with_arrow" href="#how_it_works">
 							Find Out More
 							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
@@ -190,7 +184,7 @@
 		</div>
 	</section>
 
-	<!-- <section id="how_it_works">
+	<section id="how_it_works">
 		<div class="container">
 			<h2 class="title">Getting Started</h2>
 			<div class="grid_wrap">
@@ -200,8 +194,8 @@
 							1
 						</span>
 					</span>
-					<h4>Complete our Contact Form</h4>
-					<p><a href="/contact-us">Contact Us</a> to apply for an account today. Be as detailed as possible so we can best assist you.</p>
+					<h4>You Must Be Invited</h4>
+					<p>CPA Admin is an invite only network. If you were not invited to join you will not be able to create an account.</p>
 				</article>
 				<article>
 					<span class="number_wrap">
@@ -210,7 +204,7 @@
 						</span>
 					</span>
 					<h4>Account Approval</h4>
-					<p>After we recieve your application a qualified managers will reach out to you within 24 hrs.</p>
+					<p>After we have all the info we need to create your account, a qualified managers will reach out to you within 24 hrs.</p>
 				</article>
 				<article>
 					<span class="number_wrap">
@@ -223,7 +217,7 @@
 				</article>
 			</div>
 		</div>
-	</section> -->
+	</section>
 
 	<section id="faq">
 		<div class="container">
