@@ -84,14 +84,6 @@ $mid = (isset($_GET["mid"]) && $_GET["mid"] != "") ? $_GET["mid"] : "";
 	.heading_holder {
 		margin: 0px 0px 10px 0px;
 	}
-	
-	.left_con01 p input {
-	
-	}
-	
-	.btn_yellow {
-	
-	}
 </style>
 
 

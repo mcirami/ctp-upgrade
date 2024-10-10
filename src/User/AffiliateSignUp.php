@@ -53,7 +53,7 @@ class AffiliateSignUp
     public static function queryFetchPendingAffiliates()
     {
         $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
-        $sql = "SELECT * FROM rep WHERE rep.referrer_repid = 1 AND status = 0";
+        $sql = "SELECT * FROM rep WHERE rep.lft = 0 AND rep.rgt = 0 AND rep.referrer_repid = 1 AND status = 0";
         $prep = $db->prepare($sql);
         $prep->execute();
 
@@ -105,10 +105,10 @@ class AffiliateSignUp
 
 		if ($this->getP("mid") != "") {
 			$mid = intval($this->getP("mid"));
-			//$status = 1;
+			$status = 1;
 		} else {
 			$mid = 1;
-			//$status = 0;
+			$status = 0;
 		}
 
         $email = $_POST["tys_email"];
@@ -116,7 +116,7 @@ class AffiliateSignUp
         $timestamp = date("Y-m-d H:i:s");
 
         $sql = "
-INSERT INTO rep (first_name, last_name, email, user_name, password, status, referrer_repid, rep_timestamp, lft,rgt, skype, company_name) VALUES(:first_name, :last_name, :email, :user_name, :password, 0, :mid, :date, 0,0, :skype, :company_name);
+INSERT INTO rep (first_name, last_name, email, user_name, password, status, referrer_repid, rep_timestamp, lft,rgt, skype, company_name) VALUES(:first_name, :last_name, :email, :user_name, :password, :status, :mid, :date, 0,0, :skype, :company_name);
 ";
 
         $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
@@ -129,11 +129,12 @@ INSERT INTO rep (first_name, last_name, email, user_name, password, status, refe
         $prep->bindParam(":email", $email);
         $prep->bindParam(":user_name", $user_name);
         $prep->bindParam(":password", $password);
+        $prep->bindParam(":status", $status);
+        $prep->bindParam(":mid", $mid);
         $prep->bindParam(":date", $timestamp);
         $prep->bindParam(":skype", $skype);
         $prep->bindParam(":company_name", $company_name);
-	    //$prep->bindParam(":status", $status);
-	    $prep->bindParam(":mid", $mid);
+	    
 
         if ($prep->execute()) {
 
