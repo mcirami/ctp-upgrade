@@ -53,7 +53,7 @@ class AffiliateSignUp
     public static function queryFetchPendingAffiliates()
     {
         $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
-        $sql = "SELECT * FROM rep WHERE rep.lft = 0 AND rep.rgt = 0 AND rep.referrer_repid = 1 AND status = 0";
+        $sql = "SELECT * FROM rep WHERE rep.referrer_repid = 1 AND status = 0";
         $prep = $db->prepare($sql);
         $prep->execute();
 
