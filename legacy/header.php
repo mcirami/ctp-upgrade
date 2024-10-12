@@ -130,19 +130,19 @@ $navBar = new \LeadMax\TrackYourStats\System\NavBar(\LeadMax\TrackYourStats\Syst
         </div>
     </div>
 </div> <!-- top_sec -->
-<div class="info_bar">
+<!-- <div class="info_bar">
     <div class="icon_wrap">
-        <img src='<?php echo $webroot; ?>/images/warning.png'
+        <img src='<?php// echo $webroot; ?>/images/warning.png'
             alt="warning"
             title="warning"/>
     </div>
     <p>Sales made with <span>ILLEGAL OR STOLEN PROFILES</span> will <span>NOT</span> be paid </p>
     <div class="icon_wrap">
-        <img src='<?php echo $webroot; ?>/images/warning.png'
+        <img src='<?php //echo $webroot; ?>/images/warning.png'
         alt="warning"
         title="warning"/>
     </div>
-</div>
+</div> -->
 <div class="panels_wrap">
 
     <div class="left_panel value_span3">

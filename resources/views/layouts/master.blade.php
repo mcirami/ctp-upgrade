@@ -113,7 +113,7 @@
     </div>
     
 </div> <!-- top_sec -->
-<div class="info_bar">
+<!-- <div class="info_bar">
     <div class="icon_wrap">
         <img src={{ asset('/images/warning.png') }}
             alt="warning"
@@ -125,7 +125,7 @@
         alt="warning"
         title="warning"/>
     </div>
-</div>
+</div> -->
 <div class="panels_wrap">
 
     <div class="left_panel value_span3">
