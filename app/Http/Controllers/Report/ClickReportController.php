@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Report;
 
 use App\Click;
+use App\Conversion;
 use App\Offer;
 use App\Privilege;
 use App\Services\Repositories\Offer\OfferAffiliateClicksRepository;
@@ -117,6 +118,38 @@ class ClickReportController extends ReportController
 
         return view('report.clicks.affiliate', compact('report', 'user', 'reportCollection', 'startDate', 'endDate', 'dateSelect'));
     }
+
+	public function showUserConversions($userId) {
+		$dates = self::getDates();
+		$startDate = $dates['originalStart'];
+		$endDate = $dates['originalEnd'];
+		$dateSelect = request()->query('dateSelect');
+
+        $user = User::myUsers()->findOrFail($userId);
+
+	    $reportCollection = Conversion::where('user_id', '=', $userId)
+	                ->whereBetween('timestamp', [$dates['startDate'], $dates['endDate']])
+	                ->leftJoin('click_vars', 'click_vars.click_id', '=', 'conversions.click_id')
+					->leftJoin('clicks', 'clicks.idclicks', '=', 'conversions.click_id')
+	                ->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
+	                ->select(
+						'clicks.idclicks',
+						'offer.offer_name',
+						'conversions.timestamp as conversion_timestamp',
+						'conversions.paid as paid',
+						'click_vars.sub1',
+						'click_vars.sub2',
+		                'click_vars.sub3',
+		                'click_vars.sub4',
+		                'click_vars.sub5',
+	                )
+	                ->orderBy('conversions.timestamp', 'DESC')->paginate(100);
+
+
+		$report = $this->formatResults($reportCollection);
+
+        return view('report.conversions.affiliate', compact('report', 'user', 'reportCollection', 'startDate', 'endDate', 'dateSelect'));
+	}
 
 	public function showConversionsByUser($offerId) {
 

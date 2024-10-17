@@ -37,8 +37,7 @@ class Date
 
     static function convertToEST($date) {
         $carbon = Carbon::createFromFormat("Y-m-d H:i:s", $date, "UTC");
-        $twentyFour = $carbon->setTimezone("America/New_York");
-        return $twentyFour->format('Y-m-d h:i:s');
+        return $carbon->setTimezone("America/New_York");
     }
 
     static function tomorrow()
