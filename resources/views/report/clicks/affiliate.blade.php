@@ -58,13 +58,23 @@
 			</thead>
 			<tbody>
 			@foreach($report as $row)
+				@php 
+					
+					$myReport = new LeadMax\TrackYourStats\Table\Date; 
+					$timestamp = $myReport->convertToEST($row->timestamp);
+					$convertionTimeStamp = "";
+					if ($row->conversion_timestamp) {
+						$convertionTimeStamp = $myReport->convertToEST($row->conversion_timestamp);
+					}
+					
+				@endphp
 				<tr role="row">
 					@if (\LeadMax\TrackYourStats\System\Session::permissions()->can("view_fraud_data"))
 						<td>{{$row->idclicks}}</td>
 					@endif
-					<td>{{$row->timestamp}}</td>
+					<td>{{$timestamp}}</td>
 					<td>{{$row->offer_name}}</td>
-					<td>{{$row->conversion_timestamp}}</td>
+					<td>{{$convertionTimeStamp}}</td>
 					<td>{{$row->paid}}</td>
 					<td>{{$row->sub1}}</td>
 					<td>{{$row->sub2}}</td>

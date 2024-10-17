@@ -35,6 +35,12 @@ class Date
         return $carbon->format($newFormat);
     }
 
+    static function convertToEST($date) {
+        $carbon = Carbon::createFromFormat("Y-m-d H:i:s", $date, "UTC");
+        $twentyFour = $carbon->setTimezone("America/New_York");
+        return $twentyFour->format('Y-m-d h:i:s');
+    }
+
     static function tomorrow()
     {
         $timezone = (isset($_COOKIE["timezone"])) ? $_COOKIE["timezone"] : "America/New_York";
