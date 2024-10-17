@@ -57,10 +57,9 @@
 			</tr>
 			</thead>
 			<tbody>
+			@php $myReport = new LeadMax\TrackYourStats\Table\Date;  @endphp
 			@foreach($report as $row)
 				@php 
-					
-					$myReport = new LeadMax\TrackYourStats\Table\Date; 
 					$timestamp = $myReport->convertToEST($row->timestamp);
 					$convertionTimeStamp = "";
 					if ($row->conversion_timestamp) {
