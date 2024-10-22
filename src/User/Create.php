@@ -182,7 +182,7 @@ class Create
             Session::userID();
             //dd($this->listAdmin[0]);
         }
-        print_r($this->listAdmin);
+        //print_r($this->listAdmin);
         echo "<script type=\"text/javascript\">";
         echo "var listAdmin = ".json_encode($this->listAdmin).";";
         echo "</script>";
