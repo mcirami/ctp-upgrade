@@ -180,7 +180,7 @@ class Create
     {
         if(\App\Privilege::ROLE_ADMIN) {
             Session::userID();
-            dd($this->listAdmin[0]);
+            //dd($this->listAdmin[0]);
         }
         print_r($this->listAdmin);
         echo "<script type=\"text/javascript\">";
