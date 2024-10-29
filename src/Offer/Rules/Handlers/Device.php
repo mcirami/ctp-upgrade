@@ -29,13 +29,22 @@ class Device
 
     public $deviceList = array();
 
+    public $capStatus = 0;
+
+    public $capAmount = 0;
+
     function __construct($args)
     {
         // if we're editing a device rule
         if (is_string($args)) {
+
             $this->ruleID = $args;
+
             $this->getRules();
             $this->offerID = $this->rules[0]["offer_idoffer"];
+            $this->capStatus = $this->rules[0]["cap_status"];
+            $this->capAmount = $this->rules[0]["cap"];
+
         } else  // if we're creating a new device rule
         {
 
@@ -49,7 +58,12 @@ class Device
 
             $this->deny = $args[3];
 
-            for ($i = 4; $i < count($args); $i++) {
+            $this->capAmount = $args[4];
+
+            $this->capStatus = $args[5];
+            
+
+            for ($i = 6; $i < count($args); $i++) {
                 $this->deviceList[] = $args[$i];
             }
 
@@ -66,11 +80,12 @@ class Device
 
     public function updateRule($ruleData, $countryList)
     {
-
         $ruleData->ruleID = (int)$ruleData->ruleID;
         $ruleData->is_active = (int)$ruleData->is_active;
         $ruleData->deny = (int)$ruleData->deny;
         $ruleData->redirectOffer = (int)$ruleData->redirectOffer;
+        $ruleData->capAmount = (int)$ruleData->capAmount;
+        $ruleData->capStatus = (int)$ruleData->capStatus;
 
         $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
         try {
@@ -79,7 +94,7 @@ class Device
 
             //Update rule and geo_rule
             $sql = "UPDATE rule
-                    SET rule.name = :name, rule.redirect_offer = :redirect_offer,  rule.is_active = :is_active, rule.deny = :deny 
+                    SET rule.name = :name, rule.redirect_offer = :redirect_offer,  rule.is_active = :is_active, rule.deny = :deny, rule.cap = :cap, rule.cap_status = :capStatus 
                     
                     WHERE rule.idrule = :ruleID  ";
 
@@ -90,6 +105,8 @@ class Device
             $prep->bindParam(":is_active", $ruleData->is_active);
             $prep->bindParam(":deny", $ruleData->deny);
             $prep->bindParam(":ruleID", $ruleData->ruleID);
+            $prep->bindParam(":cap", $ruleData->capAmount);
+            $prep->bindParam(":capStatus", $ruleData->capStatus);
             $prep->execute();
 
 
@@ -161,10 +178,12 @@ class Device
         $rule = $this->rules[0];
 
         return [
-            'name' => $rule["name"],
+            'name'          => $rule["name"],
             'redirectOffer' => $rule["redirect_offer"],
-            'is_active' => $rule["is_active"],
-            'deny' => $rule["deny"],
+            'is_active'     => $rule["is_active"],
+            'deny'          => $rule["deny"],
+            'capAmount'     => $rule["cap"],
+            'capStatus'     => $rule["cap_status"]
         ];
     }
 
@@ -213,7 +232,7 @@ class Device
 
             $db->beginTransaction();
 
-            $sql = "INSERT INTO rule (name, offer_idoffer, type, redirect_offer, deny) VALUES(:name, :offerID, :type, :redirect_offer, :deny)";
+            $sql = "INSERT INTO rule (name, offer_idoffer, type, redirect_offer, deny, cap, cap_status) VALUES(:name, :offerID, :type, :redirect_offer, :deny, :cap, :cap_status)";
 
             $prep = $db->prepare($sql);
 
@@ -223,6 +242,8 @@ class Device
             $prep->bindParam(":type", $this->type);
             $prep->bindParam(":redirect_offer", $this->redirectOffer);
             $prep->bindParam(":deny", $this->deny);
+            $prep->bindParam(":cap", $this->capAmount);
+            $prep->bindParam(":cap_status", $this->capStatus);
             $prep->execute();
 
             $ruleID = $db->lastInsertId();

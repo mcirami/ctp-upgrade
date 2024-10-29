@@ -157,18 +157,18 @@ class Rules
 
     public function checkAllRules()
     {
+        //dd($this->rules);
         if (empty($this->rules)) {
             return true;
         }
 
-//        dd($this->rules);
+        //dd($this->rules);
 
         foreach ($this->ruleObjs as $key => $rule) {
-
+  
             if (!$rule->checkRules()) {
 
                 $newRules = new Rules($rule->redirectOffer);
-
 
                 if ($newRules->checkAllRules()) {
                     $url = $this->buildRedirectUrl($rule->redirectOffer);

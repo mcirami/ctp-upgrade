@@ -5,6 +5,9 @@
  * Date: 8/15/2017
  * Time: 4:34 PM
  */
+
+ use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 $section = "offers-edit-rules";
 require('header.php');
 
@@ -33,6 +36,17 @@ $rules = new \LeadMax\TrackYourStats\Offer\Rules($offid);
 
 $offerView = new \LeadMax\TrackYourStats\Offer\View(\LeadMax\TrackYourStats\System\Session::userType());
 
+$activeCap = false;
+$capAmount = 0;
+
+
+foreach ($rules->rules as $rule) {
+
+	if ($rule["type"] == "device") {
+		$activeCap = $rule["cap_status"];
+		$capAmount = $rule["cap"];
+	}
+}
 
 ?>
 	
@@ -55,7 +69,7 @@ $offerView = new \LeadMax\TrackYourStats\Offer\View(\LeadMax\TrackYourStats\Syst
 							
 							<table id = countryList"
 								   class = "table table-sm table-bordered table-responsive table-striped form-control  "
-								   style = "height:250px;  min-width:0;!important;">
+								   style = "height:250px;  min-width:0 !important;">
 								<thead>
 								<tr>
 									<th>Country</th>
@@ -78,7 +92,7 @@ $offerView = new \LeadMax\TrackYourStats\Offer\View(\LeadMax\TrackYourStats\Syst
 							
 							<table id = "toAdd"
 								   class = "table table-sm table-bordered table-responsive table-striped form-control  "
-								   style = "height:250px;  min-width:0;!important; ">
+								   style = "height:250px;  min-width:0 !important; ">
 								<thead>
 								<tr>
 									<th>Country</th>
@@ -169,7 +183,7 @@ $offerView = new \LeadMax\TrackYourStats\Offer\View(\LeadMax\TrackYourStats\Syst
 							
 							<table id = deviceList"
 								   class = "table table-sm table-bordered table-responsive table-striped form-control  "
-								   style = "height:250px;  min-width:0;!important; ">
+								   style = "height:250px;  min-width:0 !important; ">
 								<thead>
 								<tr>
 									<th>Device</th>
@@ -201,7 +215,7 @@ $offerView = new \LeadMax\TrackYourStats\Offer\View(\LeadMax\TrackYourStats\Syst
 							
 							<table id = "deviceToAdd"
 								   class = "table table-sm table-bordered table-responsive table-striped form-control  "
-								   style = "height:250px; min-width:0;!important;">
+								   style = "height:250px; min-width:0 !important;">
 								<thead>
 								<tr>
 									<th>Device</th>
@@ -245,11 +259,18 @@ $offerView = new \LeadMax\TrackYourStats\Offer\View(\LeadMax\TrackYourStats\Syst
 							<label style = "margin-top:10px;" for = "deviceRedirectOffer">Redirect Offer:</label>
 							<?php $offerView->printToSelectBox("deviceRedirectOffer"); ?>
 						</div>
-					
+						<div class = "form-group">
+							<input <?php if ($activeCap) { echo "checked"; } ?> id = "capIsActive" type = "checkbox"
+									style = "width:15px;height:15px;">
+								<span>Enable Cap</span>
+						</div>
+						<div class = "form-group">
+							<label for = "deviceCap">Cap:</label>
+							<input type = "text" id = "deviceCap" value=<?php echo $capAmount; ?>>
+						</div>
 					
 					</div>
 				</div>
-				
 				
 				<div class = "modal-footer" style = "position:unset;">
 					<button id = "deviceCancelButton" type = "button" class = "btn btn-default"
@@ -550,10 +571,13 @@ $offerView = new \LeadMax\TrackYourStats\Offer\View(\LeadMax\TrackYourStats\Syst
 			var ruleName = $("#deviceRuleName").val();
 			
 			var notAllowed = document.getElementById("geoIsAllowed").checked;
+
+			var capAmount = $("#deviceCap").val();
+			var capStatus = $("#capIsActive").is(":checked");
 			
 			var parsed = [];
 			if (!onlyCountries)
-				parsed = [offerID, ruleName, redirectOffer, notAllowed];
+				parsed = [offerID, ruleName, redirectOffer, notAllowed, capAmount, capStatus];
 			
 			for (var i = 0; i < rows.length; i++)
 				parsed.push(rows[i].id);

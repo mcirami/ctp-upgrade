@@ -6,8 +6,6 @@
  * Time: 12:07 PM
  */
 
-
-
 //verify user session
 $user = new \LeadMax\TrackYourStats\User\User();
 if (!$user->verify_login_session() )
@@ -24,7 +22,7 @@ if(isset($_POST["ruleData"]))
 
 
     $edit = new \LeadMax\TrackYourStats\Offer\Rules\Handlers\Device($ruleData->ruleID);
-
+    
     $edit->updateRule($ruleData, $deviceList);
     die("SUCCESS");
 }

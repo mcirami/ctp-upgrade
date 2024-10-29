@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use PDO;
-
+use Detection\MobileDetect;
 
 class Caps
 {
@@ -428,5 +428,54 @@ class Caps
 		return $capped;
 
 	}
+
+    public function checkDeviceCap($rule) {
+
+        $active = $rule["cap_status"];
+        $cap = $rule["cap"];
+        $offerId = intval($this->offerID);
+        $type = $rule["device_type"];
+
+        if ($active) {
+            $this->cap_rules["time_interval"] = self::daily;
+            $time = $this->calculateTimeInterval();
+            $timeFrame = new Logger('clicks');
+            $timeFrame ->pushHandler(new StreamHandler(storage_path('logs/clicks.log')), Logger::INFO);
+            $log = [$time];
+            $timeFrame->info('time interval', $log);
+
+            $mobileDetect = new MobileDetect();
+			$deviceConversionsToday = DB::table('clicks')
+			                          ->where('offer_idoffer', '=', $offerId)
+			                          ->whereBetween('first_timestamp', [$time['dateFrom'], $time['dateTo']])
+			                          ->rightJoin('conversions', 'conversions.click_id', '=', 'clicks.idclicks')->get();
+            
+
+            $count = 0;
+            foreach ($deviceConversionsToday as $conversion) {
+                if ($type == "mobile") {
+                    if ($mobileDetect->isMobile($conversion->browser_agent)) {
+                        $count++;
+                    }
+                } else {
+                    if (!$mobileDetect->isMobile($conversion->browser_agent)) {
+                        $count++;
+                    }
+                }
+            }
+
+            /* $clicksLog = new Logger('clicks');
+            $clicksLog->pushHandler(new StreamHandler(storage_path('logs/clicks.log')), Logger::INFO);
+            $log = [$count];
+            $clicksLog->info('deviceConversionsToday', $log); */
+
+            if ($count >= $cap) {
+                return false;
+            }
+        }
+
+        return true;
+
+    }
 
 }
