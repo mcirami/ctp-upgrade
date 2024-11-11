@@ -12,6 +12,7 @@ use App\User;
 use Carbon\Carbon;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Query\JoinClause;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Reporting repository for Offers clicks, organized by affiliates.
@@ -176,7 +177,7 @@ class OfferAffiliateClicksRepository implements Repository
     }
 
     public function getOfferConversionsForGod($start, $end) {
-        return \DB::query()->select([
+       /*  return \DB::query()->select([
             'rep.idrep as user_id',
             'rep.user_name',
             'offer.idoffer as offer_id',
@@ -184,22 +185,31 @@ class OfferAffiliateClicksRepository implements Repository
             \DB::raw('COUNT(clks.idclicks) as clicks'),
             \DB::raw('COUNT(cnvs.click_id) as conversions')
         ])->from('rep_has_offer as rho')
-            ->join('rep', function ($jc) {
+            ->join('rep', function ($jc) { */
                 /* @var $jc JoinClause */
-                $jc->on('rep.idrep', 'rho.rep_idrep');
+               /*  $jc->on('rep.idrep', 'rho.rep_idrep'); */
                /* $jc->where('rep.lft', '>', $this->user->lft);
                 $jc->where('rep.rgt', '<', $this->user->rgt);*/
-            })
+           /*  })
             ->join('offer', 'rho.offer_idoffer', 'offer.idoffer')
-            ->join('clicks as clks', function ($jc) use ($start, $end) {
+            ->join('clicks as clks', function ($jc) use ($start, $end) { */
                 /* @var $q JoinClause */
-                $jc->on('clks.rep_idrep', 'rho.rep_idrep')
+               /*  $jc->on('clks.rep_idrep', 'rho.rep_idrep')
                     ->on('clks.offer_idoffer', 'rho.offer_idoffer')
                     ->whereBetween('clks.first_timestamp', [$start, $end]);
             })
             ->leftJoin('conversions as cnvs', 'cnvs.click_id', 'clks.idclicks')
             ->where('offer.idoffer', $this->offerId)
             ->groupBy('rep.user_name', 'rep.idrep', 'offer_id')
-            ->orderBy('conversions', 'DESC');
+            ->orderBy('conversions', 'DESC'); */
+
+        return DB::table('clicks')
+        ->where('offer_idoffer', '=', $this->offerId)
+        ->whereBetween('first_timestamp',[$start, $end])
+        ->leftJoin('rep', 'idrep', '=', 'clicks.rep_idrep')
+        ->leftJoin('conversions', 'conversions.click_id', '=', 'clicks.idclicks')
+        ->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
+        ->select('rep.idrep as user_id', 'rep.user_name', 'offer.idoffer as offer_id', 'offer.offer_name', DB::raw('COUNT(clicks.idclicks) as clicks'),
+        DB::raw('COUNT(conversions.click_id) as conversions'))->groupBy('rep.user_name', 'rep.idrep', 'offer_id')->orderBy('conversions', 'DESC');
     } 
 }
