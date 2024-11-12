@@ -53,7 +53,7 @@ class Device implements Rule
             return true;
         }
 
-        foreach ($this->filteredRules as $rule) {e
+        foreach ($this->filteredRules as $rule) {
 
             $this->redirectOffer = $rule["redirect_offer"];
 
