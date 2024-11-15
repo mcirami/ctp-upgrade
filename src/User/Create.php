@@ -236,7 +236,6 @@ class Create
         $this->listAdmin = array();
         $this->listManager = array();
 
-
         foreach ($this->assignTos as $key => $value) {
             $user_name = $value["user_name"];
             $idrep = $value["idrep"];
@@ -244,17 +243,15 @@ class Create
                 $this->listGod[] = $idrep.";".$user_name;
             }
             if ($value["is_admin"] == 1) {
-                $this->listAdmin[] = $idrep.";".$user_name;
+                if ($idrep == Session::userID()) {
+                    $this->listAdmin[] = $idrep.";".$user_name;
+                }
             }
             if ($value["is_manager"] == 1) {
-                $this->listManager[] = $idrep.";".$user_name;
+                if ($value['referrer_repid'] == Session::userID()) {
+                    $this->listManager[] = $idrep.";".$user_name;
+                }
             }
-
-
         }
-
-
     }
-
-
 }
