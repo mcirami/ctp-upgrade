@@ -20,7 +20,6 @@ class AdminEmployeeRepository extends Repository
     {
         $report = $this->mergeReport($this->getClicks($dateFrom, $dateTo), $this->getConversions($dateFrom, $dateTo));
 
-
         $report = $this->mergeReport($report, $this->getBonusesRevenue($dateFrom, $dateTo));
 
 
@@ -239,7 +238,7 @@ class AdminEmployeeRepository extends Repository
 
     private function getConversions($dateFrom, $dateTo)
     {
-        $db = $this->getDB();
+        /* $db = $this->getDB();
         $sql = "
 				SELECT
 					rep.idrep,
@@ -284,17 +283,51 @@ class AdminEmployeeRepository extends Repository
         $stmt->execute();
 
 
-        $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        $result = $stmt->fetchAll(\PDO::FETCH_ASSOC); */
+        
+        $adminUserID = Session::userID();
+        $managers = DB::table('rep')->where('referrer_repid', '=', $adminUserID)->get()->pluck('idrep')->toArray();
 
+        $result = DB::table('clicks')
+        ->whereBetween('clicks.first_timestamp', [$dateFrom,$dateTo])
+        ->where('clicks.click_type', '!=', 2)
+        ->leftJoin('rep', function($query) use($managers) {
+            $query->on('rep.idrep', '=', 'clicks.rep_idrep')->whereIn('referrer_repid', $managers);
+        })
+        ->join('privileges', 'rep.idrep', '=', 'privileges.rep_idrep')
+        ->leftJoin('pending_conversions as pc', function($query) {
+            $query->on('clicks.idclicks', '=', 'pc.click_id')->where('pc.converted', '=' , 0);
+        })
+        ->leftJoin('conversions', 'clicks.idclicks', '=', 'conversions.click_id')
+        ->leftJoin('deductions', 'deductions.conversion_id', '=', 'conversions.id')
+        ->leftJoin('conversions as deducted', 'deducted.id', '=', 'deductions.conversion_id')
+        ->leftJoin('free_sign_ups', 'free_sign_ups.click_id', '=', 'clicks.idclicks')
+        ->select(
+            'rep.idrep',
+            'rep.user_name',
+            'rep.lft',
+			'rep.rgt',
+            DB::raw('COUNT(conversions.id) as Conversions'),
+            DB::raw('SUM(conversions.paid) as Revenue'),
+            DB::raw('COUNT(free_sign_ups.id) as FreeSignUps'),
+            DB::raw('SUM(deducted.paid) as Deductions')
+            )
+            ->groupBy('rep.idrep')
+            ->orderBy('conversions', 'desc')
+            ->get()
+            ->map(fn ($row) => get_object_vars($row))
+            ->toArray();
+
+            //dd($result);
         return $result;
     }
 
 
     private function getClicks($dateFrom, $dateTo)
     {
-        $managers = DB::table('rep')->where('referrer_repid', '=', 1003)->get()->pluck('idrep')->toArray();
+        
 
-        $db = $this->getDB();
+        /* $db = $this->getDB();
         $sql = "
 				SELECT
 					rep.idrep,
@@ -327,26 +360,35 @@ class AdminEmployeeRepository extends Repository
         $stmt->bindParam(":dateTo", $dateTo);
         $stmt->execute();
 
-        $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        $result = $stmt->fetchAll(\PDO::FETCH_ASSOC); */
 
         $adminUserID = Session::userID();
+        $managers = DB::table('rep')->where('referrer_repid', '=', $adminUserID)->get()->pluck('idrep')->toArray();
 
-       /*  $result = DB::table('rep')
+        $result = DB::table('clicks')
+        ->whereBetween('clicks.first_timestamp', [$dateFrom,$dateTo])
+        ->where('clicks.click_type', '!=', 2)
+        ->leftJoin('rep', function($query) use($managers) {
+            $query->on('rep.idrep', '=', 'clicks.rep_idrep')->whereIn('referrer_repid', $managers);
+        })
         ->join('privileges', 'rep.idrep', '=', 'privileges.rep_idrep')
-        ->leftJoin('clicks as rawClicks', function($query) use($dateFrom, $dateTo) {
-            $query->on('rawClicks.rep_idrep', '=', 'rep.idrep')
-            ->whereBetween('rawClicks.first_timestamp', [$dateFrom,$dateTo])
-            ->where('rawClicks.click_type', '!=', '2');
-        })->leftJoin('pending_conversions as pc', function($query) {
-            $query->on('rawClicks.idclicks', '=', 'pc.click_id')->where('pc.converted', '=' , '0');
+        ->leftJoin('pending_conversions as pc', function($query) {
+            $query->on('clicks.idclicks', '=', 'pc.click_id')->where('pc.converted', '=' , 0);
         })->select(
             'rep.idrep',
             'rep.user_name',
             'rep.lft',
 			'rep.rgt',
-            DB::raw('COUNT(rawClicks.idclicks) as Clicks'),
-            DB::raw('SUM(case when rawClicks.click_type = 0 then 1 else 0 end) as UniqueClicks'),
-            DB::raw('COUNT(pc.id) as PendingConversions'))->get()->toArray(); */
+            DB::raw('COUNT(clicks.idclicks) as Clicks'),
+            DB::raw('SUM(case when clicks.click_type = 0 then 1 else 0 end) as UniqueClicks'),
+            DB::raw('COUNT(pc.id) as PendingConversions'))
+            ->groupBy('rep.idrep')
+            ->orderBy('Clicks', 'desc')
+            ->get()
+            ->map(fn ($row) => get_object_vars($row))
+            ->toArray();
+
+        
 
         //dd($result);
         // array of arrays
