@@ -35,10 +35,7 @@ class UserController extends Controller
             'showInactive' => 'numeric|min:0|max:1'
         ]);
 
-		$userId = Session::userID();
-		$managers = DB::table('rep')->where('referrer_repid', '=', $userId)->get()->pluck('idrep')->toArray();
         $users = User::myUsers()->withRole(request('role', Privilege::ROLE_AFFILIATE))->with('referrer');
-
 
         if (request('showInactive', 0) == 1) {
             $users->where('status', 0);
@@ -46,7 +43,12 @@ class UserController extends Controller
             $users->where('status', 1);
         }
 
-		//->whereIn('referrer_repid', $managers)
+		if (Session::userType() == Privilege::ROLE_ADMIN && request('role') == '3') {
+			$userId = Session::userID();
+			$managers = DB::table('rep')->where('referrer_repid', '=', $userId)->get()->pluck('idrep')->toArray();
+			$users->whereIn('referrer_repid', $managers);
+		}
+		
         $users = $users->get();
 		$users = $this->getDiffForHumans($users);
 
