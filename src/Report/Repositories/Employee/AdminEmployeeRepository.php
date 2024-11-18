@@ -4,9 +4,11 @@ namespace LeadMax\TrackYourStats\Report\Repositories\Employee;
 
 
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use LeadMax\TrackYourStats\Report\Repositories\Repository;
 use LeadMax\TrackYourStats\System\Session;
 use LeadMax\TrackYourStats\Table\Date;
+use Termwind\Components\Raw;
 
 class AdminEmployeeRepository extends Repository
 {
@@ -290,6 +292,8 @@ class AdminEmployeeRepository extends Repository
 
     private function getClicks($dateFrom, $dateTo)
     {
+        $managers = DB::table('rep')->where('referrer_repid', '=', 1003)->get()->pluck('idrep')->toArray();
+
         $db = $this->getDB();
         $sql = "
 				SELECT
@@ -302,7 +306,7 @@ class AdminEmployeeRepository extends Repository
 					rep.rgt
 				FROM
 					rep
-					
+
 				INNER JOIN privileges p on rep.idrep = p.rep_idrep
 				
 				LEFT JOIN clicks rawClicks ON rawClicks.rep_idrep = rep.idrep
@@ -311,23 +315,41 @@ class AdminEmployeeRepository extends Repository
 				
 				WHERE
 					rawClicks.first_timestamp BETWEEN :dateFrom AND :dateTo  and rawClicks.click_type !=2
-				 
-			 GROUP BY  rep.idrep
-			 ORDER BY Clicks DESC
-		";
 
+			    GROUP BY  rep.idrep
+			    ORDER BY Clicks DESC
+		";
 
         $stmt = $db->prepare($sql);
 
 
         $stmt->bindParam(":dateFrom", $dateFrom);
         $stmt->bindParam(":dateTo", $dateTo);
-
         $stmt->execute();
-
 
         $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
+        $adminUserID = Session::userID();
+
+       /*  $result = DB::table('rep')
+        ->join('privileges', 'rep.idrep', '=', 'privileges.rep_idrep')
+        ->leftJoin('clicks as rawClicks', function($query) use($dateFrom, $dateTo) {
+            $query->on('rawClicks.rep_idrep', '=', 'rep.idrep')
+            ->whereBetween('rawClicks.first_timestamp', [$dateFrom,$dateTo])
+            ->where('rawClicks.click_type', '!=', '2');
+        })->leftJoin('pending_conversions as pc', function($query) {
+            $query->on('rawClicks.idclicks', '=', 'pc.click_id')->where('pc.converted', '=' , '0');
+        })->select(
+            'rep.idrep',
+            'rep.user_name',
+            'rep.lft',
+			'rep.rgt',
+            DB::raw('COUNT(rawClicks.idclicks) as Clicks'),
+            DB::raw('SUM(case when rawClicks.click_type = 0 then 1 else 0 end) as UniqueClicks'),
+            DB::raw('COUNT(pc.id) as PendingConversions'))->get()->toArray(); */
+
+        //dd($result);
+        // array of arrays
         return $result;
     }
 

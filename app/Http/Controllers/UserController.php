@@ -7,7 +7,9 @@ use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use \LeadMax\TrackYourStats\System\Session;
 use LeadMax\TrackYourStats\Table\Paginate;
 
 class UserController extends Controller
@@ -33,6 +35,8 @@ class UserController extends Controller
             'showInactive' => 'numeric|min:0|max:1'
         ]);
 
+		$userId = Session::userID();
+		$managers = DB::table('rep')->where('referrer_repid', '=', $userId)->get()->pluck('idrep')->toArray();
         $users = User::myUsers()->withRole(request('role', Privilege::ROLE_AFFILIATE))->with('referrer');
 
 
@@ -42,9 +46,8 @@ class UserController extends Controller
             $users->where('status', 1);
         }
 
-        $users = $users->get();
+        $users = $users->whereIn('referrer_repid', $managers)->get();
 		$users = $this->getDiffForHumans($users);
-
 
         return view('user.manage', compact('users'));
     }
