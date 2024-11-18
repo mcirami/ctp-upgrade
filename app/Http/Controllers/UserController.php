@@ -46,7 +46,8 @@ class UserController extends Controller
             $users->where('status', 1);
         }
 
-        $users = $users->whereIn('referrer_repid', $managers)->get();
+		//->whereIn('referrer_repid', $managers)
+        $users = $users->get();
 		$users = $this->getDiffForHumans($users);
 
         return view('user.manage', compact('users'));
