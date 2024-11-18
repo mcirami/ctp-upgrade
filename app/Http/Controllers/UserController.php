@@ -43,7 +43,7 @@ class UserController extends Controller
             $users->where('status', 1);
         }
 
-		if (Session::userType() == Privilege::ROLE_ADMIN && request('role') == '3') {
+		if (Session::userType() == Privilege::ROLE_ADMIN && (request('role') == null ||  request('role') == '3')) {
 			$userId = Session::userID();
 			$managers = DB::table('rep')->where('referrer_repid', '=', $userId)->get()->pluck('idrep')->toArray();
 			$users->whereIn('referrer_repid', $managers);
