@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Report;
 use App\Privilege;
 use Illuminate\Http\Request;
 use LeadMax\TrackYourStats\Report\Filters;
+use LeadMax\TrackYourStats\Report\Repositories\Employee\GodEmployeeRepository;
 use LeadMax\TrackYourStats\Report\Repositories\Employee\AdminEmployeeRepository;
 use LeadMax\TrackYourStats\Report\Repositories\Employee\ManagerEmployeeRepository;
 use LeadMax\TrackYourStats\Report\Repositories\Repository;
@@ -60,6 +61,8 @@ class EmployeeReportController extends ReportController
     {
         switch (Session::userType()) {
             case Privilege::ROLE_GOD:
+                $repository = new GodEmployeeRepository(\DB::getPdo());
+                break;
             case Privilege::ROLE_ADMIN:
                 $repository = new AdminEmployeeRepository(\DB::getPdo());
                 break;
@@ -72,7 +75,6 @@ class EmployeeReportController extends ReportController
 
         $dates = self::getDates();
         $reporter = $this->report($repository, $request);
-
 
         return view('report.employee', compact('reporter', 'dates'));
     }
