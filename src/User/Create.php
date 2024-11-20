@@ -243,12 +243,12 @@ class Create
                 $this->listGod[] = $idrep.";".$user_name;
             }
             if ($value["is_admin"] == 1) {
-                if ($idrep == Session::userID()) {
+                if ($idrep == Session::userID() || Session::userType() == \App\Privilege::ROLE_GOD) {
                     $this->listAdmin[] = $idrep.";".$user_name;
                 }
             }
             if ($value["is_manager"] == 1) {
-                if ($value['referrer_repid'] == Session::userID()) {
+                if ($value['referrer_repid'] == Session::userID() || Session::userType() == \App\Privilege::ROLE_GOD) {
                     $this->listManager[] = $idrep.";".$user_name;
                 }
             }
