@@ -34,7 +34,7 @@ class HTML implements Format
     {
 		$params = "";
 		if(isset($_GET['d_from']) && isset($_GET['d_to']) && isset($_GET['dateSelect']) ) {
-			$params = "d_from=" . $_GET['d_from'] . "&d_to=" . $_GET['d_to'] . "&dateSelect=" . $_GET["dateSelect"];
+			$params = "&d_from=" . $_GET['d_from'] . "&d_to=" . $_GET['d_to'] . "&dateSelect=" . $_GET["dateSelect"];
 		}
 
         $report = $this->resetArrayKeys($report);
@@ -49,7 +49,7 @@ class HTML implements Format
             if (empty($this->printTheseArrayKeys)) {
                 foreach ($row as $item => $val) {
 					if($item == "conversions" && $val > 0 && (key_exists('sub', $row) && $row["sub"] != "TOTAL") ) {
-						echo "<td><a href='/report/sub/conversions?subid={$row["sub"]}". "&" . "{$params}'>{$val}</a></td>";
+						echo "<td><a href='/report/sub/conversions?subid={$row["sub"]}{$params}'>{$val}</a></td>";
 					} else {
 						echo "<td>{$val}</td>";
 					}

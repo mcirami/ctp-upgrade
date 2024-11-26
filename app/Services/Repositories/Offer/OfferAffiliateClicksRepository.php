@@ -109,7 +109,7 @@ class OfferAffiliateClicksRepository implements Repository
             $query->on('idrep', '=', 'clicks.rep_idrep')
             ->where('rep.referrer_repid', $this->user->idrep);
         })
-        ->rightJoin('conversions', 'conversions.click_id', '=', 'clicks.idclicks')
+        ->leftJoin('conversions', 'conversions.click_id', '=', 'clicks.idclicks')
         ->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
         ->select('rep.idrep as user_id', 'rep.user_name', 'offer.idoffer as offer_id', 'offer.offer_name', DB::raw('COUNT(clicks.idclicks) as clicks'),
         DB::raw('COUNT(conversions.click_id) as conversions'))->groupBy('rep.user_name', 'rep.idrep', 'offer_id')->orderBy('conversions', 'DESC');
@@ -137,8 +137,8 @@ class OfferAffiliateClicksRepository implements Repository
         return DB::table('clicks')
         ->where('offer_idoffer', '=', $this->offerId)
         ->whereBetween('first_timestamp',[$start, $end])
-        ->join('rep', 'idrep', '=', 'clicks.rep_idrep')
-        ->rightJoin('conversions', 'conversions.click_id', '=', 'clicks.idclicks')
+        ->leftJoin('rep', 'idrep', '=', 'clicks.rep_idrep')
+        ->leftJoin('conversions', 'conversions.click_id', '=', 'clicks.idclicks')
         ->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
         ->select('rep.idrep as user_id', 'rep.user_name', 'offer.idoffer as offer_id', 'offer.offer_name', DB::raw('COUNT(clicks.idclicks) as clicks'),
         DB::raw('COUNT(conversions.click_id) as conversions'))->groupBy('rep.user_name', 'rep.idrep', 'offer_id')->orderBy('conversions', 'DESC');
