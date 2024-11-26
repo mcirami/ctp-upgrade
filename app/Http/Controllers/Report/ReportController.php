@@ -18,7 +18,7 @@ class ReportController extends Controller
     /**
      *
      * @param bool $timezoneConvertDates
-     * @return array ['startDate' => 'date', 'endDate' => 'date'
+     * @return array ['startDate' => 'date', 'endDate' => 'date']
      */
     public static function getDates($timezoneConvertDates = true): array
     {

@@ -754,7 +754,7 @@ class RepHasOffer
             try {
 
 
-                $offer_name = post('offer_name');
+                $offer_name = trim(post('offer_name'));
                 $description = post('description');
                 $url = post('url');
                 $payout = post('payout');

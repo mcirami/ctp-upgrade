@@ -78,7 +78,7 @@ class OfferClicksRepository implements Repository
             'clicks.offer_idoffer as offer_id',
             'click_geo.ip as ip_address'
         ]);
-        return Click::leftJoin('click_vars', 'click_vars.click_id', 'clicks.idclicks')
+        $data = Click::leftJoin('click_vars', 'click_vars.click_id', 'clicks.idclicks')
             ->leftJoin('click_geo', 'click_geo.click_id', 'clicks.idclicks')
             ->leftJoin('conversions', 'conversions.click_id', 'clicks.idclicks')
             ->join('rep', 'rep.idrep', 'clicks.rep_idrep')

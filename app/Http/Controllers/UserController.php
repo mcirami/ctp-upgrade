@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Click;
 use App\Privilege;
 use App\User;
 use Carbon\Carbon;
@@ -11,6 +12,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use \LeadMax\TrackYourStats\System\Session;
 use LeadMax\TrackYourStats\Table\Paginate;
+use App\Http\Controllers\Report\ReportController;
+use LeadMax\TrackYourStats\Table\Date;
 
 class UserController extends Controller
 {
@@ -61,13 +64,29 @@ class UserController extends Controller
 
 	public function getUserSubIds() {
 		$affId = $_GET["idrep"] ?? null;
+		$date = new Date;
+		$now = Carbon::now();
+		$todaysDate = $date->convertDateTimezone($now);
+		$subSixMonths = Carbon::now()->subMonths(6)->startOfDay();
+		$sixMonthsAgo = $date->convertDateTimezone($subSixMonths);
 
 		$subIds = DB::table('click_vars')
 		            ->where('sub1', '!=', "")->distinct()
-		            ->join('clicks', function($join) use($affId) {
-			            $join->on('idclicks', '=', 'click_vars.click_id')->where('clicks.rep_idrep', '=', $affId);
-		            })->select('click_vars.sub1')->pluck('sub1')->toArray();
+		            ->join('clicks', function($join) use($affId, $todaysDate, $sixMonthsAgo) {
+			            $join->on('idclicks', '=', 'click_vars.click_id')
+						->where('clicks.rep_idrep', '=', $affId)
+						->whereBetween('first_timestamp', [$sixMonthsAgo, $todaysDate]);
+		            })->select('click_vars.sub1')
+					->pluck('sub1')->toArray();
 
+		
+
+		/* $subIds = Click::whereBetween('first_timestamp', [$sixMonthsAgo, $todaysDate])->where('rep_idrep', '=', $affId)
+					->leftJoin('click_vars', 'click_id', '=', 'idclicks')
+					->select('click_vars.sub1')
+					->pluck('sub1')->toArray(); */
+
+					
 		$blocked = DB::table('blocked_sub_ids')->where('rep_idrep', '=', $affId)->distinct()->pluck('sub_id')->toArray();
 
 		$data = [];
