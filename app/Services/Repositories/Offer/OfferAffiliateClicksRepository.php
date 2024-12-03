@@ -105,7 +105,7 @@ class OfferAffiliateClicksRepository implements Repository
         return DB::table('clicks')
         ->where('offer_idoffer', '=', $this->offerId)
         ->whereBetween('first_timestamp',[$start, $end])
-        ->join('rep', function($query) {
+        ->leftJoin('rep', function($query) {
             $query->on('idrep', '=', 'clicks.rep_idrep')
             ->where('rep.referrer_repid', $this->user->idrep);
         })

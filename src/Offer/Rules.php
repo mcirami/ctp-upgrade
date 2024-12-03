@@ -296,8 +296,7 @@ class Rules
     }
 
     // query to find all rules associated with an offer
-    private
-    function getRulesQuery()
+    private function getRulesQuery()
     {
         $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
         $sql = "SELECT * FROM rule

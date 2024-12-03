@@ -410,7 +410,7 @@ $update->dumpPermissionsToJavascript();
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
 <script type = "text/javascript">
-
+jQuery(document).ready(function ($) {
 	$("#salaryCheckBox").click(function () {
 		if ($("#salaryCheckBox").is(":checked"))
 			$("#salaryPaid").prop("disabled", false);
@@ -553,6 +553,6 @@ $update->dumpPermissionsToJavascript();
 
 	});
 
-
+});
 </script>
 <?php include 'footer.php'; ?>

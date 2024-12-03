@@ -62,17 +62,17 @@ class UserController extends Controller
 	public function getUserSubIds() {
 		$affId = $_GET["idrep"] ?? null;
 
-		$subIds = DB::table('click_vars')
+		/* $subIds = DB::table('click_vars')
 		            ->where('sub1', '!=', "")->distinct()
 		            ->join('clicks', function($join) use($affId) {
 			            $join->on('idclicks', '=', 'click_vars.click_id')->where('clicks.rep_idrep', '=', $affId);
 		            })->select('click_vars.sub1')->pluck('sub1')->toArray();
-
-		$blocked = DB::table('blocked_sub_ids')->where('rep_idrep', '=', $affId)->distinct()->pluck('sub_id')->toArray();
+ */
+		//$blocked = DB::table('blocked_sub_ids')->where('rep_idrep', '=', $affId)->distinct()->pluck('sub_id')->toArray();
 
 		$data = [];
 
-		foreach($subIds as $subId) {
+		/* foreach($subIds as $subId) {
 			if (in_array($subId, $blocked)) {
 				$object = [
 					'subId'     => $subId,
@@ -86,7 +86,7 @@ class UserController extends Controller
 			}
 
 			array_push($data, $object);
-		}
+		} */
 
 		return json_encode($data);
 
