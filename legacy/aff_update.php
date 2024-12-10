@@ -420,14 +420,16 @@ jQuery(document).ready(function ($) {
 
 	// A $( document ).ready() block.
 
-	const subIds = JSON.parse('<?php echo $subIds; ?>');
-	const idrep = '<?php echo $idrep; ?>';
+	const data 			= JSON.parse('<?php echo $subIds; ?>');
+	const idrep 		= '<?php echo $idrep; ?>';
+	const subIds 		= data.subIds;
+	const blockedArray 	= data.blocked;
 	displayContent(subIds);
 
 	document.getElementById('searchBox').addEventListener('input', (e) => {
 		const userInput = e.target.value.trim().toLowerCase();
 		let filteredSubIds = subIds.filter((subId) => {
-			return subId.subId.toLowerCase().includes(userInput);
+			return subId.sub1.toLowerCase().includes(userInput);
 		})
 
 		displayContent(filteredSubIds);
@@ -439,24 +441,24 @@ jQuery(document).ready(function ($) {
 		let html = "";
 		subIds.forEach((subId) => {
 			html += "<tr>" +
-				"<td>" + subId['subId'] + "</td>" +
+				"<td>" + subId.sub1 + "</td>" +
 				"<td class='button_wrap'>";
-			if (subId["blocked"]) {
+			if (blockedArray.includes(subId.sub1)) {
 				html += "<button class='block_sub_id' disabled='disabled'" +
-					" data-subid='" + subId["subId"] + "'" +
+					" data-subid='" + subId.sub1 + "'" +
 					" data-rep='" + idrep + "'" +
 					">Blocked</button>" +
 					"<button class='unblock_button value_span6-2 value_span2 value_span1-2'" +
-					" data-subid='" + subId["subId"] + "'" +
+					" data-subid='" + subId.sub1 + "'" +
 					" data-rep='" + idrep + "'>UnBlock</button>";
 			} else {
 				html += "<button class='block_sub_id value_span6-2 value_span2 value_span1-2'" +
-					" data-subid='" + subId["subId"] + "'" +
+					" data-subid='" + subId.sub1 + "'" +
 					" data-rep='" + idrep + "'>Block ID</button>" +
 					"<button style='display: none;'" +
 					" disabled='disabled'" +
 					" class='unblock_button value_span6-2 value_span2 value_span1-2'" +
-					" data-subid='" + subId["subId"] + "'" +
+					" data-subid='" + subId.sub1 + "'" +
 					" data-rep='" + idrep + "'" +
 					">UnBlock</button>";
 			}

@@ -69,7 +69,7 @@ class UserController extends Controller
 		$subSixMonths = Carbon::now()->subMonths(1)->startOfDay();
 		$sixMonthsAgo = $date->convertDateTimezone($subSixMonths);
 
-		$blocked = DB::table('blocked_sub_ids')->where('rep_idrep', '=', $affId)->groupBy('rep_idrep')->pluck('sub_id')->toArray();
+		$blocked = DB::table('blocked_sub_ids')->where('rep_idrep', '=', $affId)->distinct()->pluck('sub_id')->toArray();
 		$data = [];
 		
 		$subIds = DB::table('click_vars')
@@ -83,8 +83,8 @@ class UserController extends Controller
 			->groupBy('click_vars.sub1') // Grouping instead of DISTINCT
 			->orderBy('sub1')->lazy();
 			/* ->pluck('sub1'); */
-			
-		foreach($subIds as $subId) {
+
+		/* foreach($subIds as $subId) {
 			if ($subId->sub1 && in_array($subId->sub1, $blocked)) {
 				$object = [
 					'subId'     => $subId->sub1,
@@ -98,7 +98,12 @@ class UserController extends Controller
 			}
 
 			array_push($data, $object);
-		}
+		} */
+
+		$data = [
+			'blocked'	=> $blocked,
+			'subIds' 	=> $subIds
+		];
 
 		return json_encode($data);
 
