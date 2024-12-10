@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Click;
 use App\Privilege;
 use App\User;
 use Carbon\Carbon;
@@ -11,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use \LeadMax\TrackYourStats\System\Session;
 use LeadMax\TrackYourStats\Table\Paginate;
+use LeadMax\TrackYourStats\Table\Date;
 
 class UserController extends Controller
 {
@@ -61,32 +63,42 @@ class UserController extends Controller
 
 	public function getUserSubIds() {
 		$affId = $_GET["idrep"] ?? null;
+		$date = new Date;
+		$now = Carbon::now();
+		$todaysDate = $date->convertDateTimezone($now);
+		$subSixMonths = Carbon::now()->subMonths(1)->startOfDay();
+		$sixMonthsAgo = $date->convertDateTimezone($subSixMonths);
 
-		/* $subIds = DB::table('click_vars')
-		            ->where('sub1', '!=', "")->distinct()
-		            ->join('clicks', function($join) use($affId) {
-			            $join->on('idclicks', '=', 'click_vars.click_id')->where('clicks.rep_idrep', '=', $affId);
-		            })->select('click_vars.sub1')->pluck('sub1')->toArray();
- */
-		//$blocked = DB::table('blocked_sub_ids')->where('rep_idrep', '=', $affId)->distinct()->pluck('sub_id')->toArray();
-
+		$blocked = DB::table('blocked_sub_ids')->where('rep_idrep', '=', $affId)->groupBy('rep_idrep')->pluck('sub_id')->toArray();
 		$data = [];
-
-		/* foreach($subIds as $subId) {
-			if (in_array($subId, $blocked)) {
+		
+		$subIds = DB::table('click_vars')
+			->where('sub1', '!=', '')
+			->join('clicks', function ($join) use ($affId, $sixMonthsAgo, $todaysDate) {
+				$join->on('idclicks', '=', 'click_vars.click_id')
+					->where('clicks.rep_idrep', '=', $affId)
+					->whereBetween('first_timestamp', [$sixMonthsAgo, $todaysDate]);
+			})
+			->select('click_vars.sub1')
+			->groupBy('click_vars.sub1') // Grouping instead of DISTINCT
+			->orderBy('sub1')->lazy();
+			/* ->pluck('sub1'); */
+			
+		foreach($subIds as $subId) {
+			if ($subId->sub1 && in_array($subId->sub1, $blocked)) {
 				$object = [
-					'subId'     => $subId,
+					'subId'     => $subId->sub1,
 					'blocked'   => true
 				];
-			} else {
+			} elseif($subId) {
 				$object = [
-					'subId'     => $subId,
+					'subId'     => $subId->sub1,
 					'blocked'    => false
 				];
 			}
 
 			array_push($data, $object);
-		} */
+		}
 
 		return json_encode($data);
 
