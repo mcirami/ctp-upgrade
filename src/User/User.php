@@ -23,7 +23,9 @@ use LeadMax\TrackYourStats\System\Company;
 use LeadMax\TrackYourStats\System\Mail;
 use LeadMax\TrackYourStats\System\Session;
 use PDO;
-
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+use LeadMax\TrackYourStats\Table\Date;
 
 //Begin class
 class User extends Login
@@ -968,6 +970,53 @@ class User extends Login
 
         }
 
+    }
+
+    public function getUserSubIds() {
+        $affId = $_GET["idrep"] ?? null;
+		$date = new Date;
+		$now = Carbon::now();
+		$todaysDate = $date->convertDateTimezone($now);
+		$subOneWeek = Carbon::now()->subMonths(1)->startOfDay();
+		$oneWeekAgo = $date->convertDateTimezone($subOneWeek);
+
+		$blocked = DB::table('blocked_sub_ids')->where('rep_idrep', '=', $affId)->distinct()->pluck('sub_id')->toArray();
+		$data = [];
+		
+		$subIds = DB::table('click_vars')
+			->where('sub1', '!=', '')
+			->join('clicks', function ($join) use ($affId, $oneWeekAgo, $todaysDate) {
+				$join->on('idclicks', '=', 'click_vars.click_id')
+					->where('clicks.rep_idrep', '=', $affId)
+					->whereBetween('first_timestamp', [$oneWeekAgo, $todaysDate]);
+			})
+			->select('click_vars.sub1')
+			->groupBy('click_vars.sub1') // Grouping instead of DISTINCT
+			->orderBy('sub1')->lazy();
+			/* ->pluck('sub1'); */
+
+		/* foreach($subIds as $subId) {
+			if ($subId->sub1 && in_array($subId->sub1, $blocked)) {
+				$object = [
+					'subId'     => $subId->sub1,
+					'blocked'   => true
+				];
+			} elseif($subId) {
+				$object = [
+					'subId'     => $subId->sub1,
+					'blocked'    => false
+				];
+			}
+
+			array_push($data, $object);
+		} */
+
+		$data = [
+			'blocked'	=> $blocked,
+			'subIds' 	=> $subIds
+		];
+
+		return json_encode($data);
     }
 
 
