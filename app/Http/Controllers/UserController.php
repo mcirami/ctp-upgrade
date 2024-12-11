@@ -75,12 +75,12 @@ class UserController extends Controller
 		foreach($subIds as $subId) {
 			if (in_array($subId, $blocked)) {
 				$object = [
-					'subId'     => $subId,
+					'subId'     => preg_replace('/[^a-zA-Z0-9-_]/', '', $subId),
 					'blocked'   => true
 				];
 			} else {
 				$object = [
-					'subId'     => $subId,
+					'subId'     => preg_replace('/[^a-zA-Z0-9-_]/', '', $subId),
 					'blocked'    => false
 				];
 			}
