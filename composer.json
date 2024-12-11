@@ -10,17 +10,18 @@
     "require": {
         "php": "^8.3",
         "ext-curl": "*",
+        "ext-pdo": "*",
         "barryvdh/laravel-snappy": "v1.0.2",
         "doctrine/dbal": "^3.0",
         "geoip2/geoip2": "^2.8",
         "guzzlehttp/guzzle": "^7.0.1",
         "h4cc/wkhtmltoimage-amd64": "0.12.x",
         "h4cc/wkhtmltopdf-amd64": "0.12.x",
+        "itsgoingd/clockwork": "^5.3",
         "laravel/framework": "^10.0",
         "laravel/helpers": "^1.7",
         "laravel/tinker": "^2.0",
-        "mobiledetect/mobiledetectlib": "^3.74",
-        "ext-pdo": "*"
+        "mobiledetect/mobiledetectlib": "^3.74"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.14",

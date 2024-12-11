@@ -281,10 +281,6 @@ $update->dumpPermissionsToJavascript();
 									<input type = "text" class = "form-control" name = "confirmpassword" minlength = "5" maxlength = "255"
 									       value = "" id = "confirmpassword"/>
 								</p>
-								<!--                    <!-- TODO Impliment Change Password-->
-								<!--                    <span class="btn_yellow"> <input type="submit" name="buttonChangePassword"-->
-								<!--                                                     class="value_span6-2 value_span2 value_span1-2"
-								<!--                                                     value="Change Password"/></span>-->
 
 							</div>
 							<span class = "btn_yellow"> <input type = "submit" name = "button"

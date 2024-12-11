@@ -66,18 +66,18 @@ class UserController extends Controller
 		$date = new Date;
 		$now = Carbon::now();
 		$todaysDate = $date->convertDateTimezone($now);
-		$subSixMonths = Carbon::now()->subMonths(1)->startOfDay();
-		$sixMonthsAgo = $date->convertDateTimezone($subSixMonths);
+		$subOneWeek = Carbon::now()->subMonths(1)->startOfDay();
+		$oneWeekAgo = $date->convertDateTimezone($subOneWeek);
 
 		$blocked = DB::table('blocked_sub_ids')->where('rep_idrep', '=', $affId)->distinct()->pluck('sub_id')->toArray();
 		$data = [];
 		
 		$subIds = DB::table('click_vars')
 			->where('sub1', '!=', '')
-			->join('clicks', function ($join) use ($affId, $sixMonthsAgo, $todaysDate) {
+			->join('clicks', function ($join) use ($affId, $oneWeekAgo, $todaysDate) {
 				$join->on('idclicks', '=', 'click_vars.click_id')
 					->where('clicks.rep_idrep', '=', $affId)
-					->whereBetween('first_timestamp', [$sixMonthsAgo, $todaysDate]);
+					->whereBetween('first_timestamp', [$oneWeekAgo, $todaysDate]);
 			})
 			->select('click_vars.sub1')
 			->groupBy('click_vars.sub1') // Grouping instead of DISTINCT
