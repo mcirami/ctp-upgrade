@@ -63,10 +63,16 @@ class UserController extends Controller
 		$affId = $_GET["idrep"] ?? null;
 
 		$subIds = DB::table('click_vars')
-		            ->where('sub1', '!=', "")->distinct()
+		            ->where('sub1', '!=', "")
 		            ->join('clicks', function($join) use($affId) {
 			            $join->on('idclicks', '=', 'click_vars.click_id')->where('clicks.rep_idrep', '=', $affId);
-		            })->select('click_vars.sub1')->pluck('sub1')->toArray();
+		            })->select('click_vars.sub1')->groupBy('click_vars.sub1')->pluck('sub1')->toArray();
+
+		/* $subIds = DB::table('clicks')
+					->where('clicks.rep_idrep', '=', $affId)
+		            ->leftJoin('click_vars', function($join) {
+			            $join->on('click_vars.click_id', '=', 'idclicks')->where('sub1', '!=', "");
+		            })->select('click_vars.sub1')->groupBy('click_vars.sub1')->pluck('sub1')->toArray(); */
 
 		$blocked = DB::table('blocked_sub_ids')->where('rep_idrep', '=', $affId)->distinct()->pluck('sub_id')->toArray();
 
