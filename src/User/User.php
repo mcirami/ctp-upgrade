@@ -25,6 +25,7 @@ use LeadMax\TrackYourStats\System\Session;
 use PDO;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use LeadMax\TrackYourStats\Table\Date;
 
 //Begin class
@@ -977,44 +978,40 @@ class User extends Login
 		$date = new Date;
 		$now = Carbon::now();
 		$todaysDate = $date->convertDateTimezone($now);
-		$subOneWeek = Carbon::now()->subMonths(1)->startOfDay();
-		$oneWeekAgo = $date->convertDateTimezone($subOneWeek);
+		$subOneMonth = Carbon::now()->subMonths(1)->startOfDay();
+		$oneMonthAgo = $date->convertDateTimezone($subOneMonth);
 
 		$blocked = DB::table('blocked_sub_ids')->where('rep_idrep', '=', $affId)->distinct()->pluck('sub_id')->toArray();
 		$data = [];
 		
 		$subIds = DB::table('click_vars')
 			->where('sub1', '!=', '')
-			->join('clicks', function ($join) use ($affId, $oneWeekAgo, $todaysDate) {
+			->join('clicks', function ($join) use ($affId, $oneMonthAgo, $todaysDate) {
 				$join->on('idclicks', '=', 'click_vars.click_id')
-					->where('clicks.rep_idrep', '=', $affId)
-					->whereBetween('first_timestamp', [$oneWeekAgo, $todaysDate]);
+					->where('clicks.rep_idrep', '=', $affId);
+/* 					->whereBetween('first_timestamp', [$oneMonthAgo, $todaysDate]); */
 			})
 			->select('click_vars.sub1')
 			->groupBy('click_vars.sub1') // Grouping instead of DISTINCT
-			->orderBy('sub1')->lazy();
-			/* ->pluck('sub1'); */
+			->orderBy('sub1')
+			->pluck('sub1')->toArray();
 
-		/* foreach($subIds as $subId) {
-			if ($subId->sub1 && in_array($subId->sub1, $blocked)) {
-				$object = [
-					'subId'     => $subId->sub1,
-					'blocked'   => true
-				];
-			} elseif($subId) {
-				$object = [
-					'subId'     => $subId->sub1,
-					'blocked'    => false
-				];
-			}
-
-			array_push($data, $object);
-		} */
-
-		$data = [
-			'blocked'	=> $blocked,
-			'subIds' 	=> $subIds
-		];
+            foreach($subIds as $subId) {
+                if (in_array($subId, $blocked)) {
+                    $object = [
+                        'subId'     => preg_replace('/[^a-zA-Z0-9-_]/', '', $subId),
+                        'blocked'   => true
+                    ];
+                } else {
+                    $object = [
+                        'subId'     => preg_replace('/[^a-zA-Z0-9-_]/', '', $subId),
+                        'blocked'    => false
+                    ];
+                }
+    
+                array_push($data, $object);
+            }
+    
 
 		return json_encode($data);
     }

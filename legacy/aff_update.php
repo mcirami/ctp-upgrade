@@ -421,27 +421,14 @@ $update->dumpPermissionsToJavascript();
 
 	// A $( document ).ready() block.
 
-	const idrep	= '<?php echo $idrep; ?>';
-	const data 			= <?php echo $subIds; ?>;
-	const subIdsLazy 	= data.subIds;
-	const blockedLazy 	= data.blocked;
-	
-	let subIds = [];
-	let blockedArray = [];
-
-	blockedLazy.forEach(subid => {
-		blockedArray.push(subid.replace(/[^a-zA-Z0-9-_]/g, ""));
-	});
-
-	data.subIds.forEach(subid => {
-		subIds.push(subid.sub1.replace(/[^a-zA-Z0-9-_]/g, ""));
-	});
+	const subIds = JSON.parse('<?php echo $subIds; ?>');
+	const idrep = '<?php echo $idrep; ?>';
 	displayContent(subIds);
 
 	document.getElementById('searchBox').addEventListener('input', (e) => {
 		const userInput = e.target.value.trim().toLowerCase();
 		let filteredSubIds = subIds.filter((subId) => {
-			return subId.toLowerCase().includes(userInput);
+			return subId.subId.toLowerCase().includes(userInput);
 		})
 
 		displayContent(filteredSubIds);
@@ -453,24 +440,24 @@ $update->dumpPermissionsToJavascript();
 		let html = "";
 		subIds.forEach((subId) => {
 			html += "<tr>" +
-				"<td>" + subId + "</td>" +
+				"<td>" + subId['subId'] + "</td>" +
 				"<td class='button_wrap'>";
-			if (blockedArray.includes(subId)) {
+			if (subId["blocked"]) {
 				html += "<button class='block_sub_id' disabled='disabled'" +
-					" data-subid='" + subId + "'" +
+					" data-subid='" + subId["subId"] + "'" +
 					" data-rep='" + idrep + "'" +
 					">Blocked</button>" +
 					"<button class='unblock_button value_span6-2 value_span2 value_span1-2'" +
-					" data-subid='" + subId + "'" +
+					" data-subid='" + subId["subId"] + "'" +
 					" data-rep='" + idrep + "'>UnBlock</button>";
 			} else {
 				html += "<button class='block_sub_id value_span6-2 value_span2 value_span1-2'" +
-					" data-subid='" + subId + "'" +
+					" data-subid='" + subId["subId"] + "'" +
 					" data-rep='" + idrep + "'>Block ID</button>" +
 					"<button style='display: none;'" +
 					" disabled='disabled'" +
 					" class='unblock_button value_span6-2 value_span2 value_span1-2'" +
-					" data-subid='" + subId + "'" +
+					" data-subid='" + subId["subId"] + "'" +
 					" data-rep='" + idrep + "'" +
 					">UnBlock</button>";
 			}
