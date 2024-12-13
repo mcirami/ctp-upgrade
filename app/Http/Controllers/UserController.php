@@ -11,6 +11,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use \LeadMax\TrackYourStats\System\Session;
 use LeadMax\TrackYourStats\Table\Paginate;
+use LeadMax\TrackYourStats\Table\Date;
+use Clockwork\Support\Vanilla\Clockwork;
+use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
@@ -58,6 +61,57 @@ class UserController extends Controller
 	public function AuthRouteAPI(Request $request){
 		return $request->user();
 	}
+
+	public function getUserSubIds() {
+
+		DB::enableQueryLog();
+		$affId = $_GET["idrep"] ?? null;
+        $clockwork = Clockwork::init([ 'register_helpers' => true ]);
+        clock()->addDatabaseQuery('SELECT sub1 FROM click_vars WHERE sub1 != "" JOIN clicks ON click_vars.click_id = clicks.idclicks AND clicks.rep_idrep = 1020');
+        
+		$date = new Date;
+		$now = Carbon::now();
+		$todaysDate = $date->convertDateTimezone($now);
+		$subOneMonth = Carbon::now()->subMonths(1)->startOfDay();
+		$oneMonthAgo = $date->convertDateTimezone($subOneMonth);
+
+		$blocked = DB::table('blocked_sub_ids')->where('rep_idrep', '=', $affId)->distinct()->pluck('sub_id')->toArray();
+		$data = [];
+		
+		$subIds = DB::table('click_vars')
+			->where('sub1', '!=', '')
+			->join('clicks', function ($join) use ($affId, $oneMonthAgo, $todaysDate) {
+				$join->on('idclicks', '=', 'click_vars.click_id')
+					->where('clicks.rep_idrep', '=', $affId);
+/* 					->whereBetween('first_timestamp', [$oneMonthAgo, $todaysDate]); */
+			})
+			->select('click_vars.sub1')
+			->groupBy('click_vars.sub1') // Grouping instead of DISTINCT
+			->orderBy('sub1')
+			->pluck('sub1')
+            ->take(100)
+            ->toArray();
+
+			Log::info('Query for user finished', ['query_log' => DB::getQueryLog()]);
+            foreach($subIds as $subId) {
+                if (in_array($subId, $blocked)) {
+                    $object = [
+                        'subId'     => preg_replace('/[^a-zA-Z0-9-_]/', '', $subId),
+                        'blocked'   => true
+                    ];
+                } else {
+                    $object = [
+                        'subId'     => preg_replace('/[^a-zA-Z0-9-_]/', '', $subId),
+                        'blocked'    => false
+                    ];
+                }
+    
+                array_push($data, $object);
+            }
+    
+
+		return json_encode($data);
+    }
 
 	public function blockUserSubId(Request $request) {
 

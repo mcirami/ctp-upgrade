@@ -27,6 +27,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use LeadMax\TrackYourStats\Table\Date;
+use Clockwork\Support\Vanilla\Clockwork;
 
 //Begin class
 class User extends Login
@@ -974,6 +975,8 @@ class User extends Login
     }
 
     public function getUserSubIds() {
+        $clockwork = Clockwork::init([ 'register_helpers' => true ]);
+        
         $affId = $_GET["idrep"] ?? null;
 		$date = new Date;
 		$now = Carbon::now();
@@ -994,7 +997,9 @@ class User extends Login
 			->select('click_vars.sub1')
 			->groupBy('click_vars.sub1') // Grouping instead of DISTINCT
 			->orderBy('sub1')
-			->pluck('sub1')->toArray();
+			->pluck('sub1')
+            ->take(1000)
+            ->toArray();
 
             foreach($subIds as $subId) {
                 if (in_array($subId, $blocked)) {

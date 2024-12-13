@@ -38,6 +38,7 @@ use App\Http\Controllers\Sms\SmsApiController;
 use App\Http\Controllers\Sms\SmsController;
 use App\Http\Controllers\Sms\SmsClientController;
 use App\Http\Controllers\ChatLogController;
+use Illuminate\Http\JsonResponse;
 
 Route::get('/', [IndexController::class, 'index']);
 Route::post('/', [IndexController::class, 'index']);
@@ -155,6 +156,7 @@ Route::group(['middleware' => 'legacy.auth'], function () {
         Route::get('view/{saleLogId}/{fileName}', [ChatLogController::class, 'getSaleLogImage']);
     });
     Route::get("login/{userId}", [LegacyLoginController::class, 'adminLogin']);
+
 });
 
 

@@ -1,4 +1,6 @@
 <?php
+
+use App\Http\Controllers\UserController;
 use LeadMax\TrackYourStats\User;
 use LeadMax\TrackYourStats\System\Session;
 use LeadMax\TrackYourStats\User\User as UserUser;
@@ -310,7 +312,7 @@ $update->dumpPermissionsToJavascript();
 				<?php
 				if( Session::permissions()->can("edit_affiliates")) :
 
-					$userClass = new UserUser();
+					$userClass = new UserController;
 					$subIds = $userClass->getUserSubIds();
 
 					?>

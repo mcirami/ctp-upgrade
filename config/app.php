@@ -164,6 +164,7 @@ return [
         \App\Providers\SMSApiServiceProvider::class,
 
         Barryvdh\Snappy\ServiceProvider::class,
+        Clockwork\Support\Laravel\ClockworkServiceProvider::class
 
 
     ],
@@ -218,6 +219,7 @@ return [
 
         'PDF' => Barryvdh\Snappy\Facades\SnappyPdf::class,
         'SnappyImage' => Barryvdh\Snappy\Facades\SnappyImage::class,
+        'Clockwork' => Clockwork\Support\Laravel\Facade::class,
 
     ],
 
