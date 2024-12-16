@@ -252,9 +252,8 @@ class Geo
 
             }
 
-            Log::info("inservValues: " . print_r($insertValues));
-            Log::info("postData: " . print_r($this->postData));
-            Log::info("questionMarks: " . print_r($questionMarks));
+            Log::info("inservValues: " . print_r($insertValues, true));
+            Log::info("postData: " . print_r($this->postData, true));
             $sql = 'INSERT INTO country_list (country_code, country_name, geo_rule_idgeo_rule) VALUES '.implode(',',
                     $questionMarks);
 
@@ -266,7 +265,7 @@ class Geo
             $db->commit();
         } catch (\Exception $e) {
             $db->rollBack();
-            Log::info($e);
+            Log::info("Error: " . print_r($e, true));
             die($e);
         }
 

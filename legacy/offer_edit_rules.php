@@ -607,8 +607,8 @@ foreach ($rules->rules as $rule) {
 				parsed.push([
 					$(this).id, 
 					$(this).children().first().text(), 
-					$(this).find('.cap_active').is(':checked'),  
-					$(this).find('.cap_amount').val()
+					/* $(this).find('.cap_active').is(':checked'),  
+					$(this).find('.cap_amount').val() */
 				]);
 			})
 
