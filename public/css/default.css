@@ -2722,3 +2722,12 @@ table.offer_clicks th:first-child {
 	font-size: 14px;
 	margin-left: auto;
 }
+
+.modal-dialog {
+    width: 100%;
+    max-width: 1000px;
+
+    select {
+        width: 100%;
+    }
+}

@@ -8,6 +8,7 @@
 
  use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
+use Illuminate\Support\Facades\Log;
 $section = "offers-edit-rules";
 require('header.php');
 
@@ -74,7 +75,6 @@ foreach ($rules->rules as $rule) {
 								<tr>
 									<th>Country</th>
 									<th>Action</th>
-								
 								</tr>
 								</thead>
 								<tbody id = "countryListBody">
@@ -97,11 +97,10 @@ foreach ($rules->rules as $rule) {
 								<tr>
 									<th>Country</th>
 									<th>Action</th>
-								
+									<th>Caps</th>
 								</tr>
 								</thead>
 								<tbody>
-								
 								
 								</tbody>
 							
@@ -138,8 +137,6 @@ foreach ($rules->rules as $rule) {
 							<label style = "margin-top:10px;" for = "geoRedirectOffer">Redirect Offer:</label>
 							<?php $offerView->printToSelectBox("geoRedirectOffer"); ?>
 						</div>
-					
-					
 					</div>
 				</div>
 				<div class = "modal-footer" style = "position:unset;">
@@ -419,6 +416,7 @@ foreach ($rules->rules as $rule) {
 		
 		
 		$("#geoCreateButton").click(function () {
+
 			$.ajax({
 				type: "POST",
 				url: "/scripts/offer/rules/geo/addGeo.php",
@@ -431,7 +429,6 @@ foreach ($rules->rules as $rule) {
 					
 					
 				}
-				
 				
 			});
 			
@@ -605,15 +602,18 @@ foreach ($rules->rules as $rule) {
 			var parsed = [];
 			if (!onlyCountries)
 				parsed = [offerID, geoRuleName, redirectOffer, countriesNotAllowed];
-			
-			for (var i = 0; i < rows.length; i++)
-				parsed.push([rows[i].id, rows[i].innerText]);
 
+			rows.each(function() {
+				parsed.push([
+					$(this).id, 
+					$(this).children().first().text(), 
+					$(this).find('.cap_active').is(':checked'),  
+					$(this).find('.cap_amount').val()
+				]);
+			})
 
-//            console.log(parsed);
-			
 			return JSON.stringify(parsed);
-			
+		
 		}
 		
 		function sortTable(table, order) {
@@ -645,11 +645,19 @@ foreach ($rules->rules as $rule) {
 		
 		function addCountry(countryName, sortTableAfter = true) {
 			
+			
 			var c = $("#" + countryName);
 			
-			
 			$("#countryList tbody").remove(c);
-			
+
+			const html =
+			'<td class="caps">' +
+				'<span><input class="cap_active" <?php if ($activeCap) { echo "checked"; } ?> id="' + countryName + '_capIsActive" type="checkbox" style = "width:15px;height:15px;">' +
+					'<span>Enable Cap</span></span>' +
+				'<span><label for = "geoCap">Cap:</label>' +
+				'<input class="cap_amount" type = "text" id = "' + countryName + '_geoCap" value=<?php echo $capAmount; ?>></span>' +
+			'</td>';
+			c.append(html)
 			$("#toAdd tbody").append(c);
 			
 			$("#_" + countryName).attr("onclick", "removeCountry('" + countryName + "');");

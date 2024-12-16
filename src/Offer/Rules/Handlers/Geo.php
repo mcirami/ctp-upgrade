@@ -8,6 +8,7 @@
 
 namespace LeadMax\TrackYourStats\Offer\Rules\Handlers;
 
+use Illuminate\Support\Facades\Log;
 use PDO;
 
 
@@ -235,12 +236,14 @@ class Geo
 
 
             $insertValues = array();
+            
             //start at two because thats where country arrays are
             for ($i = 0; $i < count($this->postData); $i++) {
 
                 if (is_array($this->postData[$i])) {
                     $questionMarks[] = "(?,?,?)";
                     $vals = array_values($this->postData[$i]);
+                    
                     $vals[] = $geoRuleID;
 
                     $insertValues = array_merge($insertValues, $vals);
@@ -249,18 +252,21 @@ class Geo
 
             }
 
-
+            Log::info("inservValues: " . print_r($insertValues));
+            Log::info("postData: " . print_r($this->postData));
+            Log::info("questionMarks: " . print_r($questionMarks));
             $sql = 'INSERT INTO country_list (country_code, country_name, geo_rule_idgeo_rule) VALUES '.implode(',',
                     $questionMarks);
 
             $prep = $db->prepare($sql);
-
+            
             $prep->execute($insertValues);
 
 
             $db->commit();
         } catch (\Exception $e) {
             $db->rollBack();
+            Log::info($e);
             die($e);
         }
 
