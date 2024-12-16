@@ -226,11 +226,19 @@ class Create
     public function getAssignables()
     {
         $new_replist = new User();
-        $this->assignTos = $new_replist->selectAssignablesManager();
+        $new_replist->user_id = Session::userID();
+
+        if (Session::userType() == \App\Privilege::ROLE_ADMIN) {
+            $this->assignTos = $new_replist->selectOwnedManagers()->fetchALL(PDO::FETCH_ASSOC);;
+        } else {
+            $this->assignTos = $new_replist->selectAssignablesManager();
+        }
 
         if (Session::userType() == \App\Privilege::ROLE_MANAGER) {
             $this->filterManagerAssignables();
         }
+
+        //dd($this->assignTos);
 
         $this->listGod = array();
         $this->listAdmin = array();
@@ -243,14 +251,17 @@ class Create
                 $this->listGod[] = $idrep.";".$user_name;
             }
             if ($value["is_admin"] == 1) {
-                if ($idrep == Session::userID()) {
+                $this->listAdmin[] = $idrep.";".$user_name;
+
+               /*  if ($idrep == Session::userID()) {
                     $this->listAdmin[] = $idrep.";".$user_name;
-                }
+                } */
             }
             if ($value["is_manager"] == 1) {
-                if ($value['referrer_repid'] == Session::userID()) {
+                $this->listManager[] = $idrep.";".$user_name;
+              /*   if ($value['referrer_repid'] == Session::userID()) {
                     $this->listManager[] = $idrep.";".$user_name;
-                }
+                } */
             }
         }
     }

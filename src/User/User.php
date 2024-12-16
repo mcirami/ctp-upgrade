@@ -355,10 +355,12 @@ class User extends Login
         $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
 
 
-        $sql = "SELECT * FROM rep INNER JOIN privileges ON privileges.rep_idrep = rep.idrep AND privileges.is_rep = 0 WHERE idrep != 0 AND status = 1 ";
+        $sql = "SELECT * FROM rep INNER JOIN privileges ON privileges.rep_idrep = rep.idrep AND privileges.is_rep = 0 WHERE idrep != 0 AND status = 1";
+        //AND referrer_repid = :idrep
 
 
         $stmt = $db->prepare($sql);
+        /* $stmt->bindParam(":idrep", $this->user_id); */
         $stmt->execute();
 
         return $stmt->fetchALL(PDO::FETCH_ASSOC);
