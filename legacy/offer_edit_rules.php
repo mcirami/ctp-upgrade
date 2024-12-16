@@ -40,7 +40,6 @@ $offerView = new \LeadMax\TrackYourStats\Offer\View(\LeadMax\TrackYourStats\Syst
 $activeCap = false;
 $capAmount = 0;
 
-
 foreach ($rules->rules as $rule) {
 
 	if ($rule["type"] == "device") {
@@ -579,9 +578,6 @@ foreach ($rules->rules as $rule) {
 			for (var i = 0; i < rows.length; i++)
 				parsed.push(rows[i].id);
 			
-			
-			console.log(parsed);
-			
 			return JSON.stringify(parsed);
 			
 		}
@@ -602,15 +598,16 @@ foreach ($rules->rules as $rule) {
 			var parsed = [];
 			if (!onlyCountries)
 				parsed = [offerID, geoRuleName, redirectOffer, countriesNotAllowed];
-
-			rows.each(function() {
+			
+			for (var i = 0; i < rows.length; i++) {
+				console.log("row children", rows[i].children)
 				parsed.push([
-					$(this).id, 
-					$(this).children().first().text(), 
-					/* $(this).find('.cap_active').is(':checked'),  
-					$(this).find('.cap_amount').val() */
+					rows[i].id, 
+					rows[i].children[0].innerText,
+					rows[i].children[2].firstChild.firstChild.checked, 
+					rows[i].children[2].lastChild.lastChild.value
 				]);
-			})
+			}
 
 			return JSON.stringify(parsed);
 		
@@ -652,10 +649,10 @@ foreach ($rules->rules as $rule) {
 
 			const html =
 			'<td class="caps">' +
-				'<span><input class="cap_active" <?php if ($activeCap) { echo "checked"; } ?> id="' + countryName + '_capIsActive" type="checkbox" style = "width:15px;height:15px;">' +
+				'<span><input class="cap_active" id="' + countryName + '_capIsActive" type="checkbox" style = "width:15px;height:15px;">' +
 					'<span>Enable Cap</span></span>' +
 				'<span><label for = "geoCap">Cap:</label>' +
-				'<input class="cap_amount" type = "text" id = "' + countryName + '_geoCap" value=<?php echo $capAmount; ?>></span>' +
+				'<input class="cap_amount" type = "text" id = "' + countryName + '_geoCap" value=0></span>' +
 			'</td>';
 			c.append(html)
 			$("#toAdd tbody").append(c);
@@ -673,9 +670,9 @@ foreach ($rules->rules as $rule) {
 		function removeCountry(countryName, sortTableAfter = true) {
 			var selectedCountry = $("#" + countryName);
 			
-			console.log(selectedCountry);
-			$(selectedCountry).remove();
 			
+			$(selectedCountry).remove();
+			selectedCountry[0].lastChild.remove();
 			
 			$("#countryListBody").append("<tr id=\"" + countryName + "\" >" + selectedCountry.html() + "</tr>");
 			

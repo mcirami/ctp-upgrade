@@ -113,7 +113,7 @@ class Geo
             for ($i = 0; $i < count($countryList); $i++) {
 
                 if (is_array($countryList[$i])) {
-                    $questionMarks[] = "(?,?,?)";
+                    $questionMarks[] = "(?,?,?,?,?)";
                     $vals = array_values($countryList[$i]);
                     $vals[] = $geoRuleID;
 
@@ -124,7 +124,7 @@ class Geo
             }
 
 
-            $sql = 'INSERT INTO country_list (country_code, country_name, geo_rule_idgeo_rule) VALUES '.implode(',',
+            $sql = 'INSERT INTO country_list (country_code, country_name, cap_status, cap, geo_rule_idgeo_rule) VALUES '.implode(',',
                     $questionMarks);
 
             $prep = $db->prepare($sql);
@@ -241,7 +241,7 @@ class Geo
             for ($i = 0; $i < count($this->postData); $i++) {
 
                 if (is_array($this->postData[$i])) {
-                    $questionMarks[] = "(?,?,?)";
+                    $questionMarks[] = "(?,?,?,?,?)";
                     $vals = array_values($this->postData[$i]);
                     
                     $vals[] = $geoRuleID;
@@ -252,9 +252,7 @@ class Geo
 
             }
 
-            Log::info("inservValues: " . print_r($insertValues, true));
-            Log::info("postData: " . print_r($this->postData, true));
-            $sql = 'INSERT INTO country_list (country_code, country_name, geo_rule_idgeo_rule) VALUES '.implode(',',
+            $sql = 'INSERT INTO country_list (country_code, country_name, cap_status, cap, geo_rule_idgeo_rule ) VALUES '.implode(',',
                     $questionMarks);
 
             $prep = $db->prepare($sql);
