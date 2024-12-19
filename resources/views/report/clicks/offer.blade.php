@@ -102,11 +102,11 @@
 					<th class="value_span9">Offer</th>
 					@if (\LeadMax\TrackYourStats\System\Session::permissions()->can("view_fraud_data"))
 						<th class="value_span9">Ip Address</th>
-						<th class=\"value_span9\">Sub Division</th>
-						<th class=\"value_span9\">City</th>
-						<th class=\"value_span9\">Postal</th>
-						<th class=\"value_span9\">Longitude</th>
-						<th class=\"value_span9\">Latitude</th>
+						<th class="value_span9">Sub Division</th>
+						<th class="value_span9">City</th>
+						<th class="value_span9">Postal</th>
+						<th class="value_span9">Longitude</th>
+						<th class="value_span9">Latitude</th>
 					@endif
 					<th class="value_span9">Iso Code</th>
 				</tr>
@@ -114,6 +114,7 @@
 				<tbody>
 				@php $myReport = new LeadMax\TrackYourStats\Table\Date;  @endphp
 				@foreach($report as $row)
+				
 					@php 
 						$timestamp = $myReport->convertToEST($row['timestamp']);
 						$convertionTimeStamp = "";

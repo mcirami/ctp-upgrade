@@ -323,7 +323,6 @@ class Geo implements Rule
             return true;
         }
 
-
         foreach ($this->filteredRules as $rule) {
 
             // if the rule is to not allow these countries
@@ -341,6 +340,7 @@ class Geo implements Rule
                 return true;
             } else {
 
+                //dd($rule["country_list"]);
                 foreach ($rule["country_list"] as $country_code) {
                     if ($this->countryISO == $country_code) {
                         return true;
