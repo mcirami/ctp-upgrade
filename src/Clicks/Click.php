@@ -16,6 +16,8 @@ class Click
     public $rep_idrep;
     public $offer_idoffer;
     public $ip_address;
+    public $country_code;
+    public $referer;
     public $browser_agent;
     public $click_type;
     public $last_clickid;

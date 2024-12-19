@@ -5,7 +5,9 @@ namespace LeadMax\TrackYourStats\Clicks\URLEvents;
 
 use App\BonusOffer;
 use App\User;
+use Illuminate\Support\Facades\Log;
 use LeadMax\TrackYourStats\Clicks\Click;
+use LeadMax\TrackYourStats\Clicks\ClickGeo;
 use LeadMax\TrackYourStats\Clicks\Conversion;
 use LeadMax\TrackYourStats\Clicks\Cookie;
 use LeadMax\TrackYourStats\Clicks\UID;
@@ -83,17 +85,21 @@ class ClickRegistrationEvent extends URLEvent
                 return false;
             }
 
+
+            if(array_key_exists("HTTP_REFERER", $_SERVER)) {
+                Log::info('referer: ' . print_r($_SERVER["HTTP_REFERER"], true));
+            }
+
+            $geo = preg_replace('/[^a-zA-Z]/', '', ClickGeo::findGeo($ip));
+
             $click = new Click();
-	        
-	       /* $clicksLog = new Logger('clicks');
-	        $clicksLog->pushHandler(new StreamHandler(storage_path('logs/clicks.log')));
-	        $log = [$_SERVER];
-	        $clicksLog->info('Click', $log);*/
 
 	        $click->first_timestamp = date("Y-m-d H:i:s");
             $click->ip_address = $ip; //$_SERVER["REMOTE_ADDR"];
+            $click->country_code = $geo['isoCode'];
+            $click->referer = array_key_exists("HTTP_REFERER", $_SERVER) ? $_SERVER["HTTP_REFERER"] : null;
             $click->browser_agent = $_SERVER["HTTP_USER_AGENT"];
-
+            
             $click->rep_idrep = $this->userId;
             $click->offer_idoffer = $this->offerId;
             $click->click_type = $this->getClickType();

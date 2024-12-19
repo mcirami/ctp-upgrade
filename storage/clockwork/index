@@ -69,3 +69,5 @@
 1734629727-2638-762668961,1734629727.2478,GET,/apple-touch-icon-precomposed.png,,404,43.563842773438,request
 1734629727-2640-1667861024,1734629727.2478,GET,/apple-touch-icon.png,,404,42.895078659058,request
 1734630060-6710-235582652,1734630060.5536,GET,/offer/manage,App\Http\Controllers\OfferController@showManage,200,675.05311965942,request
+1734645161-9516-532678895,1734645161.9404,GET,/?repid=1005&offerid=990&sub1=,App\Http\Controllers\IndexController@index,500,1245.2549934387,request
+1734645199-1824-976775750,1734645199.1711,GET,/?repid=1005&offerid=990&sub1=,App\Http\Controllers\IndexController@index,500,343.09005737305,request
