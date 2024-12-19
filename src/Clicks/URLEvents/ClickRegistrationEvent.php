@@ -32,11 +32,14 @@ class ClickRegistrationEvent extends URLEvent
 
     public $userId;
 
-    public function __construct($user_id, $offer_id, $sub_variables_array)
+    public $ip;
+
+    public function __construct($user_id, $offer_id, $sub_variables_array, $ip)
     {
         $this->userId = $user_id;
         $this->offerId = $offer_id;
         $this->subVarArray = $sub_variables_array;
+        $this->ip = $ip;
     }
 
     public static function getEventString(): string
@@ -46,7 +49,7 @@ class ClickRegistrationEvent extends URLEvent
 
     public function fire()
     {
-        if ($this->registerClick()) {
+        if ($this->registerClick($this->ip)) {
             $this->sendUserToOffer();
         } else {
             return false;
@@ -71,32 +74,17 @@ class ClickRegistrationEvent extends URLEvent
 
     }
 
-    private function registerClick()
+    private function registerClick($ip)
     {
-        if ($this->validateOffer() && $this->validateUser()) {
 
+        if ($this->validateOffer() && $this->validateUser()) {
+           
             if (!$this->checkBonusOfferRequirementMet()) {
                 return false;
             }
 
             $click = new Click();
-	        if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-		        $ip = $_SERVER['HTTP_CLIENT_IP'];
-		        if ( str_contains( $ip, ',' ) ) {
-			        $ip = substr($ip, 0, strpos($ip, ","));
-		        }
-	        } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-		        $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-		        if ( str_contains( $ip, ',' ) ) {
-			        $ip = substr($ip, 0, strpos($ip, ","));
-		        }
-	        } else {
-		        $ip = $_SERVER['REMOTE_ADDR'];
-		        if ( str_contains( $ip, ',' ) ) {
-			        $ip = substr($ip, 0, strpos($ip, ","));
-		        }
-	        }
-
+	        
 	       /* $clicksLog = new Logger('clicks');
 	        $clicksLog->pushHandler(new StreamHandler(storage_path('logs/clicks.log')));
 	        $log = [$_SERVER];
@@ -132,7 +120,6 @@ class ClickRegistrationEvent extends URLEvent
 
                 $conversion->registerSale();
             }
-
 
             return true;
         } else {
@@ -185,7 +172,7 @@ class ClickRegistrationEvent extends URLEvent
 
     private function checkOfferRules()
     {
-        $rules = new Rules($this->offerId);
+        $rules = new Rules($this->offerId, $this->ip);
         if ($rules->checkAllRules() == true) {
             return true;
         } else {
@@ -213,7 +200,6 @@ class ClickRegistrationEvent extends URLEvent
 
         $offer_id = $this->offerId;
         $this->getOfferDataFromDatabase($offer_id);
-
         $encodedClickId = UID::encode($this->clickId);
 		$this->updateClickVars($this->clickId, $encodedClickId);
 

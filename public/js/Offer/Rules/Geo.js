@@ -28,7 +28,7 @@ class geoEdit {
             deny: document.getElementById("geoIsAllowed").checked,
             is_active: document.getElementById("geoIsActive").checked,
         };
-        console.log(ruleData);
+
         $.ajax({
             type: "POST",
             url: "/scripts/offer/rules/geo/editGeo.php",
@@ -40,7 +40,6 @@ class geoEdit {
             cache: false,
             traditional: true,
             success: function (result) {
-                console.log(result);
                 $("#geoModal").modal("hide");
                 location.reload();
             },
@@ -58,7 +57,6 @@ class geoEdit {
             cache: false,
 
             success: function (result) {
-                console.log(result);
                 var parsed = JSON.parse(result);
 
                 $("#geoRuleName").val(parsed["name"]);
@@ -68,7 +66,6 @@ class geoEdit {
                         parsed["redirectOffer"] +
                         '"]'
                 ).prop("selected", true);
-                console.log(parsed);
 
                 if (parsed["deny"] === 1)
                     $("#geoIsAllowed").attr("checked", true);
@@ -90,8 +87,13 @@ class geoEdit {
 
             success: function (result) {
                 var parsed = JSON.parse(result);
-
-                for (var i = 0; i < parsed.length; i++) addCountry(parsed[i]);
+                for (var i = 0; i < parsed.length; i++) {
+                    addCountry(
+                        parsed[i].country_code,
+                        parsed[i].cap_status,
+                        parsed[i].cap
+                    );
+                }
             },
         });
     }

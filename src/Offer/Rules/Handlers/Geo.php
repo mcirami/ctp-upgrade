@@ -107,7 +107,6 @@ class Geo
 
             $prep->execute();
 
-
             $insertValues = array();
             //start at two because thats where country arrays are
             for ($i = 0; $i < count($countryList); $i++) {
@@ -122,7 +121,6 @@ class Geo
 
 
             }
-
 
             $sql = 'INSERT INTO country_list (country_code, country_name, cap_status, cap, geo_rule_idgeo_rule) VALUES '.implode(',',
                     $questionMarks);
@@ -169,10 +167,16 @@ class Geo
     {
         $countries = array();
 
-        foreach ($this->rules as $rule) {
-            $countries[] = $rule["country_code"];
-        }
 
+        foreach ($this->rules as $rule) {
+            $object = [
+                'country_code'  => $rule["country_code"],
+                'cap_status'    => $rule["cap_status"],
+                'cap'           => $rule["cap"]
+            ];
+            $countries[] = $object;
+
+        }
         return $countries;
 
     }
@@ -181,6 +185,7 @@ class Geo
     public function getRules()
     {
         $this->rules = $this->queryGetRules()->fetchAll(PDO::FETCH_ASSOC);
+       
     }
 
 

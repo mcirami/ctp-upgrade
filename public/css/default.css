@@ -2731,3 +2731,42 @@ table.offer_clicks th:first-child {
         width: 100%;
     }
 }
+
+#toAdd .caps {
+	display: flex;
+	justify-content: flex-start;
+    border: none;
+}
+
+
+#toAdd .caps span {
+	width: 50%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 5px;
+}
+
+#toAdd .caps span span {
+	font-size: 1.4rem;
+	width: 100%;
+}
+
+
+#toAdd .caps span .cap_amount{
+	width: 100%;
+    height: 30px;
+}
+
+#toAdd .caps span label {
+	margin: 0;
+}
+
+#toAdd thead tr th:first-child {
+	width: 35%;
+}
+
+
+#toAdd thead tr th:last-child {
+	width: 100%;
+}

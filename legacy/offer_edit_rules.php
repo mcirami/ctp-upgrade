@@ -59,7 +59,7 @@ foreach ($rules->rules as $rule) {
 					<button type = "button" class = "close" data-dismiss = "modal"
 							aria-label = "Close"><span
 								aria-hidden = "true">&times;</span></button>
-					<h4 class = "modal-title" id = "geoRuleTitle">New Geo Rule</h4>
+					<h4 style="float: left;" class = "modal-title" id = "geoRuleTitle">New Geo Rule</h4>
 				</div>
 				<div class = "modal-body ">
 					<div class = "row">
@@ -168,7 +168,7 @@ foreach ($rules->rules as $rule) {
 					<button type = "button" class = "close" data-dismiss = "modal"
 							aria-label = "Close"><span
 								aria-hidden = "true">&times;</span></button>
-					<h4 class = "modal-title" id = "deviceRuleTitle">New Device Rule</h4>
+					<h4 style="float: left;" class = "modal-title" id = "deviceRuleTitle">New Device Rule</h4>
 				</div>
 				
 				<div class = "modal-body ">
@@ -499,12 +499,20 @@ foreach ($rules->rules as $rule) {
 			$("#geoCancelButton").click(function () {
 				resetGeoModal()
 			});
+
+			$("#geoModal").click(function() {
+				resetGeoModal();
+			});
+
+			$("button.close").click(function() {
+				resetGeoModal();
+			});
 			
 			$("#geoCreateButton").show();
 			$("#geoUpdateButton").hide();
-			
-			
+
 			for (var i = 0; i < rows.length; i++) {
+				rows[i].lastChild.remove();
 				$("#countryListBody").append(rows[i]);
 				
 				$("#_" + rows[i].id).attr("onclick", "addCountry(\"" + rows[i].id + "\")");
@@ -559,7 +567,6 @@ foreach ($rules->rules as $rule) {
 		function parseDevices(tableName, onlyCountries = false) {
 			var rows = $('#' + tableName + ' > tbody > tr');
 			
-			
 			var offerID = $("#offerID").val();
 			
 			var redirectOffer = $("#deviceRedirectOffer").val();
@@ -600,11 +607,11 @@ foreach ($rules->rules as $rule) {
 				parsed = [offerID, geoRuleName, redirectOffer, countriesNotAllowed];
 			
 			for (var i = 0; i < rows.length; i++) {
-				console.log("row children", rows[i].children)
+				console.log("firstChild.checked: ", rows[i].children[2].firstChild.firstChild.checked);
 				parsed.push([
 					rows[i].id, 
 					rows[i].children[0].innerText,
-					rows[i].children[2].firstChild.firstChild.checked, 
+					rows[i].children[2].firstChild.firstChild.checked || 0, 
 					rows[i].children[2].lastChild.lastChild.value
 				]);
 			}
@@ -640,23 +647,27 @@ foreach ($rules->rules as $rule) {
 		}
 		
 		
-		function addCountry(countryName, sortTableAfter = true) {
+		function addCountry(countryName, capStatus = 0, cap = 0, sortTableAfter = true) {
 			
-			
+			capIsActve = capStatus ? "checked" : "";			
+
 			var c = $("#" + countryName);
 			
 			$("#countryList tbody").remove(c);
-
-			const html =
-			'<td class="caps">' +
-				'<span><input class="cap_active" id="' + countryName + '_capIsActive" type="checkbox" style = "width:15px;height:15px;">' +
-					'<span>Enable Cap</span></span>' +
-				'<span><label for = "geoCap">Cap:</label>' +
-				'<input class="cap_amount" type = "text" id = "' + countryName + '_geoCap" value=0></span>' +
-			'</td>';
-			c.append(html)
-			$("#toAdd tbody").append(c);
+		
+			if(!document.getElementById(countryName + '_capIsActive')) {
+				const html =
+					'<td class="caps">' +
+						'<span><input class="cap_active" id="' + countryName + '_capIsActive"' + capIsActve + ' type="checkbox" style = "width:15px;height:15px;">' +
+							'<span>Enable Cap</span></span>' +
+						'<span><label for = "geoCap">Cap:</label>' +
+						'<input class="cap_amount" type = "number" id = "' + countryName + '_geoCap" value=' + cap + '></span>' +
+					'</td>';
+					c.append(html)
+			}
 			
+			$("#toAdd tbody").append(c);
+
 			$("#_" + countryName).attr("onclick", "removeCountry('" + countryName + "');");
 			
 			$("#" + countryName + "_img").attr("src", "images/icons/cancel.png");
@@ -676,9 +687,8 @@ foreach ($rules->rules as $rule) {
 			
 			$("#countryListBody").append("<tr id=\"" + countryName + "\" >" + selectedCountry.html() + "</tr>");
 			
-			
-			$("#_" + countryName).attr("onclick", "addCountry(\"" + countryName + "\")");
-			
+			$("#_" + countryName).attr("onclick", "addCountry('" + countryName + "');");
+
 			$("#" + countryName + "_img").attr("src", "images/icons/add.png");
 			
 			if (sortTableAfter)
