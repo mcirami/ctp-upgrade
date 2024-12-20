@@ -988,7 +988,6 @@ class User extends Login
 		$subIds = [];
 		
         foreach(DB::table('click_vars')
-            ->where('sub1', '!=', '')
             ->join('clicks', function ($join) use ($affId, $oneMonthAgo, $todaysDate) {
                 $join->on('idclicks', '=', 'click_vars.click_id')
                     ->where('clicks.rep_idrep', '=', $affId)
@@ -998,7 +997,9 @@ class User extends Login
             ->groupBy('click_vars.sub1') // Grouping instead of DISTINCT
             ->orderBy('sub1')
             ->cursor()->pluck('sub1') as $row) {
-                $subIds[] = $row;
+                if ($row != '') {
+                    $subIds[] = $row;
+                }
             }
 
         foreach($subIds as $subId) {
