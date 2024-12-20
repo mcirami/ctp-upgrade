@@ -39,13 +39,10 @@
 				<th class="value_span9">Sub 1</th>
 				<th class="value_span9">Sub 2</th>
 				<th class="value_span9">Sub 3</th>
-				<th class="value_span9">Sub 4</th>
-				<th class="value_span9">Sub 5</th>
-
+				<th class="value_span9">Referer Url</th>
 				@if (\LeadMax\TrackYourStats\System\Session::permissions()->can("view_fraud_data"))
 					<th class="value_span9">IP Address</th>
 				@endif
-
 				<th class="value_span9">Iso Code</th>
 				@if (\LeadMax\TrackYourStats\System\Session::permissions()->can("view_fraud_data"))
 					<th class="value_span9">Sub Division</th>
@@ -78,8 +75,7 @@
 					<td>{{$row->sub1}}</td>
 					<td>{{$row->sub2}}</td>
 					<td>{{$row->sub3}}</td>
-					<td>{{$row->sub4}}</td>
-					<td>{{$row->sub5}}</td>
+					<td>{{$row->referer}}</td>
 					@if (\LeadMax\TrackYourStats\System\Session::permissions()->can("view_fraud_data"))
 						<td>{{$row->ip_address}}</td>
 					@endif

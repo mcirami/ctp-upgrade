@@ -71,3 +71,15 @@
 1734630060-6710-235582652,1734630060.5536,GET,/offer/manage,App\Http\Controllers\OfferController@showManage,200,675.05311965942,request
 1734645161-9516-532678895,1734645161.9404,GET,/?repid=1005&offerid=990&sub1=,App\Http\Controllers\IndexController@index,500,1245.2549934387,request
 1734645199-1824-976775750,1734645199.1711,GET,/?repid=1005&offerid=990&sub1=,App\Http\Controllers\IndexController@index,500,343.09005737305,request
+1734709281-4464-377571818,1734709281.2125,GET,/report/offer,App\Http\Controllers\Report\OfferReportController@show,200,793.87211799622,request
+1734709286-0403-1251100396,1734709286.0161,GET,/report/offer?&d_from=2024-12-19&d_to=2024-12-19&dateSelect=1,App\Http\Controllers\Report\OfferReportController@show,200,521.37589454651,request
+1734709295-1469-2109892132,1734709295.1208,GET,/offer/985/clicks?d_from=2024-12-19&d_to=2024-12-19&dateSelect=1&filter=affiliate,App\Http\Controllers\Report\ClickReportController@offerClicks,200,705.41596412659,request
+1734713892-9401-1937187295,1734713892.7957,GET,/offer/985/clicks?d_from=2024-12-19&d_to=2024-12-19&dateSelect=1&filter=affiliate,App\Http\Controllers\Report\ClickReportController@offerClicks,200,654.33502197266,request
+1734713946-5926-1160188082,1734713946.5807,GET,/offer/985/clicks?d_from=2024-12-19&d_to=2024-12-19&dateSelect=1&filter=affiliate,App\Http\Controllers\Report\ClickReportController@offerClicks,200,402.36592292786,request
+1734713984-5467-702703864,1734713984.5324,GET,/offer/985/clicks?d_from=2024-12-19&d_to=2024-12-19&dateSelect=1&filter=affiliate,App\Http\Controllers\Report\ClickReportController@offerClicks,200,430.08899688721,request
+1734714157-0081-1467075154,1734714156.9782,GET,/offer/985/clicks?d_from=2024-12-19&d_to=2024-12-19&dateSelect=1&filter=affiliate,App\Http\Controllers\Report\ClickReportController@offerClicks,200,663.20300102234,request
+1734714274-7514-1081086306,1734714274.6479,GET,/offer/985/clicks?d_from=2024-12-19&d_to=2024-12-19&dateSelect=1&filter=affiliate,App\Http\Controllers\Report\ClickReportController@offerClicks,200,577.32200622559,request
+1734714287-4979-37300976,1734714287.4824,GET,/report/affiliate,App\Http\Controllers\Report\EmployeeReportController@show,200,384.49692726135,request
+1734714290-5679-578091137,1734714290.5554,GET,/report/affiliate?&d_from=2024-12-19&d_to=2024-12-19&dateSelect=1,App\Http\Controllers\Report\EmployeeReportController@show,200,383.76808166504,request
+1734714293-2135-1408103911,1734714293.1962,GET,/user/1005/clicks?d_from=2024-12-19&d_to=2024-12-19&dateSelect=1,App\Http\Controllers\Report\ClickReportController@showUsersClicks,200,553.37405204773,request
+1734714425-4770-847213797,1734714425.4645,GET,/user/1005/clicks?d_from=2024-12-19&d_to=2024-12-19&dateSelect=1,App\Http\Controllers\Report\ClickReportController@showUsersClicks,200,449.47600364685,request

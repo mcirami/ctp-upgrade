@@ -46,7 +46,7 @@ class ClickReportController extends ReportController
 		$report                = $reportCollection->items();
 
         return view('report.clicks.offer', compact('offer', 'report', 'reportCollection', 'id', 'startDate', 'endDate', 'dateSelect'));
-    }
+    } 
 
     public function showOfferClicks($id)
     {
@@ -106,8 +106,7 @@ class ClickReportController extends ReportController
 						'click_vars.sub1',
 						'click_vars.sub2',
 		                'click_vars.sub3',
-		                'click_vars.sub4',
-		                'click_vars.sub5',
+						'clicks.referer',
 						'click_geo.ip  as ip_address',
 						'clicks.offer_idoffer  as offer_id'
 	                )
