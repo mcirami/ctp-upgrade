@@ -31,6 +31,7 @@ class UserController extends Controller
 
     public function viewManageUsers()
     {
+
         $this->validate(request(), [
             'showInactive' => 'numeric|min:0|max:1'
         ]);
