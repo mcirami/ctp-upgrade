@@ -985,34 +985,37 @@ class User extends Login
 
 		$blocked = DB::table('blocked_sub_ids')->where('rep_idrep', '=', $affId)->distinct()->pluck('sub_id')->toArray();
 		$data = [];
+		$subIds = [];
 		
-		$subIds = DB::table('click_vars')
-			->where('sub1', '!=', '')
-			->join('clicks', function ($join) use ($affId, $oneMonthAgo, $todaysDate) {
-				$join->on('idclicks', '=', 'click_vars.click_id')
-					->where('clicks.rep_idrep', '=', $affId);
-/* 					->whereBetween('first_timestamp', [$oneMonthAgo, $todaysDate]); */
-			})
-			->select('click_vars.sub1')
-			->groupBy('click_vars.sub1') // Grouping instead of DISTINCT
-			->orderBy('sub1')
-			->pluck('sub1')->toArray();
-
-            foreach($subIds as $subId) {
-                if (in_array($subId, $blocked)) {
-                    $object = [
-                        'subId'     => preg_replace('/[^a-zA-Z0-9-_]/', '', $subId),
-                        'blocked'   => true
-                    ];
-                } else {
-                    $object = [
-                        'subId'     => preg_replace('/[^a-zA-Z0-9-_]/', '', $subId),
-                        'blocked'    => false
-                    ];
-                }
-    
-                array_push($data, $object);
+        foreach(DB::table('click_vars')
+            ->where('sub1', '!=', '')
+            ->join('clicks', function ($join) use ($affId, $oneMonthAgo, $todaysDate) {
+                $join->on('idclicks', '=', 'click_vars.click_id')
+                    ->where('clicks.rep_idrep', '=', $affId)
+    				->whereBetween('first_timestamp', [$oneMonthAgo, $todaysDate]);
+            })
+            ->select('click_vars.sub1')
+            ->groupBy('click_vars.sub1') // Grouping instead of DISTINCT
+            ->orderBy('sub1')
+            ->cursor()->pluck('sub1') as $row) {
+                $subIds[] = $row;
             }
+
+        foreach($subIds as $subId) {
+            if (in_array($subId, $blocked)) {
+                $object = [
+                    'subId'     => preg_replace('/[^a-zA-Z0-9-_]/', '', $subId),
+                    'blocked'   => true
+                ];
+            } else {
+                $object = [
+                    'subId'     => preg_replace('/[^a-zA-Z0-9-_]/', '', $subId),
+                    'blocked'    => false
+                ];
+            }
+
+            array_push($data, $object);
+        }
     
 
 		return json_encode($data);

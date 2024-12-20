@@ -83,3 +83,8 @@
 1734714290-5679-578091137,1734714290.5554,GET,/report/affiliate?&d_from=2024-12-19&d_to=2024-12-19&dateSelect=1,App\Http\Controllers\Report\EmployeeReportController@show,200,383.76808166504,request
 1734714293-2135-1408103911,1734714293.1962,GET,/user/1005/clicks?d_from=2024-12-19&d_to=2024-12-19&dateSelect=1,App\Http\Controllers\Report\ClickReportController@showUsersClicks,200,553.37405204773,request
 1734714425-4770-847213797,1734714425.4645,GET,/user/1005/clicks?d_from=2024-12-19&d_to=2024-12-19&dateSelect=1,App\Http\Controllers\Report\ClickReportController@showUsersClicks,200,449.47600364685,request
+1734716043-6270-1836520820,1734716043.5558,GET,/sales/add,App\Http\Controllers\AdjustmentsController@showAddSaleLog,200,491.09482765198,request
+1734716045-8965-691912136,1734716045.8854,GET,/user/1005/clicks?d_from=2024-12-19&d_to=2024-12-19&dateSelect=1,App\Http\Controllers\Report\ClickReportController@showUsersClicks,200,484.47608947754,request
+1734717341-0474-1969927468,1734717340.979,GET,/user/manage,App\Http\Controllers\UserController@viewManageUsers,200,583.12010765076,request
+1734717456-4592-1308650923,1734717456.4491,GET,/dashboard,App\Http\Controllers\DashboardController@home,200,405.1730632782,request
+1734717460-1830-1469340528,1734717460.1709,GET,/user/manage,App\Http\Controllers\UserController@viewManageUsers,200,501.75404548645,request
