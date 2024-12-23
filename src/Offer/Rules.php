@@ -186,25 +186,34 @@ class Rules
                 $dateFrom = $carbonFrom->setTimezone("UTC");
                 $dateTo = $carbonTo->setTimezone("UTC");
 
-                $conversionIps = DB::table('conversions')
+                $conversions = DB::table('conversions')
                 ->whereBetween('first_timestamp', [$dateFrom, $dateTo ])
                 ->leftJoin('clicks', function($query) use ($offerId) {
                     $query->on('conversions.click_id', '=', 'clicks.idclicks')->where('offer_idoffer', '=', $offerId);
-                })->select('ip_address')->pluck('ip_address')->toArray();
+                })->select('ip_address', 'country_code')->get();
 
-                
-                $count = 0;
-                foreach($conversionIps as $Ip) {
-                    $geo = preg_replace('/[^a-zA-Z]/', '', ClickGeo::findGeo($Ip));
-                    if ($geo['isoCode'] == $country && $clickCountry['isoCode'] == $geo['isoCode']) {
-                        ++$count;
+                if ($conversions) {
+                    $count = 0;
+                    $conversions->toArray();
+                    foreach($conversions as $conversion) {
+
+                        if ($conversion['country_code']) {
+                            if ($conversion['country_code'] == $country && $clickCountry['isoCode'] == $conversion['country_code']) {
+                                ++$count;
+                            }
+                        } else {
+                            $geo = preg_replace('/[^a-zA-Z]/', '', ClickGeo::findGeo($conversion['ip_address']));
+                            if ($geo['isoCode'] == $country && $clickCountry['isoCode'] == $geo['isoCode']) {
+                                ++$count;
+                            }
+                        }
                     }
-                }
 
-                if ($count >= $cap) {
-                    $url = $this->buildRedirectUrl($rule['redirect_offer']);
-                    send_to($url); 
-                };
+                    if ($count >= $cap) {
+                        $url = $this->buildRedirectUrl($rule['redirect_offer']);
+                        send_to($url); 
+                    };
+                }
             }
         }
 
