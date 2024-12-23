@@ -984,8 +984,8 @@ class User extends Login
 		$oneMonthAgo = $date->convertDateTimezone(Carbon::now()->subMonths(1)->startOfDay());
 
 		$cacheKey = "user_{$affId}_subids";
-        //$cacheTime = 1800; // one hour
-        $data = Cache::remember($cacheKey, now()->addMinutes(5), function () use ($affId, $oneMonthAgo, $todaysDate) {
+        $cacheTime = 1800; // one hour
+        $data = Cache::remember($cacheKey, $cacheTime, function () use ($affId, $oneMonthAgo, $todaysDate) {
             $blocked = DB::table('blocked_sub_ids')->where('rep_idrep', '=', $affId)->distinct()->pluck('sub_id')->toArray();
             $subIdArray = [];
             $mergedArray = [];
