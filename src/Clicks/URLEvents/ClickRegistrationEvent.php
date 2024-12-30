@@ -86,12 +86,14 @@ class ClickRegistrationEvent extends URLEvent
             }
 
 
-            if(array_key_exists("HTTP_REFERER", $_SERVER)) {
+            /* if(array_key_exists("HTTP_REFERER", $_SERVER)) {
                 Log::info('referer: ' . print_r($_SERVER["HTTP_REFERER"], true));
-            }
-            Log::info('ip: ' . print_r($ip, true));
+            } */
+            //Log::info('ip: ' . print_r($ip, true));
             $geo = preg_replace('/[^a-zA-Z]/', '', ClickGeo::findGeo($ip));
-            Log::info('geo: ' . print_r($geo, true));
+            //Log::info('geo: ' . print_r($geo, true));
+
+            Log::info('geo: ' . print_r($_SERVER, true));
             $click = new Click();
 
 	        $click->first_timestamp = date("Y-m-d H:i:s");
