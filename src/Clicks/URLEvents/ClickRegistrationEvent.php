@@ -93,7 +93,7 @@ class ClickRegistrationEvent extends URLEvent
             $geo = preg_replace('/[^a-zA-Z]/', '', ClickGeo::findGeo($ip));
             //Log::info('geo: ' . print_r($geo, true));
 
-            Log::info('geo: ' . print_r($_SERVER, true));
+            //Log::info('geo: ' . print_r($_SERVER, true));
             $click = new Click();
 
 	        $click->first_timestamp = date("Y-m-d H:i:s");
