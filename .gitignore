@@ -6,6 +6,8 @@
 /public/GeoIP2-City.mmdb
 /public/images/galaxy3
 /storage/GeoIP2-City.mmdb
+/storage/clockwork/
+/storage/logs/
 /storage/*.key
 /vendor
 /config/octane.php
