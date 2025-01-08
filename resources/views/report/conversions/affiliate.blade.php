@@ -29,17 +29,19 @@
 		<table id="clicks" class="table table-condensed table-bordered table_01 tablesorter">
 			<thead>
 			<tr>
-				@if (\LeadMax\TrackYourStats\System\Session::permissions()->can("view_fraud_data"))
+				{{-- @if (\LeadMax\TrackYourStats\System\Session::permissions()->can("view_fraud_data"))
 					<th class="value_span9">Click ID</th>
-				@endif
+				@endif --}}
 				<th class="value_span9">Offer Name</th>
-				<th class="value_span9">Conversion Timestamp</th>
+				<th class="value_span9">Clicks</th>
+				<th class="value_span9">Conversions</th>
+				{{-- <th class="value_span9">Conversion Timestamp</th>
 				<th class="value_span9">Paid</th>
 				<th class="value_span9">Sub 1</th>
 				<th class="value_span9">Sub 2</th>
 				<th class="value_span9">Sub 3</th>
 				<th class="value_span9">Sub 4</th>
-				<th class="value_span9">Sub 5</th>
+				<th class="value_span9">Sub 5</th> --}}
 			</tr>
 			</thead>
 			<tbody>
@@ -53,17 +55,19 @@
 					
 				@endphp
 				<tr role="row">
-					@if (\LeadMax\TrackYourStats\System\Session::permissions()->can("view_fraud_data"))
+					{{-- @if (\LeadMax\TrackYourStats\System\Session::permissions()->can("view_fraud_data"))
 						<td>{{$row->idclicks}}</td>
-					@endif
+					@endif --}}
 					<td>{{$row->offer_name}}</td>
-					<td>{{$convertionTimeStamp}}</td>
+					<td>{{$row->clicks}}</td>
+					<td>{{$row->conversions}}</td>
+					{{-- <td>{{$convertionTimeStamp}}</td>
 					<td>{{$row->paid}}</td>
 					<td>{{$row->sub1}}</td>
 					<td>{{$row->sub2}}</td>
 					<td>{{$row->sub3}}</td>
 					<td>{{$row->sub4}}</td>
-					<td>{{$row->sub5}}</td>
+					<td>{{$row->sub5}}</td> --}}
 				</tr>
 
 

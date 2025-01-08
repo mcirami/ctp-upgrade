@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 use LeadMax\TrackYourStats\System\Session;
 use LeadMax\TrackYourStats\User\Permissions;
 use App\Http\Traits\ClickTraits;
+use Illuminate\Database\Query\JoinClause;
 
 class ClickReportController extends ReportController
 {
@@ -126,7 +127,35 @@ class ClickReportController extends ReportController
 
         $user = User::myUsers()->findOrFail($userId);
 
-	    $reportCollection = Conversion::where('user_id', '=', $userId)
+		$reportCollection = Click::where('user_id', '=', $userId)
+	                ->whereBetween('timestamp', [$dates['startDate'], $dates['endDate']])
+					->rightJoin('conversions', 'conversions.click_id', '=', 'clicks.idclicks')
+	                ->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
+	                ->select(
+						DB::raw('COUNT(clicks.idclicks) as clicks'),
+				        DB::raw('COUNT(conversions.click_id) as conversions'),
+						'offer.offer_name',
+	                )
+					->groupBy('offer.offer_name')
+	                ->orderBy('conversions.timestamp', 'DESC')->paginate(100);
+
+	
+	    /* $reportCollection = Conversion::where('user_id', '=', $userId)
+	                ->whereBetween('timestamp', [$dates['startDate'], $dates['endDate']])
+					->leftJoin('clicks', function(JoinClause $join) use ($userId, $dates) {
+						$join->on('clicks.rep_idrep', '=', 'conversions.user_id')
+						->whereBetween('first_timestamp', [$dates['startDate'], $dates['endDate']]);
+					})
+					->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
+	                ->select(
+						DB::raw('COUNT(clicks.idclicks) as clicks'),
+				        DB::raw('COUNT(conversions.click_id) as conversions'),
+						'offer.offer_name',
+	                )
+					->groupBy('offer.offer_name')
+	                ->orderBy('conversions', 'DESC')->paginate(100); */
+
+		/* $reportCollection = Conversion::where('user_id', '=', $userId)
 	                ->whereBetween('timestamp', [$dates['startDate'], $dates['endDate']])
 	                ->leftJoin('click_vars', 'click_vars.click_id', '=', 'conversions.click_id')
 					->leftJoin('clicks', 'clicks.idclicks', '=', 'conversions.click_id')
@@ -143,7 +172,7 @@ class ClickReportController extends ReportController
 		                'click_vars.sub5',
 	                )
 	                ->orderBy('conversions.timestamp', 'DESC')->paginate(100);
-
+					*/
 
 		$report = $this->formatResults($reportCollection);
 

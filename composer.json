@@ -21,6 +21,7 @@
     "laravel/helpers": "^1.7",
     "laravel/tinker": "^2.0",
     "mobiledetect/mobiledetectlib": "^3.74",
+    "nesbot/carbon": "^2.72",
     "predis/predis": "^2.3"
   },
   "require-dev": {
