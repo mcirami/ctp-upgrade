@@ -8,6 +8,7 @@
     @include('report.options.dates')
 @endsection
 
+
 @section('table')
 	{{-- <div class="form-group searchDiv">
 		@if (\LeadMax\TrackYourStats\System\Session::permissions()->can("view_fraud_data"))
