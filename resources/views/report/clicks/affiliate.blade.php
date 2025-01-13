@@ -6,6 +6,12 @@
 
 @section('table-options')
     @include('report.options.dates')
+	<form action="/user/{{$user->idrep}}/clicks/export" method="GET" enctype="multipart/form-data" style="margin-top: 20px;">
+		@csrf
+		<input type="hidden" name="d_from" id="d_from" class="form-control" type="date" value="{{$startDate}}">
+		<input type="hidden" name="d_to" id="d_to" class="form-control" type="date"  value="{{$endDate}}">
+		<button style="margin-left: 0;" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4">Export Data</button>
+	</form>
 @endsection
 
 @section('table')

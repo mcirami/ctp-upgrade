@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Report;
 
 use App\Click;
 use App\Conversion;
+use App\Exports\DataExport;
 use App\Offer;
 use App\Privilege;
 use App\Services\Repositories\Offer\OfferAffiliateClicksRepository;
@@ -15,9 +16,8 @@ use Illuminate\Support\Facades\DB;
 use LeadMax\TrackYourStats\System\Session;
 use LeadMax\TrackYourStats\User\Permissions;
 use App\Http\Traits\ClickTraits;
-use Illuminate\Support\Collection;
-use Illuminate\Database\Query\JoinClause;
 use LeadMax\TrackYourStats\Clicks\ClickGeo;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ClickReportController extends ReportController
 {
@@ -240,6 +240,8 @@ class ClickReportController extends ReportController
 		$offerId = request()->query('offer');
         $user = User::myUsers()->findOrFail($userId);
 
+		dd($dates['startDate']);
+
 		$clicksSubquery = Click::whereBetween('first_timestamp', [$dates['startDate'], $dates['endDate']])
 		->where('rep_idrep', '=', $userId)
 		->where('offer_idoffer', '=', $offerId)
@@ -457,4 +459,16 @@ class ClickReportController extends ReportController
 		}
 	}
 
+	public function exportUsersClicks($userId) {
+
+		$dates = self::getDates();
+		$startDate = $dates['originalStart'];
+		$endDate = $dates['originalEnd'];
+
+		$query = Click::query()
+		->whereBetween('first_timestamp', [ $startDate, $endDate])
+		->where('rep_idrep', $userId);
+		$data = $query->get();
+		return Excel::download(new DataExport($data), 'clicks.xlsx');
+	}
 }
