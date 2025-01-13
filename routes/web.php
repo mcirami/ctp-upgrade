@@ -70,6 +70,8 @@ Route::group(['middleware' => 'legacy.auth'], function () {
             });
         Route::get('{id}/clicks', [ClickReportController::class, 'showUsersClicks'])->middleware('role:0,1,2')->name('userClicks');
         Route::get('{id}/conversions', [ClickReportController::class, 'showUserConversions'])->middleware('role:0,1,2')->name('userConversions');
+        Route::get('{id}/conversions-by-country', [ClickReportController::class, 'showUserConversionsByCountry'])->middleware('role:0,1,2')->name('userConversionsByCountry');
+        Route::get('{id}/conversions-by-offer', [ClickReportController::class, 'showUserConversionsByOffer'])->middleware('role:0,1,2')->name('userConversionsByOffer');
         Route::get('{id}/search-clicks', [ClickReportController::class, 'searchClicks'])->middleware('role:0')->name('clicks.search');
     });
     Route::group(['prefix' => 'report'], function () {
