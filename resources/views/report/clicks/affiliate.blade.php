@@ -1,3 +1,8 @@
+@php
+	use App\Exports\DataExport;
+	use Maatwebsite\Excel\Facades\Excel;
+@endphp
+
 @extends('report.template')
 
 @section('report-title')
@@ -6,12 +11,18 @@
 
 @section('table-options')
     @include('report.options.dates')
-	<form action="/user/{{$user->idrep}}/clicks/export" method="GET" enctype="multipart/form-data" style="margin-top: 20px;">
-		@csrf
-		<input type="hidden" name="d_from" id="d_from" class="form-control" type="date" value="{{$startDate}}">
-		<input type="hidden" name="d_to" id="d_to" class="form-control" type="date"  value="{{$endDate}}">
-		<button style="margin-left: 0;" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4">Export Data</button>
-	</form>
+	<div class="button_wrap" style="width: 100%; display:inline-block; margin-top: 10px;">
+		<a style="
+		width: 170px; 
+		border:none; 
+		padding: 10px;
+    	font-size: 18px;
+    	border-radius: 6px;
+    	color: #676767;" 
+		class="btn btn-default btn-sm" href="/user/{{$user->idrep}}/clicks/export?d_from={{$startDate}}&d_to={{$endDate}}&dateSelect={{$dateSelect}}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4">
+			Export Data
+		</a>
+	</div>
 @endsection
 
 @section('table')

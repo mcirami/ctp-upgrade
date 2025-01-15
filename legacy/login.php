@@ -84,7 +84,8 @@ else
 		<link rel = "shortcut icon" type = "image/ico" href = "<?= \LeadMax\TrackYourStats\System\Company::loadFromSession()->getImgDir() ?>/favicon.ico"/>
 		
 		<link rel = "stylesheet" type = "text/css" href = "<?php echo $webroot; ?>css/default.css"/>
-		<link rel="stylesheet" type="text/css" media="screen" href="<?php echo $webroot; ?>css/company.php"/>
+		<!-- <link rel="stylesheet" type="text/css" media="screen" href="<?php //echo $webroot; ?>css/company.php"/> -->
+		<link rel="stylesheet" href="<?php echo $webroot; ?>css/company.css">
 		<link href = "<?php echo $webroot; ?>css/responsive_table.css" rel = "stylesheet" type = "text/css"/>
 		<link href = "<?php echo $webroot; ?>css/drawer.min.css" rel = "stylesheet">
 		<link rel = "stylesheet" href = "<?php echo $webroot; ?>css/magic.min.css">

@@ -160,4 +160,8 @@ Route::group(['middleware' => 'legacy.auth'], function () {
     Route::get("login/{userId}", [LegacyLoginController::class, 'adminLogin']);
 });
 
-
+Route::get('/css/company.css', function () {
+    header('Content-Type: text/css');
+    include resource_path('styles/company.php');
+    exit;
+});
