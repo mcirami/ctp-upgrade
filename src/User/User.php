@@ -984,7 +984,7 @@ class User extends Login
 		$oneMonthAgo = $date->convertDateTimezone(Carbon::now()->subMonths(1)->startOfDay());
 
 		$cacheKey = "user_{$affId}_subids";
-        $cacheTime = 300; //5 min //1800; // 30 minutes
+        $cacheTime = 3600; // 60 minutes
         $data = Cache::remember($cacheKey, $cacheTime, function () use ($affId, $oneMonthAgo, $todaysDate) {
             $blocked = DB::table('blocked_sub_ids')->where('rep_idrep', '=', $affId)->distinct()->pluck('sub_id')->toArray();
             $subIdArray = [];
@@ -993,7 +993,7 @@ class User extends Login
                 ->join('clicks', function ($join) use ($affId, $oneMonthAgo, $todaysDate) {
                     $join->on('idclicks', '=', 'click_vars.click_id')
                         ->where('clicks.rep_idrep', '=', $affId)
-                        /* ->whereBetween('first_timestamp', [$oneMonthAgo, $todaysDate]) */;
+                        ->whereBetween('first_timestamp', [$oneMonthAgo, $todaysDate]);
                 })
                 ->select('click_vars.sub1')
                 ->groupBy('click_vars.sub1') // Grouping instead of DISTINCT
