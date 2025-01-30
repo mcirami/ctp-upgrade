@@ -77,9 +77,9 @@ Route::group(['middleware' => 'legacy.auth'], function () {
         Route::get('{id}/conversions', [ConversionReportController::class, 'showUserConversions'])->middleware('role:0,1,2')->name('userConversions');
         Route::get('{id}/{offer}/conversions-by-country', [ConversionReportController::class, 'showUserOfferConversionsByCountry'])->middleware('role:0,1,2')->name('userOfferConversionsByCountry');
         Route::get('{user}/{offer}/conversions-by-subid', [SubReportController::class, 'showUserConversionsBySubId'])->middleware('role:0,1,2')->name('userConversionsBySubId');
-        Route::get('{user}/{offer}/subid-clicks-by-offer', [SubReportController::class, 'showSubIdClicksByOffer'])->middleware('role:0,1,2')->name('userSubIdClicksByOffer');
-        Route::get('{user}/{offer}/subid-conversions-in-country', [SubReportController::class, 'showSubIdConversionsInCountry'])->middleware('role:0,1,2')->name('userSubIdConversionsInCountry');
-        
+        Route::get('{user}/{offer}/subid-clicks-by-offer', [SubReportController::class, 'showSubIdClicksByOffer'])->middleware('role:0,1,2')->name('subIdClicksByOffer');
+        Route::get('{user}/{offer}/subid-conversions-in-country', [SubReportController::class, 'showSubIdConversionsInCountry'])->middleware('role:0,1,2')->name('subIdConversionsInCountry');
+        Route::get('{user}/{offer}/subid-offer-clicks-in-country', [SubReportController::class, 'showSubIdClicksByOfferInCountry'])->middleware('role:0,1,2')->name('subIdClicksByOfferInCountry');
     });
     Route::group(['prefix' => 'report'], function () {
         Route::get('daily', [AggregateReportController::class, 'show']);

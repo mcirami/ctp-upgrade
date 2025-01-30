@@ -14,10 +14,10 @@
 			'user' 			=> $user->idrep,
 			'offerId' 		=> $offer->idoffer
 		);
-
 	@endphp
 	@include('report.options.user-clicks-view', $data)
     @include('report.options.dates')
+    
 @endsection
 
 @section('table')

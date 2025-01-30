@@ -4,13 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Privilege;
 use App\User;
+use App\Click;
 use Carbon\Carbon;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use \LeadMax\TrackYourStats\System\Session;
 use LeadMax\TrackYourStats\Table\Paginate;
+use Illuminate\Support\Facades\Cache;
+use LeadMax\TrackYourStats\Table\Date;
 
 class UserController extends Controller
 {
@@ -82,6 +83,43 @@ class UserController extends Controller
 
 		return response()->json(['success' => true]);
 	}
+
+	public function getUserSubIds() {
+        $affId = $_GET["idrep"] ?? null;
+		$date = new Date;
+		$now = Carbon::now();
+		$todaysDate = $date->convertDateTimezone($now);
+		$oneMonthAgo = $date->convertDateTimezone(Carbon::now()->subMonths(3)->startOfDay());
+
+		$cacheKey = "user_{$affId}_subids";
+        $cacheTime = 3600; // 30 minutes
+        $data = Cache::remember($cacheKey, $cacheTime, function () use ($affId, $oneMonthAgo, $todaysDate) {
+            $blocked = DB::table('blocked_sub_ids')->where('rep_idrep', '=', $affId)->distinct()->pluck('sub_id')->toArray();
+            $subIdArray = [];
+            $mergedArray = [];
+
+            $subIdArray = Click::where('rep_idrep', '=', $affId) 
+            ->whereBetween('first_timestamp', [$oneMonthAgo, $todaysDate])
+            ->join('click_vars', 'click_vars.click_id', '=', 'clicks.idclicks')
+            ->select('click_vars.sub1')
+            ->groupBy('click_vars.sub1')
+            ->orderBy('click_vars.sub1')->get()->toArray();
+
+            
+            foreach($subIdArray as $subId) {
+                $object = [
+                    'subId'     => preg_replace('/[^a-zA-Z0-9-_]/', '', $subId['sub1']),
+                    'blocked'   => in_array($subId['sub1'], $blocked)
+                ];
+                array_push($mergedArray, $object);
+            }
+
+            return $mergedArray;
+
+            });
+
+		return json_encode($data);
+    }
 
 	public function changeAffPayout(Request $request) {
 		$message = null;

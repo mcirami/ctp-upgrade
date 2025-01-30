@@ -52,7 +52,7 @@ class Click extends Model
     {
 	
         static::addGlobalScope('ignore_old_records', function (Builder $builder) {
-            $builder->where('first_timestamp', '>=', DB::raw('NOW() - INTERVAL 3 YEAR'));
+            $builder->where('first_timestamp', '>=', DB::raw('NOW() - INTERVAL 2 YEAR'));
         });
     }
 

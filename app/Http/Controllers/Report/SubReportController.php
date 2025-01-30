@@ -92,23 +92,26 @@ class SubReportController extends ReportController
 				));
 	}
 
-	public function showSubIdClicksByOffer($userId, $offerId) {
+	public function showSubIdClicksByOffer(User $user, Offer $offer) {
 		$dates = self::getDates();
 		$startDate = $dates['originalStart'];
 		$endDate = $dates['originalEnd'];
 		$dateSelect = request()->query('dateSelect');
 		$subId = request()->query('subId');
 
-        $user = User::myUsers()->findOrFail($userId);
-		$offerData = Offer::findOrFail($offerId);
-
-	    $reportCollection = Click::where('rep_idrep', '=', $userId)
-					->where('clicks.offer_idoffer', '=', $offerId)
+	    $reportCollection = Click::where('rep_idrep', '=', $user->idrep)
+					->where('clicks.offer_idoffer', '=', $offer->idoffer)
 	                ->where('clicks.click_type', '!=', 2)
 	                ->whereBetween('clicks.first_timestamp', [$dates['startDate'], $dates['endDate']])
-	                ->leftJoin('click_vars', 'click_vars.click_id', '=', 'clicks.idclicks')
+	                ->leftJoin('click_vars', function($query) {
+						$query->on('click_vars.click_id', '=', 'clicks.idclicks')
+						->whereRaw('clicks.first_timestamp >= NOW() - INTERVAL 2 YEAR');
+					})
 					->where('click_vars.sub1', '=', $subId)
-	                ->leftJoin('click_geo', 'click_geo.click_id', '=', 'clicks.idclicks')
+	                ->leftJoin('click_geo', function($query) {
+						$query->on('click_geo.click_id', '=', 'clicks.idclicks')
+						->whereRaw('clicks.first_timestamp >= NOW() - INTERVAL 2 YEAR');
+					})
 	                ->leftJoin('conversions', 'conversions.click_id', '=', 'clicks.idclicks')
 	                ->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
 	                ->select(
@@ -134,7 +137,7 @@ class SubReportController extends ReportController
 			'report', 
 			'user',
 			'subId',
-			'offerData',
+			'offer',
 			'reportCollection', 
 			'startDate', 
 			'endDate', 
@@ -226,6 +229,78 @@ class SubReportController extends ReportController
 			'dateSelect',
 			'offer',
 			'country'
+		));
+	}
+
+	public function showSubIdClicksByOfferInCountry(User $user, Offer $offer) {
+		$dates = self::getDates();
+		$startDate = $dates['originalStart'];
+		$endDate = $dates['originalEnd'];
+		$dateSelect = request()->query('dateSelect');
+		$subId = request()->query('subid');
+		$country = request()->query('country');
+		$userId = $user->idrep;
+		$offerId = $offer->idoffer;
+
+		$ipAddresses = Click::where('rep_idrep', '=', $userId)
+		->where('offer_idoffer', '=', $offerId)
+		->where('clicks.click_type', '!=', 2)
+		->whereBetween('first_timestamp', [$dates['startDate'], $dates['endDate']])
+		->where(function ($query) {
+			$query->whereNull('country_code')
+			->orWhere('country_code', '');
+		})
+		->pluck('ip_address')
+		->toArray();
+
+		$matchingIPs = array_filter($ipAddresses, function ($ip) use ($country) {
+			$geo = ClickGeo::findGeo($ip);
+			return $geo['isoCode'] === $country;
+		});
+
+	    $reportCollection = Click::where('rep_idrep', '=', $user->idrep)
+					->where('clicks.offer_idoffer', '=', $offer->idoffer)
+	                ->where('clicks.click_type', '!=', 2)
+	                ->whereBetween('clicks.first_timestamp', [$dates['startDate'], $dates['endDate']])
+	                ->leftJoin('click_vars', 'click_vars.click_id', '=', 'clicks.idclicks')
+					->where('click_vars.sub1', '=', $subId)
+					->where(function ($query) use($matchingIPs, $country) {
+						$query->where('country_code', '=', $country)
+						->orWhere(function ($subQuery) use ($matchingIPs) {
+							$subQuery->whereIn('ip_address', $matchingIPs);
+						});
+					})
+	                ->leftJoin('click_geo', 'click_geo.click_id', '=', 'clicks.idclicks')
+	                ->leftJoin('conversions', 'conversions.click_id', '=', 'clicks.idclicks')
+	                ->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
+	                ->select(
+						'clicks.idclicks',
+						'clicks.first_timestamp as timestamp',
+						'offer.offer_name',
+						'conversions.timestamp as conversion_timestamp',
+						'conversions.paid as paid',
+						'click_vars.url',
+						'click_vars.sub1 as subId',
+						'clicks.referer',
+						'click_geo.ip  as ip_address',
+						'clicks.offer_idoffer  as offer_id'
+	                )
+	                ->orderBy('paid', 'DESC')->paginate(100);
+	
+		$reportCollection->appends(['country' => $country, 'subid' => $subId]);
+		$report = $this->formatResults($reportCollection);
+
+		//dd($report);
+		return view('report.clicks.subid-in-country', 
+		compact(
+			'report', 
+			'user',
+			'subId',
+			'offer',
+			'reportCollection', 
+			'startDate', 
+			'endDate', 
+			'dateSelect'
 		));
 	}
 }

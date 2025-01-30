@@ -3,7 +3,6 @@
 @section('report-title')
     {{$user->user_name}}'s Sub Id '{{$subId}}' Clicks For Offer '{{$offer->offer_name}}'
 @endsection
-
 @section('table-options')
     @include('report.options.dates')
 	{{-- <div class="button_wrap" style="width: 100%; display:inline-block; margin-top: 10px;">

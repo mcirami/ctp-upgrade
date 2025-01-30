@@ -5,7 +5,9 @@
 @endsection
 
 @section('table-options')
-
+    @php 
+        $params = "d_from=$startDate&d_to=$endDate&dateSelect=$dateSelect&country=$country";
+    @endphp
     {{-- @php
 		$data = array(
 			'd_from' 		=> $startDate,
@@ -32,20 +34,17 @@
         </tr>
         </thead>
         <tbody>
-        @php 
-            $params = "d_from=$startDate&d_to=$endDate&dateSelect=$dateSelect";
-        @endphp
         @foreach($reportCollection as $row)
             <tr role="row">
-                <td>{{$row->subId}}</td>
+                <td>
+                    <a href="/user/{{$user->idrep}}/{{$offer->idoffer}}/subid-offer-clicks-in-country?{{$params}}&subid={{$row->subId}}">
+                        {{$row->subId}}
+                    </a>
+                </td>
                 <td>{{$row->total_clicks}}</td>
                 <td>{{$row->unique_clicks}}</td>
                 <td>
-                    @if ($row->total_conversions > 0)
-                        <a href="/user/{{$user->idrep}}/{{$offer->idoffer}}/subid-conversions-in-country?{{$params}}&country={{$country}}">{{$row->total_conversions}}</a>
-                    @else
-                        {{$row->total_conversions}}    
-                    @endif
+                    {{$row->total_conversions}}
                 </td>
             </tr>
         @endforeach

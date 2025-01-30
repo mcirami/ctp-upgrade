@@ -133,7 +133,6 @@ class ConversionReportController extends ReportController
 			DB::raw('SUM(clicks.click_type = 0) as unique_clicks'))
 		->groupBy('ip_address');
 
-
 		$conversionsSubquery = Conversion::where('user_id', '=', $userId)
 			->whereBetween('timestamp', [$dates['startDate'], $dates['endDate']])
 			->leftJoin('clicks', 'clicks.idclicks', '=', 'conversions.click_id')
@@ -157,7 +156,7 @@ class ConversionReportController extends ReportController
 			)
 			->groupBy('clicks.ip_address', 'clicks.country_code')
 			->orderBy('total_conversions', 'DESC')->get();
-
+		
 		foreach($reportCollection as $item) {
 			if (is_null($item->country_code)) {
 				$geo = ClickGeo::findGeo($item->ip_address);
@@ -184,7 +183,8 @@ class ConversionReportController extends ReportController
 
 		return view('report.conversions.affiliate-by-country', 
 		compact(
-			'reports', 
+			'reportCollection',
+			'reports',
 			'user', 
 			'startDate', 
 			'endDate', 
