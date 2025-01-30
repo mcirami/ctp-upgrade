@@ -1,21 +1,21 @@
 @extends('report.template')
 
 @section('report-title')
-    {{$user->user_name}}'s {{ $offerName }} Conversions By Sub Id's
+    {{$user->user_name}}'s {{ $offerData->offer_name }} Conversions By Sub Id's
 @endsection
 
 @section('table-options')
-	{{-- @php
+	@php
 		$data = array(
 			'd_from' 		=> $startDate,
 			'd_to'			=> $endDate,
 			'dateSelect'	=> $dateSelect,
 			'user' 			=> $user->idrep,
-			'offerId' 		=> $offerId
+			'offerId' 		=> $offerData->idoffer
 		);
 
 	@endphp
-	@include('report.options.user-clicks-view', $data) --}}
+	@include('report.options.user-clicks-view', $data)
     @include('report.options.dates')
 @endsection
 
@@ -30,10 +30,18 @@
 			</tr>
 			</thead>
 			<tbody>
+				@php 
+					$params = "d_from=$startDate&d_to=$endDate&dateSelect=$dateSelect";
+				@endphp
 			@foreach($report as $row)
 				<tr role="row">
 					<td>{{$row->sub1}}</td>
-					<td>{{$row->clicks}}</td>
+					<td>
+						<a href="/user/{{$user->idrep}}/{{$offerData->idoffer}}/subid-clicks-by-offer?{{$params}}&subId={{$row->sub1}}">
+							{{$row->clicks}}
+						</a>
+
+					</td>
 					<td>{{$row->conversions}}</td>
 				</tr>
 			@endforeach

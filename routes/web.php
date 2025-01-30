@@ -73,10 +73,13 @@ Route::group(['middleware' => 'legacy.auth'], function () {
         Route::get('{id}/clicks/export', [ClickReportController::class, 'exportUsersClicks'])->middleware('role:0,1,2')->name('exportUserClicks');
         Route::get('{id}/search-clicks', [ClickReportController::class, 'searchClicks'])->middleware('role:0')->name('clicks.search');
 
-        Route::get('{id}/conversions', [ConversionReportController::class, 'showUserConversions'])->middleware('role:0,1,2')->name('userConversions');
-        Route::get('{user}/{offer}/conversions-by-subid', [SubReportController::class, 'showUserConversionsBySubId'])->middleware('role:0,1,2')->name('userConversionsBySubId');
-        Route::get('{id}/conversions-by-country', [ConversionReportController::class, 'showUserConversionsByCountry'])->middleware('role:0,1,2')->name('userConversionsByCountry');
         Route::get('{id}/conversions-by-offer', [ConversionReportController::class, 'showUserConversionsByOffer'])->middleware('role:0,1,2')->name('userConversionsByOffer');
+        Route::get('{id}/conversions', [ConversionReportController::class, 'showUserConversions'])->middleware('role:0,1,2')->name('userConversions');
+        Route::get('{id}/{offer}/conversions-by-country', [ConversionReportController::class, 'showUserOfferConversionsByCountry'])->middleware('role:0,1,2')->name('userOfferConversionsByCountry');
+        Route::get('{user}/{offer}/conversions-by-subid', [SubReportController::class, 'showUserConversionsBySubId'])->middleware('role:0,1,2')->name('userConversionsBySubId');
+        Route::get('{user}/{offer}/subid-clicks-by-offer', [SubReportController::class, 'showSubIdClicksByOffer'])->middleware('role:0,1,2')->name('userSubIdClicksByOffer');
+        Route::get('{user}/{offer}/subid-conversions-in-country', [SubReportController::class, 'showSubIdConversionsInCountry'])->middleware('role:0,1,2')->name('userSubIdConversionsInCountry');
+        
     });
     Route::group(['prefix' => 'report'], function () {
         Route::get('daily', [AggregateReportController::class, 'show']);
@@ -99,7 +102,7 @@ Route::group(['middleware' => 'legacy.auth'], function () {
             });
         Route::group(['middleware' => 'role:' . Privilege::ROLE_AFFILIATE], function () {
             Route::get('sub', [SubReportController::class,'show']);
-	        Route::get('sub/conversions', [SubReportController::class,'showSubConversions']);
+	        Route::get('sub/conversions', [SubReportController::class,'showSubCoxnversions']);
             Route::group(['prefix' => 'payout'], function () {
                 Route::get('', [PayoutReportController::class, 'report']);
                 Route::get('pdf', [PayoutReportController::class, 'invoice']);

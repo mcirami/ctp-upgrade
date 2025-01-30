@@ -6,6 +6,8 @@ use Database\Factories\ClickFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 
 /**
  * App\Click
@@ -45,5 +47,13 @@ class Click extends Model
 	{
 		return ClickFactory::new();
 	}
+
+	protected static function booted()
+    {
+	
+        static::addGlobalScope('ignore_old_records', function (Builder $builder) {
+            $builder->where('first_timestamp', '>=', DB::raw('NOW() - INTERVAL 3 YEAR'));
+        });
+    }
 
 }

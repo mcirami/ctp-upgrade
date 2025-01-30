@@ -112,17 +112,18 @@ class ConversionReportController extends ReportController
 			));
 	}
 
-    public function showUserConversionsByCountry($userId) {
+    public function showUserOfferConversionsByCountry($userId, $offerId) {
 		$dates = self::getDates();
 		$startDate = $dates['originalStart'];
 		$endDate = $dates['originalEnd'];
 		$dateSelect = request()->query('dateSelect');
-		$offerId = request()->query('offer');
         $user = User::myUsers()->findOrFail($userId);
+		$offer = Offer::findOrFail($offerId);
 
 		$clicksSubquery = Click::whereBetween('first_timestamp', [$dates['startDate'], $dates['endDate']])
 		->where('rep_idrep', '=', $userId)
 		->where('offer_idoffer', '=', $offerId)
+		->where('clicks.click_type', '!=', 2)
 		->select(
 			'idclicks',
 			'ip_address', 
@@ -188,7 +189,7 @@ class ConversionReportController extends ReportController
 			'startDate', 
 			'endDate', 
 			'dateSelect', 
-			'offerId'
+			'offer',
 		));
 	}
 
