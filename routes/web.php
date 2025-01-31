@@ -80,6 +80,8 @@ Route::group(['middleware' => 'legacy.auth'], function () {
         Route::get('{user}/{offer}/subid-clicks-by-offer', [SubReportController::class, 'showSubIdClicksByOffer'])->middleware('role:0,1,2')->name('subIdClicksByOffer');
         Route::get('{user}/{offer}/subid-conversions-in-country', [SubReportController::class, 'showSubIdConversionsInCountry'])->middleware('role:0,1,2')->name('subIdConversionsInCountry');
         Route::get('{user}/{offer}/subid-offer-clicks-in-country', [SubReportController::class, 'showSubIdClicksByOfferInCountry'])->middleware('role:0,1,2')->name('subIdClicksByOfferInCountry');
+        Route::get('{user}/{offer}/subid-offer-conversions-by-country', [SubReportController::class, 'subIdOfferConverisonsByCountry'])->middleware('role:0,1,2')->name('subIdOfferConverisonsByCountry');
+    
     });
     Route::group(['prefix' => 'report'], function () {
         Route::get('daily', [AggregateReportController::class, 'show']);

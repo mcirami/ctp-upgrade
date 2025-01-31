@@ -37,11 +37,13 @@
         @foreach($reportCollection as $row)
             <tr role="row">
                 <td>
-                    <a href="/user/{{$user->idrep}}/{{$offer->idoffer}}/subid-offer-clicks-in-country?{{$params}}&subid={{$row->subId}}">
-                        {{$row->subId}}
-                    </a>
+                    {{$row->subId}}
                 </td>
-                <td>{{$row->total_clicks}}</td>
+                <td>
+                    <a href="/user/{{$user->idrep}}/{{$offer->idoffer}}/subid-offer-clicks-in-country?{{$params}}&subid={{$row->subId}}">
+                        {{$row->total_clicks}}
+                    </a>
+                </td>    
                 <td>{{$row->unique_clicks}}</td>
                 <td>
                     {{$row->total_conversions}}

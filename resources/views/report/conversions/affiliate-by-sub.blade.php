@@ -26,6 +26,7 @@
 			<tr>
 				<th class="value_span9">Sub Id</th>
 				<th class="value_span9">Clicks</th>
+				<th class="value_span9">Unique Clicks</th>
 				<th class="value_span9">Conversions</th>
 			</tr>
 			</thead>
@@ -42,7 +43,18 @@
 						</a>
 
 					</td>
-					<td>{{$row->conversions}}</td>
+					<td>
+						{{$row->unique_clicks}}
+					</td>
+					<td>
+						@if($row->conversions > 0)
+							<a href="/user/{{$user->idrep}}/{{$offerData->idoffer}}/subid-offer-conversions-by-country?{{$params}}&subid={{$row->sub1}}">
+								{{$row->conversions}}
+							</a>
+						@else
+							{{$row->conversions}}
+						@endif
+					</td>
 				</tr>
 			@endforeach
 			</tbody>
@@ -61,7 +73,7 @@
 				// Initialize tablesorter
 				// ***********************
 				.tablesorter({
-					sortList: [[2, 1]],
+					sortList: [[3, 1]],
 					widgets: ['staticRow']
 				})
 		});
