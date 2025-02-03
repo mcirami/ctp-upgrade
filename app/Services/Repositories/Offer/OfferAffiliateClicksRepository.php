@@ -13,6 +13,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Facades\DB;
+use LeadMax\TrackYourStats\Clicks\ClickGeo;
 
 /**
  * Reporting repository for Offers clicks, organized by affiliates.
@@ -58,23 +59,8 @@ class OfferAffiliateClicksRepository implements Repository
         } else {
             $report = $this->getOfferConversionsForGod($start, $end);
         }
-
-		/*return \DB::query()->select([
-			'rep.idrep as user_id',
-			'rep.user_name',
-			'offer.idoffer as offer_id',
-			'offer.offer_name',
-			\DB::raw('COUNT(clicks.idclicks) as clicks'),
-			\DB::raw('COUNT(conversions.click_id) as conversions')
-		])->from('conversions')->whereBetween('timestamp', [$start, $end])
-		                 ->leftJoin('clicks', 'conversions.click_id', 'clicks.idclicks')
-		                 ->leftJoin('rep', 'rep.idrep', 'conversions.user_id')
-		                 ->leftJoin('offer', 'clicks.offer_idoffer', 'offer.idoffer')
-		                 ->groupBy('rep.user_name', 'rep.idrep', 'offer_id')
-		                 ->orderBy('conversions', 'DESC');;*/
-
-                         
-                         return $report;
+                                    
+        return $report;
     }
 
     /**
@@ -138,9 +124,82 @@ class OfferAffiliateClicksRepository implements Repository
         ->where('offer_idoffer', '=', $this->offerId)
         ->whereBetween('first_timestamp',[$start, $end])
         ->join('rep', 'idrep', '=', 'clicks.rep_idrep')
-        ->rightJoin('conversions', 'conversions.click_id', '=', 'clicks.idclicks')
+        ->leftJoin('conversions', 'conversions.click_id', '=', 'clicks.idclicks')
         ->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
-        ->select('rep.idrep as user_id', 'rep.user_name', 'offer.idoffer as offer_id', 'offer.offer_name', DB::raw('COUNT(clicks.idclicks) as clicks'),
-        DB::raw('COUNT(conversions.click_id) as conversions'))->groupBy('rep.user_name', 'rep.idrep', 'offer_id')->orderBy('conversions', 'DESC');
-    } 
+        ->select(
+            'rep.idrep as user_id', 
+            'rep.user_name', 
+            'offer.idoffer as offer_id', 
+            'offer.offer_name', 
+        DB::raw('COUNT(clicks.idclicks) as clicks'),
+        DB::raw('SUM(clicks.click_type = 0) as unique_clicks'),
+        DB::raw('COUNT(conversions.click_id) as conversions'))
+        ->groupBy('rep.user_name', 'rep.idrep', 'offer_id')
+        ->orderBy('conversions', 'DESC');
+    }
+
+    public function getOfferConversionsByCountry($start, $end) {
+
+        $clicksSubquery = Click::whereBetween('first_timestamp', [$start, $end])
+		->where('offer_idoffer', '=', $this->offerId)
+		->where('clicks.click_type', '!=', 2)
+		->leftJoin('click_vars', 'click_vars.click_id', '=', 'clicks.idclicks')
+		->select(
+			'idclicks',
+			'ip_address',
+			'country_code',
+			'click_type',
+			DB::raw('COUNT(idclicks) as clicks'),
+			DB::raw('SUM(clicks.click_type = 0) as unique_clicks'))
+		->groupBy('ip_address', 'clicks.country_code');
+
+		$conversionsSubquery = Conversion::whereBetween('timestamp', [$start, $end])
+			->leftJoin('clicks', 'clicks.idclicks', '=', 'conversions.click_id')
+			->where('clicks.offer_idoffer', '=', $this->offerId)
+			->select(
+				'clicks.ip_address', 
+				'clicks.country_code',
+				DB::raw('COUNT(conversions.id) as conversions'))
+			->groupBy('clicks.ip_address', 'clicks.country_code');
+
+			$reportCollection = DB::table(DB::raw("({$clicksSubquery->toSql()}) as clicks"))
+			->mergeBindings($clicksSubquery->getQuery())
+			->leftJoin(DB::raw("({$conversionsSubquery->toSql()}) as conversions"), 'clicks.ip_address', '=', 'conversions.ip_address')
+			->mergeBindings($conversionsSubquery->getQuery())
+			->select(
+				'clicks.ip_address',
+				'clicks.country_code',
+				DB::raw('SUM(clicks.clicks) as total_clicks'),
+				DB::raw('SUM(clicks.unique_clicks) as unique_clicks'),
+				DB::raw('SUM(COALESCE(conversions.conversions, 0)) as total_conversions'),
+			)
+			->groupBy('clicks.ip_address', 'clicks.country_code')
+			->orderBy('total_conversions', 'DESC')->get();
+		
+		foreach($reportCollection as $item) {
+			if (is_null($item->country_code)) {
+				$geo = ClickGeo::findGeo($item->ip_address);
+				$item->country_code = $geo['isoCode'];
+			}
+		}
+
+		$reports = [];
+
+		foreach ($reportCollection as $item) {
+			$countryCode = $item->country_code;
+			if (!isset($reports[$countryCode])) {
+				$reports[$countryCode] = [
+					'country_code' => $countryCode,
+					'total_clicks' => 0,
+					'unique_clicks' => 0,
+					'total_conversions' => 0
+				];
+			}
+			$reports[$countryCode]['total_clicks'] += $item->total_clicks;
+			$reports[$countryCode]['unique_clicks'] += $item->unique_clicks;
+			$reports[$countryCode]['total_conversions'] += $item->total_conversions;
+		}
+
+        return $reports;
+    }
 }

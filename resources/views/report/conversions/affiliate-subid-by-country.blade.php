@@ -1,23 +1,11 @@
 @extends('report.template')
 
 @section('report-title')
-    {{$user->user_name}}'s {{$offer->offer_name}} Conversions By Country
+    {{$user->user_name}}'s {{$subId}}'s' {{$offer->offer_name}}'s' Conversions By Country
 @endsection
 
 @section('table-options')
-
-    @php
-		$data = array(
-			'd_from' 		=> $startDate,
-			'd_to'			=> $endDate,
-			'dateSelect'	=> $dateSelect,
-			'user' 			=> $user->idrep,
-			'offerId' 		=> $offer->idoffer
-		);
-	@endphp
-	@include('report.options.user-clicks-view', $data)
     @include('report.options.dates')
-    
 @endsection
 
 @section('table')
@@ -33,19 +21,19 @@
         </thead>
         <tbody>
         @php 
-            $params = "d_from=$startDate&d_to=$endDate&dateSelect=$dateSelect";
+            $params = "d_from=$startDate&d_to=$endDate&dateSelect=$dateSelect&subid=$subId";
         @endphp
         @foreach($reports as $key => $row)
             <tr role="row">
-                <td>{{$key}}</td>
-                <td>{{$row['total_clicks']}}</td>
+                <td>{{$row['country_code']}}</td>
+                <td>
+                    <a href="/user/{{$user->idrep}}/{{$offer->idoffer}}/subid-offer-clicks-in-country?{{$params}}&country={{$row['country_code']}}">
+                        {{$row['total_clicks']}}
+                   </a>
+                </td>
                 <td>{{$row['unique_clicks']}}</td>
                 <td>
-                    @if ($row['total_conversions'] > 0)
-                        <a href="/user/{{$user->idrep}}/{{$offer->idoffer}}/subid-conversions-in-country?{{$params}}&country={{$key}}">{{$row['total_conversions']}}</a>
-                    @else
-                        {{$row['total_conversions']}}    
-                    @endif
+                    {{$row['total_conversions']}}   
                 </td>
             </tr>
         @endforeach

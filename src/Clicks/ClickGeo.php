@@ -9,6 +9,7 @@
 namespace LeadMax\TrackYourStats\Clicks;
 
 use GeoIp2\Database\Reader;
+use Illuminate\Support\Facades\Cache;
 
 function unKnownGeo( array $geo ): array {
 	$geo["isoCode"] = "UNKNOWN";
@@ -39,33 +40,38 @@ class ClickGeo
 	        return unKnownGeo($geo);
         }
 
-        $reader = new Reader(env("GEO_IP_DATABASE"));
+        $cacheKey = "geoip_{$ip}";
+        $ttl = now()->addDays(7);
+        return Cache::remember($cacheKey, $ttl, function () use ($ip, $geo) {
+            try {
 
-        try {
-            $record = $reader->city($ip);
-
-            if($record->country->isoCode == "") {
-                return unKnownGeo($geo);
+                $reader = new Reader(env("GEO_IP_DATABASE"));
+                $record = $reader->city($ip);
+    
+                /* if($record->country->isoCode == "") {
+                    return unKnownGeo($geo);
+                } */
+    
+                $geo["isoCode"] = $record->country->isoCode; // 'US'
+    
+                $geo["subDivision"] = $record->mostSpecificSubdivision->name;
+    
+                $geo["city"] = $record->city->name;
+    
+                $geo["postal"] = $record->postal->code;
+    
+                $geo["latitude"] = $record->location->latitude;
+    
+                $geo["longitude"] = $record->location->longitude;
+            } catch (\Exception $e) {
+    
+                $geo = unKnownGeo($geo);
             }
 
-            $geo["isoCode"] = $record->country->isoCode; // 'US'
+            return $geo;
+        });
 
-            $geo["subDivision"] = $record->mostSpecificSubdivision->name;
-
-            $geo["city"] = $record->city->name;
-
-            $geo["postal"] = $record->postal->code;
-
-            $geo["latitude"] = $record->location->latitude;
-
-            $geo["longitude"] = $record->location->longitude;
-        } catch (\Exception $e) {
-
-            $geo = unKnownGeo($geo);
-        }
-
-
-        return $geo;
+        
 
     }
 }
