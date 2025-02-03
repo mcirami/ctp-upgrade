@@ -81,12 +81,12 @@ Route::group(['middleware' => 'legacy.auth'], function () {
         Route::get('{user}/{offer}/subid-conversions-in-country', [SubReportController::class, 'showSubIdConversionsInCountry'])->middleware('role:0,1,2')->name('subIdConversionsInCountry');
         Route::get('{user}/{offer}/subid-offer-clicks-in-country', [SubReportController::class, 'showSubIdClicksByOfferInCountry'])->middleware('role:0,1,2')->name('subIdClicksByOfferInCountry');
         Route::get('{user}/{offer}/subid-offer-conversions-by-country', [SubReportController::class, 'subIdOfferConverisonsByCountry'])->middleware('role:0,1,2')->name('subIdOfferConverisonsByCountry');
-    
     });
     Route::group(['prefix' => 'report'], function () {
         Route::get('daily', [AggregateReportController::class, 'show']);
         Route::get('offer', [OfferReportController::class, 'show']);
 	    Route::get('offer/{id}/user-conversions', [ConversionReportController::class, 'showConversionsByUser']);
+        Route::get('offer/{id}/conversions-by-country', [ConversionReportController::class, 'showConversionsByCountry']);
         Route::group(['middleware' => 'role:' . Privilege::ROLE_GOD], function () {
             Route::get('advertiser', [AdvertiserReportController::class, 'show']);
             Route::get('blacklist', [BlackListReportController::class, 'show']);

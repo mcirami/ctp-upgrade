@@ -206,4 +206,8 @@ class ConversionReportController extends ReportController
 
 		return view('report.offer.conversions', compact('affiliateReport', 'offer'));
 	}
+
+	public function showConversionsByCountry($offerId) {
+		
+	}
 }

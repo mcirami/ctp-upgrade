@@ -5,6 +5,15 @@
 @endsection
 
 @section('table-options')
+	@php
+		$data = array(
+			'd_from' 		=> request()->query('d_from'),
+			'd_to'			=> request()->query('d_to'),
+			'dateSelect'	=> request()->query('dateSelect'),
+			'offerId' 		=> $offer->idoffer
+		);
+	@endphp
+	@include('report.options.offer_conversions_view', $data)
     @include('report.options.dates')
 @endsection
 

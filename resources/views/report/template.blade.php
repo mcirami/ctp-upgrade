@@ -5,7 +5,7 @@
         <div class="white_box_outer large_table">
             <div class="heading_holder">
                 <span class="lft value_span9"> @yield('report-title')</span>
-
+                
             </div>
 
             <div class='form-group ' style='float:left'>
