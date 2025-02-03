@@ -192,22 +192,4 @@ class ConversionReportController extends ReportController
 			'offer',
 		));
 	}
-
-    public function showConversionsByUser($offerId) {
-
-		$dates = self::getDates();
-		$offer = Offer::findOrFail($offerId);
-
-		$start = Carbon::parse( $dates['startDate'], 'America/New_York' );
-		$end   = Carbon::parse( $dates['endDate'], 'America/New_York' );
-
-		$affiliateRepo = new OfferAffiliateClicksRepository( $offerId, Session::user() );
-		$affiliateReport = $affiliateRepo->between( $start, $end );
-
-		return view('report.offer.conversions', compact('affiliateReport', 'offer'));
-	}
-
-	public function showConversionsByCountry($offerId) {
-		
-	}
 }

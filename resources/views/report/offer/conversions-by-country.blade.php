@@ -1,7 +1,7 @@
 @extends('report.template')
 
 @section('report-title')
-    {{$offer->offer_name}}'s Conversions By Affiliate
+    {{$offer->offer_name}}'s Conversions By Country
 @endsection
 
 @section('table-options')
@@ -22,8 +22,7 @@
 		<thead>
 
 		<tr>
-			<th class="value_span9">Affiliate ID</th>
-			<th class="value_span9">Username</th>
+			<th class="value_span9">Country</th>
 			<th class="value_span9">Clicks</th>
 			<th class="value_span9">Unique Clicks</th>
 			<th class="value_span9">Conversions</th>
@@ -33,12 +32,12 @@
 		@if(!empty($affiliateReport))
 			@foreach($affiliateReport as $report)
 				<tr>
-					<td>{{$report->user_id}}</td>
-					<td>{{$report->user_name}}</td>
-					<td>{{$report->clicks}}</td>
-					<td>{{$report->unique_clicks}}</td>
-					<td>{{$report->conversions}}</td>
+					<td>{{$report['country_code']}}</td>
+					<td>{{$report['total_clicks']}}</td>
+					<td>{{$report['unique_clicks']}}</td>
+					<td>{{$report['total_conversions']}}</td>
 				</tr>
+
 			@endforeach
 		@endif
 		</tbody>
@@ -52,7 +51,7 @@
 		$(document).ready(function () {
 			$('#mainTable').tablesorter(
 				{
-					sortList: [[4, 1]],
+					sortList: [[3, 1]],
 					widgets: ['staticRow'],
 				});
 		});
