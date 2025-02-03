@@ -44,7 +44,11 @@ class ClickGeo
         try {
             $record = $reader->city($ip);
 
-            $geo["isoCode"] = $record->country->isoCode."\n"; // 'US'
+            if($record->country->isoCode == "") {
+                return unKnownGeo($geo);
+            }
+
+            $geo["isoCode"] = $record->country->isoCode; // 'US'
 
             $geo["subDivision"] = $record->mostSpecificSubdivision->name;
 

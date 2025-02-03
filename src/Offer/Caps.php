@@ -439,10 +439,6 @@ class Caps
         if ($active) {
             $this->cap_rules["time_interval"] = self::daily;
             $time = $this->calculateTimeInterval();
-            $timeFrame = new Logger('clicks');
-            $timeFrame ->pushHandler(new StreamHandler(storage_path('logs/clicks.log')), Logger::INFO);
-            $log = [$time];
-            $timeFrame->info('time interval', $log);
 
             $mobileDetect = new MobileDetect();
 			$deviceConversionsToday = DB::table('clicks')

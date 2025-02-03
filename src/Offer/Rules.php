@@ -8,11 +8,14 @@
 
 namespace LeadMax\TrackYourStats\Offer;
 
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use LeadMax\TrackYourStats\Offer\Rules\Device;
 use LeadMax\TrackYourStats\Offer\Rules\Geo;
 use LeadMax\TrackYourStats\Offer\Rules\NoneUnique;
 use PDO;
-
+use LeadMax\TrackYourStats\Clicks\ClickGeo;
 
 class Rules
 {
@@ -25,11 +28,15 @@ class Rules
 
     // offer id
     public $offid = 0;
+    
+    public $ip;
 
-    function __construct($offid)
+    function __construct($offid, $ip = null)
     {
         // set our offer id
         $this->offid = $offid;
+
+        $this->ip = $ip;
 
         // find all rules associated with that offer
         $this->getRules();
@@ -157,28 +164,72 @@ class Rules
 
     public function checkAllRules()
     {
-        //dd($this->rules);
+
         if (empty($this->rules)) {
             return true;
         }
 
-        //dd($this->rules);
+        foreach($this->rules as $rule) {
+            if ($rule['cap_status']) {
+                $cap = $rule['cap'];
+                $country = $rule['country_code'];
+                $offerId = $rule['offer_idoffer'];
+                $clickCountry = preg_replace('/[^a-zA-Z]/', '', ClickGeo::findGeo($this->ip));
+
+                $tz = 'America/New_York';
+                $timeNow = \Illuminate\Support\Carbon::today($tz)->format('Y-m-d');
+                $from = $timeNow . " 00:00:00";
+                $to = $timeNow . " 23:59:59";
+
+                $carbonFrom = Carbon::createFromFormat('Y-m-d H:i:s', $from, $tz);
+                $carbonTo = Carbon::createFromFormat('Y-m-d H:i:s', $to, $tz);
+                $dateFrom = $carbonFrom->setTimezone("UTC");
+                $dateTo = $carbonTo->setTimezone("UTC");
+
+                $conversions = DB::table('conversions')
+                ->whereBetween('first_timestamp', [$dateFrom, $dateTo ])
+                ->leftJoin('clicks', function($query) use ($offerId) {
+                    $query->on('conversions.click_id', '=', 'clicks.idclicks')->where('offer_idoffer', '=', $offerId);
+                })->select('ip_address', 'country_code')->get();
+
+                if ($conversions) {
+                    $count = 0;
+                    $conversions->toArray();
+                    foreach($conversions as $conversion) {
+
+                        if ($conversion['country_code']) {
+                            if ($conversion['country_code'] == $country && $clickCountry['isoCode'] == $conversion['country_code']) {
+                                ++$count;
+                            }
+                        } else {
+                            $geo = preg_replace('/[^a-zA-Z]/', '', ClickGeo::findGeo($conversion['ip_address']));
+                            if ($geo['isoCode'] == $country && $clickCountry['isoCode'] == $geo['isoCode']) {
+                                ++$count;
+                            }
+                        }
+                    }
+
+                    if ($count >= $cap) {
+                        $url = $this->buildRedirectUrl($rule['redirect_offer']);
+                        send_to($url); 
+                    };
+                }
+            }
+        }
 
         foreach ($this->ruleObjs as $key => $rule) {
-  
+
             if (!$rule->checkRules()) {
 
-                $newRules = new Rules($rule->redirectOffer);
+                $newRules = new Rules($rule->redirectOffer, $this->ip);
 
                 if ($newRules->checkAllRules()) {
                     $url = $this->buildRedirectUrl($rule->redirectOffer);
                     send_to($url);
                 }
-
-
+                
             }
         }
-
 
         return true;
     }

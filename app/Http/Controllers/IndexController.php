@@ -97,9 +97,24 @@ class IndexController extends Controller
 			    return redirect( '404' )->setStatusCode( '404' );
 		    }
 	    }
-
+        if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+            $ip = $_SERVER['HTTP_CLIENT_IP'];
+            if ( str_contains( $ip, ',' ) ) {
+                $ip = substr($ip, 0, strpos($ip, ","));
+            }
+        } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+            $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+            if ( str_contains( $ip, ',' ) ) {
+                $ip = substr($ip, 0, strpos($ip, ","));
+            }
+        } else {
+            $ip = $_SERVER['REMOTE_ADDR'];
+            if ( str_contains( $ip, ',' ) ) {
+                $ip = substr($ip, 0, strpos($ip, ","));
+            }
+        }
         $clickRegistrationEvent = new ClickRegistrationEvent($request->get('repid'), $request->get('offerid'),
-            $request->query());
+            $request->query(), $ip);
         if ( ! $clickRegistrationEvent->fire()) {
             return redirect('404');
         }

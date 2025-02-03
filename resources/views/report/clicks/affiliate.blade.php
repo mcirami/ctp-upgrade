@@ -1,3 +1,8 @@
+@php
+	use App\Exports\DataExport;
+	use Maatwebsite\Excel\Facades\Excel;
+@endphp
+
 @extends('report.template')
 
 @section('report-title')
@@ -6,6 +11,18 @@
 
 @section('table-options')
     @include('report.options.dates')
+	<div class="button_wrap" style="width: 100%; display:inline-block; margin-top: 10px;">
+		<a style="
+		width: 170px; 
+		border:none; 
+		padding: 10px;
+    	font-size: 18px;
+    	border-radius: 6px;
+    	color: #676767;" 
+		class="btn btn-default btn-sm" href="/user/{{$user->idrep}}/clicks/export?d_from={{$startDate}}&d_to={{$endDate}}&dateSelect={{$dateSelect}}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4">
+			Export Data
+		</a>
+	</div>
 @endsection
 
 @section('table')
@@ -39,13 +56,10 @@
 				<th class="value_span9">Sub 1</th>
 				<th class="value_span9">Sub 2</th>
 				<th class="value_span9">Sub 3</th>
-				<th class="value_span9">Sub 4</th>
-				<th class="value_span9">Sub 5</th>
-
+				<th class="value_span9">Referer Url</th>
 				@if (\LeadMax\TrackYourStats\System\Session::permissions()->can("view_fraud_data"))
 					<th class="value_span9">IP Address</th>
 				@endif
-
 				<th class="value_span9">Iso Code</th>
 				@if (\LeadMax\TrackYourStats\System\Session::permissions()->can("view_fraud_data"))
 					<th class="value_span9">Sub Division</th>
@@ -78,8 +92,7 @@
 					<td>{{$row->sub1}}</td>
 					<td>{{$row->sub2}}</td>
 					<td>{{$row->sub3}}</td>
-					<td>{{$row->sub4}}</td>
-					<td>{{$row->sub5}}</td>
+					<td>{{$row->referer}}</td>
 					@if (\LeadMax\TrackYourStats\System\Session::permissions()->can("view_fraud_data"))
 						<td>{{$row->ip_address}}</td>
 					@endif

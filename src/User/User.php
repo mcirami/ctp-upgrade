@@ -24,6 +24,7 @@ use LeadMax\TrackYourStats\System\Mail;
 use LeadMax\TrackYourStats\System\Session;
 use PDO;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use LeadMax\TrackYourStats\Table\Date;
@@ -980,40 +981,48 @@ class User extends Login
 		$date = new Date;
 		$now = Carbon::now();
 		$todaysDate = $date->convertDateTimezone($now);
-		$subOneMonth = Carbon::now()->subMonths(1)->startOfDay();
-		$oneMonthAgo = $date->convertDateTimezone($subOneMonth);
+		$oneMonthAgo = $date->convertDateTimezone(Carbon::now()->subMonths(1)->startOfDay());
 
-		$blocked = DB::table('blocked_sub_ids')->where('rep_idrep', '=', $affId)->distinct()->pluck('sub_id')->toArray();
-		$data = [];
-		
-		$subIds = DB::table('click_vars')
-			->where('sub1', '!=', '')
-			->join('clicks', function ($join) use ($affId, $oneMonthAgo, $todaysDate) {
-				$join->on('idclicks', '=', 'click_vars.click_id')
-					->where('clicks.rep_idrep', '=', $affId);
-/* 					->whereBetween('first_timestamp', [$oneMonthAgo, $todaysDate]); */
-			})
-			->select('click_vars.sub1')
-			->groupBy('click_vars.sub1') // Grouping instead of DISTINCT
-			->orderBy('sub1')
-			->pluck('sub1')->toArray();
-
-            foreach($subIds as $subId) {
-                if (in_array($subId, $blocked)) {
-                    $object = [
-                        'subId'     => preg_replace('/[^a-zA-Z0-9-_]/', '', $subId),
-                        'blocked'   => true
-                    ];
-                } else {
-                    $object = [
-                        'subId'     => preg_replace('/[^a-zA-Z0-9-_]/', '', $subId),
-                        'blocked'    => false
-                    ];
+		$cacheKey = "user_{$affId}_subids";
+        $cacheTime = 3600; // 60 minutes
+        $data = Cache::remember($cacheKey, $cacheTime, function () use ($affId, $oneMonthAgo, $todaysDate) {
+            $blocked = DB::table('blocked_sub_ids')->where('rep_idrep', '=', $affId)->distinct()->pluck('sub_id')->toArray();
+            $subIdArray = [];
+            $mergedArray = [];
+            foreach(DB::table('click_vars')
+                ->join('clicks', function ($join) use ($affId, $oneMonthAgo, $todaysDate) {
+                    $join->on('idclicks', '=', 'click_vars.click_id')
+                        ->where('clicks.rep_idrep', '=', $affId)
+                        ->whereBetween('first_timestamp', [$oneMonthAgo, $todaysDate]);
+                })
+                ->select('click_vars.sub1')
+                ->groupBy('click_vars.sub1') // Grouping instead of DISTINCT
+                ->orderBy('sub1')
+                ->cursor()->pluck('sub1') as $row) {
+                    if ($row != '') {
+                        $subIdArray[] = $row;
+                    }
                 }
-    
-                array_push($data, $object);
-            }
-    
+
+                foreach($subIdArray as $subId) {
+                    if (in_array($subId, $blocked)) {
+                        $object = [
+                            'subId'     => preg_replace('/[^a-zA-Z0-9-_]/', '', $subId),
+                            'blocked'   => true
+                        ];
+                    } else {
+                        $object = [
+                            'subId'     => preg_replace('/[^a-zA-Z0-9-_]/', '', $subId),
+                            'blocked'    => false
+                        ];
+                    }
+        
+                    array_push($mergedArray, $object);
+                }
+
+                return $mergedArray;
+
+        });
 
 		return json_encode($data);
     }

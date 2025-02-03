@@ -72,8 +72,7 @@ class OfferClicksRepository implements Repository
 	        'click_vars.sub1',
 	        'click_vars.sub2',
 	        'click_vars.sub3',
-	        'click_vars.sub4',
-	        'click_vars.sub5',
+            'clicks.referer',
             'clicks.rep_idrep as affiliate_id',
             'clicks.offer_idoffer as offer_id',
             'click_geo.ip as ip_address'

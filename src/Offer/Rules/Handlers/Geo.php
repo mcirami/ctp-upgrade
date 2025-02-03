@@ -8,6 +8,7 @@
 
 namespace LeadMax\TrackYourStats\Offer\Rules\Handlers;
 
+use Illuminate\Support\Facades\Log;
 use PDO;
 
 
@@ -106,13 +107,12 @@ class Geo
 
             $prep->execute();
 
-
             $insertValues = array();
             //start at two because thats where country arrays are
             for ($i = 0; $i < count($countryList); $i++) {
 
                 if (is_array($countryList[$i])) {
-                    $questionMarks[] = "(?,?,?)";
+                    $questionMarks[] = "(?,?,?,?,?)";
                     $vals = array_values($countryList[$i]);
                     $vals[] = $geoRuleID;
 
@@ -122,8 +122,7 @@ class Geo
 
             }
 
-
-            $sql = 'INSERT INTO country_list (country_code, country_name, geo_rule_idgeo_rule) VALUES '.implode(',',
+            $sql = 'INSERT INTO country_list (country_code, country_name, cap_status, cap, geo_rule_idgeo_rule) VALUES '.implode(',',
                     $questionMarks);
 
             $prep = $db->prepare($sql);
@@ -168,10 +167,16 @@ class Geo
     {
         $countries = array();
 
-        foreach ($this->rules as $rule) {
-            $countries[] = $rule["country_code"];
-        }
 
+        foreach ($this->rules as $rule) {
+            $object = [
+                'country_code'  => $rule["country_code"],
+                'cap_status'    => $rule["cap_status"],
+                'cap'           => $rule["cap"]
+            ];
+            $countries[] = $object;
+
+        }
         return $countries;
 
     }
@@ -180,6 +185,7 @@ class Geo
     public function getRules()
     {
         $this->rules = $this->queryGetRules()->fetchAll(PDO::FETCH_ASSOC);
+       
     }
 
 
@@ -235,12 +241,14 @@ class Geo
 
 
             $insertValues = array();
+            
             //start at two because thats where country arrays are
             for ($i = 0; $i < count($this->postData); $i++) {
 
                 if (is_array($this->postData[$i])) {
-                    $questionMarks[] = "(?,?,?)";
+                    $questionMarks[] = "(?,?,?,?,?)";
                     $vals = array_values($this->postData[$i]);
+                    
                     $vals[] = $geoRuleID;
 
                     $insertValues = array_merge($insertValues, $vals);
@@ -249,18 +257,18 @@ class Geo
 
             }
 
-
-            $sql = 'INSERT INTO country_list (country_code, country_name, geo_rule_idgeo_rule) VALUES '.implode(',',
+            $sql = 'INSERT INTO country_list (country_code, country_name, cap_status, cap, geo_rule_idgeo_rule ) VALUES '.implode(',',
                     $questionMarks);
 
             $prep = $db->prepare($sql);
-
+            
             $prep->execute($insertValues);
 
 
             $db->commit();
         } catch (\Exception $e) {
             $db->rollBack();
+            Log::info("Error: " . print_r($e, true));
             die($e);
         }
 
