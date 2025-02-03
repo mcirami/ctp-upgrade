@@ -5,7 +5,7 @@
 @endsection
 
 @section('table-options')
-	@php
+	{{-- @php
 		$data = array(
 			'd_from' 		=> $startDate,
 			'd_to'			=> $endDate,
@@ -15,7 +15,7 @@
 		);
 
 	@endphp
-	@include('report.options.user-clicks-view', $data)
+	@include('report.options.user-clicks-view', $data) --}}
     @include('report.options.dates')
 @endsection
 

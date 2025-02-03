@@ -47,7 +47,7 @@
                     <td>{{$row->unique_clicks}}</td>
 					<td>
                         @if ($row->conversions != 0)
-                            <a href='/user/{{$user->idrep}}/conversions?{{$params}}&offer={{$row->idoffer}}'>{{$row->conversions}}
+                            <a href='/user/{{$user->idrep}}/{{$row->idoffer}}/conversions-by-subid?{{$params}}'>{{$row->conversions}}
                             </a>
                         @else
                             {{$row->conversions}}

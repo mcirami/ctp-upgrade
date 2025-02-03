@@ -16,18 +16,12 @@ namespace LeadMax\TrackYourStats\User;
 //include '../modifiedPreorderTreeTraversalfiedPreorderTreeTraversal.php';
 //include '../Permissions.php';
 
-
 use App\Privilege;
 use LeadMax\TrackYourStats\Offer\RepHasOffer;
 use LeadMax\TrackYourStats\System\Company;
 use LeadMax\TrackYourStats\System\Mail;
 use LeadMax\TrackYourStats\System\Session;
 use PDO;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use LeadMax\TrackYourStats\Table\Date;
 
 //Begin class
 class User extends Login
@@ -974,57 +968,6 @@ class User extends Login
 
         }
 
-    }
-
-    public function getUserSubIds() {
-        $affId = $_GET["idrep"] ?? null;
-		$date = new Date;
-		$now = Carbon::now();
-		$todaysDate = $date->convertDateTimezone($now);
-		$oneMonthAgo = $date->convertDateTimezone(Carbon::now()->subMonths(1)->startOfDay());
-
-		$cacheKey = "user_{$affId}_subids";
-        $cacheTime = 3600; // 60 minutes
-        $data = Cache::remember($cacheKey, $cacheTime, function () use ($affId, $oneMonthAgo, $todaysDate) {
-            $blocked = DB::table('blocked_sub_ids')->where('rep_idrep', '=', $affId)->distinct()->pluck('sub_id')->toArray();
-            $subIdArray = [];
-            $mergedArray = [];
-            foreach(DB::table('click_vars')
-                ->join('clicks', function ($join) use ($affId, $oneMonthAgo, $todaysDate) {
-                    $join->on('idclicks', '=', 'click_vars.click_id')
-                        ->where('clicks.rep_idrep', '=', $affId)
-                        ->whereBetween('first_timestamp', [$oneMonthAgo, $todaysDate]);
-                })
-                ->select('click_vars.sub1')
-                ->groupBy('click_vars.sub1') // Grouping instead of DISTINCT
-                ->orderBy('sub1')
-                ->cursor()->pluck('sub1') as $row) {
-                    if ($row != '') {
-                        $subIdArray[] = $row;
-                    }
-                }
-
-                foreach($subIdArray as $subId) {
-                    if (in_array($subId, $blocked)) {
-                        $object = [
-                            'subId'     => preg_replace('/[^a-zA-Z0-9-_]/', '', $subId),
-                            'blocked'   => true
-                        ];
-                    } else {
-                        $object = [
-                            'subId'     => preg_replace('/[^a-zA-Z0-9-_]/', '', $subId),
-                            'blocked'    => false
-                        ];
-                    }
-        
-                    array_push($mergedArray, $object);
-                }
-
-                return $mergedArray;
-
-        });
-
-		return json_encode($data);
     }
 
 } // end class
