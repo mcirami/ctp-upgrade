@@ -19,7 +19,7 @@ class Connection
 
 {
 
-    public $subDomain = "chattrackpro";
+    public $subDomain = "ctpupgrade";
 
     private static $host;
 
