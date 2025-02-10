@@ -13,11 +13,15 @@ class HTML implements Format
 
     public $printTheseArrayKeys;
 
-    public function __construct($lastRowStatic = false, $printTheseArrayKeys = [])
+    public $dates;
+
+    public function __construct($lastRowStatic = false, $printTheseArrayKeys = [], $dates = [])
     {
         $this->lastRowStatic = $lastRowStatic;
 
         $this->printTheseArrayKeys = $printTheseArrayKeys;
+
+        $this->dates = $dates;
     }
 
     public function resetArrayKeys($array)
@@ -35,9 +39,12 @@ class HTML implements Format
 		$params = "";
 		if(isset($_GET['d_from']) && isset($_GET['d_to']) && isset($_GET['dateSelect']) ) {
 			$params = "d_from=" . $_GET['d_from'] . "&d_to=" . $_GET['d_to'] . "&dateSelect=" . $_GET["dateSelect"];
-		}
+		} else {
+            $params = "d_from=" . $this->dates['originalStart'] . "&d_to=" . $this->dates['originalEnd'] . "&dateSelect=";
+        }
 
         $report = $this->resetArrayKeys($report);
+
 
         foreach ($report as $key => $row) {
             if ($this->lastRowStatic && $key == count($report) - 1) {
