@@ -46,31 +46,6 @@ class OfferReportController extends ReportController
         return view('report.offer.admin', compact('reporter', 'dates'));
     }
 
-    public function god() {
-        $dates = self::getDates();
-        $repo = new GodOfferRepository(\DB::getPdo());
-
-        $reporter = new Reporter($repo);
-
-
-        $reporter
-            ->addFilter(new Filters\DeductionColumnFilter())
-            ->addFilter(new Filters\Total([
-                'Clicks', 
-                'UniqueClicks', 
-                'FreeSignUps', 
-                'PendingConversions', 
-                'Conversions', 
-                'Revenue', 
-                'Deductions'
-            ]))
-            ->addFilter(new Filters\EarningPerClick('UniqueClicks', 'Revenue'))
-            ->addFilter(new Filters\DollarSign(['Revenue', 'Deductions', 'EPC']))
-            ->addFilter(new Filters\ClickLink(request()));
-
-        return view('report.offer.admin', compact('reporter', 'dates'));
-    }
-
     public function admin()
     {
         $dates = self::getDates();

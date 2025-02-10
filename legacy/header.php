@@ -133,7 +133,7 @@ $navBar = new \LeadMax\TrackYourStats\System\NavBar(\LeadMax\TrackYourStats\Syst
 </div> <!-- top_sec -->
 <!-- <div class="info_bar">
     <div class="icon_wrap">
-        <img src='<?php// echo $webroot; ?>/images/warning.png'
+        <img src='<?php // echo $webroot; ?>/images/warning.png'
             alt="warning"
             title="warning"/>
     </div>
