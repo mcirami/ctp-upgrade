@@ -82,8 +82,11 @@ class OfferAffiliateClicksRepository implements Repository
         ->join('rep', 'idrep', '=', 'clicks.rep_idrep')
         ->rightJoin('conversions', 'conversions.click_id', '=', 'clicks.idclicks')
         ->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
-        ->select('rep.idrep as user_id', 'rep.user_name', 'offer.idoffer as offer_id', 'offer.offer_name', DB::raw('COUNT(clicks.idclicks) as clicks'),
-        DB::raw('COUNT(conversions.click_id) as conversions'))->groupBy('rep.user_name', 'rep.idrep', 'offer_id')->orderBy('conversions', 'DESC');
+        ->select('rep.idrep as user_id', 'rep.user_name', 'offer.idoffer as offer_id', 'offer.offer_name', 
+        DB::raw('COUNT(clicks.idclicks) as clicks'),
+        DB::raw('SUM(clicks.click_type = 0) as unique_clicks'),
+        DB::raw('COUNT(conversions.click_id) as conversions'))
+        ->groupBy('rep.user_name', 'rep.idrep', 'offer_id')->orderBy('conversions', 'DESC');
     }
 
     public function getOfferConversionsForManager($start, $end) {
@@ -97,8 +100,11 @@ class OfferAffiliateClicksRepository implements Repository
         })
         ->rightJoin('conversions', 'conversions.click_id', '=', 'clicks.idclicks')
         ->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
-        ->select('rep.idrep as user_id', 'rep.user_name', 'offer.idoffer as offer_id', 'offer.offer_name', DB::raw('COUNT(clicks.idclicks) as clicks'),
-        DB::raw('COUNT(conversions.click_id) as conversions'))->groupBy('rep.user_name', 'rep.idrep', 'offer_id')->orderBy('conversions', 'DESC');
+        ->select('rep.idrep as user_id', 'rep.user_name', 'offer.idoffer as offer_id', 'offer.offer_name', 
+        DB::raw('COUNT(clicks.idclicks) as clicks'),
+        DB::raw('SUM(clicks.click_type = 0) as unique_clicks'),
+        DB::raw('COUNT(conversions.click_id) as conversions'))
+        ->groupBy('rep.user_name', 'rep.idrep', 'offer_id')->orderBy('conversions', 'DESC');
     }
 
     public function getOfferConversionsForAdmin($start, $end) {
@@ -114,8 +120,11 @@ class OfferAffiliateClicksRepository implements Repository
         })
         ->rightJoin('conversions', 'conversions.click_id', '=', 'clicks.idclicks')
         ->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
-        ->select('rep.idrep as user_id', 'rep.user_name', 'offer.idoffer as offer_id', 'offer.offer_name', DB::raw('COUNT(clicks.idclicks) as clicks'),
-        DB::raw('COUNT(conversions.click_id) as conversions'))->groupBy('rep.user_name', 'rep.idrep', 'offer_id')->orderBy('conversions', 'DESC');
+        ->select('rep.idrep as user_id', 'rep.user_name', 'offer.idoffer as offer_id', 'offer.offer_name', 
+        DB::raw('COUNT(clicks.idclicks) as clicks'),
+        DB::raw('SUM(clicks.click_type = 0) as unique_clicks'),
+        DB::raw('COUNT(conversions.click_id) as conversions'))
+        ->groupBy('rep.user_name', 'rep.idrep', 'offer_id')->orderBy('conversions', 'DESC');
     }
 
     public function getOfferConversionsForGod($start, $end) {
