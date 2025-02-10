@@ -39,7 +39,7 @@ class HTML implements Format
 		$params = "";
 		if(isset($_GET['d_from']) && isset($_GET['d_to']) && isset($_GET['dateSelect']) ) {
 			$params = "d_from=" . $_GET['d_from'] . "&d_to=" . $_GET['d_to'] . "&dateSelect=" . $_GET["dateSelect"];
-		} else {
+		} elseif(isset($this->dates['originalStart']) && isset($this->dates['originalEnd'])) {
             $params = "d_from=" . $this->dates['originalStart'] . "&d_to=" . $this->dates['originalEnd'] . "&dateSelect=";
         }
 
