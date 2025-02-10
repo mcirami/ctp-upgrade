@@ -1,6 +1,9 @@
 @php
 	use App\Exports\DataExport;
 	use Maatwebsite\Excel\Facades\Excel;
+	use \LeadMax\TrackYourStats\System\Session;
+
+	$canViewFraudData = Session::permissions()->can("view_fraud_data");
 @endphp
 
 @extends('report.template')
@@ -11,23 +14,25 @@
 
 @section('table-options')
     @include('report.options.dates')
-	<div class="button_wrap" style="width: 100%; display:inline-block; margin-top: 10px;">
-		<a style="
-		width: 170px; 
-		border:none; 
-		padding: 10px;
-    	font-size: 18px;
-    	border-radius: 6px;
-    	color: #676767;" 
-		class="btn btn-default btn-sm" href="/user/{{$user->idrep}}/clicks/export?d_from={{$startDate}}&d_to={{$endDate}}&dateSelect={{$dateSelect}}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4">
-			Export Data
-		</a>
-	</div>
+	@if ($canViewFraudData)
+		<div class="button_wrap" style="width: 100%; display:inline-block; margin-top: 10px;">
+			<a style="
+			width: 170px; 
+			border:none; 
+			padding: 10px;
+			font-size: 18px;
+			border-radius: 6px;
+			color: #676767;" 
+			class="btn btn-default btn-sm" href="/user/{{$user->idrep}}/clicks/export?d_from={{$startDate}}&d_to={{$endDate}}&dateSelect={{$dateSelect}}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4">
+				Export Data
+			</a>
+		</div>
+	@endif
 @endsection
 
 @section('table')
 	<div class="form-group searchDiv">
-		@if (\LeadMax\TrackYourStats\System\Session::permissions()->can("view_fraud_data"))
+		@if ($canViewFraudData)
 			<form action="/user/{{$user->idrep}}/search-clicks" method="GET">
 				<input id="searchBox"
 					   class="form-control"
@@ -46,24 +51,24 @@
 		<table id="clicks" class="table table-condensed table-bordered table_01 tablesorter">
 			<thead>
 			<tr>
-				@if (\LeadMax\TrackYourStats\System\Session::permissions()->can("view_fraud_data"))
+				@if ($canViewFraudData)
 					<th class="value_span9">Click ID</th>
 				@endif
 				<th class="value_span9">Timestamp</th>
 				<th class="value_span9">Offer Name</th>
 				<th class="value_span9">Conversion Timestamp</th>
-				@if(Session::userType() == \App\Privilege::ROLE_GOD)
+				@if($canViewFraudData)
 					<th class="value_span9">Paid</th>
 				@endif
 				<th class="value_span9">Sub 1</th>
 				<th class="value_span9">Sub 2</th>
 				<th class="value_span9">Sub 3</th>
 				<th class="value_span9">Referer Url</th>
-				@if (\LeadMax\TrackYourStats\System\Session::permissions()->can("view_fraud_data"))
+				@if ($canViewFraudData)
 					<th class="value_span9">IP Address</th>
 				@endif
 				<th class="value_span9">Iso Code</th>
-				@if (\LeadMax\TrackYourStats\System\Session::permissions()->can("view_fraud_data"))
+				@if ($canViewFraudData)
 					<th class="value_span9">Sub Division</th>
 					<th class="value_span9">City</th>
 					<th class="value_span9">Postal</th>
@@ -84,22 +89,24 @@
 					
 				@endphp
 				<tr role="row">
-					@if (\LeadMax\TrackYourStats\System\Session::permissions()->can("view_fraud_data"))
+					@if ($canViewFraudData)
 						<td>{{$row->idclicks}}</td>
 					@endif
 					<td>{{$timestamp}}</td>
 					<td>{{$row->offer_name}}</td>
 					<td>{{$convertionTimeStamp}}</td>
-					<td>{{$row->paid}}</td>
+					@if($canViewFraudData)
+						<td>{{$row->paid}}</td>
+					@endif
 					<td>{{$row->sub1}}</td>
 					<td>{{$row->sub2}}</td>
 					<td>{{$row->sub3}}</td>
 					<td>{{$row->referer}}</td>
-					@if (\LeadMax\TrackYourStats\System\Session::permissions()->can("view_fraud_data"))
+					@if ($canViewFraudData)
 						<td>{{$row->ip_address}}</td>
 					@endif
 					<td>{{$row->isoCode}}</td>
-					@if (\LeadMax\TrackYourStats\System\Session::permissions()->can("view_fraud_data"))
+					@if ($canViewFraudData)
 						<td>{{$row->subDivision}}</td>
 						<td>{{$row->city}}</td>
 						<td>{{$row->postal}}</td>
