@@ -25,6 +25,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property float $db_version
  * @property string $login_url
  * @property string $landing_page
+ * @property string $login_theme
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Company whereAddress($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Company whereCity($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Company whereColors($value)
