@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Report;
 use App\Click;
 use App\Offer;
 use App\Privilege;
-use App\Services\Repositories\Offer\OfferAffiliateClicksRepository;
 use App\Services\Repositories\Offer\OfferClicksRepository;
 use App\User;
 use Carbon\Carbon;
@@ -14,6 +13,8 @@ use Illuminate\Support\Facades\DB;
 use LeadMax\TrackYourStats\System\Session;
 use LeadMax\TrackYourStats\User\Permissions;
 use App\Http\Traits\ClickTraits;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\ClicksExport;
 
 class ClickReportController extends ReportController
 {
@@ -44,8 +45,17 @@ class ClickReportController extends ReportController
 	    $reportCollection      = $repo->between( $start, $end );
 		$report                = $reportCollection->items();
 
-        return view('report.clicks.offer', compact('offer', 'report', 'reportCollection', 'id', 'startDate', 'endDate', 'dateSelect'));
-    }
+        return view('report.clicks.offer', 
+		compact(
+			'offer', 
+			'report', 
+			'reportCollection', 
+			'id', 
+			'startDate', 
+			'endDate', 
+			'dateSelect'
+		));
+    } 
 
     public function showOfferClicks($id)
     {
@@ -88,7 +98,6 @@ class ClickReportController extends ReportController
 
         $user = User::myUsers()->findOrFail($userId);
 
-
 	    $reportCollection = Click::where('rep_idrep', '=', $userId)
 	                ->where('clicks.click_type', '!=', 2)
 	                ->whereBetween('clicks.first_timestamp', [$dates['startDate'], $dates['endDate']])
@@ -106,42 +115,24 @@ class ClickReportController extends ReportController
 						'click_vars.sub1',
 						'click_vars.sub2',
 		                'click_vars.sub3',
-		                'click_vars.sub4',
-		                'click_vars.sub5',
+						'clicks.referer',
 						'click_geo.ip  as ip_address',
 						'clicks.offer_idoffer  as offer_id'
 	                )
 	                ->orderBy('paid', 'DESC')->paginate(100);
 
-
 		$report = $this->formatResults($reportCollection);
 
-        return view('report.clicks.affiliate', compact('report', 'user', 'reportCollection', 'startDate', 'endDate', 'dateSelect'));
+        return view('report.clicks.affiliate', 
+		compact(
+			'report', 
+			'user', 
+			'reportCollection', 
+			'startDate', 
+			'endDate', 
+			'dateSelect'
+		));
     }
-
-	public function showConversionsByUser($offerId) {
-
-		$dates = self::getDates();
-		$offer = Offer::findOrFail($offerId);
-
-		/*$startDate = $dates['originalStart'];
-		$endDate = $dates['originalEnd'];
-		$dateSelect = request()->query('dateSelect');*/
-
-		$start = Carbon::parse( $dates['startDate'], 'America/New_York' );
-		$end   = Carbon::parse( $dates['endDate'], 'America/New_York' );
-
-		$affiliateRepo = new OfferAffiliateClicksRepository( $offerId, Session::user() );
-		$affiliateReport = $affiliateRepo->between( $start, $end );
-
-		//dd($affiliateReport);
-		/*
-		 * if filter is managers
-		 *  $affiliateReport = $this->showManagersClicks($id);
-		*/
-
-		return view('report.offer.conversions', compact('affiliateReport', 'offer'));
-	}
 
 	public function showManagersClicks($id) {
 
@@ -264,4 +255,35 @@ class ClickReportController extends ReportController
 		}
 	}
 
+	public function exportUsersClicks($userId) {
+
+		$dates = self::getDates();
+		$startDate = $dates['originalStart'];
+		$endDate = $dates['originalEnd'];
+	
+		// Replicate the query used for the view
+		$reportCollection = Click::where('rep_idrep', '=', $userId)
+			->where('clicks.click_type', '!=', 2)
+			->whereBetween('clicks.first_timestamp', [$dates['startDate'], $dates['endDate']])
+			->leftJoin('click_vars', 'click_vars.click_id', '=', 'clicks.idclicks')
+			->leftJoin('click_geo', 'click_geo.click_id', '=', 'clicks.idclicks')
+			->leftJoin('conversions', 'conversions.click_id', '=', 'clicks.idclicks')
+			->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
+			->select(
+				'clicks.idclicks',
+				'clicks.first_timestamp as timestamp',
+				'offer.offer_name',
+				'conversions.timestamp as conversion_timestamp',
+				'conversions.paid as paid',
+				'click_vars.url',
+				'click_vars.sub1',
+				'click_vars.sub2',
+				'click_vars.sub3',
+				'clicks.referer',
+				'click_geo.ip as ip_address',
+			)
+			->orderBy('paid', 'DESC')->get();
+			$report = $this->formatResults($reportCollection);
+		return Excel::download(new ClicksExport($report), 'clicks.xlsx');
+	}
 }

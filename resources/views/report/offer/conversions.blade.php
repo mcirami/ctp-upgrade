@@ -5,6 +5,15 @@
 @endsection
 
 @section('table-options')
+	@php
+		$data = array(
+			'd_from' 		=> request()->query('d_from'),
+			'd_to'			=> request()->query('d_to'),
+			'dateSelect'	=> request()->query('dateSelect'),
+			'offerId' 		=> $offer->idoffer
+		);
+	@endphp
+	@include('report.options.offer_conversions_view', $data)
     @include('report.options.dates')
 @endsection
 
@@ -16,6 +25,7 @@
 			<th class="value_span9">Affiliate ID</th>
 			<th class="value_span9">Username</th>
 			<th class="value_span9">Clicks</th>
+			<th class="value_span9">Unique Clicks</th>
 			<th class="value_span9">Conversions</th>
 		</tr>
 		</thead>
@@ -26,9 +36,9 @@
 					<td>{{$report->user_id}}</td>
 					<td>{{$report->user_name}}</td>
 					<td>{{$report->clicks}}</td>
+					<td>{{$report->unique_clicks}}</td>
 					<td>{{$report->conversions}}</td>
 				</tr>
-
 			@endforeach
 		@endif
 		</tbody>

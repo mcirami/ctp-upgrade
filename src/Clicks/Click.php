@@ -16,6 +16,8 @@ class Click
     public $rep_idrep;
     public $offer_idoffer;
     public $ip_address;
+    public $country_code;
+    public $referer;
     public $browser_agent;
     public $click_type;
     public $last_clickid;
@@ -63,7 +65,7 @@ class Click
     public function save()
     {
         $db = DatabaseConnection::getInstance();
-        $sql = "INSERT INTO clicks(first_timestamp, rep_idrep, offer_idoffer, ip_address, browser_agent, click_type) VALUES(:timestamp, :user_id, :offer_id, :ip, :browser_agent, :click_type)";
+        $sql = "INSERT INTO clicks(first_timestamp, rep_idrep, offer_idoffer, ip_address, browser_agent, click_type, country_code, referer) VALUES(:timestamp, :user_id, :offer_id, :ip, :browser_agent, :click_type, :country_code, :referer)";
         $prep = $db->prepare($sql);
         $prep->bindParam(":timestamp", $this->first_timestamp);
         $prep->bindParam(":user_id", $this->rep_idrep);
@@ -71,6 +73,8 @@ class Click
         $prep->bindParam(":ip", $this->ip_address);
         $prep->bindParam(":browser_agent", $this->browser_agent);
         $prep->bindParam(":click_type", $this->click_type);
+        $prep->bindParam(":country_code", $this->country_code);
+        $prep->bindParam(":referer", $this->referer);
 
         if ($prep->execute()) {
             $this->id = $db->lastInsertId();

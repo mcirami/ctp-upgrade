@@ -10,7 +10,10 @@
 /storage/logs/
 /storage/*.key
 /vendor
+/storage/clockwork
 /config/octane.php
+/public/resources/landers/ctpupgrade/assets
+/public/resources/landers/node_modules
 .env
 .env.backup
 .env-nodebug
@@ -35,3 +38,4 @@ composer-setup.php
 /infra
 Makefile
 cron.log
+dump.rdb

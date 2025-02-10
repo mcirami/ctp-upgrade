@@ -1,4 +1,5 @@
 <?php
+
 use App\Http\Controllers\UserController;
 use LeadMax\TrackYourStats\System\Session;
 
@@ -95,7 +96,7 @@ $update->dumpPermissionsToJavascript();
 							<a href="#sub_ids">Sub ID's</a>
 						</li>
 					<?php endif; ?>
-					<?php if ( Session::permissions()->can("edit_affiliates") /* && $update->selectedUserType == \App\Privilege::ROLE_AFFILIATE */) : ?>
+					<?php if ( Session::permissions()->can("edit_affiliates")) : ?>
 						<li class="px-10 py-4 rounded-t-xl value_span4">
 							<a href="#offers">Offers</a>
 						</li>
@@ -307,10 +308,9 @@ $update->dumpPermissionsToJavascript();
 					</div>
 				</div>
 				<?php
-				
 				if( Session::permissions()->can("edit_affiliates")) :
 
-					$userClass = new UserController;
+					$userClass = new UserController();
 					$subIds = $userClass->getUserSubIds();
 
 					?>
@@ -338,7 +338,7 @@ $update->dumpPermissionsToJavascript();
 
 				<?php
 
-				if ( Session::permissions()->can("edit_affiliates") /* && $update->selectedUserType == \App\Privilege::ROLE_AFFILIATE */)
+				if ( Session::permissions()->can("edit_affiliates"))
 				{
 
 					echo " <div id=\"offers\" class=\"hidden p-4 columns-1\"><div class=\"heading_holder value_span9\"><span

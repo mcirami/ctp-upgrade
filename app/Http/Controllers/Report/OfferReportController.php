@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Report;
 use App\Privilege;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Offer;
+use App\Services\Repositories\Offer\OfferAffiliateClicksRepository;
+use Carbon\Carbon;
 use LeadMax\TrackYourStats\Report\Affiliate;
 use LeadMax\TrackYourStats\Report\Reporter;
 use LeadMax\TrackYourStats\Report\Repositories\Offer\AdminOfferRepository;
@@ -18,6 +21,30 @@ use LeadMax\TrackYourStats\Report\Repositories\Offer\GodOfferRepository;
 class OfferReportController extends ReportController
 {
 
+    public function god() {
+        $dates = self::getDates();
+        $repo = new GodOfferRepository(\DB::getPdo());
+
+        $reporter = new Reporter($repo);
+
+
+        $reporter
+            ->addFilter(new Filters\DeductionColumnFilter())
+            ->addFilter(new Filters\Total([
+                'Clicks', 
+                'UniqueClicks', 
+                'FreeSignUps', 
+                'PendingConversions', 
+                'Conversions', 
+                'Revenue', 
+                'Deductions'
+            ]))
+            ->addFilter(new Filters\EarningPerClick('UniqueClicks', 'Revenue'))
+            ->addFilter(new Filters\DollarSign(['Revenue', 'Deductions', 'EPC']))
+            ->addFilter(new Filters\ClickLink(request()));
+
+        return view('report.offer.admin', compact('reporter', 'dates'));
+    }
 
     public function god() {
         $dates = self::getDates();
@@ -131,5 +158,31 @@ class OfferReportController extends ReportController
         }
     }
 
+    public function showConversionsByUser(Offer $offer) {
+
+		$dates = self::getDates();
+		//$offer = Offer::findOrFail($offerId);
+
+		$start = Carbon::parse( $dates['startDate'], 'America/New_York' );
+		$end   = Carbon::parse( $dates['endDate'], 'America/New_York' );
+
+		$affiliateRepo = new OfferAffiliateClicksRepository( $offer->idoffer, Session::user() );
+		$affiliateReport = $affiliateRepo->between( $start, $end );
+
+		return view('report.offer.conversions', compact('affiliateReport', 'offer'));
+	}
+
+    public function showConversionsByCountry(Offer $offer) {
+		$dates = self::getDates();
+
+        $start = Carbon::parse( $dates['startDate'], 'America/New_York' );
+		$end   = Carbon::parse( $dates['endDate'], 'America/New_York' );
+
+        $affiliateRepo = new OfferAffiliateClicksRepository( $offer->idoffer, Session::user() );
+		$affiliateReport = $affiliateRepo->getOfferConversionsByCountry( $start, $end );
+
+        return view('report.offer.conversions-by-country', compact('affiliateReport', 'offer'));
+
+	}
 
 }

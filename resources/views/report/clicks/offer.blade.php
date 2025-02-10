@@ -100,37 +100,46 @@
 					<th class="value_span9">Sub 1</th>
 					<th class="value_span9">Sub 2</th>
 					<th class="value_span9">Sub 3</th>
-					<th class="value_span9">Sub 4</th>
-					<th class="value_span9">Sub 5</th>
+					{{-- <th class="value_span9">Sub 4</th>
+					<th class="value_span9">Sub 5</th> --}}
 					<th class="value_span9">Affiliate</th>
 					<th class="value_span9">Offer</th>
+					<th class="value_span9">Referer Url</th>
 					@if (\LeadMax\TrackYourStats\System\Session::permissions()->can("view_fraud_data"))
 						<th class="value_span9">Ip Address</th>
-						<th class=\"value_span9\">Sub Division</th>
-						<th class=\"value_span9\">City</th>
-						<th class=\"value_span9\">Postal</th>
-						<th class=\"value_span9\">Longitude</th>
-						<th class=\"value_span9\">Latitude</th>
+						<th class="value_span9">Sub Division</th>
+						<th class="value_span9">City</th>
+						<th class="value_span9">Postal</th>
+						<th class="value_span9">Longitude</th>
+						<th class="value_span9">Latitude</th>
 					@endif
 					<th class="value_span9">Iso Code</th>
 				</tr>
 				</thead>
 				<tbody>
+				@php $myReport = new LeadMax\TrackYourStats\Table\Date;  @endphp
 				@foreach($report as $row)
+				
+					@php 
+						$timestamp = $myReport->convertToEST($row['timestamp']);
+						$convertionTimeStamp = "";
+						if ($row->conversion_timestamp) {
+							$convertionTimeStamp = $myReport->convertToEST($row['conversion_timestamp']);
+						}
+					@endphp
 					<tr>
 						@if (\LeadMax\TrackYourStats\System\Session::permissions()->can("view_fraud_data"))
 							<td>{{$row['id']}}</td>
 						@endif
-						<td>{{$row['timestamp']}}</td>
-						<td>{{$row['conversion_timestamp']}}</td>
-						@if(Session::userType() == \App\Privilege::ROLE_GOD)
-							<td>{{$row['paid']}}</td>
-						@endif
-						@for($i = 1; $i <= 5; $i++)
+						<td>{{$timestamp}}</td>
+						<td>{{$convertionTimeStamp}}</td>
+						<td>{{$row['paid']}}</td>
+						@for($i = 1; $i <= 3; $i++)
 							<td>{{$row['sub' . $i]}}</td>
 						@endfor
 						<td>{{$row['affiliate_id']}}</td>
 						<td>{{$row['offer_id']}}</td>
+						<td>{{$row['referer']}}</td>
 						@if (\LeadMax\TrackYourStats\System\Session::permissions()->can("view_fraud_data"))
 							<td>{{isset($row['ip_address']) ? $row['ip_address'] : ""}}</td>
 							<td>{{isset($row['subDivision']) ? $row['subDivision'] : ""}}</td>

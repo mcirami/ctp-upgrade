@@ -36,6 +36,7 @@ abstract class Repository
 
     public function mergeReport($clicks, $conversions)
     {
+
         if (empty($clicks) && empty($conversions)) {
             return $clicks;
         }
@@ -62,11 +63,11 @@ abstract class Repository
 
         $clicks = $this->setArrayKeyToInnerArrayKeyValue($commonId, $clicks);
         $conversions = $this->setArrayKeyToInnerArrayKeyValue($commonId, $conversions);
-
+        
 
         $unMatchedKeys = $this->getUnmatchedKeys($commonKeys, reset($conversions));
 
-
+       
         foreach ($clicks as $clickKey => $clickRow) {
             if (isset($conversions[$clickRow[$commonId]])) {
                 if ($this->valuesMatchWithTheseKeys($commonKeys, $clickRow, $conversions[$clickRow[$commonId]])) {
@@ -84,7 +85,7 @@ abstract class Repository
 
 
         }
-
+        
         // check for any unmatched conversions into clicks
         if (empty($conversions) == false) {
 
@@ -98,6 +99,7 @@ abstract class Repository
             }
         }
 
+        
         return $mergedReport;
     }
 

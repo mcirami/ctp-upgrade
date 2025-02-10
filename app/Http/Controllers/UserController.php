@@ -4,11 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Privilege;
 use App\User;
+use App\Click;
 use Carbon\Carbon;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use \LeadMax\TrackYourStats\System\Session;
 use LeadMax\TrackYourStats\Table\Paginate;
+use Illuminate\Support\Facades\Cache;
+use LeadMax\TrackYourStats\Table\Date;
 
 class UserController extends Controller
 {
@@ -29,12 +32,12 @@ class UserController extends Controller
 
     public function viewManageUsers()
     {
+
         $this->validate(request(), [
             'showInactive' => 'numeric|min:0|max:1'
         ]);
 
         $users = User::myUsers()->withRole(request('role', Privilege::ROLE_AFFILIATE))->with('referrer');
-
 
         if (request('showInactive', 0) == 1) {
             $users->where('status', 0);
@@ -42,48 +45,20 @@ class UserController extends Controller
             $users->where('status', 1);
         }
 
+		if (Session::userType() == Privilege::ROLE_ADMIN && (request('role') == null ||  request('role') == '3')) {
+			$userId = Session::userID();
+			$managers = DB::table('rep')->where('referrer_repid', '=', $userId)->get()->pluck('idrep')->toArray();
+			$users->whereIn('referrer_repid', $managers);
+		}
+		
         $users = $users->get();
 		$users = $this->getDiffForHumans($users);
-
 
         return view('user.manage', compact('users'));
     }
 
 	public function AuthRouteAPI(Request $request){
 		return $request->user();
-	}
-
-	public function getUserSubIds() {
-		$affId = $_GET["idrep"] ?? null;
-
-		$subIds = DB::table('click_vars')
-		            ->where('sub1', '!=', "")->distinct()
-		            ->join('clicks', function($join) use($affId) {
-			            $join->on('idclicks', '=', 'click_vars.click_id')->where('clicks.rep_idrep', '=', $affId);
-		            })->select('click_vars.sub1')->pluck('sub1')->toArray();
-
-		$blocked = DB::table('blocked_sub_ids')->where('rep_idrep', '=', $affId)->distinct()->pluck('sub_id')->toArray();
-
-		$data = [];
-
-		foreach($subIds as $subId) {
-			if (in_array($subId, $blocked)) {
-				$object = [
-					'subId'     => $subId,
-					'blocked'   => true
-				];
-			} else {
-				$object = [
-					'subId'     => $subId,
-					'blocked'    => false
-				];
-			}
-
-			array_push($data, $object);
-		}
-
-		return json_encode($data);
-
 	}
 
 	public function blockUserSubId(Request $request) {
@@ -108,6 +83,43 @@ class UserController extends Controller
 
 		return response()->json(['success' => true]);
 	}
+
+	public function getUserSubIds() {
+        $affId = $_GET["idrep"] ?? null;
+		$date = new Date;
+		$now = Carbon::now();
+		$todaysDate = $date->convertDateTimezone($now);
+		$oneMonthAgo = $date->convertDateTimezone(Carbon::now()->subMonths(3)->startOfDay());
+
+		$cacheKey = "user_{$affId}_subids";
+        $cacheTime = 3600; // 30 minutes
+        $data = Cache::remember($cacheKey, $cacheTime, function () use ($affId, $oneMonthAgo, $todaysDate) {
+            $blocked = DB::table('blocked_sub_ids')->where('rep_idrep', '=', $affId)->distinct()->pluck('sub_id')->toArray();
+            $subIdArray = [];
+            $mergedArray = [];
+
+            $subIdArray = Click::where('rep_idrep', '=', $affId) 
+            ->whereBetween('first_timestamp', [$oneMonthAgo, $todaysDate])
+            ->join('click_vars', 'click_vars.click_id', '=', 'clicks.idclicks')
+            ->select('click_vars.sub1')
+            ->groupBy('click_vars.sub1')
+            ->orderBy('click_vars.sub1')->get()->toArray();
+
+            
+            foreach($subIdArray as $subId) {
+                $object = [
+                    'subId'     => preg_replace('/[^a-zA-Z0-9-_]/', '', $subId['sub1']),
+                    'blocked'   => in_array($subId['sub1'], $blocked)
+                ];
+                array_push($mergedArray, $object);
+            }
+
+            return $mergedArray;
+
+            });
+
+		return json_encode($data);
+    }
 
 	public function changeAffPayout(Request $request) {
 		$message = null;

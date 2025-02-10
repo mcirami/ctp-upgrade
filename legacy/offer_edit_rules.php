@@ -5,6 +5,10 @@
  * Date: 8/15/2017
  * Time: 4:34 PM
  */
+
+ use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
+use Illuminate\Support\Facades\Log;
 $section = "offers-edit-rules";
 require('header.php');
 
@@ -33,6 +37,16 @@ $rules = new \LeadMax\TrackYourStats\Offer\Rules($offid);
 
 $offerView = new \LeadMax\TrackYourStats\Offer\View(\LeadMax\TrackYourStats\System\Session::userType());
 
+$activeCap = false;
+$capAmount = 0;
+
+foreach ($rules->rules as $rule) {
+
+	if ($rule["type"] == "device") {
+		$activeCap = $rule["cap_status"];
+		$capAmount = $rule["cap"];
+	}
+}
 
 ?>
 	
@@ -45,7 +59,7 @@ $offerView = new \LeadMax\TrackYourStats\Offer\View(\LeadMax\TrackYourStats\Syst
 					<button type = "button" class = "close" data-dismiss = "modal"
 							aria-label = "Close"><span
 								aria-hidden = "true">&times;</span></button>
-					<h4 class = "modal-title" id = "geoRuleTitle">New Geo Rule</h4>
+					<h4 style="float: left;" class = "modal-title" id = "geoRuleTitle">New Geo Rule</h4>
 				</div>
 				<div class = "modal-body ">
 					<div class = "row">
@@ -55,12 +69,11 @@ $offerView = new \LeadMax\TrackYourStats\Offer\View(\LeadMax\TrackYourStats\Syst
 							
 							<table id = countryList"
 								   class = "table table-sm table-bordered table-responsive table-striped form-control  "
-								   style = "height:250px;  min-width:0;!important;">
+								   style = "height:250px;  min-width:0 !important;">
 								<thead>
 								<tr>
 									<th>Country</th>
 									<th>Action</th>
-								
 								</tr>
 								</thead>
 								<tbody id = "countryListBody">
@@ -78,16 +91,15 @@ $offerView = new \LeadMax\TrackYourStats\Offer\View(\LeadMax\TrackYourStats\Syst
 							
 							<table id = "toAdd"
 								   class = "table table-sm table-bordered table-responsive table-striped form-control  "
-								   style = "height:250px;  min-width:0;!important; ">
+								   style = "height:250px;  min-width:0 !important; ">
 								<thead>
 								<tr>
 									<th>Country</th>
 									<th>Action</th>
-								
+									<th>Caps</th>
 								</tr>
 								</thead>
 								<tbody>
-								
 								
 								</tbody>
 							
@@ -124,8 +136,6 @@ $offerView = new \LeadMax\TrackYourStats\Offer\View(\LeadMax\TrackYourStats\Syst
 							<label style = "margin-top:10px;" for = "geoRedirectOffer">Redirect Offer:</label>
 							<?php $offerView->printToSelectBox("geoRedirectOffer"); ?>
 						</div>
-					
-					
 					</div>
 				</div>
 				<div class = "modal-footer" style = "position:unset;">
@@ -158,7 +168,7 @@ $offerView = new \LeadMax\TrackYourStats\Offer\View(\LeadMax\TrackYourStats\Syst
 					<button type = "button" class = "close" data-dismiss = "modal"
 							aria-label = "Close"><span
 								aria-hidden = "true">&times;</span></button>
-					<h4 class = "modal-title" id = "deviceRuleTitle">New Device Rule</h4>
+					<h4 style="float: left;" class = "modal-title" id = "deviceRuleTitle">New Device Rule</h4>
 				</div>
 				
 				<div class = "modal-body ">
@@ -169,7 +179,7 @@ $offerView = new \LeadMax\TrackYourStats\Offer\View(\LeadMax\TrackYourStats\Syst
 							
 							<table id = deviceList"
 								   class = "table table-sm table-bordered table-responsive table-striped form-control  "
-								   style = "height:250px;  min-width:0;!important; ">
+								   style = "height:250px;  min-width:0 !important; ">
 								<thead>
 								<tr>
 									<th>Device</th>
@@ -201,7 +211,7 @@ $offerView = new \LeadMax\TrackYourStats\Offer\View(\LeadMax\TrackYourStats\Syst
 							
 							<table id = "deviceToAdd"
 								   class = "table table-sm table-bordered table-responsive table-striped form-control  "
-								   style = "height:250px; min-width:0;!important;">
+								   style = "height:250px; min-width:0 !important;">
 								<thead>
 								<tr>
 									<th>Device</th>
@@ -245,11 +255,18 @@ $offerView = new \LeadMax\TrackYourStats\Offer\View(\LeadMax\TrackYourStats\Syst
 							<label style = "margin-top:10px;" for = "deviceRedirectOffer">Redirect Offer:</label>
 							<?php $offerView->printToSelectBox("deviceRedirectOffer"); ?>
 						</div>
-					
+						<div class = "form-group">
+							<input <?php if ($activeCap) { echo "checked"; } ?> id = "capIsActive" type = "checkbox"
+									style = "width:15px;height:15px;">
+								<span>Enable Cap</span>
+						</div>
+						<div class = "form-group">
+							<label for = "deviceCap">Cap:</label>
+							<input type = "text" id = "deviceCap" value=<?php echo $capAmount; ?>>
+						</div>
 					
 					</div>
 				</div>
-				
 				
 				<div class = "modal-footer" style = "position:unset;">
 					<button id = "deviceCancelButton" type = "button" class = "btn btn-default"
@@ -398,6 +415,7 @@ $offerView = new \LeadMax\TrackYourStats\Offer\View(\LeadMax\TrackYourStats\Syst
 		
 		
 		$("#geoCreateButton").click(function () {
+
 			$.ajax({
 				type: "POST",
 				url: "/scripts/offer/rules/geo/addGeo.php",
@@ -410,7 +428,6 @@ $offerView = new \LeadMax\TrackYourStats\Offer\View(\LeadMax\TrackYourStats\Syst
 					
 					
 				}
-				
 				
 			});
 			
@@ -482,12 +499,20 @@ $offerView = new \LeadMax\TrackYourStats\Offer\View(\LeadMax\TrackYourStats\Syst
 			$("#geoCancelButton").click(function () {
 				resetGeoModal()
 			});
+
+			$("#geoModal").click(function() {
+				resetGeoModal();
+			});
+
+			$("button.close").click(function() {
+				resetGeoModal();
+			});
 			
 			$("#geoCreateButton").show();
 			$("#geoUpdateButton").hide();
-			
-			
+
 			for (var i = 0; i < rows.length; i++) {
+				rows[i].lastChild.remove();
 				$("#countryListBody").append(rows[i]);
 				
 				$("#_" + rows[i].id).attr("onclick", "addCountry(\"" + rows[i].id + "\")");
@@ -542,7 +567,6 @@ $offerView = new \LeadMax\TrackYourStats\Offer\View(\LeadMax\TrackYourStats\Syst
 		function parseDevices(tableName, onlyCountries = false) {
 			var rows = $('#' + tableName + ' > tbody > tr');
 			
-			
 			var offerID = $("#offerID").val();
 			
 			var redirectOffer = $("#deviceRedirectOffer").val();
@@ -550,16 +574,16 @@ $offerView = new \LeadMax\TrackYourStats\Offer\View(\LeadMax\TrackYourStats\Syst
 			var ruleName = $("#deviceRuleName").val();
 			
 			var notAllowed = document.getElementById("geoIsAllowed").checked;
+
+			var capAmount = $("#deviceCap").val();
+			var capStatus = $("#capIsActive").is(":checked");
 			
 			var parsed = [];
 			if (!onlyCountries)
-				parsed = [offerID, ruleName, redirectOffer, notAllowed];
+				parsed = [offerID, ruleName, redirectOffer, notAllowed, capAmount, capStatus];
 			
 			for (var i = 0; i < rows.length; i++)
 				parsed.push(rows[i].id);
-			
-			
-			console.log(parsed);
 			
 			return JSON.stringify(parsed);
 			
@@ -582,14 +606,18 @@ $offerView = new \LeadMax\TrackYourStats\Offer\View(\LeadMax\TrackYourStats\Syst
 			if (!onlyCountries)
 				parsed = [offerID, geoRuleName, redirectOffer, countriesNotAllowed];
 			
-			for (var i = 0; i < rows.length; i++)
-				parsed.push([rows[i].id, rows[i].innerText]);
+			for (var i = 0; i < rows.length; i++) {
+				console.log("firstChild.checked: ", rows[i].children[2].firstChild.firstChild.checked);
+				parsed.push([
+					rows[i].id, 
+					rows[i].children[0].innerText,
+					rows[i].children[2].firstChild.firstChild.checked || 0, 
+					rows[i].children[2].lastChild.lastChild.value
+				]);
+			}
 
-
-//            console.log(parsed);
-			
 			return JSON.stringify(parsed);
-			
+		
 		}
 		
 		function sortTable(table, order) {
@@ -619,15 +647,27 @@ $offerView = new \LeadMax\TrackYourStats\Offer\View(\LeadMax\TrackYourStats\Syst
 		}
 		
 		
-		function addCountry(countryName, sortTableAfter = true) {
+		function addCountry(countryName, capStatus = 0, cap = 0, sortTableAfter = true) {
 			
+			capIsActve = capStatus ? "checked" : "";			
+
 			var c = $("#" + countryName);
 			
-			
 			$("#countryList tbody").remove(c);
+		
+			if(!document.getElementById(countryName + '_capIsActive')) {
+				const html =
+					'<td class="caps">' +
+						'<span><input class="cap_active" id="' + countryName + '_capIsActive"' + capIsActve + ' type="checkbox" style = "width:15px;height:15px;">' +
+							'<span>Enable Cap</span></span>' +
+						'<span><label for = "geoCap">Cap:</label>' +
+						'<input class="cap_amount" type = "number" id = "' + countryName + '_geoCap" value=' + cap + '></span>' +
+					'</td>';
+					c.append(html)
+			}
 			
 			$("#toAdd tbody").append(c);
-			
+
 			$("#_" + countryName).attr("onclick", "removeCountry('" + countryName + "');");
 			
 			$("#" + countryName + "_img").attr("src", "images/icons/cancel.png");
@@ -641,15 +681,14 @@ $offerView = new \LeadMax\TrackYourStats\Offer\View(\LeadMax\TrackYourStats\Syst
 		function removeCountry(countryName, sortTableAfter = true) {
 			var selectedCountry = $("#" + countryName);
 			
-			console.log(selectedCountry);
-			$(selectedCountry).remove();
 			
+			$(selectedCountry).remove();
+			selectedCountry[0].lastChild.remove();
 			
 			$("#countryListBody").append("<tr id=\"" + countryName + "\" >" + selectedCountry.html() + "</tr>");
 			
-			
-			$("#_" + countryName).attr("onclick", "addCountry(\"" + countryName + "\")");
-			
+			$("#_" + countryName).attr("onclick", "addCountry('" + countryName + "');");
+
 			$("#" + countryName + "_img").attr("src", "images/icons/add.png");
 			
 			if (sortTableAfter)

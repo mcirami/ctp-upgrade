@@ -10,7 +10,7 @@ namespace LeadMax\TrackYourStats\Offer\Rules;
 
 
 use Detection\MobileDetect;
-
+use LeadMax\TrackYourStats\Offer\Caps;
 
 class Device implements Rule
 {
@@ -54,6 +54,7 @@ class Device implements Rule
         }
 
         foreach ($this->filteredRules as $rule) {
+
             $this->redirectOffer = $rule["redirect_offer"];
 
             switch ($rule["device_type"]) {
@@ -61,6 +62,10 @@ class Device implements Rule
                     if ($rule["deny"] == 1) {
                         return $this->detect->isMobile();
                     } else {
+                        if(!$this->detect->isMobile()) {
+                            $deviceCap = new Caps($rule["offer_idoffer"]);
+                            return $deviceCap->checkDeviceCap($rule);
+                        }
                         return !$this->detect->isMobile();
                     }
                     break;
@@ -69,7 +74,11 @@ class Device implements Rule
                     if ($rule["deny"] == 1) {
                         return !$this->detect->isMobile();
                     } else {
-                        return $this->detect->isMobile();
+                        if ($this->detect->isMobile()) {
+                            $deviceCap = new Caps($rule["offer_idoffer"]);
+                            return $deviceCap->checkDeviceCap($rule);
+                        }
+                        return false;
                     }
                     break;
 
@@ -94,14 +103,14 @@ class Device implements Rule
                     $this->filteredRules[$val["idrule"]]["device_type"] = $val["device_type"];
                     $this->filteredRules[$val["idrule"]]["redirect_offer"] = $val["redirect_offer"];
                     $this->filteredRules[$val["idrule"]]["deny"] = $val["deny"];
+                    $this->filteredRules[$val["idrule"]]["offer_idoffer"] = $val["offer_idoffer"];
+                    $this->filteredRules[$val["idrule"]]["cap"] = $val["cap"];
+                    $this->filteredRules[$val["idrule"]]["cap_status"] = $val["cap_status"];
 
                 }
 
             }
 
         }
-
-
     }
-
 }

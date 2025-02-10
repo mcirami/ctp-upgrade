@@ -376,8 +376,7 @@ if ($assignType == 0) {
         if (to === 'managers') {
           window.location = 'offer_add.php?ast=1&name=' + name + '&status=' + status + '&desc=' + desc + '&url=' + url +
               '&payout=' + payout + '&public=' + publicOffer + capStringAmend;
-        }
-        else {
+        } else {
           window.location = 'offer_add.php?ast=0&name=' + name + '&status=' + status + '&desc=' + desc + '&url=' + url +
               '&payout=' + payout + '&public=' + publicOffer + capStringAmend;
         }

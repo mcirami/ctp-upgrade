@@ -21,13 +21,9 @@
             <th class="value_span9">Free Sign Ups</th>
             <th class="value_span9">Pending Conversion</th>
             <th class="value_span9">Conversion</th>
-            @if(Session::userType() !== \App\Privilege::ROLE_MANAGER && LeadMax\TrackYourStats\System\Session::userType() !== \App\Privilege::ROLE_ADMIN)
-                <th class="value_span9">Revenue</th>
-                <th class="value_span9">Deductions</th>
-                <th class="value_span9">EPC</th>
-            @endif
-
-
+            <th class="value_span9">Revenue</th>
+            <th class="value_span9">Deductions</th>
+            <th class="value_span9">EPC</th>
         </tr>
         </thead>
         <tbody>

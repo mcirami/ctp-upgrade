@@ -18,7 +18,23 @@ class ClickListener extends Listener
 
     public function dispatch()
     {
-        $register = new ClickRegistrationEvent($_GET["repid"], $_GET["offerid"], $_GET);
+        if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+            $ip = $_SERVER['HTTP_CLIENT_IP'];
+            if ( str_contains( $ip, ',' ) ) {
+                $ip = substr($ip, 0, strpos($ip, ","));
+            }
+        } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+            $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+            if ( str_contains( $ip, ',' ) ) {
+                $ip = substr($ip, 0, strpos($ip, ","));
+            }
+        } else {
+            $ip = $_SERVER['REMOTE_ADDR'];
+            if ( str_contains( $ip, ',' ) ) {
+                $ip = substr($ip, 0, strpos($ip, ","));
+            }
+        }
+        $register = new ClickRegistrationEvent($_GET["repid"], $_GET["offerid"], $_GET, $ip);
 
         return $register->fire();
     }

@@ -32,8 +32,9 @@ class ReportController extends Controller
 
 
         if ($timezoneConvertDates) {
+ 
             Date::addHis($startDate, $endDate);
-
+            
             $startDate = Date::convertDateTimezone($startDate);
             $endDate = Date::convertDateTimezone($endDate);
         }

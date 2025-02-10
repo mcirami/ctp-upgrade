@@ -281,8 +281,8 @@ switch ($result)
 
 					});
 
-					if (cap_enabled)
-						$("#enable_cap").click();
+					/* if (cap_enabled)
+						$("#enable_cap").click(); */
 
 				});
 
@@ -319,10 +319,10 @@ switch ($result)
 
 		// A $( document ).ready() block.
 		$(document).ready(function () {
-			console.log("ready!");
+			/* console.log("ready!");
 			jQuery(function ($) {
 				$("#cell_phone").mask("(999) 999-9999");
-			});
+			}); */
 		});
 
 

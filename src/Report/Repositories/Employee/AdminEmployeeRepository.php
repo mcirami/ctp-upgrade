@@ -4,9 +4,11 @@ namespace LeadMax\TrackYourStats\Report\Repositories\Employee;
 
 
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use LeadMax\TrackYourStats\Report\Repositories\Repository;
 use LeadMax\TrackYourStats\System\Session;
 use LeadMax\TrackYourStats\Table\Date;
+use Termwind\Components\Raw;
 
 class AdminEmployeeRepository extends Repository
 {
@@ -17,7 +19,6 @@ class AdminEmployeeRepository extends Repository
     public function between($dateFrom, $dateTo): array
     {
         $report = $this->mergeReport($this->getClicks($dateFrom, $dateTo), $this->getConversions($dateFrom, $dateTo));
-
 
         $report = $this->mergeReport($report, $this->getBonusesRevenue($dateFrom, $dateTo));
 
@@ -237,52 +238,39 @@ class AdminEmployeeRepository extends Repository
 
     private function getConversions($dateFrom, $dateTo)
     {
-        $db = $this->getDB();
-        $sql = "
-				SELECT
-					rep.idrep,
-					rep.user_name,
-					count(c.id) Conversions,
-					sum(c.paid) Revenue,
-					count(u.id) FreeSignUps,
-					sum(deducted.paid) Deductions,
-					rep.lft,
-					rep.rgt
-				FROM
-					rep
-					
-				INNER JOIN privileges p on rep.idrep = p.rep_idrep
-				
-				LEFT JOIN clicks rawClicks ON rawClicks.rep_idrep = rep.idrep
-				
-				LEFT JOIN conversions c on rawClicks.idclicks = c.click_id
-				
-				
-				LEFT JOIN deductions ON deductions.conversion_id = c.id
-				
-				LEFT JOIN conversions deducted ON deducted.id = deductions.conversion_id
-				
-				LEFT JOIN free_sign_ups u on rawClicks.idclicks = u.click_id
-				
-				
-				
-				WHERE
-					c.timestamp BETWEEN :dateFrom AND :dateTo
-				 
-			 GROUP BY  rep.idrep
-			 ORDER BY Conversions DESC ";
+        
+        $adminUserID = Session::userID();
+        $managers = DB::table('rep')->where('referrer_repid', '=', $adminUserID)->get()->pluck('idrep')->toArray();
 
-        $stmt = $db->prepare($sql);
-
-
-        $stmt->bindParam(":dateFrom", $dateFrom);
-        $stmt->bindParam(":dateTo", $dateTo);
-
-
-        $stmt->execute();
-
-
-        $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        $result = DB::table('clicks')
+        ->whereBetween('clicks.first_timestamp', [$dateFrom,$dateTo])
+        ->where('clicks.click_type', '!=', 2)
+        ->leftJoin('rep', function($query) use($managers) {
+            $query->on('rep.idrep', '=', 'clicks.rep_idrep')->whereIn('referrer_repid', $managers);
+        })
+        ->join('privileges', 'rep.idrep', '=', 'privileges.rep_idrep')
+        ->leftJoin('pending_conversions as pc', function($query) {
+            $query->on('clicks.idclicks', '=', 'pc.click_id')->where('pc.converted', '=' , 0);
+        })
+        ->leftJoin('conversions', 'clicks.idclicks', '=', 'conversions.click_id')
+        ->leftJoin('deductions', 'deductions.conversion_id', '=', 'conversions.id')
+        ->leftJoin('conversions as deducted', 'deducted.id', '=', 'deductions.conversion_id')
+        ->leftJoin('free_sign_ups', 'free_sign_ups.click_id', '=', 'clicks.idclicks')
+        ->select(
+            'rep.idrep',
+            'rep.user_name',
+            'rep.lft',
+			'rep.rgt',
+            DB::raw('COUNT(conversions.id) as Conversions'),
+            DB::raw('SUM(conversions.paid) as Revenue'),
+            DB::raw('COUNT(free_sign_ups.id) as FreeSignUps'),
+            DB::raw('SUM(deducted.paid) as Deductions')
+            )
+            ->groupBy('rep.idrep')
+            ->orderBy('conversions', 'desc')
+            ->get()
+            ->map(fn ($row) => get_object_vars($row))
+            ->toArray();
 
         return $result;
     }
@@ -290,44 +278,34 @@ class AdminEmployeeRepository extends Repository
 
     private function getClicks($dateFrom, $dateTo)
     {
-        $db = $this->getDB();
-        $sql = "
-				SELECT
-					rep.idrep,
-					rep.user_name,
-					count(rawClicks.idclicks) Clicks,
-					SUM(CASE WHEN rawClicks.click_type = 0 THEN 1 ELSE 0 END) UniqueClicks,
-					count(pc.id) PendingConversions,
-					rep.lft,
-					rep.rgt
-				FROM
-					rep
-					
-				INNER JOIN privileges p on rep.idrep = p.rep_idrep
-				
-				LEFT JOIN clicks rawClicks ON rawClicks.rep_idrep = rep.idrep
-				
-				LEFT JOIN pending_conversions pc on rawClicks.idclicks = pc.click_id AND pc.converted = 0
-				
-				WHERE
-					rawClicks.first_timestamp BETWEEN :dateFrom AND :dateTo  and rawClicks.click_type !=2
-				 
-			 GROUP BY  rep.idrep
-			 ORDER BY Clicks DESC
-		";
 
+        $adminUserID = Session::userID();
+        $managers = DB::table('rep')->where('referrer_repid', '=', $adminUserID)->get()->pluck('idrep')->toArray();
 
-        $stmt = $db->prepare($sql);
+        $result = DB::table('clicks')
+        ->whereBetween('clicks.first_timestamp', [$dateFrom,$dateTo])
+        ->where('clicks.click_type', '!=', 2)
+        ->leftJoin('rep', function($query) use($managers) {
+            $query->on('rep.idrep', '=', 'clicks.rep_idrep')->whereIn('referrer_repid', $managers);
+        })
+        ->join('privileges', 'rep.idrep', '=', 'privileges.rep_idrep')
+        ->leftJoin('pending_conversions as pc', function($query) {
+            $query->on('clicks.idclicks', '=', 'pc.click_id')->where('pc.converted', '=' , 0);
+        })->select(
+            'rep.idrep',
+            'rep.user_name',
+            'rep.lft',
+			'rep.rgt',
+            DB::raw('COUNT(clicks.idclicks) as Clicks'),
+            DB::raw('SUM(case when clicks.click_type = 0 then 1 else 0 end) as UniqueClicks'),
+            DB::raw('COUNT(pc.id) as PendingConversions'))
+            ->groupBy('rep.idrep')
+            ->orderBy('Clicks', 'desc')
+            ->get()
+            ->map(fn ($row) => get_object_vars($row))
+            ->toArray();
 
-
-        $stmt->bindParam(":dateFrom", $dateFrom);
-        $stmt->bindParam(":dateTo", $dateTo);
-
-        $stmt->execute();
-
-
-        $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-
+        // array of arrays
         return $result;
     }
 

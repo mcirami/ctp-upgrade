@@ -31,7 +31,8 @@ class Company
 
     public $colors = false;
 
-	public $login_theme = '';
+    public $login_theme = '';
+
 
     function __construct()
     {
@@ -270,6 +271,7 @@ class Company
 
             $this->login_url = $company["login_url"]  ?? '';
 
+            $this->login_theme = $company['login_theme'] ?? '';
 
             $this->loaded();
 

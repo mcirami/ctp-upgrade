@@ -1,11 +1,7 @@
 <?php
 
 $domain = $_SERVER["HTTP_HOST"];
-
-
 $webroot = getWebRoot();
-
-
 $user = new \LeadMax\TrackYourStats\User\User;
 $company =  \LeadMax\TrackYourStats\System\Company::loadFromSession();
 $company->reloadSettings();
@@ -19,13 +15,11 @@ if ($user->is_loggedin())
 	}
 }
 
-
 $user->checkLoginAttempts();
-
 
 //POST to login.php (self),
 //if count is < 5, continue, else, too many attempts for today
-if (isset($_POST['button']) && $user->count < 5)
+if (isset($_POST['txt_uname_email']) && $user->count < 5)
 {
 	$user_name = $_POST['txt_uname_email'];
 	$email     = $_POST['txt_uname_email'];
@@ -73,16 +67,14 @@ else
 	}
 }
 
-/*if($company->login_theme != '') {
-	$filePath = __DIR__ . '/../public/login_themes/' . $company->login_theme . '/index.php';
-	if (file_exists($filePath)){
-		include($filePath);
-		die;
-	}
-}*/
-
+if($company->login_theme != '') {
+    $filePath = __DIR__ . '/../public/login_themes/' . $company->login_theme . '/index.php';
+    if (file_exists($filePath)){
+        include($filePath);
+        die;
+    }
+}
 ?>
-
 	
 	<!DOCTYPE html>
 	<html>
@@ -94,7 +86,8 @@ else
 		<link rel = "shortcut icon" type = "image/ico" href = "<?= \LeadMax\TrackYourStats\System\Company::loadFromSession()->getImgDir() ?>/favicon.ico"/>
 		
 		<link rel = "stylesheet" type = "text/css" href = "<?php echo $webroot; ?>css/default.css"/>
-		<link rel="stylesheet" type="text/css" media="screen" href="<?php echo $webroot; ?>css/company.php"/>
+		<!-- <link rel="stylesheet" type="text/css" media="screen" href="<?php //echo $webroot; ?>css/company.php"/> -->
+		<link rel="stylesheet" href="<?php echo $webroot; ?>css/company.css">
 		<link href = "<?php echo $webroot; ?>css/responsive_table.css" rel = "stylesheet" type = "text/css"/>
 		<link href = "<?php echo $webroot; ?>css/drawer.min.css" rel = "stylesheet">
 		<link rel = "stylesheet" href = "<?php echo $webroot; ?>css/magic.min.css">
