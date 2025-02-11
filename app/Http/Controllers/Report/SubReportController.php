@@ -32,9 +32,9 @@ class SubReportController extends ReportController
         $reporter = new Reporter($repo);
 
         $reporter
-            ->addFilter(new Filters\Total(['clicks','unique','conversions','revenue']))
-            ->addFilter(new Filters\EarningPerClick('unique', 'revenue'))
-            ->addFilter(new Filters\DollarSign(['EPC', 'revenue', 'TOTAL', 'Total']));
+            ->addFilter(new Filters\Total(['clicks','unique','conversions']));
+            //->addFilter(new Filters\EarningPerClick('unique', 'revenue'))
+            //->addFilter(new Filters\DollarSign(['EPC', 'revenue', 'TOTAL', 'Total']));
 
         return view('report.sub', compact('reporter', 'dates'));
     }
