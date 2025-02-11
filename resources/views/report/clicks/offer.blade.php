@@ -122,18 +122,20 @@
 				
 					@php 
 						$timestamp = $myReport->convertToEST($row['timestamp']);
-						$convertionTimeStamp = "";
+						$conversionTimeStamp = "";
 						if ($row->conversion_timestamp) {
-							$convertionTimeStamp = $myReport->convertToEST($row['conversion_timestamp']);
+							$conversionTimeStamp = $myReport->convertToEST($row['conversion_timestamp']);
 						}
 					@endphp
 					<tr>
 						@if (\LeadMax\TrackYourStats\System\Session::permissions()->can("view_fraud_data"))
 							<td>{{$row['id']}}</td>
 						@endif
-						<td>{{$timestamp}}</td>
-						<td>{{$convertionTimeStamp}}</td>
+						<td>{{$row['timestamp']}}</td>
+						<td>{{$conversionTimeStamp}}</td>
+						@if (\LeadMax\TrackYourStats\System\Session::permissions()->can("view_fraud_data"))
 						<td>{{$row['paid']}}</td>
+						@endif
 						@for($i = 1; $i <= 3; $i++)
 							<td>{{$row['sub' . $i]}}</td>
 						@endfor
