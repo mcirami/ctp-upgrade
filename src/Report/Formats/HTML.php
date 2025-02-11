@@ -1,5 +1,6 @@
 <?php namespace LeadMax\TrackYourStats\Report\Formats;
-
+use LeadMax\TrackYourStats\System\Session;
+use App\Privilege;
 /**
  * Author: Dean
  * Email: dwm348@gmail.com
@@ -73,7 +74,12 @@ class HTML implements Format
 						if($toPrint == "offer_name") {
 							echo "<td><a href='/offer_update.php?idoffer=" . $row['idoffer'] . "'>$row[$toPrint]</a></td>";
 						} elseif ($toPrint == "Conversions" && $row[$toPrint] > 0 && (key_exists('idoffer', $row) && $row["idoffer"] != "TOTAL") ) {
-							echo "<td><a href='/report/offer/{$row['idoffer']}/user-conversions?{$params}'>$row[$toPrint]</a></td>";
+                            if(Session::userType() == Privilege::ROLE_AFFILIATE) {
+                                $userId = Session::userID();
+                                echo "<td><a href='/user/{$userId}/{$row['idoffer']}/conversions-by-country?{$params}'>$row[$toPrint]</a></td>";
+                            } else {
+                                echo "<td><a href='/report/offer/{$row['idoffer']}/user-conversions?{$params}'>$row[$toPrint]</a></td>";
+                            }
 						} elseif($toPrint == "Conversions" && $row[$toPrint] > 0 && (key_exists('idrep', $row) && $row[$toPrint] != "TOTAL")) 
                             echo "<td><a target='_blank' href='/user/{$row['idrep']}/conversions-by-offer?{$params}'>$row[$toPrint]</a></td>";
                         else {

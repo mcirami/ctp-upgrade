@@ -3,8 +3,6 @@
 namespace App\Http\Controllers\Report;
 
 use App\Privilege;
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use App\Offer;
 use App\Services\Repositories\Offer\OfferAffiliateClicksRepository;
 use Carbon\Carbon;
