@@ -101,6 +101,9 @@ img {
     margin: 0 auto;
     padding: 40px;
     border-radius: 4px;
+    -webkit-box-shadow: 0 1px 22px -8px rgba(141,139,139,1);
+    -moz-box-shadow: 0 1px 22px -8px rgba(141,139,139,1);
+    box-shadow: 0 1px 22px -8px rgba(141,139,139,1);
 }
 
 .left_column h3 {
