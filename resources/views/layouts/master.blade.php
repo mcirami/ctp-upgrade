@@ -23,10 +23,7 @@
 
     <link rel="stylesheet" type="text/css" href="<?php echo $webroot; ?>css/default.css?v=1.9"/>
     <link rel="stylesheet" type="text/css" href="<?php echo $webroot; ?>css/tablesorter.default.css"/>
-
-    {{-- <link rel="stylesheet" media="screen" type="text/css"
-          href="<?php //echo $webroot; ?>css/company.php"/> --}}
-          <link rel="stylesheet" href="<?php echo $webroot; ?>css/company.css">
+    <link rel="stylesheet" href="<?php echo $webroot; ?>css/company.css">
     <link href="<?php echo $webroot; ?>css/responsive_table.css" rel="stylesheet" type="text/css"/>
     <link href="<?php echo $webroot; ?>css/drawer.min.css?v=1.1" rel="stylesheet">
 
