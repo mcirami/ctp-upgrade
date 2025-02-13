@@ -183,7 +183,7 @@
 		<div class="container">
 			<div class="two_columns">
 				<div class="column">
-					<img src="/resources/landers/modelcash/images/home-graph.png" alt="">
+					<img src="/resources/landers/modelcash/images/graph.png" alt="">
 				</div>
 				<div class="column">
 					<small>MODELS</small>

@@ -40,7 +40,7 @@
 					</div>
 					<div class="col-12 col-lg-6 right_column d-flex flex-column align-content-center justify-content-center">
 						<div class="logo_wrap">
-							<img src="<?= \LeadMax\TrackYourStats\System\Company::loadFromSession()->getImgDir() ?>/logo.png" alt="">
+							<img src="<?= \LeadMax\TrackYourStats\System\Company::loadFromSession()->getImgDir() ?>/logo.png?v=2" alt="">
 						</div>
 						<div class="form_wrap">
 							<h3 class="my-3">Login to your account</h3>
