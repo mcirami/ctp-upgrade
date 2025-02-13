@@ -167,8 +167,9 @@ img {
     background: #ec297b;
     color: #ffffff;
     border: none;
-    border-radius: 50px;
+    border-radius: 50px !important;
     padding: 10px 20px;
+    border-radius: 4px;
     font-family: "sarabun-bold", sans-serif;
     cursor: pointer;
 }
@@ -178,7 +179,7 @@ img {
 }
 
 .right_column .form_wrap a.signup_link {
-    font-family: "sarabun-bold", sans-serif;
+    font-family: "sarabun-bold";
     color: #ec297b;
     text-decoration: underline;
 }
