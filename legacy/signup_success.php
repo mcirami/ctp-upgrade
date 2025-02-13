@@ -22,18 +22,15 @@ $pending = (isset($_GET["pending"]) && $_GET["pending"] != "") ? $_GET["pending"
 	
 	<link rel = "shortcut icon" type = "image/ico"
 		  href = "<?PHP echo \LeadMax\TrackYourStats\System\Company::loadFromSession()->getImgDir() . "/favicon.ico"; ?>"/>
-	<link rel = "shortcut icon" type = "image/ico"
-		  href = "<?PHP echo \LeadMax\TrackYourStats\System\Company::loadFromSession()->getImgDir() . "/favicon.ico"; ?>"/>
-	<link href = "css/bootstrap.min.css" rel = "stylesheet">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
 	<link href = "css/animate.css" rel = "stylesheet">
 	
 	
 	<link rel = "stylesheet" type = "text/css" href = "<?php echo $webroot; ?>css/default.css"/>
-	
+
 	<link rel = "stylesheet" media = "screen" type = "text/css"
-		  href = "<?php echo $webroot; ?>css/company.php"/>
-	
-	
+	      href = "<?php echo $webroot; ?>css/company.css"/>
 	<link rel = "stylesheet" type = "text/css" href = "<?php echo $webroot; ?>css/font-awesome.min.css">
 	<link rel = "stylesheet" href = "<?php echo $webroot; ?>css/magic.min.css">
 	
@@ -93,8 +90,10 @@ $pending = (isset($_GET["pending"]) && $_GET["pending"] != "") ? $_GET["pending"
 	
 	}
 	
-	.btn_yellow {
-	
+	.btn {
+		border-radius: 50px;
+		width: 150px;
+		padding: 10px 20px;
 	}
 </style>
 
@@ -116,10 +115,15 @@ $pending = (isset($_GET["pending"]) && $_GET["pending"] != "") ? $_GET["pending"
 					if ($mid) {
 				?>
 					<div class = "heading_holder">
-						<h3 class = " value_span9">Congratulations!</h3>
-						<p>
-							Your new account is setup and activated. Contact the manager who sent you your signup link with any questions.
+						<h2 class = " value_span9 mb-3 text-center text-uppercase">Congratulations!</h2>
+						<h3>
+							Your new account is setup and automatically activated.
+						</h3>
+						<p class="mb-2">
+							Click below to login, grab your SmartLink from the Offer page inside your model.cash account, post the SmartLink on a new button on your link sharing platform (ex: linktree)
 						</p>
+						<a href="/login.php" class="btn value_span5-1 value_span2 value_span4">Login Now!</a>
+						<p class="mb-0">If you have any questions, feel free to contact the Model Ambassador who sent you the signup link!</p>
 					</div>
 				<?php
 					} else { ?>
@@ -130,15 +134,11 @@ $pending = (isset($_GET["pending"]) && $_GET["pending"] != "") ? $_GET["pending"
 									<?php if ($pending) : ?>
 										Your account is still Pending!
 									<?php else : ?>
-										Thank you for registering with Money Lovers!
+										Thank you for registering with Model Cash!
 									<?php endif; ?>
 								</h2>
 							</div>
-							<div class="columns_wrap">
-								<div class="column" style="text-align: center; width: 100%; margin: 20px 0;">
-									<h4>Please Contact the Manager that registered your account to get approved!</h4>
-								</div>
-							</div>
+							<p>If you have any questions, feel free to contact the Model Ambassador who sent you the signup link!</p>
 						</div>
 				<?php
 					}
