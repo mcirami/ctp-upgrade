@@ -12146,6 +12146,9 @@ header .row_wrap .navbar-nav {
 header .logo img {
   max-width: 200px;
 }
+header .navbar-brand {
+  max-width: 150px;
+}
 header .nav_wrap {
   width: 100%;
 }
@@ -12486,10 +12489,12 @@ footer .footer_content {
     flex-wrap: wrap;
   }
 }
+footer .footer_content .logo_wrap {
+  max-width: 150px;
+}
 @media screen and (max-width: 991px) {
   footer .footer_content .logo_wrap {
     width: 100%;
-    max-width: 150px;
     text-align: center;
     margin: 0 auto 20px;
   }
