@@ -2770,3 +2770,38 @@ table.offer_clicks th:first-child {
 #toAdd thead tr th:last-child {
 	width: 100%;
 }
+
+.link_info {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-orient: horizontal;
+	-webkit-box-direction: normal;
+	-ms-flex-direction: row;
+	flex-direction: row;
+	-ms-flex-wrap: nowrap;
+	flex-wrap: nowrap;
+	justify-content: flex-start;
+	-webkit-justify-content: flex-start;
+	gap: 15px;
+	background: #fff;
+	border: 1px solid #ccc;
+	padding: 10px;
+	-webkit-border-radius: 6px;
+	-moz-border-radius: 6px;
+	border-radius: 6px;
+}
+
+.link_info h4 {
+	font-family: 'robotobold', sans-serif;
+}
+
+.link_info p {
+	font-size: 1.5rem;
+}
+
+.link_info p span {
+	font-family: 'Lato-Italic', sans-serif;
+	padding-top: 5px;
+	display: block;
+}

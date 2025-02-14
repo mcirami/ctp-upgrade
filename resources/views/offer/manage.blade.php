@@ -18,11 +18,12 @@
 			@endif
 
 			@if(\LeadMax\TrackYourStats\System\Session::userType() == \App\Privilege::ROLE_AFFILIATE)
-				<div class='form-group'>
-					<p class='form-control'>
-						Add up to 5 Sub variables as follows: http://domain.com/?repid=1&offerid=1&sub1=XXX&sub2=YYY&sub3=ZZZ&sub4=AAA&sub5=BBB
+				<div class='link_info'>
+					<h4>SmartLink:</h4>
+					<p>
+						https://modeldating.site/mc/?repid=<?php echo \LeadMax\TrackYourStats\System\Session::userID(); ?>&sub1= ** <br>
+						<span>** Add any value after sub1= in your Smartlink to track traffic sources in the "Reports > Sub Report" menu above.</span>
 					</p>
-
 				</div>
 			@endif
 

@@ -112,59 +112,27 @@ $pending = (isset($_GET["pending"]) && $_GET["pending"] != "") ? $_GET["pending"
 				?>
 
 				<?php
-					if ($mid) {
+					if ($pending) {
 				?>
 						<div class = "heading_holder">
-							<h3 class = " value_span9">Congratulations!</h3>
+							<h3 class = " mb-2 value_span9">Your account is still Pending!</h3>
 							<p>
-								Your new account is set up and activated. Contact the manager who sent you your signup link with any questions.
+								If you have any questions, feel free to contact the Model Ambassador who sent you the signup link!
 							</p>
 						</div>
 				<?php
 					} else { ?>
 
-						<div class="action-details">
-							<div class = "heading_holder">
-								<h2 class = " value_span9">
-									<?php if ($pending) : ?>
-										Your account is still Pending!
-									<?php else : ?>
-										Thank you for registering with <?php echo env('APP_NAME'); ?>
-									<?php endif; ?>
-								</h2>
-							</div>
-							<h3>Please contact us for approval</h3>
-							<div class="columns_wrap">
-								<div class="column">
-									<h4>Jeff:</h4>
-									<p>
-										<span>Skype:</span>
-										<a href="skype:moneylovers.jeff?add">moneylovers.jeff</a>
-									</p>
-									<p>
-										<span>Email: </span>
-										<a href="mailto:jeff@moneylovers.com">jeff@moneylovers.com</a></p>
-									<p>
-										<span>Telegram:</span>
-										<a href="https://t.me/jefftoch">jefftoch</a>
-									</p>
-								</div>
-								<div class="column">
-									<h4>Matteo</h4>
-									<p>
-										<span>Skype:</span>
-										<a href="skype:moneylovers.matteo?add">moneylovers.matteo</a>
-									</p>
-									<p>
-										<span>Email:</span>
-										<a href="mailto:matteo@moneylovers.com">matteo@moneylovers.com</a>
-									</p>
-									<p>
-										<span>Telegram:</span>
-										<a href="https://t.me/moneylovers_matteo">moneylovers_matteo</a>
-									</p>
-								</div>
-							</div>
+						<div class = "heading_holder">
+							<h2 class = " value_span9 mb-3 text-center text-uppercase">Congratulations!</h2>
+							<h3>
+								Your new account is set up and automatically activated.
+							</h3>
+							<p class="mb-2">
+								Click below to log in, grab your SmartLink from the Offer page inside your model.cash account, post the SmartLink on a new button on your link sharing platform (ex: linktree)
+							</p>
+							<a href="/login.php" class="btn value_span5-1 value_span2 value_span4">Login Now!</a>
+							<p class="mb-0">If you have any questions, feel free to contact the Model Ambassador who sent you the signup link!</p>
 						</div>
 				<?php
 					}
