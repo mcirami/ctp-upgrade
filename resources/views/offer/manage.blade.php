@@ -18,12 +18,19 @@
 			@endif
 
 			@if(\LeadMax\TrackYourStats\System\Session::userType() == \App\Privilege::ROLE_AFFILIATE)
-				<div class='link_info'>
-					<h4>SmartLink:</h4>
-					<p>
-						https://modeldating.site/mc/?repid=<?php echo \LeadMax\TrackYourStats\System\Session::userID(); ?>&sub1= ** <br>
-						<span>** Add any value after sub1= in your Smartlink to track traffic sources in the "Reports > Sub Report" menu above.</span>
-					</p>
+				<div class="info_bar">
+					<div class='link_info'>
+						<h4>SmartLink:</h4>
+						<div class="text_wrap">
+							<div class="link_wrap">
+								<p id="smart_link">
+									https://modeldating.site/mc/?repid=<?php echo \LeadMax\TrackYourStats\System\Session::userID(); ?>&sub1= **
+								</p>
+							</div>
+							<a href="#" onclick = "copyToClipboard(getElementById('smart_link'));" class = 'copy_text value_span6 value_span5'>Click To Copy Link</a>
+						</div>
+					</div>
+					<p class="link_desc">** Add any value after sub1= in your Smartlink to track traffic sources in the "Reports > Sub Report" menu above.</p>
 				</div>
 			@endif
 

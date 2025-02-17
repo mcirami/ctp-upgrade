@@ -200,14 +200,19 @@ img {
     }
 }
 
-@media screen and (max-width: 768px) {
-    .white_box {
-        width: 100%;
-        margin: 40px 0;
+@media screen and (max-width: 991px) {
+    .left_column {
+        order: 1;
     }
 
     .right_column {
         padding: 3rem;
+    }
+}
+@media screen and (max-width: 768px) {
+    .white_box {
+        width: 100%;
+        margin: 40px 0;
     }
 
     .right_column .form_wrap {

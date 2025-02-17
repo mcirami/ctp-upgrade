@@ -2771,7 +2771,17 @@ table.offer_clicks th:first-child {
 	width: 100%;
 }
 
+.info_bar {
+	width: 100%;
+	display: inline-block;
+}
 .link_info {
+	background: #fff;
+	border: 1px solid #ccc;
+	padding: 10px;
+	-webkit-border-radius: 6px;
+	-moz-border-radius: 6px;
+	border-radius: 6px;
 	display: -webkit-box;
 	display: -ms-flexbox;
 	display: flex;
@@ -2781,19 +2791,24 @@ table.offer_clicks th:first-child {
 	flex-direction: row;
 	-ms-flex-wrap: nowrap;
 	flex-wrap: nowrap;
-	justify-content: flex-start;
-	-webkit-justify-content: flex-start;
 	gap: 15px;
-	background: #fff;
-	border: 1px solid #ccc;
-	padding: 10px;
-	-webkit-border-radius: 6px;
-	-moz-border-radius: 6px;
-	border-radius: 6px;
 }
 
 .link_info h4 {
 	font-family: 'robotobold', sans-serif;
+}
+
+.link_info .link_wrap {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-orient: horizontal;
+	-webkit-box-direction: normal;
+	-ms-flex-direction: row;
+	flex-direction: row;
+	-ms-flex-wrap: nowrap;
+	flex-wrap: nowrap;
+	gap: 5px;
 }
 
 .link_info p {
@@ -2804,4 +2819,20 @@ table.offer_clicks th:first-child {
 	font-family: 'Lato-Italic', sans-serif;
 	padding-top: 5px;
 	display: block;
+}
+
+.info_bar .link_desc {
+	margin: 10px 0 20px;
+}
+
+@media screen and (max-width: 992px) {
+	.link_info {
+		flex-wrap: wrap;
+		-ms-flex-wrap: wrap;
+		gap: 5px;
+	}
+
+	.link_info .text_wrap {
+		width: 100%;
+	}
 }
