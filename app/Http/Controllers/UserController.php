@@ -89,12 +89,12 @@ class UserController extends Controller
 		$date = new Date;
 		$now = Carbon::now();
 		$todaysDate = $date->convertDateTimezone($now);
-		$monthsAgo = $date->convertDateTimezone(Carbon::now()->subMonths(5)->startOfDay());
+		$monthsAgo = $date->convertDateTimezone(Carbon::now()->subMonths(2)->startOfDay());
 
 		$cacheKey = "user_{$affId}_subids";
         $cacheTime = 7200; // 60 minutes
 
-        $data = Cache::remember($cacheKey, 30, function () use ($affId, $monthsAgo, $todaysDate) {
+        $data = Cache::remember($cacheKey, $cacheTime, function () use ($affId, $monthsAgo, $todaysDate) {
             $blocked = DB::table('blocked_sub_ids')->where('rep_idrep', '=', $affId)->distinct()->pluck('sub_id')->toArray();
             $mergedArray = [];
 
