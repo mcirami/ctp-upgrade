@@ -93,23 +93,23 @@ class UserController extends Controller
 		$date = new Date;
 		$now = Carbon::now();
 		$todaysDate = $date->convertDateTimezone($now);
-		$oneMonthAgo = $date->convertDateTimezone(Carbon::now()->subMonths(3)->startOfDay());
+		$monthsAgo = $date->convertDateTimezone(Carbon::now()->subMonths(5)->startOfDay());
 
 		$cacheKey = "user_{$affId}_subids";
-        $cacheTime = 3600; // 30 minutes
-        $data = Cache::remember($cacheKey, $cacheTime, function () use ($affId, $oneMonthAgo, $todaysDate) {
+        $cacheTime = 7200; // 60 minutes
+
+        $data = Cache::remember($cacheKey, 30, function () use ($affId, $monthsAgo, $todaysDate) {
             $blocked = DB::table('blocked_sub_ids')->where('rep_idrep', '=', $affId)->distinct()->pluck('sub_id')->toArray();
-            $subIdArray = [];
             $mergedArray = [];
 
             $subIdArray = Click::where('rep_idrep', '=', $affId) 
-            ->whereBetween('first_timestamp', [$oneMonthAgo, $todaysDate])
+            ->whereBetween('first_timestamp', [$monthsAgo, $todaysDate])
             ->join('click_vars', 'click_vars.click_id', '=', 'clicks.idclicks')
+            ->where('click_vars.sub1', '!=', '')
             ->select('click_vars.sub1')
             ->groupBy('click_vars.sub1')
             ->orderBy('click_vars.sub1')->get()->toArray();
 
-            
             foreach($subIdArray as $subId) {
                 $object        = [
                     'subId'     => preg_replace('/[^a-zA-Z0-9-_]/', '', $subId['sub1']),
