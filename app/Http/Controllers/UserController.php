@@ -16,6 +16,7 @@ use LeadMax\TrackYourStats\Table\Date;
 use Stripe\Account;
 use Stripe\AccountLink;
 use Illuminate\Support\Facades\Redirect;
+use Stripe\Exception\ApiErrorException;
 use Stripe\Stripe;
 
 class UserController extends Controller
@@ -273,7 +274,18 @@ class UserController extends Controller
 		return response()->json(['success' => $success, 'message' => $message]);
 	}
 
-	public function addPaymentDetails() {
+	/**
+	 * @throws ApiErrorException
+	 */
+	public function showPaymentDetails() {
+
+		$user = Session::user();
+		$payoutDetails = $user->payoutData()->first();
+
+		return view('user.payment-details')->with(['user' => $user, 'payoutDetails' => $payoutDetails]);
+	}
+
+	public function addPaymentDetails(User $user) {
 
 		if (App::environment() == 'production') {
 			$stripeSecret = env('STRIPE_SECRET');
@@ -281,10 +293,9 @@ class UserController extends Controller
 			$stripeSecret =  env('STRIPE_SANDBOX_SECRET');
 		}
 		Stripe::setApiKey($stripeSecret);
-		$hostURL = request()->getSchemeAndHttpHost();
-		$refreshUrl = $hostURL . '/user/stripe-reauth';
-		$returnUrl = $hostURL . '/user/stripe-account-complete';
-		$user = Session::user();
+		$refreshUrl = route('stripe.refresh.url');
+		$returnUrl = route('stripe.complete');
+		//$user = Session::user();
 
 		try {
 			$account = Account::create([
@@ -292,7 +303,7 @@ class UserController extends Controller
 				'email' => $user->email,
 			]);
 
-			$user->payout_data()->create([
+			$user->payoutData()->create([
 				'payout_type' => 'stripe',
 				'payout_id'   => $account->id
 			]);

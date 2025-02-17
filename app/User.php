@@ -211,7 +211,7 @@ class User extends Authenticatable
     }
 
 	public function payoutData() {
-		return $this->hasOne(PayoutData::class);
+		return $this->hasOne(PayoutData::class, 'rep_idrep');
 	}
 
 }
