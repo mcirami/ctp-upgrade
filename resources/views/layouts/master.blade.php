@@ -12,10 +12,7 @@
 
     <link rel="shortcut icon" type="image/ico"
           href="<?PHP echo $webroot . "/" . \LeadMax\TrackYourStats\System\Company::loadFromSession()
-                  ->getImgDir() . "/favicon.ico"; ?>"/>
-    <link rel="shortcut icon" type="image/ico"
-          href="<?PHP echo $webroot . "/" . \LeadMax\TrackYourStats\System\Company::loadFromSession()
-                  ->getImgDir() . "/favicon.ico"; ?>"/>
+                  ->getImgDir() . "/favicon.ico?v=2"; ?>"/>
     <link href="{{$webroot}}css/bootstrap.min.css" rel="stylesheet">
     <!--    <link href="css/bootstrap-theme.min.css" rel="stylesheet">-->
     <link href="{{$webroot}}css/animate.css" rel="stylesheet">

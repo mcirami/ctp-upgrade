@@ -170,7 +170,7 @@ class NavBar
 
             "IP Blacklist" => ['url' => '/ip_black_list.php', "required_user_types" => [\App\Privilege::ROLE_GOD]],
 
-            "Notifications" => ['url' => '/notifications.php'],
+            "Payment Details" => ['url' => '/user/payment-details', "required_user_types" => [\App\Privilege::ROLE_AFFILIATE]],
 
 //            "Salaries" => ["url" => "/salaries.php", "possible_permissions" => ["pay_salaries"]],
 

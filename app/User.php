@@ -210,5 +210,8 @@ class User extends Authenticatable
         return $this->hasOne(Salary::class, 'user_id', 'idrep');
     }
 
+	public function payoutData() {
+		return $this->hasOne(PayoutData::class);
+	}
 
 }

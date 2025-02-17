@@ -7,11 +7,16 @@ use App\User;
 use App\Click;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
-use \LeadMax\TrackYourStats\System\Session;
+use LeadMax\TrackYourStats\System\Session;
 use LeadMax\TrackYourStats\Table\Paginate;
 use Illuminate\Support\Facades\Cache;
 use LeadMax\TrackYourStats\Table\Date;
+use Stripe\Account;
+use Stripe\AccountLink;
+use Illuminate\Support\Facades\Redirect;
+use Stripe\Stripe;
 
 class UserController extends Controller
 {
@@ -19,7 +24,6 @@ class UserController extends Controller
     public function viewManagersAffiliates($id)
     {
         $manager = User::myUsers()->withRole(Privilege::ROLE_MANAGER)->findOrFail($id);
-
 
         $affiliates = $manager->users()->withRole(Privilege::ROLE_AFFILIATE)->with('referrer');
 
@@ -107,11 +111,11 @@ class UserController extends Controller
 
             
             foreach($subIdArray as $subId) {
-                $object = [
+                $object        = [
                     'subId'     => preg_replace('/[^a-zA-Z0-9-_]/', '', $subId['sub1']),
                     'blocked'   => in_array($subId['sub1'], $blocked)
                 ];
-                array_push($mergedArray, $object);
+                $mergedArray[] = $object;
             }
 
             return $mergedArray;
@@ -130,7 +134,7 @@ class UserController extends Controller
 
 		// TODO: check if already has access or not.
 
-		if(\LeadMax\TrackYourStats\System\Session::userType() != Privilege::ROLE_AFFILIATE) {
+		if(Session::userType() != Privilege::ROLE_AFFILIATE) {
 
 			$offerAccess = DB::table('rep_has_offer')
 			                 ->where('rep_idrep', '=', $userID)
@@ -161,7 +165,7 @@ class UserController extends Controller
 		$access = $request->access;
 		$message = "";
 
-		if(\LeadMax\TrackYourStats\System\Session::userType() != Privilege::ROLE_AFFILIATE) {
+		if(Session::userType() != Privilege::ROLE_AFFILIATE) {
 
 			if ($access) {
 				DB::table('rep_has_offer')->insert([
@@ -213,7 +217,7 @@ class UserController extends Controller
 		$status = $request->status;
 		$message = "";
 
-		if(\LeadMax\TrackYourStats\System\Session::userType() == Privilege::ROLE_GOD) {
+		if(Session::userType() == Privilege::ROLE_GOD) {
 			$userOfferCap = DB::table('user_offer_caps')->where("rep_idrep", $userID)->where('offer_idoffer', $offer)->first();
 
 			if($userOfferCap) {
@@ -244,7 +248,7 @@ class UserController extends Controller
 		$offer = $request->offer_id;
 		$cap = $request->cap;
 		$message = "";
-		if(\LeadMax\TrackYourStats\System\Session::userType() == Privilege::ROLE_GOD) {
+		if(Session::userType() == Privilege::ROLE_GOD) {
 			$userOfferCap = DB::table('user_offer_caps')->where("rep_idrep", $userID)->where('offer_idoffer', $offer)->first();
 			if($userOfferCap) {
 				DB::table('user_offer_caps')->where("rep_idrep", $userID)->where('offer_idoffer', $offer)->update( [
@@ -267,6 +271,53 @@ class UserController extends Controller
 		}
 
 		return response()->json(['success' => $success, 'message' => $message]);
+	}
+
+	public function addPaymentDetails() {
+
+		if (App::environment() == 'production') {
+			$stripeSecret = env('STRIPE_SECRET');
+		} else {
+			$stripeSecret =  env('STRIPE_SANDBOX_SECRET');
+		}
+		Stripe::setApiKey($stripeSecret);
+		$hostURL = request()->getSchemeAndHttpHost();
+		$refreshUrl = $hostURL . '/user/stripe-reauth';
+		$returnUrl = $hostURL . '/user/stripe-account-complete';
+		$user = Session::user();
+
+		try {
+			$account = Account::create([
+				'type'  => 'express',
+				'email' => $user->email,
+			]);
+
+			$user->payout_data()->create([
+				'payout_type' => 'stripe',
+				'payout_id'   => $account->id
+			]);
+
+			$link = AccountLink::create([
+				'account' => $account->id,
+				'refresh_url' => $refreshUrl,
+				'return_url' => $returnUrl,
+				'type' => 'account_onboarding',
+			]);
+
+			return redirect($link->url);
+
+		} catch (\Exception $e) {
+			LogDB($e, null);
+
+			return response()->json([
+				'status'  => 500,
+				'message' => $e->getMessage(),
+			], 500);
+		}
+
+
+
+		//return view('user.payment-details');
 	}
 
 	private function getDiffForHumans($users) {

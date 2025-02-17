@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<link rel="shortcut icon" href="/login_themes/<?=$company->login_theme?>/images/favicon.ico" type="image/x-icon" />
+		<link rel="shortcut icon" href="/login_themes/<?=$company->login_theme?>/images/favicon.ico?v=2" type="image/x-icon" />
         <link href="/login_themes/<?=$company->login_theme?>/css/bootstrap/bootstrap.min.css" rel="stylesheet" />
 		<link rel="stylesheet" href="/login_themes/<?=$company->login_theme?>/css/style.css?v=1.3">
 		<script type="text/javascript" src="/login_themes/<?=$company->login_theme?>/js/jquery-3.3.1.min.js"></script>

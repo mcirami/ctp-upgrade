@@ -39,6 +39,7 @@ use App\Http\Controllers\Sms\SmsController;
 use App\Http\Controllers\Sms\SmsClientController;
 use App\Http\Controllers\ChatLogController;
 use App\Http\Controllers\Report\ConversionReportController;
+use App\Http\Controllers\PayoutController;
 
 Route::get('/', [IndexController::class, 'index']);
 Route::post('/', [IndexController::class, 'index']);
@@ -49,8 +50,11 @@ Route::post('email/incoming/distribute', [RelevanceReactorController::class, 'di
 Route::group(['middleware' => 'legacy.auth'], function () {
     Route::get('dashboard', [DashboardController::class, 'home']);
     Route::group(['prefix' => 'user'], function () {
-        Route::get('manage', [UserController::class, 'viewManageUsers'])->middleware(['role:0,1,2']);
-        Route::get('{id}/affiliates', [UserController::class, 'viewManagersAffiliates'])->middleware([
+        Route::get('/manage', [UserController::class, 'viewManageUsers'])->middleware(['role:0,1,2']);
+	    Route::get('/payment-details', [UserController::class, 'addPaymentDetails'])->middleware(['role:3']);
+	    Route::get('/stripe-reauth', [PayoutController::class, 'stripeOnboardRefresh'])->middleware(['role:3'])->name('stripe.refresh.url');
+	    Route::get('/stripe-account-complete', [PayoutController::class, 'stripeComplete'])->middleware(['role:3'])->name('stripe.complete');
+        Route::get('/{id}/affiliates', [UserController::class, 'viewManagersAffiliates'])->middleware([
             'role:0,1,2',
             'permissions:' . Permissions::CREATE_MANAGERS
         ]);
