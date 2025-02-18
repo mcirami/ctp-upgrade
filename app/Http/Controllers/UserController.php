@@ -285,50 +285,10 @@ class UserController extends Controller
 		return view('user.payment-details')->with(['user' => $user, 'payoutDetails' => $payoutDetails]);
 	}
 
-	public function addPaymentDetails(User $user) {
-
-		if (App::environment() == 'production') {
-			$stripeSecret = env('STRIPE_SECRET');
-		} else {
-			$stripeSecret =  env('STRIPE_SANDBOX_SECRET');
-		}
-		Stripe::setApiKey($stripeSecret);
-		$refreshUrl = route('stripe.refresh.url');
-		$returnUrl = route('stripe.complete');
-		//$user = Session::user();
-
-		try {
-			$account = Account::create([
-				'type'  => 'express',
-				'email' => $user->email,
-			]);
-
-			$user->payoutData()->create([
-				'payout_type' => 'stripe',
-				'payout_id'   => $account->id
-			]);
-
-			$link = AccountLink::create([
-				'account' => $account->id,
-				'refresh_url' => $refreshUrl,
-				'return_url' => $returnUrl,
-				'type' => 'account_onboarding',
-			]);
-
-			return redirect($link->url);
-
-		} catch (\Exception $e) {
-			LogDB($e, null);
-
-			return response()->json([
-				'status'  => 500,
-				'message' => $e->getMessage(),
-			], 500);
-		}
+	public function collectPaymentDetails(Request $request) {
+		$user = Session::user();
 
 
-
-		//return view('user.payment-details');
 	}
 
 	private function getDiffForHumans($users) {
