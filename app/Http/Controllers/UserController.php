@@ -13,11 +13,7 @@ use LeadMax\TrackYourStats\System\Session;
 use LeadMax\TrackYourStats\Table\Paginate;
 use Illuminate\Support\Facades\Cache;
 use LeadMax\TrackYourStats\Table\Date;
-use Stripe\Account;
-use Stripe\AccountLink;
 use Illuminate\Support\Facades\Redirect;
-use Stripe\Exception\ApiErrorException;
-use Stripe\Stripe;
 
 class UserController extends Controller
 {
@@ -274,9 +270,6 @@ class UserController extends Controller
 		return response()->json(['success' => $success, 'message' => $message]);
 	}
 
-	/**
-	 * @throws ApiErrorException
-	 */
 	public function showPaymentDetails() {
 
 		$user = Session::user();
@@ -285,48 +278,9 @@ class UserController extends Controller
 		return view('user.payment-details')->with(['user' => $user, 'payoutDetails' => $payoutDetails]);
 	}
 
-	public function addPaymentDetails(User $user) {
+	public function addPaymentDetails() {
 
-		if (App::environment() == 'production') {
-			$stripeSecret = env('STRIPE_SECRET');
-		} else {
-			$stripeSecret =  env('STRIPE_SANDBOX_SECRET');
-		}
-		Stripe::setApiKey($stripeSecret);
-		$refreshUrl = route('stripe.refresh.url');
-		$returnUrl = route('stripe.complete');
-		//$user = Session::user();
-
-		try {
-			$account = Account::create([
-				'type'  => 'express',
-				'email' => $user->email,
-			]);
-
-			$user->payoutData()->create([
-				'payout_type' => 'stripe',
-				'payout_id'   => $account->id
-			]);
-
-			$link = AccountLink::create([
-				'account' => $account->id,
-				'refresh_url' => $refreshUrl,
-				'return_url' => $returnUrl,
-				'type' => 'account_onboarding',
-			]);
-
-			return redirect($link->url);
-
-		} catch (\Exception $e) {
-			LogDB($e, null);
-
-			return response()->json([
-				'status'  => 500,
-				'message' => $e->getMessage(),
-			], 500);
-		}
-
-
+		$user = Session::user();
 
 		//return view('user.payment-details');
 	}

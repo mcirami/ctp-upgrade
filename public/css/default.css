@@ -104,14 +104,17 @@ td > a {
 }
 
 .right_panel button {
-	background: #e6e6e6;
 	border: none;
 	width: 170px;
 	padding: 10px;
 	font-size: 18px;
-	margin-left: 15px;
 	border-radius: 6px;
 	color: #676767;
+}
+
+.right_panel button:not(.button) {
+	background: #e6e6e6;
+	margin-left: 15px;
 }
 
 .right_panel .button_wrap {
@@ -2835,4 +2838,43 @@ table.offer_clicks th:first-child {
 	.link_info .text_wrap {
 		width: 100%;
 	}
+}
+.payment_details .radio_wrap {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-orient: horizontal;
+	-webkit-box-direction: normal;
+	-ms-flex-direction: row;
+	flex-direction: row;
+	-ms-flex-wrap: nowrap;
+	flex-wrap: nowrap;
+	column-gap: 10px;
+	-moz-column-gap: 10px;
+	-webkit-column-gap: 10px;
+	justify-content: flex-start;
+	-webkit-justify-content: flex-start;
+	align-items: center;
+	-webkit-align-items: center;
+	gap: 10px;
+}
+
+.payment_details .radio_wrap input[type="radio"] {
+	width: auto;
+}
+
+.payment_details .logo_wrap {
+	width: 100px;
+	margin: 20px 0;
+	border-radius: 6px;
+	-webkit-border-radius: 6px;
+	-moz-border-radius: 6px;
+}
+
+.payment_details .logo_wrap img {
+	width: 100%;
+	height: auto;
+	border-radius: 6px;
+	-webkit-border-radius: 6px;
+	-moz-border-radius: 6px;
 }

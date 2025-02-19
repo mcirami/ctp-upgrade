@@ -17,7 +17,7 @@ return new class extends Migration
 	        $table->foreign('rep_idrep')->references('idrep')->on('rep');
 	        $table->string('payout_type');
 	        $table->string('payout_id');
-	        $table->boolean('onboarding_complete')->default(0);
+	        $table->string('country');
             $table->timestamps();
         });
     }

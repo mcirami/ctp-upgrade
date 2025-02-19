@@ -52,10 +52,7 @@ Route::group(['middleware' => 'legacy.auth'], function () {
     Route::group(['prefix' => 'user'], function () {
         Route::get('/manage', [UserController::class, 'viewManageUsers'])->middleware(['role:0,1,2']);
 	    Route::get('/payment-details', [UserController::class, 'showPaymentDetails'])->middleware(['role:3'])->name('payment.details');
-	    Route::get('/add-payment-details/{user}', [UserController::class, 'addPaymentDetails'])->middleware(['role:3'])->name('add.stripe.details');
-	    Route::get('/stripe-reauth', [PayoutController::class, 'stripeOnboardRefresh'])->middleware(['role:3'])->name('stripe.refresh.url');
-	    Route::get('/stripe-account-complete', [PayoutController::class, 'stripeComplete'])->middleware(['role:3'])->name('stripe.complete');
-	    Route::get('/stripe-login/{user}', [PayoutController::class, 'stripeLogin'])->middleware(['role:3'])->name('stripe.login');
+	    Route::get('/add-payment-details', [UserController::class, 'addPaymentDetails'])->middleware(['role:3'])->name('add.payment.details');
         Route::get('/{id}/affiliates', [UserController::class, 'viewManagersAffiliates'])->middleware([
             'role:0,1,2',
             'permissions:' . Permissions::CREATE_MANAGERS
