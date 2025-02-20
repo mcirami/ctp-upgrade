@@ -2,22 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\PayoutDataRequest;
 use App\Privilege;
 use App\User;
 use App\Click;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use LeadMax\TrackYourStats\System\Session;
 use LeadMax\TrackYourStats\Table\Paginate;
 use Illuminate\Support\Facades\Cache;
 use LeadMax\TrackYourStats\Table\Date;
-use Stripe\Account;
-use Stripe\AccountLink;
-use Illuminate\Support\Facades\Redirect;
-use Stripe\Exception\ApiErrorException;
-use Stripe\Stripe;
 
 class UserController extends Controller
 {
@@ -274,9 +269,6 @@ class UserController extends Controller
 		return response()->json(['success' => $success, 'message' => $message]);
 	}
 
-	/**
-	 * @throws ApiErrorException
-	 */
 	public function showPaymentDetails() {
 
 		$user = Session::user();
@@ -285,50 +277,23 @@ class UserController extends Controller
 		return view('user.payment-details')->with(['user' => $user, 'payoutDetails' => $payoutDetails]);
 	}
 
-	public function addPaymentDetails(User $user) {
+	public function addPaymentDetails(PayoutDataRequest $request) {
 
-		if (App::environment() == 'production') {
-			$stripeSecret = env('STRIPE_SECRET');
+		$user = Session::user();
+		$payoutData = $user->payoutData()->first();
+		if ($payoutData) {
+			$message = 'Payment details updated successfully.';
 		} else {
-			$stripeSecret =  env('STRIPE_SANDBOX_SECRET');
+			$message = 'Payment details added successfully.';
 		}
-		Stripe::setApiKey($stripeSecret);
-		$refreshUrl = route('stripe.refresh.url');
-		$returnUrl = route('stripe.complete');
-		//$user = Session::user();
+		$payoutDetails = $user->payoutData()->updateOrCreate(
+			['rep_idrep'    => $user->idrep],
+			['payout_type'  => $request->input('payout_type'),
+			'payout_id'     => $request->input('payout_id'),
+			'country'       => $request->input('country')]
+		);
 
-		try {
-			$account = Account::create([
-				'type'  => 'express',
-				'email' => $user->email,
-			]);
-
-			$user->payoutData()->create([
-				'payout_type' => 'stripe',
-				'payout_id'   => $account->id
-			]);
-
-			$link = AccountLink::create([
-				'account' => $account->id,
-				'refresh_url' => $refreshUrl,
-				'return_url' => $returnUrl,
-				'type' => 'account_onboarding',
-			]);
-
-			return redirect($link->url);
-
-		} catch (\Exception $e) {
-			LogDB($e, null);
-
-			return response()->json([
-				'status'  => 500,
-				'message' => $e->getMessage(),
-			], 500);
-		}
-
-
-
-		//return view('user.payment-details');
+		return back()->with(['message' => $message, 'payoutDetails' => $payoutDetails]);
 	}
 
 	private function getDiffForHumans($users) {
