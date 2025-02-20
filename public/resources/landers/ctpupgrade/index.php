@@ -70,7 +70,7 @@
 					</div>
 				</div>
 				<div class="column">
-					<img src="/resources/landers/ctpupgrade/images/home-hero.png" alt="">
+					<img src="/resources/landers/ctpupgrade/images/home-page-hero-image.png" alt="">
 				</div>
 			</div>
 			<div class="logos_wrap">
@@ -183,7 +183,7 @@
 		<div class="container">
 			<div class="two_columns">
 				<div class="column">
-					<img src="/resources/landers/ctpupgrade/images/graph.png" alt="">
+					<img src="/resources/landers/ctpupgrade/images/home-page-middle-image.png" alt="">
 				</div>
 				<div class="column">
 					<small>MODELS</small>
