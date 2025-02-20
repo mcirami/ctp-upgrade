@@ -3,7 +3,7 @@
 @section('content')
 
 	<!--right_panel-->
-	<div class="right_panel">
+	<div class="right_panel manage_offers">
 		<div class="white_box_outer large_table">
 			<div class="heading_holder">
 				<span class="lft value_span9">Offers</span>
@@ -27,7 +27,7 @@
 									https://modeldating.site/mc/?repid=<?php echo \LeadMax\TrackYourStats\System\Session::userID(); ?>&sub1= **
 								</p>
 							</div>
-							<a href="#" onclick = "copyToClipboard(getElementById('smart_link'));" class = 'copy_text value_span6 value_span5'>Click To Copy Link</a>
+							<button onclick="copyToClipboard(getElementById('smart_link'));" class='btn btn-default'>Copy My Link</button>
 						</div>
 					</div>
 					<p class="link_desc">** Add any value after sub1= in your Smartlink to track traffic sources in the "Reports > Sub Report" menu above.</p>

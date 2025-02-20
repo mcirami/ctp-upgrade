@@ -35,7 +35,7 @@ class AffiliateSignUp
     public function __construct()
     {
         if ($this->checkRequiredFields()) {
-            if ($this->userNameOrEmailExists($_POST["tys_username"], $_POST["tys_email"]) == false) {
+            if ( ! $this->userNameOrEmailExists( $_POST["tys_username"], $_POST["tys_email"] ) ) {
                 if ($this->registerUser()) {
                     $this->setResult(self::SUCCESS);
                 } else {
@@ -100,8 +100,8 @@ class AffiliateSignUp
 
         $firstName = $this->getP("tys_first_name");
         $lastName = $this->getP("tys_last_name");
-        $skype = $this->getP("tys_skype");
-        $company_name = $this->getP("tys_company_name");
+        $imType = $this->getP("im_type");
+        $imUsername = $this->getP("im_username");
 
 		if ($this->getP("mid") != "") {
 			$mid = intval($this->getP("mid"));
@@ -116,7 +116,7 @@ class AffiliateSignUp
         $timestamp = date("Y-m-d H:i:s");
 
         $sql = "
-INSERT INTO rep (first_name, last_name, email, user_name, password, status, referrer_repid, rep_timestamp, lft,rgt, skype, company_name) VALUES(:first_name, :last_name, :email, :user_name, :password, :status, :mid, :date, 0,0, :skype, :company_name);
+INSERT INTO rep (first_name, last_name, email, user_name, password, status, referrer_repid, rep_timestamp, lft,rgt, im_type, im_username) VALUES(:first_name, :last_name, :email, :user_name, :password, :status, :mid, :date, 0,0, :im_type, :im_username);
 ";
 
         $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
@@ -132,8 +132,8 @@ INSERT INTO rep (first_name, last_name, email, user_name, password, status, refe
         $prep->bindParam(":status", $status);
         $prep->bindParam(":mid", $mid);
         $prep->bindParam(":date", $timestamp);
-        $prep->bindParam(":skype", $skype);
-        $prep->bindParam(":company_name", $company_name);
+        $prep->bindParam(":im_type", $imType);
+        $prep->bindParam(":im_username", $imUsername);
 	    
 
         if ($prep->execute()) {
@@ -181,26 +181,26 @@ INSERT INTO rep (first_name, last_name, email, user_name, password, status, refe
     public function checkRequiredFields()
     {
 
-        if ($this->verifyOtherFields() == false) {
+        if ( ! $this->verifyOtherFields() ) {
             $this->setResult(self::MISSING_FIELDS);
 
             return false;
         }
 
 
-        if ($this->verifyUserName() == false) {
+        if ( ! $this->verifyUserName() ) {
             $this->setResult(self::INVALID_USERNAME);
 
             return false;
         }
 
-        if ($this->verifyPassword() == false) {
+        if ( ! $this->verifyPassword() ) {
             $this->setResult(self::PASSWORD_MISMATCH);
 
             return false;
         }
 
-        if ($this->verifyEmail() == false) {
+        if ( ! $this->verifyEmail() ) {
             $this->setResult(self::INVALID_EMAIL);
 
             return false;
@@ -212,10 +212,10 @@ INSERT INTO rep (first_name, last_name, email, user_name, password, status, refe
 
     private function verifyEmail()
     {
-        if (isset($_POST["tys_email"]) == false) {
+        if ( ! isset( $_POST["tys_email"] ) ) {
             return false;
         } else {
-            if (filter_var($_POST["tys_email"], FILTER_VALIDATE_EMAIL) == false) {
+            if ( ! filter_var( $_POST["tys_email"], FILTER_VALIDATE_EMAIL ) ) {
                 return false;
             }
         }
@@ -225,7 +225,7 @@ INSERT INTO rep (first_name, last_name, email, user_name, password, status, refe
 
     private function verifyPassword()
     {
-        if (isset($_POST["tys_password"]) == false || isset($_POST["tys_confirm_password"]) == false) {
+        if ( ! isset( $_POST["tys_password"] ) || ! isset( $_POST["tys_confirm_password"] ) ) {
             return false;
         } else {
             if ($_POST["tys_password"] != $_POST["tys_confirm_password"]) {
@@ -242,7 +242,7 @@ INSERT INTO rep (first_name, last_name, email, user_name, password, status, refe
 
     private function verifyUserName()
     {
-        if (isset($_POST["tys_username"]) == false) {
+        if ( ! isset( $_POST["tys_username"] ) ) {
             return false;
         } else {
             if (strlen($_POST["tys_username"]) <= 3) {

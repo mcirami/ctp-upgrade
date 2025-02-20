@@ -252,7 +252,7 @@
                 <input value="paypal" class="form-check-input" type="radio" name="payout_type" id="paypal"
 				    <?php if($payoutType == "paypal") echo "checked"; ?>>
                 <label class="form-check-label" for="paypal">
-                    <img class="payout_logo" src="{{asset('/images/paypal-logo.png')}}" alt="">
+                    <img class="payout_logo" src="{{asset('/images/paypal-logo.png?v=2')}}" alt="">
                 </label>
             </div>
         </div>

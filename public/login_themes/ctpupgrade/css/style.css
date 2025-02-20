@@ -96,7 +96,7 @@ img {
 }
 
 .left_column .white_box {
-    background: #ffffff;
+    background: rgba(255,255,255,.5);
     width: 65%;
     margin: 0 auto;
     padding: 40px;

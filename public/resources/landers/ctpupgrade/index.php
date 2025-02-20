@@ -191,16 +191,16 @@
 					<p>Ready to make extra cash? Model.cash makes that easier than ever with a new strategy for growth.</p>
 					<ul>
 						<li>
-							<p><span>(Step 1)</span> Create your model.cash account now to get started.</p>
+							<p>Create your model.cash account now to get started.</p>
 						</li>
 						<li>
-							<p><span>(Step 2)</span> Copy the SmartLink code from inside your account.</p>
+							<p>Copy the SmartLink code from inside your account.</p>
 						</li>
 						<li>
-							<p><span>(Step 3)</span> Add your SmartLink to a new button on your link sharing platform (ex: linktree)</p>
+							<p>Add your SmartLink to a new button on your link sharing platform (ex: linktree)</p>
 						</li>
 						<li>
-							<p><span>(Step 4)</span> Earn cash every time someone joins through your SmartLink all around the World!</p>
+							<p>Earn cash every time someone joins through your SmartLink all around the World!</p>
 						</li>
 					</ul>
 				</div>
@@ -236,7 +236,7 @@
 						<div class="tab-pane fade" id="pills-engagement" role="tabpanel" aria-labelledby="pills-engagement-tab">
 							<h3>Engagement</h3>
 							<p>
-								Broaden your engagement by giving your customers more to see, aka another way for you to make cash! Check out https://linktr.ee/model.cash to Join or click the "Chat & Hookup" link for a preview of how your link will look!
+								Enhance the user engagement of your followers by giving them more to see and do...aka another way for you to make cash! Contact Us for more details or to setup a chat to learn how we can help you earn extra cash!
 							</p>
 						</div>
 						<div class="tab-pane fade" id="pills-recruiting" role="tabpanel" aria-labelledby="pills-recruiting-tab">
@@ -254,7 +254,7 @@
 						<div class="tab-pane fade" id="pills-payments" role="tabpanel" aria-labelledby="pills-payments-tab">
 							<h3>Payments</h3>
 							<p>
-								Payments are sent every Wednesday for all traffic and sales generated inside your account for the previous week from Monday through Sunday. Payments can be sent directly to your bank account!
+								Payments are sent every Wednesday for all traffic and sales generated inside your account for the previous week from Monday through Sunday. Payments can be sent through PayPal or directly to your bank account!
 							</p>
 						</div>
 					</div>

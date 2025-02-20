@@ -17,7 +17,7 @@
     <link href="{{$webroot}}css/animate.css" rel="stylesheet">
 
 
-    <link rel="stylesheet" type="text/css" href="<?php echo $webroot; ?>css/default.css?v=1.9"/>
+    <link rel="stylesheet" type="text/css" href="<?php echo $webroot; ?>css/default.css?v=2"/>
     <link rel="stylesheet" type="text/css" href="<?php echo $webroot; ?>css/tablesorter.default.css"/>
     <link rel="stylesheet" href="<?php echo $webroot; ?>css/company.css">
     <link href="<?php echo $webroot; ?>css/responsive_table.css" rel="stylesheet" type="text/css"/>
@@ -38,7 +38,7 @@
     <script type="text/javascript" src="<?php echo $webroot; ?>js/drawer.js"></script>
     <script type="text/javascript" src="<?php echo $webroot; ?>js/iscroll.min.js"></script>
 
-    <script type="text/javascript" src="<?php echo $webroot; ?>js/tables.js?v=1.1"></script>
+    <script type="text/javascript" src="<?php echo $webroot; ?>js/tables.js?v=1.2"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
     <script type="text/javascript" src="<?php echo $webroot; ?>js/bootstrap-notify.min.js"></script>

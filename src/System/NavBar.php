@@ -135,9 +135,9 @@ class NavBar
      //           'required_user_types' => [\App\Privilege::ROLE_AFFILIATE],
      //       ],
 
-            "Daily Report" => [
+            /*"Daily Report" => [
                 'url' => '/report/daily',
-            ]
+            ]*/
 
         ],
 

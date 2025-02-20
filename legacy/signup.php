@@ -61,26 +61,33 @@ $mid = (isset($_GET["mid"]) && $_GET["mid"] != "") ? $_GET["mid"] : "";
 
 <style>
 	
-	.white_box {
-		
-		margin-top: 40px;
-	}
-	
 	.white_box_outer {
-		float: none;
 		margin: 0 auto;
-		max-width: 750px;
+		width: 100%;
+		display: block;
+		text-align: center;
 	}
-	
+
+    .white_box {
+	    display: inline-block;
+        margin: 40px 0;
+	    max-width: 750px;
+	    width: 100%;
+	    text-align: left;
+	    float: none;
+        border-radius: 6px;
+        -webkit-border-radius: 6px;
+        -moz-border-radius: 6px;
+    }
+
 	.left_con01 {
-		width: auto;
-		padding: 5px;
-		padding-top: 10px;
-		padding-left: 17px;
-		padding-right: 10px;
-		float: none;
-		
+		width: 100%;
+		padding: 0;
 	}
+
+    .left_con01 p input {
+	    width: 100%;
+    }
 	
 	.heading_holder {
 		margin: 0px 0px 10px 0px;
@@ -98,7 +105,7 @@ $mid = (isset($_GET["mid"]) && $_GET["mid"] != "") ? $_GET["mid"] : "";
 			<form action = "/" id = "signUpForm">
 				<div class = "left_con01">
 					<div class = "heading_holder">
-						<h3 class = " value_span9">Sign Up</h3>
+						<h3 class = " value_span9">Sign Up Now To Start Earning Cash!</h3>
 					</div>
 					<input name="mid" type="hidden" value="<?php echo $mid; ?>">
 					
@@ -147,15 +154,20 @@ $mid = (isset($_GET["mid"]) && $_GET["mid"] != "") ? $_GET["mid"] : "";
 					
 					<p>
 						
-						<label for = "tys_company_name">Company:</label>
-						<input type = "text" name = "tys_company_name">
+						<label for = "tys_company_name">Instant Messenger:</label>
+						<select>
+							<option value="skype">Skype</option>
+							<option value="telegram">Telegram</option>
+							<option value="instagram">Instagram</option>
+							<option value="facebook">Facebook</option>
+						</select>
 					</p>
 					
 					
 					<p>
 						
-						<label for = "tys_skype">Skype:</label>
-						<input type = "text" name = "tys_skype">
+						<label for="im_username">IM Username:</label>
+						<input type="text" name="im_username">
 					
 					</p>
 					
@@ -163,9 +175,6 @@ $mid = (isset($_GET["mid"]) && $_GET["mid"] != "") ? $_GET["mid"] : "";
 					<span class = "btn_yellow" style = "color:#1D4C9E;">
 						<input type = "submit" name = "button" class="rounded-5 value_span5-1 value_span2 value_span4" value = "Sign Up"/>
 					</span>
-				
-				</div>
-				<div class = "right_con01">
 				
 				</div>
 			</form>

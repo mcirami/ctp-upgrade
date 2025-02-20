@@ -22,7 +22,7 @@
                     <div class="current_payout_details">
                         @if($payoutDetails->payout_type == 'paypal')
                             <div class="logo_wrap mt-0">
-                                <img class="payout_logo" src="{{asset('/images/paypal-logo.png')}}" alt="">
+                                <img class="payout_logo" src="{{asset('/images/paypal-logo.png?v=2')}}" alt="">
                             </div>
                         @endif
                         @if($payoutDetails->payout_type == 'wise')

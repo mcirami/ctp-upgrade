@@ -200,9 +200,31 @@ function moveToAssign(ele) {
 }
 
 
-function copyToClipboard(elem) {
-    let text = elem.innerHTML.replace(/&amp;/g, '&') .replace(/[\s\*]/g, '');
-    navigator.clipboard.writeText(text).then(r => console.log("copied"));
+async function copyToClipboard(elem) {
+    let text = elem.innerHTML.replace(/&amp;/g, '&').replace(/[\s*]/g, '');
+    if(navigator.clipboard) {
+        await navigator.clipboard.writeText(text).then(r => console.log("copied"));
+    } else {
+        // Use the 'out of viewport hidden text area' trick
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+
+        // Move textarea out of the viewport so it's not visible
+        textArea.style.position = "absolute";
+        textArea.style.left = "-999999px";
+
+        document.body.prepend(textArea);
+        textArea.select();
+
+        try {
+            document.execCommand('copy');
+        } catch (error) {
+            console.error(error);
+        } finally {
+            textArea.remove();
+        }
+    }
+
 }
 
 
