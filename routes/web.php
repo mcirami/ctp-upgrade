@@ -52,7 +52,7 @@ Route::group(['middleware' => 'legacy.auth'], function () {
     Route::group(['prefix' => 'user'], function () {
         Route::get('/manage', [UserController::class, 'viewManageUsers'])->middleware(['role:0,1,2']);
 	    Route::get('/payment-details', [UserController::class, 'showPaymentDetails'])->middleware(['role:3'])->name('payment.details');
-	    Route::get('/add-payment-details', [UserController::class, 'addPaymentDetails'])->middleware(['role:3'])->name('add.payment.details');
+	    Route::post('/add-payment-details', [UserController::class, 'addPaymentDetails'])->middleware(['role:3'])->name('add.payment.details');
         Route::get('/{id}/affiliates', [UserController::class, 'viewManagersAffiliates'])->middleware([
             'role:0,1,2',
             'permissions:' . Permissions::CREATE_MANAGERS

@@ -258,4 +258,131 @@ jQuery(document).ready(function ($) {
             })
         })
     }
+
+    const payoutOptionsRadio = document.querySelectorAll('input[type="radio"][name="payout_type"]');
+    if(payoutOptionsRadio) {
+        const form = document.querySelector('#submit_payment_details');
+        payoutOptionsRadio.forEach((radio) => {
+            radio.addEventListener('change', (e) => {
+                const payoutType = e.target.value;
+                form.classList.remove('wise');
+                form.classList.remove('paypal');
+                if (payoutType === 'wise') {
+                    setLabel("wise");
+                    setPayoutText("wise");
+                    form.classList.add('wise');
+                }
+                if (payoutType === 'paypal') {
+                    setLabel("paypal");
+                    setPayoutText("paypal");
+                    form.classList.add('paypal');
+                }
+            })
+        })
+
+        const radioValue = document.querySelector('input[name="payout_type"]:checked').value;
+
+        if (radioValue === "wise") {
+            setLabel("wise");
+            setPayoutText("wise");
+            form.classList.add('wise');
+        }
+
+        if(radioValue === "paypal") {
+            setLabel("paypal");
+            setPayoutText("wise");
+            form.classList.add('paypal');
+        }
+    }
+
+    const payoutCountry = document.querySelector('#payout_country');
+    if(payoutCountry) {
+        const country = payoutCountry.dataset.value;
+        if(country) {
+            payoutCountry.value = country;
+        }
+    }
+
+    const cancelPayoutUpdate = document.querySelector('#cancel_payout_update');
+    if(cancelPayoutUpdate) {
+        cancelPayoutUpdate.addEventListener('click', (e) => {
+            e.preventDefault();
+            document.querySelector('.current_payout_details').classList.remove('hidden');
+            document.querySelector('#update_payout_form').classList.add('hidden');
+        })
+    }
+
+    const changeDetailsLink = document.querySelector('#update_details_link');
+    if(changeDetailsLink) {
+        changeDetailsLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            document.querySelector('.current_payout_details').classList.add('hidden');
+            document.querySelector('#update_payout_form').classList.remove('hidden');
+        })
+    }
+
+    const alertMessage = document.querySelector('.alert');
+    if (alertMessage) {
+        setTimeout(() => {
+            alertMessage.classList.add('hidden');
+        }, 5000);
+    }
+
+    function removeFromString(text, valueToRemove) {
+        const index = text.indexOf(valueToRemove);
+
+        if (index === -1) {
+            return text; // Value not found, return original string
+        }
+
+        return text.substring(0, index);
+    }
+
+    function setLabel(payoutType) {
+        let value = "";
+        let placeholder = "";
+        if(payoutType === 'wise') {
+            value = "<h5>Enter your @Wisetag, Email, Or Phone Number associated with your Wise account and select the country you are from:</h5>";
+            placeholder = "@Wisetag, Email, Or Phone Number";
+        }
+        if(payoutType === 'paypal') {
+            value = "<h5>Enter your PayPal email address you want us to send payments to and select the country you are from:</h5>";
+            placeholder = "PayPal Email Address";
+        }
+        const payoutInputLabel = document.querySelector('label[for="payout_id"]');
+        const inputElement = document.querySelector('#payout_id');
+        payoutInputLabel.innerHTML = value;
+        inputElement.placeholder = placeholder;
+    }
+
+    function setPayoutText(payoutType) {
+        let html = '';
+        if (payoutType === 'wise') {
+            html = "<h4>Get paid directly to your bank account!</h4>" +
+                "<p class='mb-2'>Don't have a Wise Account? You will need to:</p>" +
+                "<ol>" +
+                    "<li>" +
+                        "<p>Create an account at <a class='text-decoration-underline' target='_blank' href='https://wise.com/register'>Wise.com</a></p>" +
+                    "</li>" +
+                    "<li>" +
+                        "<p>Prove your identity.</p>" +
+                    "</li>" +
+                    "<li>" +
+                        "<p>Link your bank.</p>" +
+                    "</li>" +
+                    "<li>" +
+                        "<p>Add $20 from the bank account you link to wise for verification.</p>" +
+                    "</li>" +
+                    "<li>" +
+                        "<p>Get paid directly to your bank!</p>" +
+                    "</li>" +
+                "</ol>";
+        }
+        if (payoutType === 'paypal') {
+            html = "<p>Don't have a PayPal Account? <a target='_blank' href='https://www.paypal.com/us/webapps/mpp/account-selection'>Click Here To Sign Up Now!</a></p>";
+        }
+
+        document.querySelector('.payout_text').innerHTML = html;
+    }
+
 });

@@ -2,18 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\PayoutDataRequest;
 use App\Privilege;
 use App\User;
 use App\Click;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use LeadMax\TrackYourStats\System\Session;
 use LeadMax\TrackYourStats\Table\Paginate;
 use Illuminate\Support\Facades\Cache;
 use LeadMax\TrackYourStats\Table\Date;
-use Illuminate\Support\Facades\Redirect;
 
 class UserController extends Controller
 {
@@ -278,11 +277,23 @@ class UserController extends Controller
 		return view('user.payment-details')->with(['user' => $user, 'payoutDetails' => $payoutDetails]);
 	}
 
-	public function addPaymentDetails() {
+	public function addPaymentDetails(PayoutDataRequest $request) {
 
 		$user = Session::user();
+		$payoutData = $user->payoutData()->first();
+		if ($payoutData) {
+			$message = 'Payment details updated successfully.';
+		} else {
+			$message = 'Payment details added successfully.';
+		}
+		$payoutDetails = $user->payoutData()->updateOrCreate(
+			['rep_idrep'    => $user->idrep],
+			['payout_type'  => $request->input('payout_type'),
+			'payout_id'     => $request->input('payout_id'),
+			'country'       => $request->input('country')]
+		);
 
-		//return view('user.payment-details');
+		return back()->with(['message' => $message, 'payoutDetails' => $payoutDetails]);
 	}
 
 	private function getDiffForHumans($users) {
