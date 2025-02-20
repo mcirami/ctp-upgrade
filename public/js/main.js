@@ -260,7 +260,7 @@ jQuery(document).ready(function ($) {
     }
 
     const payoutOptionsRadio = document.querySelectorAll('input[type="radio"][name="payout_type"]');
-    if(payoutOptionsRadio) {
+    if(payoutOptionsRadio.length > 0) {
         const form = document.querySelector('#submit_payment_details');
         payoutOptionsRadio.forEach((radio) => {
             radio.addEventListener('change', (e) => {

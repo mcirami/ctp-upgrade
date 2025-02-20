@@ -34,7 +34,7 @@
 
     <script type="text/javascript" src="<?php echo $webroot; ?>js/jscolor.min.js"></script>
     <link rel="stylesheet" href="{{$webroot}}css/jquery-ui.min.css"/>
-    <script type="text/javascript" src="<?php echo $webroot; ?>js/main.js?v=2"></script>
+    <script type="text/javascript" src="<?php echo $webroot; ?>js/main.js?v=2.1"></script>
     <script type="text/javascript" src="<?php echo $webroot; ?>js/drawer.js"></script>
     <script type="text/javascript" src="<?php echo $webroot; ?>js/iscroll.min.js"></script>
 
