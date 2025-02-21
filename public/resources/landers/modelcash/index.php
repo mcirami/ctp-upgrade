@@ -47,8 +47,8 @@
 									</li>
 								</ul>
 								<div class="buttons_wrap">
-									<a class="button white" href="https://model.cash/login.php">Login</a>
-									<a class="button pink" href="https://model.cash/signup.php?mid=1003">Sign Up</a>
+									<a class="button white" href="/login.php">Login</a>
+									<a class="button pink" href="/signup.php?mid=1003">Sign Up</a>
 								</div>
 							</div>
 						</div>
@@ -282,7 +282,7 @@
 						<a href="#tabs">Passive Income</a>
 					</li>
 					<li>
-						<a href="#">Contact</a>
+						<a href="/contact">Contact</a>
 					</li>
 				</ul>
 				<div class="buttons_wrap">

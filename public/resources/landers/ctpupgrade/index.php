@@ -286,8 +286,8 @@
 					</li>
 				</ul>
 				<div class="buttons_wrap">
-					<a class="button white" href="https://model.cash/login.php">Login</a>
-					<a class="button pink" href="https://model.cash/signup.php">Sign Up</a>
+					<a class="button white" href="/login.php">Login</a>
+					<a class="button pink" href="/signup.php">Sign Up</a>
 				</div>
 			</div>
 			<p class="copy">&copy; model.cash | All rights reserved.</p>
