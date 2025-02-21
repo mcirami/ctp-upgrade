@@ -22,39 +22,56 @@ $mid = (isset($_GET["mid"]) && $_GET["mid"] != "") ? $_GET["mid"] : "";
 	
 	<link rel = "shortcut icon" type = "image/ico"
 		  href = "<?PHP echo \LeadMax\TrackYourStats\System\Company::loadFromSession()->getImgDir() . "/favicon.ico"; ?>"/>
-	<link rel = "shortcut icon" type = "image/ico"
-		  href = "<?PHP echo \LeadMax\TrackYourStats\System\Company::loadFromSession()->getImgDir() . "/favicon.ico"; ?>"/>
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-
-	<link href = "css/animate.css" rel = "stylesheet">
-	
 	
 	<link rel = "stylesheet" type = "text/css" href = "<?php echo $webroot; ?>css/default.css"/>
 	
 	<link rel = "stylesheet" media = "screen" type = "text/css"
 		  href = "<?php echo $webroot; ?>css/company.css"/>
-	
-	
-	<link rel = "stylesheet" type = "text/css" href = "<?php echo $webroot; ?>css/font-awesome.min.css">
-	<link rel = "stylesheet" href = "<?php echo $webroot; ?>css/magic.min.css">
-	
-	<script type = "text/javascript" src = "<?php echo $webroot; ?>js/jquery_2.1.3_jquery.min.js"></script>
-	<script type = "text/javascript" src = "<?php echo $webroot; ?>js/jquery-ui.min.js"></script>
-	
-	<script type = "text/javascript" src = "<?php echo $webroot; ?>js/jscolor.min.js"></script>
-	<link rel = "stylesheet" href = "css/jquery-ui.min.css"/>
-	
-	<script type = "text/javascript" src = "<?php echo $webroot; ?>js/tables.js"></script>
-	<script type = "text/javascript" src = "<?php echo $webroot; ?>js/bootstrap-notify.min.js"></script>
-	
-	
+
+	<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+	<script src="https://code.jquery.com/ui/1.14.1/jquery-ui.min.js" integrity="sha256-AlTido85uXPlSyyaZNsjJXeCs07eSv3r43kyCVc8ChI=" crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
 	<title><?php echo \LeadMax\TrackYourStats\System\Company::loadFromSession()->getShortHand(); ?></title>
 </head>
-<body style = "background-color:#EAEEF1;">
+<body class="signup">
 <div class = "top_sec value_span1">
-	<div class = "logo">
-		<a href = "<?php echo $webroot ?>"><img src = "<?=\LeadMax\TrackYourStats\System\Company::loadFromSession()->getImgDir() ?>/logo.png" alt = "TRACK YOUR STATS"
-												title = "TRACK YOUR STATS"/></a>
+	<div class="container">
+		<div class="row_wrap w-100">
+			<div class="nav_wrap external_nav">
+				<nav class="navbar navbar-expand-lg">
+					<div class="container-fluid">
+						<a class="navbar-brand" href="/">
+							<img src="/resources/landers/modelcash/images/logo.png" alt="">
+						</a>
+						<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+							<span class="navbar-toggler-icon"></span>
+						</button>
+						<div class="collapse navbar-collapse" id="navbarNav">
+							<ul class="navbar-nav">
+								<li class="nav-item">
+									<a class="nav-link" aria-current="page" href="#about">About Us</a>
+								</li>
+								<li class="nav-item">
+									<a class="nav-link" href="#our_benefits">How It Works</a>
+								</li>
+								<li class="nav-item">
+									<a class="nav-link" href="#tabs">Passive Income</a>
+								</li>
+								<li class="nav-item">
+									<a href="/contact" class="nav-link">Contact</a>
+								</li>
+							</ul>
+							<div class="buttons_wrap">
+								<a class="button white" href="https://model.cash/login.php">Login</a>
+								<a class="button value_span11 value_span2 value_span4" href="https://model.cash/signup.php?mid=1003">Sign Up</a>
+							</div>
+						</div>
+					</div>
+				</nav>
+			</div>
+		</div>
 	</div>
 
 </div> <!-- top_sec -->
@@ -65,8 +82,23 @@ $mid = (isset($_GET["mid"]) && $_GET["mid"] != "") ? $_GET["mid"] : "";
 		margin: 0 auto;
 		width: 100%;
 		display: block;
-		text-align: center;
+		background: #ffffff;
 	}
+
+	.content_wrap {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-orient: vertical;
+        -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        -ms-flex-wrap: nowrap;
+        flex-wrap: nowrap;
+        justify-content: center;
+		align-items: center;
+        padding: 60px 0;
+    }
 
     .white_box {
 	    display: inline-block;
@@ -78,6 +110,7 @@ $mid = (isset($_GET["mid"]) && $_GET["mid"] != "") ? $_GET["mid"] : "";
         border-radius: 6px;
         -webkit-border-radius: 6px;
         -moz-border-radius: 6px;
+        background: #fff1fa;
     }
 
 	.left_con01 {
@@ -90,96 +123,136 @@ $mid = (isset($_GET["mid"]) && $_GET["mid"] != "") ? $_GET["mid"] : "";
     }
 	
 	.heading_holder {
+		max-width: 750px;
 		margin: 0px 0px 10px 0px;
 	}
+
+    label {
+	    text-transform: uppercase;
+        font-family: 'robotobold', sans-serif;
+	    font-size: .8rem !important;
+    }
+
 </style>
 
 
 	   <!--right_panel-->
 <div class = "white_box_outer">
-	
-	<div class = "clear"></div>
-	<div class = "white_box value_span8">
-		<div class = "com_acc">
-			
-			<form action = "/" id = "signUpForm">
-				<div class = "left_con01">
-					<div class = "heading_holder">
-						<h3 class = " value_span9">Sign Up Now To Start Earning Cash!</h3>
-					</div>
-					<input name="mid" type="hidden" value="<?php echo $mid; ?>">
-					
-					<p>
-						<label class = "value_span9" for = "tys_first_name">First Name: <sup>*</sup></label>
-						<input class = "form-control" type = "text" name = "tys_first_name">
-					</p>
-					
-					<p>
-						
-						<label for = "tys_last_name">Last Name: <sup>*</sup></label>
-						<input type = "text" name = "tys_last_name">
-					</p>
-					
-					
-					<p>
-						
-						<label for = "tys_email">Email: <sup>*</sup></label>
-						<input type = "text" name = "tys_email">
-					</p>
-					
-					
-					<p>
-						
-						<!-- MUST BE GREATER THAN FOUR CHARACTERS -->
-						<label for = "tys_username">Username: <sup>*</sup></label>
-						<input type = "text" name = "tys_username">
-						<small>(MUST BE GREATER THAN 4 CHARACTERS)</small>
-					</p>
-					
-					<p>
-						
-						<!-- MUST BE GREATER THAN 6 CHARACTERS -->
-						<label for = "tys_password">Password: <sup>*</sup></label>
-						<input type = "password" name = "tys_password">
-						<small>(MUST BE GREATER THAN 6 CHARACTERS)</small>
-					</p>
-					
-					
-					<p>
-						
-						<label for = "tys_confirm_password">Confirm Password: <sup>*</sup></label>
-						<input type = "password" name = "tys_confirm_password">
-					</p>
-					
-					
-					<p>
-						
-						<label for = "tys_company_name">Instant Messenger:</label>
-						<select>
-							<option value="skype">Skype</option>
-							<option value="telegram">Telegram</option>
-							<option value="instagram">Instagram</option>
-							<option value="facebook">Facebook</option>
-						</select>
-					</p>
-					
-					
-					<p>
-						
-						<label for="im_username">IM Username:</label>
-						<input type="text" name="im_username">
-					
-					</p>
-					
-					
-					<span class = "btn_yellow" style = "color:#1D4C9E;">
-						<input type = "submit" name = "button" class="rounded-5 value_span5-1 value_span2 value_span4" value = "Sign Up"/>
-					</span>
-				
-				</div>
-			</form>
-		</div><!-- white_box -->
+	<div class="container">
+		<div class="content_wrap">
+			<div class="heading_holder">
+				<h3 class="value_span9 text-center">Sign Up Now To Start Earning Cash!</h3>
+			</div>
+			<div class = "white_box value_span8">
+				<div class = "com_acc">
+
+					<form action = "/" id = "signUpForm">
+						<div class = "left_con01">
+							<input name="mid" type="hidden" value="<?php echo $mid; ?>">
+
+							<p>
+								<label class = "value_span9" for = "tys_first_name">First Name: <sup>*</sup></label>
+								<input class = "form-control" type = "text" name = "tys_first_name">
+							</p>
+
+							<p>
+
+								<label for = "tys_last_name">Last Name: <sup>*</sup></label>
+								<input type = "text" name = "tys_last_name">
+							</p>
+
+
+							<p>
+
+								<label for = "tys_email">Email: <sup>*</sup></label>
+								<input type = "text" name = "tys_email">
+							</p>
+
+
+							<p>
+
+								<!-- MUST BE GREATER THAN FOUR CHARACTERS -->
+								<label for = "tys_username">Username: <sup>*</sup></label>
+								<input type = "text" name = "tys_username">
+								<small>(MUST BE GREATER THAN 4 CHARACTERS)</small>
+							</p>
+
+							<p>
+
+								<!-- MUST BE GREATER THAN 6 CHARACTERS -->
+								<label for = "tys_password">Password: <sup>*</sup></label>
+								<input type = "password" name = "tys_password">
+								<small>(MUST BE GREATER THAN 6 CHARACTERS)</small>
+							</p>
+
+
+							<p>
+
+								<label for = "tys_confirm_password">Confirm Password: <sup>*</sup></label>
+								<input type = "password" name = "tys_confirm_password">
+							</p>
+
+
+							<p>
+
+								<label for="im_type">Instant Messenger:</label>
+								<select id="im_type" name="im_type" required>
+									<option value="skype">Skype</option>
+									<option value="telegram">Telegram</option>
+									<option value="instagram">Instagram</option>
+									<option value="facebook">Facebook</option>
+								</select>
+							</p>
+
+
+							<p>
+
+								<label for="im_username">IM Username:</label>
+								<input type="text" name="im_username">
+
+							</p>
+
+
+							<span class = "btn_yellow" style = "color:#1D4C9E;">
+								<input type = "submit" name = "button" class="rounded-5 value_span5-1 value_span2 value_span4" value = "Sign Up"/>
+							</span>
+
+						</div>
+					</form>
+				</div><!-- white_box -->
+			</div>
+		</div>
 	</div><!-- white_box_outer -->
+	<footer class="full_width external">
+		<div class="container">
+			<div class="footer_content">
+				<div class="logo_wrap">
+					<a href="/">
+						<img class="w-100 h-auto" src="/resources/landers/modelcash/images/logo.png" alt="">
+					</a>
+				</div>
+				<ul>
+					<li>
+						<a href="/#home">About Us</a>
+					</li>
+					<li>
+						<a href="/#our_benefits">How It Works</a>
+					</li>
+					<li>
+						<a href="/#tabs">Passive Income</a>
+					</li>
+					<li>
+						<a href="/contact">Contact</a>
+					</li>
+				</ul>
+				<div class="buttons_wrap">
+					<a class="button white mr-4" href="/login.php">Login</a>
+					<a class="button value_span11 value_span2 value_span4" href="/signup.php">Sign Up</a>
+				</div>
+			</div>
+			<p class="copy">&copy; model.cash | All rights reserved.</p>
+		</div>
+	</footer>
 	<script type = "text/javascript">
 		
 		function notify(message, type) {

@@ -43,12 +43,12 @@
 										<a class="nav-link" href="#tabs">Passive Income</a>
 									</li>
 									<li class="nav-item">
-										<a href="#contact" class="nav-link">Contact</a>
+										<a href="/contact" class="nav-link">Contact</a>
 									</li>
 								</ul>
 								<div class="buttons_wrap">
-									<a class="button white" href="https://model.cash/login.php">Login</a>
-									<a class="button pink" href="https://model.cash/signup.php?mid=1003">Sign Up</a>
+									<a class="button white" href="/login.php">Login</a>
+									<a class="button pink" href="/signup.php?mid=1003">Sign Up</a>
 								</div>
 							</div>
 						</div>

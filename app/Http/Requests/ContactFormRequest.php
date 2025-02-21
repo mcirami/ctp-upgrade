@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class PayoutDataRequest extends FormRequest
+class ContactFormRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -18,14 +18,17 @@ class PayoutDataRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array|string>
      */
     public function rules(): array
     {
 	    return [
-		    'payout_type'   => 'required',
-		    'payout_id'     => 'required',
-		    'country'       => 'required'
+		    'name'          => 'required|max:255',
+		    'email'         => 'required|email',
+		    'country'       => 'required',
+		    'im_type'       => 'required',
+		    'im_username'   => 'required|max:255',
+		    'message'       => 'required|max:255'
 	    ];
     }
 }

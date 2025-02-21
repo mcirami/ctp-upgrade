@@ -225,24 +225,22 @@ class Login
 
     public function logout()
     {
-
-
         $db = DatabaseConnection::getInstance();
-        $salt = hash("sha256", $_SESSION["salt"]);
+		if (isset($_SESSION["salt"])) {
+			$salt = hash("sha256", $_SESSION["salt"]);
 
+			$deleteSQL = "UPDATE logins SET success = 2, session_id = :hashUpdate WHERE ip = :ip AND repid = :repid AND session_id = :salt";
 
-        $deleteSQL = "UPDATE logins SET success = 2, session_id = :hashUpdate WHERE ip = :ip AND repid = :repid AND session_id = :salt";
+			$salt2 = "($salt)";
 
-        $salt2 = "($salt)";
+			$oof = $db->prepare($deleteSQL);
+			$oof->bindParam(":ip", $_SERVER["REMOTE_ADDR"], \PDO::PARAM_STR);
+			$oof->bindParam(":repid", $_SESSION["repid"], \PDO::PARAM_INT);
+			$oof->bindParam(":salt", $salt, \PDO::PARAM_STR);
+			$oof->bindParam(":hashUpdate", $salt2, \PDO::PARAM_STR);
 
-
-        $oof = $db->prepare($deleteSQL);
-        $oof->bindParam(":ip", $_SERVER["REMOTE_ADDR"], \PDO::PARAM_STR);
-        $oof->bindParam(":repid", $_SESSION["repid"], \PDO::PARAM_INT);
-        $oof->bindParam(":salt", $salt, \PDO::PARAM_STR);
-        $oof->bindParam(":hashUpdate", $salt2, \PDO::PARAM_STR);
-
-        $oof->execute();
+			$oof->execute();
+		}
 
         unset($_SESSION['user_session']);
         unset($_SESSION['email']);
@@ -256,7 +254,6 @@ class Login
         } else {
             session_destroy();
         }
-
 
         return true;
     }

@@ -39,7 +39,7 @@ use App\Http\Controllers\Sms\SmsController;
 use App\Http\Controllers\Sms\SmsClientController;
 use App\Http\Controllers\ChatLogController;
 use App\Http\Controllers\Report\ConversionReportController;
-use App\Http\Controllers\PayoutController;
+use App\Http\Controllers\ContactController;
 
 Route::get('/', [IndexController::class, 'index']);
 Route::post('/', [IndexController::class, 'index']);
@@ -47,6 +47,8 @@ Route::any('/resources/landers/{subDomain}/{asset}', [LanderController::class, '
 Route::get('/logout', [LegacyLoginController::class, 'logout']);
 Route::post('email/incoming', [RelevanceReactorController::class, 'incomingEmail']);
 Route::post('email/incoming/distribute', [RelevanceReactorController::class, 'distributeEmail']);
+Route::get('/contact', [ContactController::class, 'showContactPage']);
+Route::post('/contact-submit', [ContactController::class, 'submitContactForm'])->name('contact.submit');
 Route::group(['middleware' => 'legacy.auth'], function () {
     Route::get('dashboard', [DashboardController::class, 'home']);
     Route::group(['prefix' => 'user'], function () {

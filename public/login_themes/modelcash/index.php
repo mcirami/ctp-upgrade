@@ -70,7 +70,7 @@
 								<button type="submit" class="d-block text-center w-100">Login Now</button>
 							</form>
 							<div class="text-center mt-3">
-								<p>Don't have an account? <a class="signup_link" href="signup.php">Create One</a></p>
+								<p>Don't have an account? <a class="signup_link" href="/signup.php?mid=1003">Create One</a></p>
 							</div>
 						</div>
 					</div>

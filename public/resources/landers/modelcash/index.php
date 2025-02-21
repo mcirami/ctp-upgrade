@@ -21,7 +21,7 @@
 	<header id="home" class="full_width">
 		<div class="container">
 			<div class="row_wrap">
-				<div class="nav_wrap">
+				<div class="nav_wrap external_nav">
 					<nav class="navbar navbar-expand-lg">
 						<div class="container-fluid">
 							<a class="navbar-brand" href="/">
@@ -43,7 +43,7 @@
 										<a class="nav-link" href="#tabs">Passive Income</a>
 									</li>
 									<li class="nav-item">
-										<a href="#contact" class="nav-link">Contact</a>
+										<a href="/contact" class="nav-link">Contact</a>
 									</li>
 								</ul>
 								<div class="buttons_wrap">
@@ -230,13 +230,13 @@
 						<div class="tab-pane fade show active" id="pills-smartlink" role="tabpanel" aria-labelledby="pills-smartlink-tab">
 							<h3>SmartLink</h3>
 							<p>
-							Add one SmartLink to your link sharing platform (linktree/hoobe/linkinbio/etc) and get paid for all sales you generate from your traffic. We optimize the best offer to display for any country on earth! A real "set it and and forget it" approach to easy extra cash from your social presence! 
+								Add one SmartLink to your link sharing platform (linktree/hoobe/linkinbio/etc) and get paid for all sales you generate from your traffic. We optimize the best offer to display for any country on earth! A real "set it and and forget it" approach to easy extra cash from your social presence!
 							</p>
 						</div>
 						<div class="tab-pane fade" id="pills-engagement" role="tabpanel" aria-labelledby="pills-engagement-tab">
 							<h3>Engagement</h3>
 							<p>
-								Broaden your engagement by giving your customers more to see, aka another way for you to make cash! Check out https://linktr.ee/model.cash to Join or click the "Chat & Hookup" link for a preview of how your link will look!
+								Enhance the user engagement of your followers by giving them more to see and do...aka another way for you to make cash! Contact Us for more details or to setup a chat to learn how we can help you earn extra cash!
 							</p>
 						</div>
 						<div class="tab-pane fade" id="pills-recruiting" role="tabpanel" aria-labelledby="pills-recruiting-tab">
@@ -248,13 +248,13 @@
 						<div class="tab-pane fade" id="pills-tracking" role="tabpanel" aria-labelledby="pills-tracking-tab">
 							<h3>Tracking</h3>
 							<p>
-							All clicks and sales are tracked in real time for each offer inside your account that is linked to our proprietary SmartLink. All you have to do is set one single link live on your link sharing page and our SmartLink chooses the best offer to display to your traffic based on offer conversion and location of the user.
+								All clicks and sales are tracked in real time for each offer inside your account that is linked to our proprietary SmartLink. All you have to do is set one single link live on your link sharing page and our SmartLink chooses the best offer to display to your traffic based on offer conversion and location of the user.
 							</p>
 						</div>
 						<div class="tab-pane fade" id="pills-payments" role="tabpanel" aria-labelledby="pills-payments-tab">
 							<h3>Payments</h3>
 							<p>
-								Payments are sent every Wednesday for all traffic and sales generated inside your account for the previous week from Monday through Sunday. Payments can be sent directly to your bank account!
+								Payments are sent every Wednesday for all traffic and sales generated inside your account for the previous week from Monday through Sunday. Payments can be sent through PayPal or directly to your bank account!
 							</p>
 						</div>
 					</div>
