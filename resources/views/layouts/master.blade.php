@@ -17,7 +17,7 @@
     <link href="{{$webroot}}css/animate.css" rel="stylesheet">
 
 
-    <link rel="stylesheet" type="text/css" href="<?php echo $webroot; ?>css/default.css?v=2"/>
+    <link rel="stylesheet" type="text/css" href="<?php echo $webroot; ?>css/default.css?v=2.1"/>
     <link rel="stylesheet" type="text/css" href="<?php echo $webroot; ?>css/tablesorter.default.css"/>
     <link rel="stylesheet" href="<?php echo $webroot; ?>css/company.css">
     <link href="<?php echo $webroot; ?>css/responsive_table.css" rel="stylesheet" type="text/css"/>
