@@ -3379,6 +3379,10 @@ footer.external img {
 
 @media screen and (max-width: 549px) {
 
+	.payment_details form .submit_wrap button, .payment_details .form-group input, .payment_details .form-group select {
+		width: 100%;
+	}
+
 	footer.external a.button {
 		width: 125px;
 		display: inline-block;

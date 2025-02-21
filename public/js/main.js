@@ -342,7 +342,7 @@ jQuery(document).ready(function ($) {
         let value = "";
         let placeholder = "";
         if(payoutType === 'wise') {
-            value = "<h5>Enter your @Wisetag, Email, Or Phone Number associated with your Wise account and select the country you are from:</h5>";
+            value = "<h5>Enter the @Wisetag, Email, Or Phone Number associated with your Wise account and select the country you are from:</h5>";
             placeholder = "@Wisetag, Email, Or Phone Number";
         }
         if(payoutType === 'paypal') {
