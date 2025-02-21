@@ -3209,6 +3209,11 @@ footer.external .footer_content ul {
 	max-width: 150px;
 }
 
+.nav_wrap.external_nav .navbar-brand img {
+	width: 100%;
+	height: auto;
+}
+
 .nav_wrap.external_nav {
 	width: 100%;
 }
@@ -3273,6 +3278,18 @@ footer.external .footer_content ul {
 	-webkit-align-items: center;
 	column-gap: 20px;
 	gap: 20px;
+}
+
+footer.external .copy {
+	color: #000000;
+	margin-top: 20px;
+	font-size: 12px;
+	text-align: center;
+}
+
+footer.external img {
+	width: 100%;
+	height: auto;
 }
 
 @media screen and (max-width: 1199px) {
@@ -3383,11 +3400,4 @@ footer.external .footer_content ul {
 		width: 100%;
 		margin-bottom: 10px;
 	}
-}
-
-footer.external .copy {
-	color: #000000;
-	margin-top: 20px;
-	font-size: 12px;
-	text-align: center;
 }
