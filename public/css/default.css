@@ -3178,6 +3178,7 @@ footer.external .footer_content ul {
 }
 .contact .two_columns .column form input, .contact .two_columns .column select  {
 	height: 50px;
+	width: 100%;
 }
 
 .nav_wrap.external_nav .row_wrap {

@@ -236,7 +236,7 @@
 	}
 @endphp
 
-<select class="selectBox w-100" name="country" id="payout_country" required data-value="<?php if ($country) echo $country; ?>">
+<select class="selectBox" name="country" id="payout_country" required data-value="<?php if ($country) echo $country; ?>">
     <option value="">Select Your Country</option>
     @foreach ($countryArray as $key => $country)
         <option value="{{$key}}">{{$country['name']}}</option>
