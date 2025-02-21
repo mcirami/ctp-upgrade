@@ -3262,7 +3262,7 @@ footer.external .footer_content ul {
 	font-size: 1.2em;
 }
 
-.nav_wrap.external_nav .buttons_wrap {
+.nav_wrap.external_nav .buttons_wrap, footer.external .buttons_wrap {
 	display: -webkit-box;
 	display: -ms-flexbox;
 	display: flex;
@@ -3336,14 +3336,15 @@ footer.external img {
 		flex-wrap: wrap;
 	}
 
-	.nav_wrap.external_nav .buttons_wrap {
+	.nav_wrap.external_nav .buttons_wrap, footer.external .buttons_wrap {
 		justify-content: center;
 		-webkit-justify-content: center;
 		margin-top: 20px;
 	}
 
-	.nav_wrap.external_nav .button {
-		width: 150px;
+	.nav_wrap.external_nav a.button {
+		width: 125px;
+		font-size: 1rem;
 	}
 
 	.contact a.button {
@@ -3377,14 +3378,10 @@ footer.external img {
 
 @media screen and (max-width: 549px) {
 
-	.nav_wrap.external_nav .button {
-		width: 100px;
+	footer.external a.button {
+		width: 125px;
 		display: inline-block;
-	}
-
-	footer.external .button {
-		width: 150px;
-		display: inline-block;
+		font-size: 1rem;
 	}
 
 	.contact form button.button {
