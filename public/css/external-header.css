@@ -1,0 +1,39 @@
+header.external {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 999;
+    width: 100%;
+    transition: all 0.5s linear;
+    -webkit-transition: all 0.5s linear;
+}
+
+header.external .button,
+header.external .nav_wrap ul a,
+header.external .navbar-brand {
+    transition: all 0.5s linear;
+    -webkit-transition: all 0.5s linear;
+}
+
+.header_padding {
+    padding-top: 120px;
+}
+
+header.external.scroll {
+    padding: 5px 0;
+}
+
+header.external.scroll .navbar-brand {
+    max-width: 100px;
+}
+
+header.external.scroll .nav_wrap ul a {
+    font-size: 1em;
+}
+
+header.external.scroll .button {
+    font-size: 1em;
+    padding: 5px 20px;
+}
+

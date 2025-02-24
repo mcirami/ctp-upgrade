@@ -7,18 +7,21 @@
 		<meta http-equiv="Cache-Control" content="no-cache" />
 		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 		<link href="/resources/landers/ctpupgrade/css/app.css?v=2.1" rel="stylesheet" />
+		<link href="/css/external-header.css?v=1" rel="stylesheet" />
 		<link href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css" rel="stylesheet">
 		<link rel="shortcut icon" href="/resources/landers/ctpupgrade/images/favicon.ico" type="image/x-icon" />
 		<link rel="icon" href="/resources/landers/ctpupgrade/images/favicon.ico" type="image/x-icon" />
+		<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 		<script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/@splidejs/splide-extension-auto-scroll@0.5.3/dist/js/splide-extension-auto-scroll.min.js"></script>
 		<script src="/resources/landers/ctpupgrade/assets/js/app.js"></script>
+		<script src="/js/external-header.js"></script>
 		<title>Model Cash | Exclusive Private Network</title>
 	</head>
 	<body>
 
-	<header id="home" class="full_width">
+	<header id="home" class="full_width external">
 		<div class="container">
 			<div class="row_wrap">
 				<div class="nav_wrap">
@@ -57,7 +60,7 @@
 			</div>
 		</div>
 	</header>
-	<section class="hero">
+	<section class="hero header_padding">
 		<div class="container">
 			<div class="two_columns">
 				<div class="column">

@@ -33,8 +33,8 @@ $pending = (isset($_GET["pending"]) && $_GET["pending"] != "") ? $_GET["pending"
 
 	<title><?php echo \LeadMax\TrackYourStats\System\Company::loadFromSession()->getShortHand(); ?></title>
 </head>
-<body class="signup">
-<div class = "top_sec value_span1">
+<body class="signup" style="background: #ffffff;">
+<header class="external">
 	<div class="container">
 		<div class="row_wrap w-100">
 			<div class="nav_wrap external_nav">
@@ -49,21 +49,21 @@ $pending = (isset($_GET["pending"]) && $_GET["pending"] != "") ? $_GET["pending"
 						<div class="collapse navbar-collapse" id="navbarNav">
 							<ul class="navbar-nav">
 								<li class="nav-item">
-									<a class="nav-link" aria-current="page" href="#about">About Us</a>
+									<a class="nav-link" aria-current="page" href="/#about">About Us</a>
 								</li>
 								<li class="nav-item">
-									<a class="nav-link" href="#our_benefits">How It Works</a>
+									<a class="nav-link" href="/#our_benefits">How It Works</a>
 								</li>
 								<li class="nav-item">
-									<a class="nav-link" href="#tabs">Passive Income</a>
+									<a class="nav-link" href="/#tabs">Passive Income</a>
 								</li>
 								<li class="nav-item">
 									<a href="/contact" class="nav-link">Contact</a>
 								</li>
 							</ul>
 							<div class="buttons_wrap">
-								<a class="button white" href="https://model.cash/login.php">Login</a>
-								<a class="button value_span11 value_span2 value_span4" href="https://model.cash/signup.php?mid=1003">Sign Up</a>
+								<a class="button white" href="/login.php">Login</a>
+								<a class="button value_span11 value_span2 value_span4" href="/signup.php?mid=1003">Sign Up</a>
 							</div>
 						</div>
 					</div>
@@ -71,15 +71,13 @@ $pending = (isset($_GET["pending"]) && $_GET["pending"] != "") ? $_GET["pending"
 			</div>
 		</div>
 	</div>
-</div> <!-- top_sec -->
+</header>
 
 <style>
-	
+
 	.white_box {
-		
-		margin-top: 40px;
+		background:#fff2fa;
 	}
-	
 	.white_box_outer {
 		float: none;
 		margin: 0 auto;
@@ -88,12 +86,11 @@ $pending = (isset($_GET["pending"]) && $_GET["pending"] != "") ? $_GET["pending"
 	
 	.left_con01 {
 		width: auto;
-		padding: 5px;
-		padding-top: 10px;
-		padding-left: 17px;
-		padding-right: 10px;
-		float: none;
-		
+        padding: 10px 10px 5px 17px;
+        float: none;
+        border-radius: 10px;
+        -webkit-border-radius: 10px;
+        -moz-border-radius: 10px;
 	}
 	
 	.heading_holder {
@@ -116,6 +113,9 @@ $pending = (isset($_GET["pending"]) && $_GET["pending"] != "") ? $_GET["pending"
 <div class = "white_box_outer">
 	
 	<div class = "clear"></div>
+	<div class = "heading_holder mt-5">
+		<h3 class = " value_span9 mb-3 text-center">Congratulations!</h3>
+	</div>
 	<div class = "white_box value_span8">
 		<div class = "com_acc">
 			
@@ -130,23 +130,20 @@ $pending = (isset($_GET["pending"]) && $_GET["pending"] != "") ? $_GET["pending"
 				?>
 						<div class = "heading_holder">
 							<h3 class = " mb-2 value_span9">Your account is still Pending!</h3>
-							<p>
-								If you have any questions, feel free to contact the Model Ambassador who sent you the signup link!
-							</p>
+							<p class="mb-0">If you have any questions, feel free to <a class="text-decoration-underline" href="/contact">Contact Us</a> at any time and we'll get right back with you!</p>
 						</div>
 				<?php
 					} else { ?>
 
-						<div class = "heading_holder">
-							<h2 class = " value_span9 mb-3 text-center text-uppercase">Congratulations!</h2>
+						<div class = "success_message">
 							<h3>
 								Your new account is set up and automatically activated.
 							</h3>
 							<p class="mb-2">
-								Click below to log in, grab your SmartLink from the Offer page inside your model.cash account, post the SmartLink on a new button on your link sharing platform (ex: linktree)
+								Click the Login Now! button below to log into your account and get started on your path to more cash with Model.Cash!
 							</p>
 							<a href="/login.php" class="btn value_span5-1 value_span2 value_span4">Login Now!</a>
-							<p class="mb-0">If you have any questions, feel free to contact the Model Ambassador who sent you the signup link!</p>
+							<p class="mb-0">If you have any questions, feel free to <a class="text-decoration-underline" href="/contact">Contact Us</a> at any time and we'll get right back with you!</p>
 						</div>
 				<?php
 					}

@@ -14,7 +14,7 @@ $mid = (isset($_GET["mid"]) && $_GET["mid"] != "") ? $_GET["mid"] : "";
 ?>
 
 <!DOCTYPE html>
-<html>
+<html xmlns="http://www.w3.org/1999/html">
 <head>
 	
 	<meta http-equiv = "Content-Type" content = "text/html; charset=utf-8"/>
@@ -25,7 +25,7 @@ $mid = (isset($_GET["mid"]) && $_GET["mid"] != "") ? $_GET["mid"] : "";
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 	
 	<link rel = "stylesheet" type = "text/css" href = "<?php echo $webroot; ?>css/default.css?v=1.2"/>
-	
+	<link rel = "stylesheet" type = "text/css" href = "<?php echo $webroot; ?>css/external-header.css?v=1"/>
 	<link rel = "stylesheet" media = "screen" type = "text/css"
 		  href = "<?php echo $webroot; ?>css/company.css"/>
 
@@ -33,10 +33,12 @@ $mid = (isset($_GET["mid"]) && $_GET["mid"] != "") ? $_GET["mid"] : "";
 	<script src="https://code.jquery.com/ui/1.14.1/jquery-ui.min.js" integrity="sha256-AlTido85uXPlSyyaZNsjJXeCs07eSv3r43kyCVc8ChI=" crossorigin="anonymous"></script>
 	<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
+	<script type="text/javascript" src="<?php echo $webroot; ?>js/external-header.js?v=1"></script>
+
 	<title><?php echo \LeadMax\TrackYourStats\System\Company::loadFromSession()->getShortHand(); ?></title>
 </head>
 <body class="signup">
-<div class = "top_sec value_span1">
+<header class = "external">
 	<div class="container">
 		<div class="row_wrap w-100">
 			<div class="nav_wrap external_nav">
@@ -51,13 +53,13 @@ $mid = (isset($_GET["mid"]) && $_GET["mid"] != "") ? $_GET["mid"] : "";
 						<div class="collapse navbar-collapse" id="navbarNav">
 							<ul class="navbar-nav">
 								<li class="nav-item">
-									<a class="nav-link" aria-current="page" href="#about">About Us</a>
+									<a class="nav-link" aria-current="page" href="/#about">About Us</a>
 								</li>
 								<li class="nav-item">
-									<a class="nav-link" href="#our_benefits">How It Works</a>
+									<a class="nav-link" href="/#our_benefits">How It Works</a>
 								</li>
 								<li class="nav-item">
-									<a class="nav-link" href="#tabs">Passive Income</a>
+									<a class="nav-link" href="/#tabs">Passive Income</a>
 								</li>
 								<li class="nav-item">
 									<a href="/contact" class="nav-link">Contact</a>
@@ -74,7 +76,7 @@ $mid = (isset($_GET["mid"]) && $_GET["mid"] != "") ? $_GET["mid"] : "";
 		</div>
 	</div>
 
-</div> <!-- top_sec -->
+</header> <!-- top_sec -->
 
 <style>
 	
@@ -99,28 +101,6 @@ $mid = (isset($_GET["mid"]) && $_GET["mid"] != "") ? $_GET["mid"] : "";
 		align-items: center;
         padding: 60px 0;
     }
-
-    .white_box {
-	    display: inline-block;
-        margin: 40px 0;
-	    max-width: 750px;
-	    width: 100%;
-	    text-align: left;
-	    float: none;
-        border-radius: 6px;
-        -webkit-border-radius: 6px;
-        -moz-border-radius: 6px;
-        background: #fff1fa;
-    }
-
-	.left_con01 {
-		width: 100%;
-		padding: 0;
-	}
-
-    .left_con01 p input {
-	    width: 100%;
-    }
 	
 	.heading_holder {
 		max-width: 750px;
@@ -137,63 +117,62 @@ $mid = (isset($_GET["mid"]) && $_GET["mid"] != "") ? $_GET["mid"] : "";
 
 
 	   <!--right_panel-->
-<div class = "white_box_outer">
+<div class = "white_box_outer header_padding">
 	<div class="container">
 		<div class="content_wrap">
 			<div class="heading_holder">
-				<h3 class="value_span9 text-center">Sign Up Now To Start Earning Cash!</h3>
+				<h3 class="value_span9 text-center mb-4">Sign Up to Earn Cash!</h3>
 			</div>
-			<div class = "white_box value_span8">
-				<div class = "com_acc">
+			<div class="two_columns external">
+				<div class="column">
 
 					<form action = "/" id = "signUpForm">
-						<div class = "left_con01">
 							<input name="mid" type="hidden" value="<?php echo $mid; ?>">
 
-							<p>
+							<div class="form-group">
 								<label class = "value_span9" for = "tys_first_name">First Name: <sup>*</sup></label>
 								<input class = "form-control" type = "text" name = "tys_first_name">
-							</p>
+							</div>
 
-							<p>
+							<div class="form-group">
 
 								<label for = "tys_last_name">Last Name: <sup>*</sup></label>
 								<input type = "text" name = "tys_last_name">
-							</p>
+							</div>
 
 
-							<p>
+							<div class="form-group">
 
 								<label for = "tys_email">Email: <sup>*</sup></label>
 								<input type = "text" name = "tys_email">
-							</p>
+							</div>
 
 
-							<p>
+							<div class="form-group">
 
 								<!-- MUST BE GREATER THAN FOUR CHARACTERS -->
 								<label for = "tys_username">Username: <sup>*</sup></label>
 								<input type = "text" name = "tys_username">
 								<small>(MUST BE GREATER THAN 4 CHARACTERS)</small>
-							</p>
+							</div>
 
-							<p>
+							<div class="form-group">
 
 								<!-- MUST BE GREATER THAN 6 CHARACTERS -->
 								<label for = "tys_password">Password: <sup>*</sup></label>
 								<input type = "password" name = "tys_password">
 								<small>(MUST BE GREATER THAN 6 CHARACTERS)</small>
-							</p>
+							</div>
 
 
-							<p>
+							<div class="form-group">
 
 								<label for = "tys_confirm_password">Confirm Password: <sup>*</sup></label>
 								<input type = "password" name = "tys_confirm_password">
-							</p>
+							</div>
 
 
-							<p>
+							<div class="form-group">
 
 								<label for="im_type">Instant Messenger:</label>
 								<select id="im_type" name="im_type" required>
@@ -202,25 +181,31 @@ $mid = (isset($_GET["mid"]) && $_GET["mid"] != "") ? $_GET["mid"] : "";
 									<option value="instagram">Instagram</option>
 									<option value="facebook">Facebook</option>
 								</select>
-							</p>
+							</div>
 
 
-							<p>
+							<div class="form-group">
 
 								<label for="im_username">IM Username:</label>
 								<input type="text" name="im_username">
 
-							</p>
+							</div>
 
 
 							<span class = "btn_yellow" style = "color:#1D4C9E;">
 								<input type = "submit" name = "button" class="rounded-5 value_span5-1 value_span2 value_span4" value = "Sign Up"/>
 							</span>
 
-						</div>
+
 					</form>
-				</div><!-- white_box -->
-			</div>
+				</div><!-- column -->
+				<div class="column">
+					<h3>One Link. Unlimited Cash.</h3>
+					<div class="image_wrap">
+						<img src="<?php echo $webroot; ?>images/mc-icon-circle.png" alt="">
+					</div>
+				</div>
+			</div><!-- two_columns -->
 		</div>
 	</div><!-- white_box_outer -->
 	<footer class="full_width external">
@@ -259,19 +244,19 @@ $mid = (isset($_GET["mid"]) && $_GET["mid"] != "") ? $_GET["mid"] : "";
 			
 			$.notify({
 					
-					message: message
+					message: message,
 					
 				}, {
 					placement: {
 						from: 'top',
-						align: 'center'
+						align: 'center',
 					},
 					type: type,
 					animate: {
 						enter: 'animated fadeInDown',
-						exit: 'animated fadeOutUp'
+						exit: 'animated fadeOutUp',
 					},
-				}
+				},
 			);
 		}
 		
@@ -281,58 +266,58 @@ $mid = (isset($_GET["mid"]) && $_GET["mid"] != "") ? $_GET["mid"] : "";
 			responseCode = responseCode.replace(/\s/g, '');
 			
 			switch (responseCode) {
-				case "SUCCESS"    :
+				case 'SUCCESS'    :
 					let mid = '<?php echo $mid; ?>';
-					mid = mid === "" ? "" : '?mid=true';
+					mid = mid === '' ? '' : '?mid=true';
 
 					window.location = 'signup_success.php' + mid;
 					break;
 				
-				case "USERNAME_OR_EMAIL_EXISTS" :
-					notify("The username or email you entered already exists in the system.", 'warning');
+				case 'USERNAME_OR_EMAIL_EXISTS' :
+					notify('The username or email you entered already exists in the system.', 'warning');
 					break;
 				
-				case "INVALID_EMAIL":
-					notify("The email you entered is invalid.", 'warning');
+				case 'INVALID_EMAIL':
+					notify('The email you entered is invalid.', 'warning');
 					break;
 				
-				case "INVALID_USERNAME":
-					notify("The username you entered is invalid, please make sure it is at least 4 characters long, and contains no special characters.", 'warning');
+				case 'INVALID_USERNAME':
+					notify('The username you entered is invalid, please make sure it is at least 4 characters long, and contains no special characters.', 'warning');
 					break;
 				
-				case "PASSWORD_MISMATCH":
-					notify("Password do not match.", 'warning');
+				case 'PASSWORD_MISMATCH':
+					notify('Password do not match.', 'warning');
 					break;
 				
-				case "MISSING_OR_INVALID_FIELDS":
-					notify("You have missing fields or they are invalid, please double check them", 'warning');
+				case 'MISSING_OR_INVALID_FIELDS':
+					notify('You have missing fields or they are invalid, please double check them', 'warning');
 					break;
 				
 				default :
-					notify("Unknown error. Please contact an administrator is this persists.", 'danger');
+					notify('Unknown error. Please contact an administrator is this persists.', 'danger');
 					break;
 			}
 			
 		}
 		
 		
-		$("#signUpForm").on('submit', function (event) {
+		$('#signUpForm').on('submit', function (event) {
 			
 			// stops form from submitting
 			event.preventDefault();
 			
-			let postData = $("#signUpForm").serialize();
+			let postData = $('#signUpForm').serialize();
 
 			$.ajax({
-				type: "post",
-				url: "scripts/affiliate_signup.php",
+				type: 'post',
+				url: 'scripts/affiliate_signup.php',
 				data: postData,
 				success: function (responseData, textStatus, jqXHR) {
 					handleResponse(responseData);
 				},
 				error: function (jqXHR, textStatus, errorThrown) {
 					alert(errorThrown);
-				}
+				},
 			});
 		});
 	
