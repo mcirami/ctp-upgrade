@@ -25,6 +25,26 @@ class ContactController extends Controller
 
 	public function submitContactForm(ContactFormRequest $request): RedirectResponse {
 
+		// 2. Verify reCAPTCHA
+		$secretKey = config('services.recaptcha.secret_key');
+		$token = $request->input('recaptcha_token');
+		$verifyUrl = 'https://www.google.com/recaptcha/api/siteverify';
+
+		$response = Http::asForm()->post($verifyUrl, [
+			'secret' => $secretKey,
+			'response' => $token,
+			// 'remoteip' => $request->ip(), // optional
+		]);
+
+		$captchaResult = $response->json();
+
+		// $captchaResult['success'] is true/false
+		// $captchaResult['score'] is from 0.0 (bad) to 1.0 (good)
+		// $captchaResult['action'] is the action name you used (e.g. 'contact_form')
+		if (!$captchaResult['success'] || $captchaResult['score'] < 0.5) {
+			return back()->withErrors(['error' => 'reCAPTCHA validation failed.']);
+		}
+
 		$text = "New contact form submission:\n";
 		$text .= "Name: " . $request->input('name') . "\n";
 		$text .= "Email: " . $request->input('email') . "\n";
@@ -38,7 +58,7 @@ class ContactController extends Controller
 		]);
 
 		if (!$response->ok()) {
-			return back()->with('error', $response->json());
+			return back()->withErrors(['error' => $response->json()]);
 		}
 
 		return back()->with('success', 'Thanks for contacting us!');

@@ -18,6 +18,9 @@
     <script type="text/javascript" src="<?php echo $webroot; ?>js/external-header.js?v=1"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
+
+    <script src="https://www.google.com/recaptcha/api.js?render={{ config('services.recaptcha.site_key') }}"></script>
+
 </head>
 <body class="contact">
 
@@ -71,7 +74,7 @@
                     <h3>{{ session()->get('success') }}</h3>
                 </div>
             @endif
-            @if(session()->has('error'))
+            @if(session()->has('errors'))
                 <div class="alert alert-danger">
                     <h3>{{ print_r(session()->get('error'), true) }}</h3>
                 </div>
@@ -93,6 +96,7 @@
                         <label for="country">Country:</label>
                         @include('components.country-dropdown')
                     </div>
+                    <input type="hidden" name="recaptcha_token" id="recaptcha_token">
                     <div class="form-group">
                         <label for="im_type">Instant Messenger:</label>
                         <select class="selectBox w-100" name="im_type" id="im_type" required>
@@ -111,7 +115,7 @@
                         <label for="message">Your Message:</label>
                         <textarea rows="5" class="form-control" name="message" placeholder="Your Message" required></textarea>
                     </div>
-                    <button class="button value_span11 value_span2 value_span4" type="submit">Send</button>
+                    <button class="w-100 button value_span11 value_span2 value_span4" type="submit">Send</button>
                 </form>
             </div>
             <div class="column">
@@ -153,5 +157,17 @@
         <p class="copy">&copy; model.cash | All rights reserved.</p>
     </div>
 </footer>
+
+<script>
+	document.addEventListener('DOMContentLoaded', function () {
+		grecaptcha.ready(function() {
+			grecaptcha.execute('{{ config('services.recaptcha.site_key') }}', {action: 'contact_form'})
+			.then(function(token) {
+				// Put the token in a hidden input, so it gets submitted with the form
+				document.getElementById('recaptcha_token').value = token;
+			});
+		});
+	});
+</script>
 </body>
 </html>

@@ -28,7 +28,8 @@ class ContactFormRequest extends FormRequest
 		    'country'       => 'required',
 		    'im_type'       => 'required',
 		    'im_username'   => 'required|max:255',
-		    'message'       => 'required|max:255'
+		    'message'       => 'required|max:255',
+		    'recaptcha_token' => 'required',
 	    ];
     }
 }
