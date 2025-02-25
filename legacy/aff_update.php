@@ -208,7 +208,7 @@ $update->dumpPermissionsToJavascript();
 
 								?>
 
-								<p class='value_span9' id = "permissionsP">
+								<p class="value_span10" id = "permissionsP">
 
 								</p>
 
@@ -354,13 +354,11 @@ $update->dumpPermissionsToJavascript();
 				                    <tr>
 				
 				                        <th class=\"value_span9\">Offer ID</th>
-				                        <th class=\"value_span9\">Offer Name</th>";
+				                        <th class=\"value_span9\">Offer Name</th>
+				                        <th class=\"value_span9\">Offer Payout</th>";
 
-					if(Session::userType() == \App\Privilege::ROLE_GOD) {
-						echo "<th class=\"value_span9\">Offer Payout</th>";
-					}
 
-					if ( Session::userType() == \App\Privilege::ROLE_GOD)
+					if ( Session::permissions()->can("edit_aff_payout"))
 					{
 						echo "<th class=\"value_span9\">Change Aff Payout</th>";
 					}
