@@ -193,7 +193,7 @@ $mid = (isset($_GET["mid"]) && $_GET["mid"] != "") ? $_GET["mid"] : "";
 							</div>
 
 
-							<span class = "btn_yellow" style = "color:#1D4C9E;">
+							<span>
 								<input type = "submit" name = "button" class="rounded-5 value_span5-1 value_span2 value_span4" value = "Sign Up"/>
 							</span>
 
