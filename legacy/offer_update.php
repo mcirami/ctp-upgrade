@@ -182,7 +182,7 @@ if (isset($_GET["noAff"])) {
 
 
                         <span class="small_txt value_span10">The offer URL where traffic will be directed to. The variables below can be used in offer URLs.</span>
-                    <p>
+                    <p class="value_span10">
 
                         When building offer url, these values will populate automatically:
 
@@ -191,7 +191,7 @@ if (isset($_GET["noAff"])) {
                         <span class="small_txt value_span10">Click ID: #clickid#</span>
                         <span class="small_txt value_span10">Offer ID: #offid#</span>
                     </p>
-                    <p>
+                    <p  class="value_span10">
                         When storing values Sub ID 1-5 on incoming clicks, these tags will populate the corresponding
                         values.
 
@@ -289,7 +289,7 @@ if (isset($_GET["noAff"])) {
 
                         </script>
 
-                    <p>
+                    <p class="value_span10">
                         <label class="value_span9">Offer Cap</label>
 
                         <input class="fixCheckBox" type="checkbox" id="enable_cap" name="enable_cap" value="enable_cap">Enable
@@ -423,7 +423,7 @@ if (isset($_GET["noAff"])) {
                     $update->findAssigned();
                     ?>
 
-                    <p>
+                    <p class="value_span10">
                         <?php
                         if (\LeadMax\TrackYourStats\System\Session::permissions()->can("create_managers")) {
                             $update->printRadios();

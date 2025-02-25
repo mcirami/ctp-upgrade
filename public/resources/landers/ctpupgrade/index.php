@@ -43,12 +43,12 @@
 										<a class="nav-link" href="#tabs">Passive Income</a>
 									</li>
 									<li class="nav-item">
-										<a href="#contact" class="nav-link">Contact</a>
+										<a href="/contact" class="nav-link">Contact</a>
 									</li>
 								</ul>
 								<div class="buttons_wrap">
-									<a class="button white" href="https://model.cash/login.php">Login</a>
-									<a class="button pink" href="https://model.cash/signup.php?mid=1003">Sign Up</a>
+									<a class="button white" href="/login.php">Login</a>
+									<a class="button pink" href="/signup.php?mid=1003">Sign Up</a>
 								</div>
 							</div>
 						</div>
@@ -64,7 +64,7 @@
 					<h2>One Link.<br />Unlimited Cash.</h2>
 					<p>Model.cash's influencer & referral network helps models of all types earn extra cash all around the world with its simple extra revenue stream.</p>
 					<div class="buttons_wrap">
-						<a class="button white" href="https://model.cash/signup.php?mid=1003">
+						<a class="button white" href="/signup.php?mid=1003">
 							Get Started Now
 						</a>
 					</div>
@@ -286,8 +286,8 @@
 					</li>
 				</ul>
 				<div class="buttons_wrap">
-					<a class="button white" href="https://model.cash/login.php">Login</a>
-					<a class="button pink" href="https://model.cash/signup.php">Sign Up</a>
+					<a class="button white" href="/login.php">Login</a>
+					<a class="button pink" href="/signup.php">Sign Up</a>
 				</div>
 			</div>
 			<p class="copy">&copy; model.cash | All rights reserved.</p>
