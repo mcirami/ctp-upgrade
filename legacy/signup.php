@@ -24,7 +24,7 @@ $mid = (isset($_GET["mid"]) && $_GET["mid"] != "") ? $_GET["mid"] : "";
 		  href = "<?PHP echo \LeadMax\TrackYourStats\System\Company::loadFromSession()->getImgDir() . "/favicon.ico"; ?>"/>
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 	
-	<link rel = "stylesheet" type = "text/css" href = "<?php echo $webroot; ?>css/default.css?v=1.3"/>
+	<link rel = "stylesheet" type = "text/css" href = "<?php echo $webroot; ?>css/default.css?v=1.4"/>
 	<link rel = "stylesheet" type = "text/css" href = "<?php echo $webroot; ?>css/external-header.css?v=1"/>
 	<link rel = "stylesheet" media = "screen" type = "text/css"
 		  href = "<?php echo $webroot; ?>css/company.css"/>
@@ -33,7 +33,7 @@ $mid = (isset($_GET["mid"]) && $_GET["mid"] != "") ? $_GET["mid"] : "";
 	<script src="https://code.jquery.com/ui/1.14.1/jquery-ui.min.js" integrity="sha256-AlTido85uXPlSyyaZNsjJXeCs07eSv3r43kyCVc8ChI=" crossorigin="anonymous"></script>
 	<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
-	<script type="text/javascript" src="<?php echo $webroot; ?>js/external-header.js?v=1"></script>
+	<script type="text/javascript" src="<?php echo $webroot; ?>js/external-header.js?v=1.2"></script>
 
 	<title><?php echo \LeadMax\TrackYourStats\System\Company::loadFromSession()->getShortHand(); ?></title>
 </head>
@@ -176,6 +176,7 @@ $mid = (isset($_GET["mid"]) && $_GET["mid"] != "") ? $_GET["mid"] : "";
 
 								<label for="im_type">Instant Messenger:</label>
 								<select id="im_type" name="im_type" required>
+									<option value="">Select Instant Messenger</option>
 									<option value="skype">Skype</option>
 									<option value="telegram">Telegram</option>
 									<option value="instagram">Instagram</option>
@@ -238,6 +239,7 @@ $mid = (isset($_GET["mid"]) && $_GET["mid"] != "") ? $_GET["mid"] : "";
 			<p class="copy">&copy; model.cash | All rights reserved.</p>
 		</div>
 	</footer>
+	<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 	<script type = "text/javascript">
 		
 		function notify(message, type) {
@@ -261,7 +263,7 @@ $mid = (isset($_GET["mid"]) && $_GET["mid"] != "") ? $_GET["mid"] : "";
 		}
 		
 		
-		function handleResponse(responseCode) {
+		function handleResponse(responseCode, data) {
 			
 			responseCode = responseCode.replace(/\s/g, '');
 			
@@ -270,6 +272,7 @@ $mid = (isset($_GET["mid"]) && $_GET["mid"] != "") ? $_GET["mid"] : "";
 					let mid = '<?php echo $mid; ?>';
 					mid = mid === '' ? '' : '?mid=true';
 
+					sendTelegramNotification(data);
 					window.location = 'signup_success.php' + mid;
 					break;
 				
@@ -297,7 +300,6 @@ $mid = (isset($_GET["mid"]) && $_GET["mid"] != "") ? $_GET["mid"] : "";
 					notify('Unknown error. Please contact an administrator is this persists.', 'danger');
 					break;
 			}
-			
 		}
 		
 		
@@ -307,19 +309,42 @@ $mid = (isset($_GET["mid"]) && $_GET["mid"] != "") ? $_GET["mid"] : "";
 			event.preventDefault();
 			
 			let postData = $('#signUpForm').serialize();
+			let form = document.getElementById('signUpForm');
+			const formData = new FormData(form);
+			const formValues = Object.fromEntries(formData.entries());
 
 			$.ajax({
 				type: 'post',
 				url: 'scripts/affiliate_signup.php',
 				data: postData,
-				success: function (responseData, textStatus, jqXHR) {
-					handleResponse(responseData);
+				success: function (responseData) {
+					handleResponse(responseData, formValues)
 				},
 				error: function (jqXHR, textStatus, errorThrown) {
 					alert(errorThrown);
 				},
 			});
 		});
+
+		function sendTelegramNotification(data) {
+
+			const url = '/signup-notification';
+			const axiosInstance = axios.create({
+				baseURL: url,
+				timeout: 1000,
+				headers: {
+					'Content-Type': 'application/json',
+					'Accept': 'application/json'
+				}
+			});
+			axiosInstance.post(axiosInstance.baseURL, data).then((response) => {
+				if (response.data.success) {
+					console.log("success");
+				} else {
+					console.log(response);
+				}
+			});
+		}
 	
 	</script>
 	

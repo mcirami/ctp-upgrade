@@ -3186,6 +3186,7 @@ footer.external .footer_content ul {
 .external.two_columns .column form input, .external.two_columns .column select  {
 	height: 50px;
 	width: 100%;
+	padding: 10px;
 }
 
 .nav_wrap.external_nav .row_wrap {

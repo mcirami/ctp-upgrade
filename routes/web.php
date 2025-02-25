@@ -49,6 +49,7 @@ Route::post('email/incoming', [RelevanceReactorController::class, 'incomingEmail
 Route::post('email/incoming/distribute', [RelevanceReactorController::class, 'distributeEmail']);
 Route::get('/contact', [ContactController::class, 'showContactPage']);
 Route::post('/contact-submit', [ContactController::class, 'submitContactForm'])->name('contact.submit');
+Route::post('/signup-notification', [ContactController::class, 'sendSignupNotification'])->name('signup.notification');
 Route::group(['middleware' => 'legacy.auth'], function () {
     Route::get('dashboard', [DashboardController::class, 'home']);
     Route::group(['prefix' => 'user'], function () {
