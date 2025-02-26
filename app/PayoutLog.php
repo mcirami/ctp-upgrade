@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -16,8 +17,9 @@ use Illuminate\Database\Eloquent\Model;
  * @property float $referrals
  * @property string|null $start_of_week
  * @property string|null $end_of_week
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property string $status
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @method static \Illuminate\Database\Eloquent\Builder|\App\PayoutLog whereBonuses($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\PayoutLog whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\PayoutLog whereDeductions($value)
@@ -26,6 +28,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\PayoutLog whereReferrals($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\PayoutLog whereRevenue($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\PayoutLog whereStartOfWeek($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\PayoutLog whereStatus($status)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\PayoutLog whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\PayoutLog whereUserId($value)
  */
@@ -33,7 +36,15 @@ class PayoutLog extends Model
 {
 
 
-    protected $guarded = [];
+    protected $guarded = [
+		'id',
+		'created_at',
+	    'updated_at',
+    ];
+
+	public function user() {
+		return $this->belongsTo(User::class);
+	}
 
 
 }

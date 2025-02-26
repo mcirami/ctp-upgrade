@@ -27,10 +27,11 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command(PayoutLogsRun::class)->mondays();
-        $schedule->command(AggregateReportData::class)->dailyAt('23:00');
+        /*$schedule->command(PayoutLogsRun::class)->mondays();
+        $schedule->command(AggregateReportData::class)->dailyAt('23:00');*/
         // $schedule->command('inspire')
         //          ->hourly();
+	    $schedule->command('payouts:weekly')->weeklyOn(1, '5:00')->timezone('America/New_York');
     }
 
     /**

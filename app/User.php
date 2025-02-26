@@ -218,4 +218,8 @@ class User extends Authenticatable
 		return $this->hasOne(PayoutData::class, 'rep_idrep');
 	}
 
+	public function payoutLog() {
+		return $this->hasMany(PayoutLog::class, 'user_id');
+	}
+
 }
