@@ -91,25 +91,28 @@ class UserController extends Controller
 		$todaysDate = $date->convertDateTimezone($now);
 		$monthsAgo = $date->convertDateTimezone(Carbon::now()->subMonths(2)->startOfDay());
 
-		$cacheKey = "user_{$affId}_subids";
-        $cacheTime = 7200; // 60 minutes
+		/*$cacheKey = "user_{$affId}_subids";
+        $cacheTime = 60; //7200; // 2 hours
+        $data = Cache::remember($cacheKey, $cacheTime, function () use ($affId, $monthsAgo, $todaysDate) {*/
+            //$blocked = DB::table('blocked_sub_ids')->where('rep_idrep', '=', $affId)->distinct()->pluck('sub_id')->toArray();
+            //$mergedArray = [];
 
-        $data = Cache::remember($cacheKey, $cacheTime, function () use ($affId, $monthsAgo, $todaysDate) {
-            $blocked = DB::table('blocked_sub_ids')->where('rep_idrep', '=', $affId)->distinct()->pluck('sub_id')->toArray();
-            $mergedArray = [];
+            $subIdArray = DB::table('clicks')
+                            ->whereBetween('first_timestamp', [$monthsAgo, $todaysDate])
+                            ->where('clicks.rep_idrep', '=', $affId)
+				            ->join('click_vars', 'click_vars.click_id', '=', 'clicks.idclicks')
+				            ->where('click_vars.sub1', '!=', '')
+				            ->leftJoin('blocked_sub_ids', 'blocked_sub_ids.sub_id', '=', 'click_vars.sub1')
+				            ->select('click_vars.sub1 as subId', 'blocked_sub_ids.sub_id as blocked')
+				            ->groupBy('click_vars.sub1')
+				            ->orderBy('click_vars.sub1')->get();
 
-            $subIdArray = Click::where('rep_idrep', '=', $affId) 
-            ->whereBetween('first_timestamp', [$monthsAgo, $todaysDate])
-            ->join('click_vars', 'click_vars.click_id', '=', 'clicks.idclicks')
-            ->where('click_vars.sub1', '!=', '')
-            ->select('click_vars.sub1')
-            ->groupBy('click_vars.sub1')
-            ->orderBy('click_vars.sub1')->get()->toArray();
+			dd($subIdArray);
 
-            foreach($subIdArray as $subId) {
+            /*foreach($subIdArray as $subId) {
                 $object        = [
-                    'subId'     => preg_replace('/[^a-zA-Z0-9-_]/', '', $subId['sub1']),
-                    'blocked'   => in_array($subId['sub1'], $blocked)
+                    'subId'     => preg_replace('/[^a-zA-Z0-9-_]/', '', $subId->sub1),
+                    'blocked'   => in_array($subId->sub1, $blocked)
                 ];
                 $mergedArray[] = $object;
             }
@@ -118,7 +121,7 @@ class UserController extends Controller
 
             });
 
-		return json_encode($data);
+		return json_encode($data);*/
     }
 
 	public function changeAffPayout(Request $request) {
