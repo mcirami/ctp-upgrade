@@ -22,20 +22,29 @@
         <tbody>
         @foreach($reports as $report)
             <tr>
-                <td>{{$report->user_name}}</td>
+                <td>
+                    <span>
+                        {{$report->user_name}}
+                    </span>
+                </td>
                 <td>{{$report->start_of_week}} - {{$report->end_of_week}}</td>
                 <td>${{ number_format( $report->revenue,2,".",",")}}
                 </td>
                 <td>
                     <div class="edit_details">
-                        <div class="previous_details">
+                        <div class="current_details">
                             {{$report->payout_type ?? "No Details"}}
-                            <a class="edit_payout_details" href="#">edit</a>
+                            {{--<a class="edit_payout_details" href="#">edit</a>--}}
                         </div>
-                        <div class="input_field">
+                        {{--<div class="input_field">
+                            <select>
+                                <option value=null>{{$report->payout_type ?? "No Details"}}</option>
+                                <option value="wise">Wise</option>
+                                <option value="paypal">Paypal</option>
+                            </select>
                             <input data-log="{{$report->log_id}}" type="text" name="payout_type" value="{{$report->payout_type ?? "No Details"}}" />
                             <a class="cancel_payout_details" href="#">cancel</a>
-                        </div>
+                        </div>--}}
                     </div>
                 </td>
                 <td>
@@ -44,14 +53,20 @@
                 <td >
                     {{$report->country ?? "No Details"}}
                 </td>
-                <td>
+                <td class="status">
                     @if ($report->status == "rollover")
                         {{$report->status}}
+                    @elseif($report->status == "pending")
+                        <span class="status_wrap">
+                            {{$report->status}}
+                            <span class="btn_span">
+                                <a data-status="{{$report->status}}" data-log="{{$report->log_id}}" class="payout_status_button btn value_span11 value_span2 value_span4" href="#">
+                                    MARK PAID
+                                </a>
+                            </span>
+                        </span>
                     @else
-                        <select name="status" class="payout_status_select" data-log="{{$report->log_id}}">
-                            <option value="paid" <?php if($report->status == "paid") echo "selected"; ?>>Paid</option>
-                            <option value="pending" <?php if($report->status == "pending") echo "selected"; ?>>Pending</option>
-                        </select>
+                        {{$report->status}}
                     @endif
                 </td>
             </tr>

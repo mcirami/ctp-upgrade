@@ -114,7 +114,7 @@ Route::group(['middleware' => 'legacy.auth'], function () {
         });
 	    Route::group(['prefix' => 'payout'], function () {
 		    Route::get('/', [PayoutReportController::class, 'report']);
-		    Route::post('/update-status/{payoutLog}', [PayoutReportController::class, 'updateStatus']);
+		    Route::post('/update-status/{payoutLog}', [PayoutReportController::class, 'markStatusPaid']);
 		    Route::get('pdf', [PayoutReportController::class, 'invoice']);
 	    });
     });

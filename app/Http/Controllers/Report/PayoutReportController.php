@@ -39,8 +39,8 @@ class PayoutReportController extends ReportController
 
     }
 
-	public function updateStatus(PayoutLog $payoutLog, Request $request) {
-		$payoutLog->update(['status' => $request->get('status')]);
+	public function markStatusPaid(PayoutLog $payoutLog) {
+		$payoutLog->update(['status' => 'paid']);
 
 		return response()->json(['success' => true]);
 	}

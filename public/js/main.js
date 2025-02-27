@@ -301,17 +301,13 @@ jQuery(document).ready(function ($) {
         }, 5000);
     }
 
-    const payoutStatusSelects = document.querySelectorAll('.payout_status_select');
-    if (payoutStatusSelects.length > 0) {
-        payoutStatusSelects.forEach((select) => {
-            select.addEventListener('change', (e) => {
+    const payoutStatusButtons = document.querySelectorAll('.payout_status_button');
+    if (payoutStatusButtons.length > 0) {
+        payoutStatusButtons.forEach((button) => {
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
                 const logID = e.target.dataset.log;
-                const status = e.target.value;
-                const packets = {
-                    status: status
-                }
-
-                updatePayoutStatus(packets, logID, select);
+                markStatusPaid(logID, button);
             })
         })
     }
@@ -372,15 +368,14 @@ jQuery(document).ready(function ($) {
         document.querySelector('.payout_text').innerHTML = html;
     }
 
-    function updatePayoutStatus(packets, logID, element) {
-        axios.post('/report/payout/update-status/' + logID, packets)
+    function markStatusPaid(logID, element) {
+
+        axios.post('/report/payout/update-status/' + logID)
         .then((response) => {
             if (response.data.success) {
-                element.classList.add('updated_animation');
-
-                setTimeout(() => {
-                    element.classList.remove('updated_animation');
-                },3000)
+                element.removeAttribute('href');
+                element.setAttribute('aria-disabled', 'true');
+                element.parentElement.parentElement.innerHTML = "paid";
             } else {
                 document.querySelector('#error_message p').innerHTML = response.data.message;
                 document.querySelector('#error_message').classList.add('active');

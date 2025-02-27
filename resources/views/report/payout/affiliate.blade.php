@@ -7,9 +7,10 @@
     <table class="table table-striped table-bordered  table_01">
         <thead>
         <tr>
-            <th class="value_span9">Cash Earned</th>
             <th class="value_span9">Payout Type</th>
             <th class="value_span9">Payout Dates</th>
+            <th class="value_span9">Cash Earned</th>
+            <th class="value_span9">Status</th>
         </tr>
         </thead>
         <tbody>
