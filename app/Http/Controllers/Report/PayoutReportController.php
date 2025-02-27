@@ -101,10 +101,19 @@ class PayoutReportController extends ReportController
     private function reportPayout()
     {
 		if (Session::userType() == 3) {
-			return 0;
+			$report = DB::table('payout_logs')
+						->where('payout_logs.user_id', Session::userID())
+			            ->join('rep', 'rep.idrep', '=', 'payout_logs.user_id')
+			            ->select(
+				            'payout_logs.revenue',
+				            'payout_logs.start_of_week',
+				            'payout_logs.end_of_week',
+				            'payout_logs.status',
+				            'payout_logs.payout_type',
+			            )->orderBy('payout_logs.start_of_week', 'desc')
+			            ->paginate(100);
 		} else {
 			$report = DB::table('payout_logs')
-			            ->leftJoin('payout_data', 'payout_data.rep_idrep' , '=', 'payout_logs.user_id')
 						->join('rep', 'rep.idrep', '=', 'payout_logs.user_id')
 						->select(
 							'payout_logs.id as log_id',
@@ -113,9 +122,9 @@ class PayoutReportController extends ReportController
 							'payout_logs.start_of_week',
 							'payout_logs.end_of_week',
 							'payout_logs.status',
-							'payout_data.payout_type',
-							'payout_data.payout_id',
-							'payout_data.country'
+							'payout_logs.payout_type',
+							'payout_logs.payout_id',
+							'payout_logs.country'
 						)->orderBy('payout_logs.start_of_week', 'desc')
 			            ->paginate(100);
 		}

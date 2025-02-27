@@ -45,7 +45,8 @@ class WeeklyPayoutCommand extends Command
 	    $users = User::where('status', '=', 1)
 	               ->join('conversions', 'conversions.user_id', '=', 'rep.idrep')
 	               ->whereBetween('conversions.timestamp', [$startUtc, $endUtc])
-	               ->select('rep.idrep', DB::raw('SUM(conversions.paid) as revenue'))
+	               ->leftJoin('payout_data', 'payout_data.rep_idrep', '=', 'rep.idrep')
+	               ->select('rep.idrep', 'payout_data.payout_type', 'payout_data.payout_id', 'payout_data.country', DB::raw('SUM(conversions.paid) as revenue'))
 	               ->groupBy('rep.idrep')
 	               ->get();
 
@@ -60,9 +61,12 @@ class WeeklyPayoutCommand extends Command
 			}
 
 			$user->payoutLog()->create([
-				'revenue' => $totalRevenue,
+				'payout_type'   => $user->payout_type,
+				'payout_id'     => $user->payout_id,
+				'country'       => $user->country,
+				'revenue'       => $totalRevenue,
 				'start_of_week' => $startEst->format('Y-m-d'),
-				'end_of_week' => $endEst->format('Y-m-d'),
+				'end_of_week'   => $endEst->format('Y-m-d'),
 			]);
 
 			$this->info("User {$user->idrep} => revenue: {$totalRevenue}");
