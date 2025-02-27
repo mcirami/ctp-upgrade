@@ -311,6 +311,29 @@ jQuery(document).ready(function ($) {
             })
         })
     }
+    const editPayoutType = document.querySelectorAll('.edit_payout_detail');
+    if (editPayoutType.length > 0) {
+        editPayoutType.forEach((link) => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.target.parentElement.classList.add('hidden');
+                e.target.parentElement.parentElement.querySelector('.input_field').classList.add('active');
+            })
+        })
+    }
+
+    const cancelPayoutType = document.querySelectorAll('.cancel_payout_detail');
+    if (cancelPayoutType.length > 0) {
+        cancelPayoutType.forEach((link) => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.target.parentElement.parentElement.querySelector('.current_details').classList.remove('hidden');
+                e.target.parentElement.classList.remove('active');
+            })
+        })
+    }
+
+
     function removeFromString(text, valueToRemove) {
         const index = text.indexOf(valueToRemove);
 

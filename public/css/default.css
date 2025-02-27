@@ -3239,14 +3239,17 @@ footer.external .footer_content ul {
 	-webkit-justify-content: space-between;
 	align-items: center;
 	-webkit-align-items: center;
-	gap: 10px;
 }
 
-#logs td .edit_details .input_field select {
+#logs td .edit_details .input_field select, #logs td .edit_details .input_field input[type="text"] {
 	height: 30px;
-	width: 100px;
+	width: 150px;
+	border: 1px solid #ebeaea;
+	border-radius: 6px;
+	-webkit-border-radius: 6px;
+	-moz-border-radius: 6px;
+	padding: 2px;
 }
-
 
 #logs td .edit_details .input_field.active {
 	opacity: 100%;
