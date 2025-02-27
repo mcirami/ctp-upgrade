@@ -20,33 +20,6 @@ function adminLogin(id) {
 }
 
 jQuery(document).ready(function ($) {
- /*   var $trigger = $(".dropdown");
-
-
-    // Show hide popover
-    $(".dropdown > a").click(function (e) {
-        e.preventDefault();
-
-        if (!$(this).parent().find(".dropdown-menu").hasClass('open')) {
-            $(this).parent().find(".dropdown-menu").slideDown(400).addClass('open');
-        } else {
-            $(this).parent().find(".dropdown-menu").slideUp(400).removeClass('open');
-        }
-
-
-    });
-*/
-    /* $(".dropdown").on("click", function(event){
-          if($trigger !== event.target && !$trigger.has(event.target).length){
-              $(".dropdown-menu").slideUp("fast");
-          }
-      });
-   */
-/*
-    var activeDropdown = $(".dropdown-menu li").find('.active');
-
-    $(activeDropdown).parent().parent().css('display', 'block').addClass('open');
-*/
 
     $('#default').click(function (e) {
         e.preventDefault();
@@ -328,6 +301,20 @@ jQuery(document).ready(function ($) {
         }, 5000);
     }
 
+    const payoutStatusSelects = document.querySelectorAll('.payout_status_select');
+    if (payoutStatusSelects.length > 0) {
+        payoutStatusSelects.forEach((select) => {
+            select.addEventListener('change', (e) => {
+                const logID = e.target.dataset.log;
+                const status = e.target.value;
+                const packets = {
+                    status: status
+                }
+
+                updatePayoutStatus(packets, logID, select);
+            })
+        })
+    }
     function removeFromString(text, valueToRemove) {
         const index = text.indexOf(valueToRemove);
 
@@ -383,6 +370,25 @@ jQuery(document).ready(function ($) {
         }
 
         document.querySelector('.payout_text').innerHTML = html;
+    }
+
+    function updatePayoutStatus(packets, logID, element) {
+        axios.post('/report/payout/update-status/' + logID, packets)
+        .then((response) => {
+            if (response.data.success) {
+                element.classList.add('updated_animation');
+
+                setTimeout(() => {
+                    element.classList.remove('updated_animation');
+                },3000)
+            } else {
+                document.querySelector('#error_message p').innerHTML = response.data.message;
+                document.querySelector('#error_message').classList.add('active');
+                setTimeout(() => {
+                    document.querySelector('#error_message').classList.remove('active');
+                },5000)
+            }
+        });
     }
 
 });

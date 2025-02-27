@@ -34,7 +34,7 @@ class WeeklyPayoutCommand extends Command
 	    //    Because we run this Monday at 5am, "now" is the new Monday (5am).
 	    //    We want last week’s Monday 00:00 to Sunday 23:59:59.
 	    $now = Carbon::now('America/New_York');
-	    $startEst = $now->copy()->subWeeks(4)->startOfWeek( CarbonInterface::MONDAY)->setTime(0,0,0);
+	    $startEst = $now->copy()->subWeek()->startOfWeek( CarbonInterface::MONDAY)->setTime(0,0,0);
 	    $endEst   = $startEst->copy()->endOfWeek(CarbonInterface::SUNDAY)->setTime(23,59,59);
 	    $startUtc = $startEst->clone()->setTimezone('UTC');
 	    $endUtc   = $endEst->clone()->setTimezone('UTC');
@@ -59,8 +59,7 @@ class WeeklyPayoutCommand extends Command
 				}
 			}
 
-			PayoutLog::create([
-				'user_id' => $user->idrep,
+			$user->payoutLog()->create([
 				'revenue' => $totalRevenue,
 				'start_of_week' => $startEst->format('Y-m-d'),
 				'end_of_week' => $endEst->format('Y-m-d'),

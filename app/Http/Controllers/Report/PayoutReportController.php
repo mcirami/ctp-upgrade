@@ -2,20 +2,26 @@
 
 namespace App\Http\Controllers\Report;
 
-use App\Http\Controllers\Controller;
+
+use App\PayoutLog;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+/*
 use Barryvdh\Snappy\Facades\SnappyPdf;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
+use App\Http\Controllers\Controller;
 use LeadMax\TrackYourStats\Report\AffiliatePayout;
+use Illuminate\Support\Arr;
 use LeadMax\TrackYourStats\Report\Filters\DeductionColumnFilter;
 use LeadMax\TrackYourStats\Report\Filters\DollarSign;
 use LeadMax\TrackYourStats\Report\Filters\Total;
 use LeadMax\TrackYourStats\Report\Reporter;
 use LeadMax\TrackYourStats\Report\Repositories\Offer\AffiliateOfferRepository;
 use LeadMax\TrackYourStats\Report\Repositories\PayoutLogRepository;
-use LeadMax\TrackYourStats\System\Session;
 use LeadMax\TrackYourStats\Report\Filters;
+*/
+use LeadMax\TrackYourStats\System\Session;
+
 
 class PayoutReportController extends ReportController
 {
@@ -23,17 +29,23 @@ class PayoutReportController extends ReportController
 
     public function report()
     {
-        $report = $this->reportPayout();
-        $historyReport = $this->reportPayoutHistory();
+        $reports = $this->reportPayout();
 
-        if (request()->expectsJson()) {
-            return response($report->toArray());
-        }
+		if(Session::userType() == 3) {
+			return view('report.payout.affiliate', compact('reports'));
+		}
 
-        return view('report.payout.affiliate', compact('report', 'historyReport'));
+	    return view('report.payout.show', compact('reports'));
+
     }
 
-    public function invoice()
+	public function updateStatus(PayoutLog $payoutLog, Request $request) {
+		$payoutLog->update(['status' => $request->get('status')]);
+
+		return response()->json(['success' => true]);
+	}
+
+   /* public function invoice()
     {
         $dates = static::getDates();
         $repo = new AffiliateOfferRepository(\DB::getPdo());
@@ -84,15 +96,29 @@ class PayoutReportController extends ReportController
 
 
         return $reporter->fetchReport($dates['startDate'], $dates['endDate']);
-    }
+    }*/
 
     private function reportPayout()
     {
-        $dates = static::getDates();
-        $report = new  AffiliatePayout(Session::userID(), $dates['startDate'], $dates['endDate']);
-
-        $report->fetchReports();
-        $report->processReports();
+		if (Session::userType() == 3) {
+			return 0;
+		} else {
+			$report = DB::table('payout_logs')
+			            ->leftJoin('payout_data', 'payout_data.rep_idrep' , '=', 'payout_logs.user_id')
+						->join('rep', 'rep.idrep', '=', 'payout_logs.user_id')
+						->select(
+							'payout_logs.id as log_id',
+							'rep.user_name',
+							'payout_logs.revenue',
+							'payout_logs.start_of_week',
+							'payout_logs.end_of_week',
+							'payout_logs.status',
+							'payout_data.payout_type',
+							'payout_data.payout_id',
+							'payout_data.country'
+						)->orderBy('payout_logs.start_of_week', 'desc')
+			            ->paginate(100);
+		}
 
         return $report;
     }

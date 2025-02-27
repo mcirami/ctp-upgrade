@@ -2518,7 +2518,7 @@ table.offer_clicks th:first-child {
 	}
 }
 
-#user_info .updated_animation {
+.updated_animation {
 	animation: pulse 2s;
 }
 

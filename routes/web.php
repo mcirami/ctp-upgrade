@@ -111,11 +111,12 @@ Route::group(['middleware' => 'legacy.auth'], function () {
         Route::group(['middleware' => 'role:' . Privilege::ROLE_AFFILIATE], function () {
             Route::get('sub', [SubReportController::class,'show']);
 	        Route::get('sub/conversions', [SubReportController::class,'showSubConversions']);
-            Route::group(['prefix' => 'payout'], function () {
-                Route::get('', [PayoutReportController::class, 'report']);
-                Route::get('pdf', [PayoutReportController::class, 'invoice']);
-            });
         });
+	    Route::group(['prefix' => 'payout'], function () {
+		    Route::get('/', [PayoutReportController::class, 'report']);
+		    Route::post('/update-status/{payoutLog}', [PayoutReportController::class, 'updateStatus']);
+		    Route::get('pdf', [PayoutReportController::class, 'invoice']);
+	    });
     });
     Route::group(['prefix' => 'offer'], function () {
         Route::get('manage', [OfferController::class, 'showManage']);

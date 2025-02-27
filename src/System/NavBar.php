@@ -124,6 +124,11 @@ class NavBar
                 "required_permissions" => [Permissions::ADJUST_SALES],
             ],
 
+            "Payout Logs" => [
+	            'url' => '/report/payout',
+	            "required_user_types" => [\App\Privilege::ROLE_GOD, \App\Privilege::ROLE_ADMIN]
+            ],
+
      //       "Chat Log Report" => [
      //           'url' => '/report/chat-log',
      //           "required_user_types" => [\App\Privilege::ROLE_GOD, \App\Privilege::ROLE_ADMIN, \App\Privilege::ROLE_MANAGER],
