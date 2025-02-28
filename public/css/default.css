@@ -3261,6 +3261,11 @@ footer.external .footer_content ul {
 	text-decoration: underline;
 }
 
+#logs.affiliate_view td .edit_details a {
+	max-width: 150px;
+	font-size: .8rem;
+}
+
 #logs td .edit_details .current_details {
 	display: -webkit-box;
 	display: -ms-flexbox;
@@ -3389,6 +3394,15 @@ footer.external img {
 	height: auto;
 }
 
+@media screen and (max-width: 1499px) {
+	#logs:not(.affiliate_view) td .edit_details .current_details {
+		-webkit-box-orient: vertical;
+		-webkit-box-direction: normal;
+		-ms-flex-direction: column;
+		flex-direction: column;
+		gap: 5px;
+	}
+}
 @media screen and (max-width: 1199px) {
 	.nav_wrap.external_nav ul a {
 		font-size: 1em;

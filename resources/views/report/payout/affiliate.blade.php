@@ -4,7 +4,7 @@
     Payout Report
 @endsection
 @section('table')
-    <table id="logs" class="table table-striped table-bordered  table_01">
+    <table id="logs" class="affiliate_view table table-striped table-bordered table_01">
         <thead>
         <tr>
             <th class="value_span9">Payout Type</th>
@@ -19,16 +19,17 @@
                 <td>
                     <div class="edit_details">
                         <div class="current_details">
-                            {{$report->payout_type ??
-                                "No Details" .
-                                "<a href='/user/payment-details'>Submit Details</a>"
-                               }}
+                            <?php if (!$report->payout_type) : ?>
+                                No Details
+                                <a class="btn value_span11 value_span2 value_span4 text-decoration-none" href='/user/payment-details'>Submit Details</a>
+                            <?php else : ?>
+                                {{$report->payout_type}}
+                            <?php endif; ?>
+
                         </div>
                     </div>
                 </td>
-                <td>
-                    {{$report->start_of_week}} - {{$report->end_of_week}}
-                </td>
+                <td>{{\Carbon\Carbon::parse($report->start_of_week)->format('m/d/Y')}} - {{\Carbon\Carbon::parse($report->end_of_week)->format('m/d/Y')}}</td>
                 <td>
                     ${{ number_format( $report->revenue,2,".",",")}}
                 </td>

@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
  * App\PayoutLog
  *
  * @mixin \Eloquent
+ * @property string $date
  * @property int $id
  * @property int $user_id
  * @property float $revenue
@@ -35,12 +36,21 @@ use Illuminate\Database\Eloquent\Model;
 class PayoutLog extends Model
 {
 
-
     protected $guarded = [
 		'id',
 		'created_at',
 	    'updated_at',
     ];
+
+	/**
+	 * The attributes that should be cast.
+	 *
+	 *
+	 */
+	protected $casts = [
+		'start_of_week'  => 'date',
+		'end_of_week'    => 'date',
+	];
 
 	public function user() {
 		return $this->belongsTo(User::class);

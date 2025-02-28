@@ -333,6 +333,36 @@ jQuery(document).ready(function ($) {
         })
     }
 
+    const logInputDetails = document.querySelectorAll('#logs .payout_detail');
+    if (logInputDetails.length > 0) {
+        ["keydown", "focusout", "change"].forEach(evt => {
+            logInputDetails.forEach((input) => {
+                input.addEventListener(evt, (e) => {
+                    if( (evt === "keydown" && e.keyCode === 13) ||
+                        (evt === "focusout" && input.type !== "select-one") ||
+                        evt === "change") {
+                        const payoutValue = e.target.value;
+                        const name = e.target.name;
+                        const logID = e.target.dataset.log;
+                        const packets = {
+                            [`${name}`]: payoutValue,
+                        }
+
+                        axios.post('/report/payout/update-log-data/' + logID,
+                            packets).then((response) => {
+                                if (response.data.success) {
+                                    input.parentElement.parentElement.querySelector('.current_details').classList.remove('hidden');
+                                    input.parentElement.parentElement.querySelector('.current_details .current_text').innerHTML = payoutValue;
+                                    input.parentElement.classList.remove('active');
+                                    console.log("SUCCESS!");
+                                }
+                        })
+                    }
+                })
+            })
+        });
+    }
+
 
     function removeFromString(text, valueToRemove) {
         const index = text.indexOf(valueToRemove);
@@ -407,6 +437,10 @@ jQuery(document).ready(function ($) {
                 },5000)
             }
         });
+    }
+
+    function updateLogDetails() {
+
     }
 
 });

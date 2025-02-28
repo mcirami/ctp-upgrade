@@ -40,6 +40,7 @@ use App\Http\Controllers\Sms\SmsClientController;
 use App\Http\Controllers\ChatLogController;
 use App\Http\Controllers\Report\ConversionReportController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\Report\PayoutLogController;
 
 Route::get('/', [IndexController::class, 'index']);
 Route::post('/', [IndexController::class, 'index']);
@@ -113,8 +114,9 @@ Route::group(['middleware' => 'legacy.auth'], function () {
 	        Route::get('sub/conversions', [SubReportController::class,'showSubConversions']);
         });
 	    Route::group(['prefix' => 'payout'], function () {
-		    Route::get('/', [PayoutReportController::class, 'report']);
-		    Route::post('/update-status/{payoutLog}', [PayoutReportController::class, 'markStatusPaid']);
+		    Route::get('/', [PayoutLogController::class, 'report']);
+		    Route::post('/update-status/{payoutLog}', [PayoutLogController::class, 'markStatusPaid']);
+		    Route::post('/update-log-data/{payoutLog}', [PayoutLogController::class, 'updateLogData']);
 		    Route::get('pdf', [PayoutReportController::class, 'invoice']);
 	    });
     });
