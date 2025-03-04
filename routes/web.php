@@ -114,7 +114,8 @@ Route::group(['middleware' => 'legacy.auth'], function () {
 	        Route::get('sub/conversions', [SubReportController::class,'showSubConversions']);
         });
 	    Route::group(['prefix' => 'payout'], function () {
-		    Route::get('/', [PayoutLogController::class, 'report']);
+		    Route::get('/', [PayoutLogController::class, 'show'])->name('show.logs');
+		    Route::get('/get-logs', [PayoutLogController::class, 'get'])->name('get.logs');
 		    Route::post('/update-status/{payoutLog}', [PayoutLogController::class, 'markStatusPaid']);
 		    Route::post('/update-log-data/{payoutLog}', [PayoutLogController::class, 'updateLogData']);
 		    Route::get('pdf', [PayoutReportController::class, 'invoice']);

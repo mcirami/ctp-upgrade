@@ -3189,7 +3189,7 @@ footer.external .footer_content ul {
 	padding: 10px;
 }
 
-#logs td.status .status_wrap {
+#logs .status_wrap {
 	display: -webkit-box;
 	display: -ms-flexbox;
 	display: flex;
@@ -3206,7 +3206,7 @@ footer.external .footer_content ul {
 	gap: 5px;
 }
 
-#logs td.status .status_wrap .btn_span a {
+#logs .status_wrap .btn_span a {
 	padding: 5px 10px;
 	border-radius: 5px;
 	width: 100%;
@@ -3215,6 +3215,18 @@ footer.external .footer_content ul {
 	font-size: .8rem;
 	text-transform: uppercase;
 	max-width: 115px;
+}
+
+#logs td, #logs th {
+	padding: 20px 15px;
+	font-family: 'robotoregular', sans-serif;
+	width: 300px;
+	text-align: left;
+}
+
+#logs th {
+	font-family: 'robotobold', sans-serif;
+	font-size: 1em;
 }
 
 #logs td .edit_details .input_field {
@@ -3241,14 +3253,117 @@ footer.external .footer_content ul {
 	-webkit-align-items: center;
 }
 
-#logs td .edit_details .input_field select, #logs td .edit_details .input_field input[type="text"] {
-	height: 30px;
-	width: 150px;
+#logs td .edit_details {
+	max-width: 300px;
+}
+#logs_wrapper select, #logs_wrapper input[type="text"], #logs_wrapper input[type="search"] {
+	height: 40px;
+	width: 160px;
 	border: 1px solid #ebeaea;
 	border-radius: 6px;
 	-webkit-border-radius: 6px;
 	-moz-border-radius: 6px;
 	padding: 2px;
+	color: #6b6b6b;
+}
+
+#logs_wrapper input[type="search"] {
+	width: 100%;
+}
+
+#logs_wrapper select.dt-input {
+	margin-right: 10px;
+	width: 100px;
+}
+
+#logs_wrapper label[for="dt-search-0"] {
+	margin-right: 10px;
+}
+#logs_wrapper label[for="dt-search-0"], #logs_wrapper label[for="dt-length-0"] {
+	font-family: 'robotobold', sans-serif;
+}
+
+#logs_wrapper .dt-search {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-orient: horizontal;
+	-webkit-box-direction: normal;
+	-ms-flex-direction: row;
+	flex-direction: row;
+	-ms-flex-wrap: wrap;
+	flex-wrap: wrap;
+}
+
+#logs_wrapper .dt-layout-row:first-child, #logs_wrapper .dt-layout-row:nth-child(3) {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-orient: horizontal;
+	-webkit-box-direction: normal;
+	-ms-flex-direction: row;
+	flex-direction: row;
+	-ms-flex-wrap: nowrap;
+	flex-wrap: nowrap;
+	justify-content: space-between;
+	-webkit-justify-content: space-between;
+	align-items: center;
+	-webkit-align-items: center;
+	padding: 20px;
+	gap: 20px;
+}
+#logs_wrapper .dt-layout-row:nth-child(3) .dt-layout-cell.dt-layout-start {
+	order: 1;
+}
+
+
+#logs_wrapper .dt-layout-row:first-child .dt-length {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-orient: horizontal;
+	-webkit-box-direction: normal;
+	-ms-flex-direction: row;
+	flex-direction: row;
+	-ms-flex-wrap: wrap;
+	flex-wrap: wrap;
+	gap: 5px;
+}
+#logs_wrapper .dt-layout-row:first-child .dt-length select {
+	order: 1;
+	width: 100%;
+	margin-right: 0;
+}
+
+#logs_wrapper .dt-layout-row:nth-child(3) .dt-layout-cell.dt-layout-end nav {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-orient: horizontal;
+	-webkit-box-direction: normal;
+	-ms-flex-direction: row;
+	flex-direction: row;
+	-ms-flex-wrap: nowrap;
+	flex-wrap: nowrap;
+	justify-content: flex-start;
+	-webkit-justify-content: flex-start;
+	gap: 10px;
+}
+#logs_wrapper .dt-layout-row:nth-child(3) .button {
+	width: auto;
+	padding: 5px 10px;
+	transition: background-color 0.3sease-in-out;
+	border-radius: 4px;
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+}
+
+#logs_wrapper .dt-paging-button.disabled,
+#logs_wrapper .dt-paging-button.first,
+#logs_wrapper .dt-paging-button.previous,
+#logs_wrapper .dt-paging-button.next,
+#logs_wrapper .dt-paging-button.last {
+	display: none;
 }
 
 #logs td .edit_details .input_field.active {
@@ -3303,7 +3418,6 @@ footer.external .footer_content ul {
 	flex-wrap: nowrap;
 	justify-content: space-between;
 	-webkit-justify-content: space-between;
-
 }
 
 .nav_wrap.external_nav .row_wrap .navbar-nav {
@@ -3490,6 +3604,19 @@ footer.external img {
 @media screen and (max-width: 549px) {
 
 	.payment_details form .submit_wrap button, .payment_details .form-group input, .payment_details .form-group select {
+		width: 100%;
+	}
+
+	#logs_wrapper .dt-layout-row:first-child {
+		flex-wrap: wrap;
+	}
+
+	#logs_wrapper .dt-layout-row:first-child .dt-length select,
+	#logs_wrapper .dt-layout-row:first-child .dt-search,
+	#logs_wrapper .dt-layout-row:first-child .dt-layout-start,
+	#logs_wrapper .dt-layout-row:first-child .dt-layout-end,
+	#logs_wrapper label[for="dt-search-0"],
+	#logs_wrapper label[for="dt-length-0"] {
 		width: 100%;
 	}
 

@@ -27,10 +27,10 @@
 
     <link rel="stylesheet" type="text/css" href="<?php echo $webroot; ?>css/font-awesome/css/all.css">
     <link rel="stylesheet" href="<?php echo $webroot; ?>css/magic.min.css">
-
+    {{--<link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.dataTables.css" />--}}
     <script type="text/javascript" src="<?php echo $webroot; ?>js/moment.js"></script>
-    <script type="text/javascript" src="<?php echo $webroot; ?>js/jquery_2.1.3_jquery.min.js"></script>
-    <script type="text/javascript" src="<?php echo $webroot; ?>js/jquery-ui.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/ui/1.14.1/jquery-ui.min.js" integrity="sha256-AlTido85uXPlSyyaZNsjJXeCs07eSv3r43kyCVc8ChI=" crossorigin="anonymous"></script>
 
     <script type="text/javascript" src="<?php echo $webroot; ?>js/jscolor.min.js"></script>
     <link rel="stylesheet" href="{{$webroot}}css/jquery-ui.min.css"/>

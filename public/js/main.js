@@ -301,68 +301,46 @@ jQuery(document).ready(function ($) {
         }, 5000);
     }
 
-    const payoutStatusButtons = document.querySelectorAll('.payout_status_button');
-    if (payoutStatusButtons.length > 0) {
-        payoutStatusButtons.forEach((button) => {
-            button.addEventListener('click', (e) => {
-                e.preventDefault();
-                const logID = e.target.dataset.log;
-                markStatusPaid(logID, button);
-            })
-        })
-    }
-    const editPayoutType = document.querySelectorAll('.edit_payout_detail');
-    if (editPayoutType.length > 0) {
-        editPayoutType.forEach((link) => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.target.parentElement.classList.add('hidden');
-                e.target.parentElement.parentElement.querySelector('.input_field').classList.add('active');
-            })
-        })
-    }
+    $(document).on('click', '.payout_status_button', function(e){
+        e.preventDefault();
+        const logID = e.target.dataset.log;
+        markStatusPaid(logID, e.target);
+    })
 
-    const cancelPayoutType = document.querySelectorAll('.cancel_payout_detail');
-    if (cancelPayoutType.length > 0) {
-        cancelPayoutType.forEach((link) => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.target.parentElement.parentElement.querySelector('.current_details').classList.remove('hidden');
-                e.target.parentElement.classList.remove('active');
-            })
-        })
-    }
+    $(document).on('click', '.edit_payout_detail', function(e){
+        e.preventDefault();
+        e.target.parentElement.classList.add('hidden');
+        e.target.parentElement.parentElement.querySelector('.input_field').classList.add('active');
+    })
 
-    const logInputDetails = document.querySelectorAll('#logs .payout_detail');
-    if (logInputDetails.length > 0) {
-        ["keydown", "focusout", "change"].forEach(evt => {
-            logInputDetails.forEach((input) => {
-                input.addEventListener(evt, (e) => {
-                    if( (evt === "keydown" && e.keyCode === 13) ||
-                        (evt === "focusout" && input.type !== "select-one") ||
-                        evt === "change") {
-                        const payoutValue = e.target.value;
-                        const name = e.target.name;
-                        const logID = e.target.dataset.log;
-                        const packets = {
-                            [`${name}`]: payoutValue,
+    $(document).on('click', '.cancel_payout_detail', function(e){
+        e.preventDefault();
+        e.target.parentElement.parentElement.querySelector('.current_details').classList.remove('hidden');
+        e.target.parentElement.classList.remove('active');
+    })
+
+    $(document).on("keydown focusout change", "#logs .payout_detail", function(evt) {
+            if( (evt.type === "keydown" && evt.keyCode === 13) ||
+                (evt.type === "focusout" && evt.type !== "change") ||
+                evt.type === "change") {
+                const payoutValue = evt.target.value;
+                const name = evt.target.name;
+                const logID = evt.target.dataset.log;
+                const packets = {
+                    [`${name}`]: payoutValue,
+                }
+
+                axios.post('/report/payout/update-log-data/' + logID,
+                    packets).then((response) => {
+                        if (response.data.success) {
+                            evt.target.parentElement.parentElement.querySelector('.current_details').classList.remove('hidden');
+                            evt.target.parentElement.parentElement.querySelector('.current_details .current_text').innerHTML = payoutValue;
+                            evt.target.parentElement.classList.remove('active');
+                            console.log("SUCCESS!");
                         }
-
-                        axios.post('/report/payout/update-log-data/' + logID,
-                            packets).then((response) => {
-                                if (response.data.success) {
-                                    input.parentElement.parentElement.querySelector('.current_details').classList.remove('hidden');
-                                    input.parentElement.parentElement.querySelector('.current_details .current_text').innerHTML = payoutValue;
-                                    input.parentElement.classList.remove('active');
-                                    console.log("SUCCESS!");
-                                }
-                        })
-                    }
                 })
-            })
-        });
-    }
-
+            }
+    });
 
     function removeFromString(text, valueToRemove) {
         const index = text.indexOf(valueToRemove);

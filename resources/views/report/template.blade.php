@@ -22,7 +22,7 @@
             </div>
 
             @yield('extra')
-
+            @stack('scripts')
         </div>
     </div>
     <!--right_panel-->

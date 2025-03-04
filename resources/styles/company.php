@@ -52,11 +52,6 @@ background: #$valueSpan3 ;
 background: #$valueSpan1 ;
 }
 
-<!--
-.value_span3-2 {
-border-left: 3px solid #<?php /*echo $valueSpan3; */?>;
-}
--->
 .value_span4:hover, .value_span4.active {
 background:  #$valueSpan4 ;
 color: #fff;
