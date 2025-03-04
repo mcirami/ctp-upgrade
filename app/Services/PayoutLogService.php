@@ -2,7 +2,10 @@
 
 namespace App\Services;
 
+use App\Privilege;
 use Carbon\Carbon;
+use App\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use LeadMax\TrackYourStats\System\Session;
 use Yajra\DataTables\DataTables;
@@ -12,40 +15,39 @@ class PayoutLogService {
 	/**
 	 * @throws Exception
 	 */
-	public function reportPayout(): \Illuminate\Http\JsonResponse {
-		if (Session::userType() == 3) {
-			$report = DB::table('payout_logs')
-			            ->where('payout_logs.user_id', Session::userID())
-			            ->join('rep', 'rep.idrep', '=', 'payout_logs.user_id')
-			            ->select(
-				            'payout_logs.revenue',
-				            'payout_logs.start_of_week',
-				            'payout_logs.end_of_week',
-				            'payout_logs.status',
-				            'payout_logs.payout_type',
-			            )->orderBy('payout_logs.start_of_week', 'desc');
+	public function getGodReportPayout(): \Illuminate\Http\JsonResponse {
 
-			$data = $this->getDataTablesAffData($report);
+		$report = DB::table('payout_logs')
+		            ->join('rep', 'rep.idrep', '=', 'payout_logs.user_id')
+		            ->select(
+			            'payout_logs.id as log_id',
+			            'rep.user_name',
+			            'payout_logs.revenue',
+			            'payout_logs.start_of_week',
+			            'payout_logs.end_of_week',
+			            'payout_logs.status',
+			            'payout_logs.payout_type',
+			            'payout_logs.payout_id',
+			            'payout_logs.country'
+		            )->orderBy('payout_logs.start_of_week', 'desc');
 
-		} else {
-			$report = DB::table('payout_logs')
-			            ->join('rep', 'rep.idrep', '=', 'payout_logs.user_id')
-			            ->select(
-				            'payout_logs.id as log_id',
-				            'rep.user_name',
-				            'payout_logs.revenue',
-				            'payout_logs.start_of_week',
-				            'payout_logs.end_of_week',
-				            'payout_logs.status',
-				            'payout_logs.payout_type',
-				            'payout_logs.payout_id',
-				            'payout_logs.country'
-			            )->orderBy('payout_logs.start_of_week', 'desc');
+		return $this->getDataTablesGodData($report);
+	}
 
-			$data = $this->getDataTablesGodData($report);
-		}
+	public function getAffiliateReportPayout(): \Illuminate\Http\JsonResponse {
+		$report = DB::table('payout_logs')
+		            ->where('payout_logs.user_id', Session::userID())
+		            ->join('rep', 'rep.idrep', '=', 'payout_logs.user_id')
+		            ->select(
+			            'payout_logs.revenue',
+			            'payout_logs.start_of_week',
+			            'payout_logs.end_of_week',
+			            'payout_logs.status',
+			            'payout_logs.payout_type',
+		            )->orderBy('payout_logs.start_of_week', 'desc');
 
-		return $data;
+		return $this->getDataTablesAffData($report);
+
 	}
 
 	private function getDataTablesGodData($query): \Illuminate\Http\JsonResponse {

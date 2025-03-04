@@ -11,21 +11,28 @@ use LeadMax\TrackYourStats\System\Session;
 
 class PayoutLogController extends Controller
 {
-	public function show(): \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\Contracts\View\View|\Illuminate\Contracts\Foundation\Application {
-
-		if(Session::userType() == 3) {
-			return view('report.payout.affiliate');
-		}
-
+	private mixed $userType;
+	public function __construct() {
+		$this->userType = Session::userType();
+	}
+	public function showGodReport(): \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\Contracts\View\View|\Illuminate\Contracts\Foundation\Application {
 		return view('report.payout.show');
+	}
+	public function showAgentReport(): \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\Contracts\View\View|\Illuminate\Contracts\Foundation\Application {
+		return view('report.payout.affiliate');
 	}
 
 	/**
 	 * @throws Exception
 	 */
-	public function get(PayoutLogService $payout_log_service): \Illuminate\Http\JsonResponse {
-		$reports = $payout_log_service->reportPayout();
+	public function getGodLogs(PayoutLogService $payout_log_service): \Illuminate\Http\JsonResponse {
+		$reports = $payout_log_service->getGodReportPayout();
+		return response()->json($reports->original);
+	}
 
+	public function getAffLogs(PayoutLogService $payout_log_service): \Illuminate\Http\JsonResponse {
+
+		$reports = $payout_log_service->getAffiliateReportPayout();
 		return response()->json($reports->original);
 	}
 

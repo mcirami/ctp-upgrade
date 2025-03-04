@@ -30,6 +30,7 @@ class Session
 
     private static function isAdminLogin($requestedSessionVar, $unserialize = false)
     {
+
         if (isset($_GET["adminLogin"]) && isset($_SESSION['adminLogin'])) {
             if (isset($_SESSION['adminLogin'][$requestedSessionVar])) {
                 if ($unserialize) {

@@ -24,7 +24,7 @@
 			$(document).ready(function () {
 				const table = $('#logs').DataTable({
 					ajax: {
-						url: '/report/payout/get-logs',
+						url: '/report/payout/get-aff-logs',
 						dataSrc: 'data',
 					},
 					processing: true,
