@@ -46,6 +46,7 @@ class ClickGeo
             try {
 
                 $reader = new Reader(env("GEO_IP_DATABASE"));
+				dd("click geo: ", $reader->city($ip));
                 $record = $reader->city($ip);
     
                 /* if($record->country->isoCode == "") {
