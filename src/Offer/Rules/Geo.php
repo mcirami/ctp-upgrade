@@ -322,8 +322,8 @@ class Geo implements Rule
 		        }
 	        }
             //trys to get their iso code and postal
+	        dd($this->geoReader->city($ip));
             $this->record = $this->geoReader->city($ip);
-			dd($this->record->country->isoCode);
             $this->countryISO = $this->record->country->isoCode;
 
         } catch (\Exception $e) // if their ip wasn't in the db, set default values
