@@ -114,7 +114,7 @@ class IndexController extends Controller
             }
         }
         $clickRegistrationEvent = new ClickRegistrationEvent($request->get('repid'), $request->get('offerid'),
-            $request->query(), '174.86.201.244');
+            $request->query(), $ip);
         if ( ! $clickRegistrationEvent->fire()) {
             return redirect('404');
         }

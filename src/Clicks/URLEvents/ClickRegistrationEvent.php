@@ -54,6 +54,7 @@ class ClickRegistrationEvent extends URLEvent
 
     public function fire()
     {
+		dd($this->country);
         if ($this->registerClick()) {
             $this->sendUserToOffer();
         } else {
