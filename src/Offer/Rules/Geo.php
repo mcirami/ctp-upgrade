@@ -323,6 +323,7 @@ class Geo implements Rule
 	        }
             //trys to get their iso code and postal
             $this->record = $this->geoReader->city($ip);
+			dd($this->record->country->isoCode);
             $this->countryISO = $this->record->country->isoCode;
 
         } catch (\Exception $e) // if their ip wasn't in the db, set default values
@@ -357,7 +358,6 @@ class Geo implements Rule
             } else {
 
                 //dd($rule["country_list"]);
-	            dd($this->countryISO);
                 foreach ($rule["country_list"] as $country_code) {
                     if ($this->countryISO == $country_code) {
                         return true;
