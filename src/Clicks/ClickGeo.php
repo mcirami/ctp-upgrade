@@ -40,9 +40,9 @@ class ClickGeo
 	        return unKnownGeo($geo);
         }
 
-        $cacheKey = "geoip_{$ip}";
+        /*$cacheKey = "geoip_{$ip}";
         $ttl = now()->addDays(7);
-        return Cache::remember($cacheKey, $ttl, function () use ($ip, $geo) {
+        return Cache::remember($cacheKey, $ttl, function () use ($ip, $geo) {*/
             try {
 
                 $reader = new Reader(env("GEO_IP_DATABASE"));
@@ -70,9 +70,6 @@ class ClickGeo
             }
 
             return $geo;
-        });
-
-        
-
+    /*    });*/
     }
 }
