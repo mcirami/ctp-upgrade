@@ -196,9 +196,10 @@ class Rules
 
                     $count = 0;
                     foreach($conversions as $conversion) {
-
                         if ($conversion->country_code) {
-                            if ($conversion->country_code == $countryRule && $clickCountry == $conversion->country_code) {
+                            if ($conversion->country_code != "UNKNOWN" &&
+                                $conversion->country_code == $countryRule &&
+                                $clickCountry == $conversion->country_code) {
                                 ++$count;
                             }
                         } else {
