@@ -54,7 +54,6 @@ class ClickRegistrationEvent extends URLEvent
 
     public function fire()
     {
-		dd($this->country);
         if ($this->registerClick()) {
             $this->sendUserToOffer();
         } else {
@@ -165,6 +164,7 @@ class ClickRegistrationEvent extends URLEvent
         $this->checkIfOfferCappedAndSendToRedirectIfCapped();
 
         $this->getOfferDataFromDatabase($this->offerId);
+
         if (!is_bool($this->offerData) && $this->offerData->status) {
             if ($this->checkOfferRules()) {
                 return true;
