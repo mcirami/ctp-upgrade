@@ -92,7 +92,6 @@ class ClickRegistrationEvent extends URLEvent
                 Log::info('referer: ' . print_r($_SERVER["HTTP_REFERER"], true));
             } */
             //Log::info('ip: ' . print_r($ip, true));
-	        dd($this->country);
             $geo = $this->country;
             //Log::info('geo: ' . print_r($geo, true));
 
