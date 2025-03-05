@@ -325,7 +325,8 @@ class Geo implements Rule
 			        $ip = substr($ip, 0, strpos($ip, ","));
 		        }
 	        }
-			dd("IP: ", $ip);
+
+			dd( $this->geoReader->city($ip));
             //trys to get their iso code and postal
             $this->record = $this->geoReader->city($ip);
             $this->countryISO = $this->record->country->isoCode;
