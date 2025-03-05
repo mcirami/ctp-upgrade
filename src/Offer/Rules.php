@@ -209,6 +209,7 @@ class Rules
                         }
                     }
 
+					dd("count: ", $count, "cap: ", $cap);
                     if ($count >= $cap) {
                         $url = $this->buildRedirectUrl($rule['redirect_offer']);
                         send_to($url); 
