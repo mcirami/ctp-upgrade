@@ -36,12 +36,15 @@ class ClickRegistrationEvent extends URLEvent
 
     public $ip;
 
+	public $country;
+
     public function __construct($user_id, $offer_id, $sub_variables_array, $ip)
     {
         $this->userId = $user_id;
         $this->offerId = $offer_id;
         $this->subVarArray = $sub_variables_array;
         $this->ip = $ip;
+		$this->country = preg_replace('/[^a-zA-Z]/', '', ClickGeo::findGeo($ip));
     }
 
     public static function getEventString(): string
@@ -51,7 +54,7 @@ class ClickRegistrationEvent extends URLEvent
 
     public function fire()
     {
-        if ($this->registerClick($this->ip)) {
+        if ($this->registerClick()) {
             $this->sendUserToOffer();
         } else {
             return false;
@@ -76,7 +79,7 @@ class ClickRegistrationEvent extends URLEvent
 
     }
 
-    private function registerClick($ip)
+    private function registerClick()
     {
 
         if ($this->validateOffer() && $this->validateUser()) {
@@ -85,19 +88,18 @@ class ClickRegistrationEvent extends URLEvent
                 return false;
             }
 
-
             /* if(array_key_exists("HTTP_REFERER", $_SERVER)) {
                 Log::info('referer: ' . print_r($_SERVER["HTTP_REFERER"], true));
             } */
             //Log::info('ip: ' . print_r($ip, true));
-            $geo = preg_replace('/[^a-zA-Z]/', '', ClickGeo::findGeo($ip));
+            $geo = $this->country;
             //Log::info('geo: ' . print_r($geo, true));
 
             //Log::info('geo: ' . print_r($_SERVER, true));
             $click = new Click();
 
 	        $click->first_timestamp = date("Y-m-d H:i:s");
-            $click->ip_address = $ip; //$_SERVER["REMOTE_ADDR"];
+            $click->ip_address = $this->ip; //$_SERVER["REMOTE_ADDR"];
             $click->country_code = $geo['isoCode'];
             $click->referer = array_key_exists("HTTP_REFERER", $_SERVER) ? $_SERVER["HTTP_REFERER"] : null;
             $click->browser_agent = $_SERVER["HTTP_USER_AGENT"];
@@ -181,7 +183,7 @@ class ClickRegistrationEvent extends URLEvent
     private function checkOfferRules()
     {
         $rules = new Rules($this->offerId, $this->ip);
-        if ($rules->checkAllRules() == true) {
+        if ($rules->checkAllRules($this->country) == true) {
             return true;
         } else {
             return false;

@@ -162,7 +162,7 @@ class Rules
     }
 
 
-    public function checkAllRules()
+    public function checkAllRules($country = null)
     {
 
         if (empty($this->rules)) {
@@ -174,7 +174,7 @@ class Rules
                 $cap = $rule['cap'];
                 $country = $rule['country_code'];
                 $offerId = $rule['offer_idoffer'];
-                $clickCountry = preg_replace('/[^a-zA-Z]/', '', ClickGeo::findGeo($this->ip));
+                $clickCountry = $country;
 
                 $tz = 'America/New_York';
                 $timeNow = \Illuminate\Support\Carbon::today($tz)->format('Y-m-d');
@@ -188,9 +188,9 @@ class Rules
 
                 $conversions = DB::table('conversions')
                 ->whereBetween('first_timestamp', [$dateFrom, $dateTo ])
-                ->leftJoin('clicks', function($query) use ($offerId) {
-                    $query->on('conversions.click_id', '=', 'clicks.idclicks')->where('offer_idoffer', '=', $offerId);
-                })->select('ip_address', 'country_code')->get();
+                ->join('clicks', 'clicks.idclicks', '=', 'conversions.click_id')
+                ->where('clicks.offer_idoffer', '=', $offerId)
+				->select('ip_address', 'country_code')->get();
 
                 if ($conversions) {
                     $count = 0;
