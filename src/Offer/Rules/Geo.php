@@ -325,13 +325,13 @@ class Geo implements Rule
 			        $ip = substr($ip, 0, strpos($ip, ","));
 		        }
 	        }
-			dd("IP", $ip);
             //trys to get their iso code and postal
             $this->record = $this->geoReader->city($ip);
             $this->countryISO = $this->record->country->isoCode;
 
         } catch (\Exception $e) // if their ip wasn't in the db, set default values
         {
+			dd("exception", $e);
             $this->countryISO = "UNKNOWN";
         }
     }
