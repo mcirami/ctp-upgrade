@@ -45,6 +45,7 @@ class ClickRegistrationEvent extends URLEvent
         $this->subVarArray = $sub_variables_array;
         $this->ip = $ip;
 		$this->country = preg_replace('/[^a-zA-Z]/', '', ClickGeo::findGeo($ip))['isoCode'];
+		dd($this->country);
     }
 
     public static function getEventString(): string

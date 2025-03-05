@@ -332,7 +332,7 @@ class Geo implements Rule
             $this->countryISO = $this->record->country->isoCode;*/
 	        $this->record = preg_replace('/[^a-zA-Z]/', '', ClickGeo::findGeo($ip));
 			$this->countryISO = $this->record['isoCode'];
-			dd($this->record, $this->countryISO);
+			//dd($this->record, $this->countryISO);
 
         } catch (\Exception $e) // if their ip wasn't in the db, set default values
         {
