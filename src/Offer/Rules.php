@@ -172,7 +172,7 @@ class Rules
         foreach($this->rules as $rule) {
             if ($rule['cap_status']) {
                 $cap = $rule['cap'];
-                $country = $rule['country_code'];
+                $countryRule = $rule['country_code'];
                 $offerId = $rule['offer_idoffer'];
                 $clickCountry = $country;
 
@@ -192,18 +192,18 @@ class Rules
                 ->where('clicks.offer_idoffer', '=', $offerId)
 				->select('ip_address', 'country_code')->get();
 
-                if ($conversions) {
+                if (count($conversions) > 0) {
+
                     $count = 0;
-                    $conversions->toArray();
                     foreach($conversions as $conversion) {
 
-                        if ($conversion['country_code']) {
-                            if ($conversion['country_code'] == $country && $clickCountry['isoCode'] == $conversion['country_code']) {
+                        if ($conversion->country_code) {
+                            if ($conversion->country_code == $countryRule && $clickCountry == $conversion->country_code) {
                                 ++$count;
                             }
                         } else {
                             $geo = preg_replace('/[^a-zA-Z]/', '', ClickGeo::findGeo($conversion['ip_address']));
-                            if ($geo['isoCode'] == $country && $clickCountry['isoCode'] == $geo['isoCode']) {
+                            if ($geo['isoCode'] == $countryRule && $clickCountry == $geo['isoCode']) {
                                 ++$count;
                             }
                         }
