@@ -10,6 +10,7 @@ namespace LeadMax\TrackYourStats\Offer\Rules;
 
 
 use GeoIp2\Database\Reader;
+use MaxMind\Db\Reader\InvalidDatabaseException;
 
 class Geo implements Rule
 {
@@ -276,7 +277,10 @@ class Geo implements Rule
     public $redirectOffer = 0;
 
 
-    function __construct($rules)
+	/**
+	 * @throws InvalidDatabaseException
+	 */
+	function __construct($rules)
     {
         // passed rules from Rules class..
         $this->rules = $rules;
@@ -321,6 +325,7 @@ class Geo implements Rule
 			        $ip = substr($ip, 0, strpos($ip, ","));
 		        }
 	        }
+			dd("IP", $ip);
             //trys to get their iso code and postal
             $this->record = $this->geoReader->city($ip);
             $this->countryISO = $this->record->country->isoCode;
