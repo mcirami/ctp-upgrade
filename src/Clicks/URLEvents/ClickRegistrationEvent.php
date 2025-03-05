@@ -44,7 +44,7 @@ class ClickRegistrationEvent extends URLEvent
         $this->offerId = $offer_id;
         $this->subVarArray = $sub_variables_array;
         $this->ip = $ip;
-		$this->country = preg_replace('/[^a-zA-Z]/', '', ClickGeo::findGeo($ip));
+		$this->country = preg_replace('/[^a-zA-Z]/', '', ClickGeo::findGeo($ip))['isoCode'];
     }
 
     public static function getEventString(): string
@@ -100,7 +100,7 @@ class ClickRegistrationEvent extends URLEvent
 
 	        $click->first_timestamp = date("Y-m-d H:i:s");
             $click->ip_address = $this->ip; //$_SERVER["REMOTE_ADDR"];
-            $click->country_code = $geo['isoCode'];
+            $click->country_code = $geo;
             $click->referer = array_key_exists("HTTP_REFERER", $_SERVER) ? $_SERVER["HTTP_REFERER"] : null;
             $click->browser_agent = $_SERVER["HTTP_USER_AGENT"];
             
@@ -183,7 +183,8 @@ class ClickRegistrationEvent extends URLEvent
     private function checkOfferRules()
     {
         $rules = new Rules($this->offerId, $this->ip);
-        if ($rules->checkAllRules($this->country) == true) {
+
+        if ($rules->checkAllRules($this->country)) {
             return true;
         } else {
             return false;

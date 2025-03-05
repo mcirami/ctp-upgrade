@@ -169,12 +169,12 @@ class Rules
             return true;
         }
 
+	    $clickCountry = $country;
         foreach($this->rules as $rule) {
             if ($rule['cap_status']) {
                 $cap = $rule['cap'];
                 $countryRule = $rule['country_code'];
                 $offerId = $rule['offer_idoffer'];
-                $clickCountry = $country;
 
                 $tz = 'America/New_York';
                 $timeNow = \Illuminate\Support\Carbon::today($tz)->format('Y-m-d');
@@ -210,7 +210,6 @@ class Rules
                         }
                     }
 
-					dd("count: ", $count, "cap: ", $cap);
                     if ($count >= $cap) {
                         $url = $this->buildRedirectUrl($rule['redirect_offer']);
                         send_to($url); 
@@ -222,14 +221,11 @@ class Rules
         foreach ($this->ruleObjs as $key => $rule) {
 
             if (!$rule->checkRules()) {
-
                 $newRules = new Rules($rule->redirectOffer, $this->ip);
-
                 if ($newRules->checkAllRules()) {
                     $url = $this->buildRedirectUrl($rule->redirectOffer);
                     send_to($url);
                 }
-                
             }
         }
 
