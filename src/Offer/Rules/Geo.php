@@ -10,6 +10,7 @@ namespace LeadMax\TrackYourStats\Offer\Rules;
 
 
 use GeoIp2\Database\Reader;
+use LeadMax\TrackYourStats\Clicks\ClickGeo;
 use MaxMind\Db\Reader\InvalidDatabaseException;
 
 class Geo implements Rule
@@ -286,7 +287,7 @@ class Geo implements Rule
         $this->rules = $rules;
 
         // instantiate our new MaxMind db Reader
-        $this->geoReader = new Reader(env("GEO_IP_DATABASE"));
+        //$this->geoReader = new Reader(env("GEO_IP_DATABASE"));
 
         // find ISO Code with current incoming click traffic
         $this->getISOCode();
@@ -326,10 +327,11 @@ class Geo implements Rule
 		        }
 	        }
 
-			dd("GEO.php", $this->geoReader->city($ip));
             //trys to get their iso code and postal
-            $this->record = $this->geoReader->city($ip);
-            $this->countryISO = $this->record->country->isoCode;
+            /*$this->record = $this->geoReader->city($ip);
+            $this->countryISO = $this->record->country->isoCode;*/
+	        $this->record = preg_replace('/[^a-zA-Z]/', '', ClickGeo::findGeo($ip));
+			$this->countryISO = $this->record['isoCode'];
 
         } catch (\Exception $e) // if their ip wasn't in the db, set default values
         {
