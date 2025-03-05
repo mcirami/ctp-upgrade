@@ -113,8 +113,9 @@ class IndexController extends Controller
                 $ip = substr($ip, 0, strpos($ip, ","));
             }
         }
+
         $clickRegistrationEvent = new ClickRegistrationEvent($request->get('repid'), $request->get('offerid'),
-            $request->query(), $ip);
+            $request->query(), '174.86.201.244');
         if ( ! $clickRegistrationEvent->fire()) {
             return redirect('404');
         }

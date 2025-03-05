@@ -83,7 +83,7 @@ class ClickRegistrationEvent extends URLEvent
     {
 
         if ($this->validateOffer() && $this->validateUser()) {
-           
+
             if (!$this->checkBonusOfferRequirementMet()) {
                 return false;
             }
@@ -103,7 +103,7 @@ class ClickRegistrationEvent extends URLEvent
             $click->country_code = $geo;
             $click->referer = array_key_exists("HTTP_REFERER", $_SERVER) ? $_SERVER["HTTP_REFERER"] : null;
             $click->browser_agent = $_SERVER["HTTP_USER_AGENT"];
-            
+
             $click->rep_idrep = $this->userId;
             $click->offer_idoffer = $this->offerId;
             $click->click_type = $this->getClickType();
@@ -114,9 +114,7 @@ class ClickRegistrationEvent extends URLEvent
                 $cookie->save();
             }
 
-
             $this->clickId = $click->id;
-
 
             if ($this->offerData->offer_type == Offer::TYPE_CPC && $click->click_type == Click::TYPE_UNIQUE) {
 
@@ -130,7 +128,6 @@ class ClickRegistrationEvent extends URLEvent
 
                 $conversion->registerSale();
             }
-
             return true;
         } else {
             return false;
@@ -167,7 +164,6 @@ class ClickRegistrationEvent extends URLEvent
         $this->checkIfOfferCappedAndSendToRedirectIfCapped();
 
         $this->getOfferDataFromDatabase($this->offerId);
-
         if (!is_bool($this->offerData) && $this->offerData->status) {
             if ($this->checkOfferRules()) {
                 return true;
@@ -210,6 +206,7 @@ class ClickRegistrationEvent extends URLEvent
         $this->getUserDataFromDatabase($user_id);
 
         $offer_id = $this->offerId;
+
         $this->getOfferDataFromDatabase($offer_id);
         $encodedClickId = UID::encode($this->clickId);
 		$this->updateClickVars($this->clickId, $encodedClickId);
