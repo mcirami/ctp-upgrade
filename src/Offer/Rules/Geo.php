@@ -357,6 +357,7 @@ class Geo implements Rule
             } else {
 
                 //dd($rule["country_list"]);
+	            dd($this->countryISO);
                 foreach ($rule["country_list"] as $country_code) {
                     if ($this->countryISO == $country_code) {
                         return true;
