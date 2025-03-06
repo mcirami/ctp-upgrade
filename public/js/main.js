@@ -1,6 +1,6 @@
 function checkBoxesInDiv(divID) {
 
-    $("#" + divID).find('input[type=checkbox]').each(function () {
+    $('#' + divID).find('input[type=checkbox]').each(function () {
         this.checked = true;
     });
 
@@ -9,7 +9,7 @@ function checkBoxesInDiv(divID) {
 
 function unCheckBoxesInDiv(divID) {
 
-    $("#" + divID).find('input[type=checkbox]').each(function () {
+    $('#' + divID).find('input[type=checkbox]').each(function () {
         this.checked = false;
     });
 
@@ -86,7 +86,7 @@ jQuery(document).ready(function ($) {
                         "border-r", "border-l", "-mb-px", "value_span6-1");
                     tabTogglers[i].classList.remove("value_span2");
                     tabContents.children[i].classList.remove("hidden");
-                    if ("#" + tabContents.children[i].id === tabName) {
+                    if ('#' + tabContents.children[i].id === tabName) {
                         continue;
                     }
                     tabContents.children[i].classList.add("hidden");
