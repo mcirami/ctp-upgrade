@@ -66,7 +66,6 @@ class NoneUnique implements Rule
             $this->saveCookie();
             $this->redirectOffer = $rule2["redirect_offer"];
 
-			dd("rule2 redirect: ", $rule2["redirect_offer"]);
             return false;
         }
 
