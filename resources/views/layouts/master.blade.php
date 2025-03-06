@@ -69,13 +69,19 @@
     <button type="button" class="drawer-toggle drawer-hamburger"><span class="sr-only">toggle navigation</span>
         <span class="drawer-hamburger-icon"></span></button>
     <nav class="drawer-nav" role="navigation">
+        <div class="logo value_span1">
+            <a href="{{$webroot}}"><img
+                        src="{{ $webroot.\LeadMax\TrackYourStats\System\Company::loadFromSession()->getImgDir() .  "/logo.png"}}"
+                        alt="<?php echo \LeadMax\TrackYourStats\System\Company::loadFromSession()->getShortHand(); ?>"
+                        title="<?php echo \LeadMax\TrackYourStats\System\Company::loadFromSession()->getShortHand(); ?>"/></a>
+        </div>
         <ul class="drawer-menu value_span1">
             @php
 
                 $navBar->printNav(true);
 
                 echo " <li>
-                            <a class=\"drawer-dropdown-menu-item value_span2-2 value_span3-2 value_span4
+                            <a class=\"drawer-dropdown-menu-item value_span2 value_span2-2 value_span6-1 value_span3-2 value_span4
                            \" href=\"/logout\">Logout</a></li>";
 
             @endphp
