@@ -262,7 +262,7 @@ opacity: 0.4; " -->
 						<!--colorcode-->
 
 
-						<a id="default" class="value_span5" href="#">Reset To Default</a>
+						<a style="width: 100%; display: block;" id="default" class="value_span5" href="#">Reset To Default</a>
 
 						<!--<a href="#">Save</a>-->
 						</span>

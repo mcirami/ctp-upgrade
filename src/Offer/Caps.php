@@ -231,6 +231,7 @@ class Caps
 
     private function calculateTimeInterval($type = null)
     {
+		$query = '';
         if ($this->cap_rules["time_interval"] !== self::total) {
             switch ($this->cap_rules["type"]) {
 
@@ -289,7 +290,7 @@ class Caps
 				case self::monthly:
 					$dateFrom = date("Y-m-01"." 00:00:00");
 					$dateTo = date("Y-");
-					$dateTo .= (date("m") + 1)."-31 23:59:59";
+					$dateTo .= (date("m") + 1) ."-31 23:59:59";
 
 					return ['dateFrom' => $dateFrom, 'dateTo' => $dateTo, 'query' => $query];
 			}
@@ -415,11 +416,13 @@ class Caps
 		if($userCapRules && $userCapRules->status) {
 			$this->cap_rules["time_interval"] = self::daily;
 			$time = $this->calculateTimeInterval();
-			$userConversionsToday = DB::table('clicks')
-			                          ->where('rep_idrep', '=', $userId)
-			                          ->where('offer_idoffer', '=', $offerId)
+
+			$userConversionsToday = DB::table('conversions')
 			                          ->whereBetween('first_timestamp', [$time['dateFrom'], $time['dateTo']])
-			                          ->rightJoin('conversions', 'conversions.click_id', '=', 'clicks.idclicks')->count();
+			                          ->join('clicks', 'conversions.click_id', '=', 'clicks.idclicks')
+			                          ->where('clicks.rep_idrep', '=', $userId)
+			                          ->where('clicks.offer_idoffer', '=', $offerId)
+			                          ->count();
 			if ($userConversionsToday >= $userCapRules->cap) {
 				$capped = true;
 			}

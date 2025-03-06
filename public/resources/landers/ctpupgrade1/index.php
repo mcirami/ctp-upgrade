@@ -67,7 +67,7 @@
 					<h2>One Link.<br />Unlimited Cash.</h2>
 					<p>Model.cash's influencer & referral network helps models of all types earn extra cash all around the world with its simple extra revenue stream.</p>
 					<div class="buttons_wrap">
-						<a class="button white" href="https://model.cash/signup.php?mid=1003">
+						<a class="button white" href="/signup.php?mid=1003">
 							Get Started Now
 						</a>
 					</div>

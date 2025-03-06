@@ -78,7 +78,7 @@ switch ($result)
 
 				<div class="column_wrap">
 					<div class = "left_con01 value_span7">
-						<h3>User Details</h3>
+						<h3 class="value_span10">User Details</h3>
 						<p>
 							<label class = "value_span9">First Name</label>
 
@@ -137,7 +137,7 @@ switch ($result)
 						-->
 					</div><!-- left_con01 -->
 					<div class = "right_con01 value_span7">
-						<h3>Account Details</h3>
+						<h3 class="value_span10">Account Details</h3>
 						<p>
 							<label class = "value_span9">Username</label>
 
@@ -155,7 +155,7 @@ switch ($result)
 								;
 							</select>
 						</p>
-						<p>
+						<p class="value_span10">
 							<label class = "value_span9">Account Type</label>
 							<?php $create->printRadios(); ?>
 
