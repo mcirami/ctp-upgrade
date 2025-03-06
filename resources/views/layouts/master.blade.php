@@ -21,7 +21,7 @@
     <link rel="stylesheet" type="text/css" href="<?php echo $webroot; ?>css/tablesorter.default.css"/>
     <link rel="stylesheet" href="<?php echo $webroot; ?>css/company.css">
     <link href="<?php echo $webroot; ?>css/responsive_table.css" rel="stylesheet" type="text/css"/>
-    <link href="<?php echo $webroot; ?>css/drawer.min.css?v=1.1" rel="stylesheet">
+    <link href="<?php echo $webroot; ?>css/drawer.min.css?v=1.3" rel="stylesheet">
 
     <link href="<?php echo $webroot; ?>css/jquery-ui-timepicker-addon.css" rel="stylesheet" type="text/css"/>
 
