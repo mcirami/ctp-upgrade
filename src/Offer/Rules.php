@@ -221,7 +221,6 @@ class Rules
         foreach ($this->ruleObjs as $key => $rule) {
 
             if (!$rule->checkRules()) {
-				dd("check rules: ", $rule->checkRules());
                 $newRules = new Rules($rule->redirectOffer, $this->ip);
                 if ($newRules->checkAllRules()) {
                     $url = $this->buildRedirectUrl($rule->redirectOffer);

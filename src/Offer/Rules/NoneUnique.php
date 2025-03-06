@@ -51,7 +51,7 @@ class NoneUnique implements Rule
         foreach ($this->filteredRules as $id => $rule) {
 
             if ($this->offerSeenRule($rule["offer_id"], $id) == false) {
-
+				dd("offer seen: ", $this->offerSeenRule($rule["offer_id"], $id));
                 $this->logOfferRule($rule["offer_id"], $id);
                 $this->saveCookie();
                 $this->redirectOffer = $rule["redirect_offer"];
