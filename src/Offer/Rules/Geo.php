@@ -286,7 +286,7 @@ class Geo implements Rule
         $this->rules = $rules;
 
         // instantiate our new MaxMind db Reader
-        //$this->geoReader = new Reader(env("GEO_IP_DATABASE"));
+        $this->geoReader = new Reader(env("GEO_IP_DATABASE"));
 
         // find ISO Code with current incoming click traffic
         $this->getISOCode();
@@ -332,7 +332,6 @@ class Geo implements Rule
 
         } catch (\Exception $e) // if their ip wasn't in the db, set default values
         {
-			dd("exception in GEO.php", $e);
             $this->countryISO = "UNKNOWN";
         }
     }
