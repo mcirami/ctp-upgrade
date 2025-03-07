@@ -12146,11 +12146,11 @@ header .row_wrap .navbar-nav {
 header .logo img {
   max-width: 200px;
 }
+header .navbar-brand {
+  max-width: 150px;
+}
 header .nav_wrap {
   width: 100%;
-}
-header .nav_wrap .navbar-toggler {
-  background: #ec297b;
 }
 header .nav_wrap .navbar-toggler .navbar-toggler-icon {
   width: 2.5em;
@@ -12206,6 +12206,17 @@ header .buttons_wrap {
   header .buttons_wrap {
     justify-content: center;
     -webkit-justify-content: center;
+    margin-top: 20px;
+  }
+}
+@media screen and (max-width: 992px) {
+  header .buttons_wrap .button {
+    width: 150px;
+  }
+}
+@media screen and (max-width: 550px) {
+  header .buttons_wrap .button {
+    width: 100px;
   }
 }
 
@@ -12240,31 +12251,31 @@ h2.title, .title.h2 {
   margin-bottom: 15px;
 }
 
-section:not(.hero) {
+section:not(.hero):not(.splide) {
   color: #000;
   padding: 80px 0;
 }
 @media screen and (max-width: 768px) {
-  section:not(.hero) {
+  section:not(.hero):not(.splide) {
     padding: 40px 0;
   }
 }
-section:not(.hero) h3, section:not(.hero) .h3 {
+section:not(.hero):not(.splide) h3, section:not(.hero):not(.splide) .h3 {
   font-size: 4rem;
   margin-bottom: 20px;
 }
 @media screen and (max-width: 768px) {
-  section:not(.hero) h3, section:not(.hero) .h3 {
+  section:not(.hero):not(.splide) h3, section:not(.hero):not(.splide) .h3 {
     font-size: 3.6rem;
   }
 }
-section:not(.hero) p {
+section:not(.hero):not(.splide) p {
   font-size: 1.8rem;
   line-height: 1.6;
   margin-bottom: 20px;
 }
 @media screen and (max-width: 768px) {
-  section:not(.hero) p {
+  section:not(.hero):not(.splide) p {
     font-size: 1.4rem;
   }
 }
@@ -12295,18 +12306,18 @@ section:not(.hero) p {
 }
 .hero h2, .hero .h2 {
   color: #000;
-  font-size: 5.2em;
+  font-size: 4.8em;
   line-height: 1.2;
   text-shadow: 2px -1px rgba(255, 255, 255, 0.8);
 }
 @media screen and (max-width: 1199px) {
   .hero h2, .hero .h2 {
-    font-size: 4.5em;
+    font-size: 3.8em;
   }
 }
 @media screen and (max-width: 768px) {
   .hero h2, .hero .h2 {
-    font-size: 3.8em;
+    font-size: 3em;
   }
 }
 @media screen and (max-width: 550px) {
@@ -12343,23 +12354,13 @@ section:not(.hero) p {
 }
 .hero .logos_wrap {
   width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   margin-top: 60px;
 }
-@media screen and (max-width: 991px) {
-  .hero .logos_wrap {
-    flex-wrap: wrap;
-  }
-}
-.hero .logos_wrap .logo_wrap {
-  width: 8%;
-}
-@media screen and (max-width: 991px) {
-  .hero .logos_wrap .logo_wrap {
-    width: 12%;
-  }
+.hero .logos_wrap h3, .hero .logos_wrap .h3 {
+  color: #000;
+  width: 100%;
+  text-align: center;
+  font-size: 3.6rem;
 }
 
 #our_benefits {
@@ -12389,18 +12390,9 @@ section:not(.hero) p {
   list-style: none;
   padding: 0;
 }
-#how_it_works ul:not(.nav) li {
-  padding-left: 30px;
-}
-#how_it_works ul:not(.nav) li:before {
-  content: "";
-  background: url("../images/check-mark.png") no-repeat;
-  background-size: 100%;
-  width: 15px;
-  height: 15px;
-  position: absolute;
-  left: 5px;
-  top: 8px;
+#how_it_works ul:not(.nav) li span {
+  font-family: "sarabun-bold", sans-serif;
+  font-weight: 800;
 }
 #how_it_works .buttons_wrap {
   display: flex;
@@ -12414,8 +12406,18 @@ section:not(.hero) p {
   margin-top: 60px;
 }
 #how_it_works .tab_section .tab_wrap {
-  max-width: 70%;
+  max-width: 75%;
   margin: 20px auto 0;
+}
+@media screen and (max-width: 1199px) {
+  #how_it_works .tab_section .tab_wrap {
+    max-width: 85%;
+  }
+}
+@media screen and (max-width: 991px) {
+  #how_it_works .tab_section .tab_wrap {
+    max-width: 100%;
+  }
 }
 #how_it_works .tab_section .tab_wrap ul {
   padding: 10px;
@@ -12426,14 +12428,34 @@ section:not(.hero) p {
   -moz-column-gap: 20px;
        column-gap: 20px;
 }
-#how_it_works .tab_section .tab_wrap ul .nav-link {
+@media screen and (max-width: 767px) {
+  #how_it_works .tab_section .tab_wrap ul {
+    border-radius: 20px;
+  }
+}
+@media screen and (max-width: 767px) {
+  #how_it_works .tab_section .tab_wrap ul .nav-item {
+    width: 100%;
+  }
+}
+#how_it_works .tab_section .tab_wrap ul .nav-item .nav-link {
   font-family: "sarabun-bold", sans-serif;
   font-weight: 800;
   padding: 10px 30px;
   border-radius: 50px;
   color: #000;
 }
-#how_it_works .tab_section .tab_wrap ul .nav-link.active {
+@media screen and (max-width: 991px) {
+  #how_it_works .tab_section .tab_wrap ul .nav-item .nav-link {
+    padding: 10px 20px;
+  }
+}
+@media screen and (max-width: 767px) {
+  #how_it_works .tab_section .tab_wrap ul .nav-item .nav-link {
+    width: 100%;
+  }
+}
+#how_it_works .tab_section .tab_wrap ul .nav-item .nav-link.active {
   background: #fff;
 }
 #how_it_works .tab_section .tab_wrap .tab-content {
@@ -12447,6 +12469,12 @@ section:not(.hero) p {
   margin-top: 20px;
 }
 
+.splide__slide .title {
+  color: #000;
+  font-size: 0.8rem;
+  text-align: center;
+}
+
 footer {
   background: #fff1fa;
   padding: 40px 0;
@@ -12455,6 +12483,33 @@ footer .footer_content {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+@media screen and (max-width: 991px) {
+  footer .footer_content {
+    flex-wrap: wrap;
+  }
+}
+footer .footer_content .logo_wrap {
+  max-width: 150px;
+}
+@media screen and (max-width: 991px) {
+  footer .footer_content .logo_wrap {
+    width: 100%;
+    text-align: center;
+    margin: 0 auto 20px;
+  }
+}
+@media screen and (max-width: 991px) {
+  footer .footer_content .buttons_wrap {
+    width: 100%;
+    text-align: center;
+    margin-top: 20px;
+  }
+}
+@media screen and (max-width: 991px) {
+  footer .footer_content .buttons_wrap .button {
+    width: 150px;
+  }
 }
 footer a {
   color: #000;
@@ -12475,6 +12530,11 @@ footer ul {
   -moz-column-gap: 40px;
   justify-content: center;
   -webkit-justify-content: center;
+}
+@media screen and (max-width: 991px) {
+  footer ul {
+    width: 100%;
+  }
 }
 @media screen and (max-width: 550px) {
   footer ul {

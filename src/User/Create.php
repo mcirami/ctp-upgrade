@@ -88,7 +88,7 @@ class Create
 
     public function printRadios()
     {
-        echo "  <p>";
+        echo "  <p class='value_span10'>";
 
 
         switch (Session::userType()) {

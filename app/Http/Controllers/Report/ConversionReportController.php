@@ -6,12 +6,8 @@ use App\Conversion;
 use App\User;
 use App\Click;
 use App\Offer;
-use Illuminate\Http\Request;
 use App\Http\Traits\ClickTraits;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
-use LeadMax\TrackYourStats\System\Session;
-use App\Services\Repositories\Offer\OfferAffiliateClicksRepository;
 use LeadMax\TrackYourStats\Clicks\ClickGeo;
 
 class ConversionReportController extends ReportController
@@ -112,13 +108,13 @@ class ConversionReportController extends ReportController
 			));
 	}
 
-    public function showUserOfferConversionsByCountry($userId, $offerId) {
+    public function showUserOfferConversionsByCountry(User $user, Offer $offer) {
 		$dates = self::getDates();
 		$startDate = $dates['originalStart'];
 		$endDate = $dates['originalEnd'];
 		$dateSelect = request()->query('dateSelect');
-        $user = User::myUsers()->findOrFail($userId);
-		$offer = Offer::findOrFail($offerId);
+        $userId = $user->idrep;
+		$offerId = $offer->idoffer;
 
 		$clicksSubquery = Click::whereBetween('first_timestamp', [$dates['startDate'], $dates['endDate']])
 		->where('rep_idrep', '=', $userId)

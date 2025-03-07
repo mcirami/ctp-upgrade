@@ -22,18 +22,15 @@ $pending = (isset($_GET["pending"]) && $_GET["pending"] != "") ? $_GET["pending"
 	
 	<link rel = "shortcut icon" type = "image/ico"
 		  href = "<?PHP echo \LeadMax\TrackYourStats\System\Company::loadFromSession()->getImgDir() . "/favicon.ico"; ?>"/>
-	<link rel = "shortcut icon" type = "image/ico"
-		  href = "<?PHP echo \LeadMax\TrackYourStats\System\Company::loadFromSession()->getImgDir() . "/favicon.ico"; ?>"/>
-	<link href = "css/bootstrap.min.css" rel = "stylesheet">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
 	<link href = "css/animate.css" rel = "stylesheet">
 	
 	
 	<link rel = "stylesheet" type = "text/css" href = "<?php echo $webroot; ?>css/default.css"/>
-	
+
 	<link rel = "stylesheet" media = "screen" type = "text/css"
-		  href = "<?php echo $webroot; ?>css/company.php"/>
-	
-	
+	      href = "<?php echo $webroot; ?>css/company.css"/>
 	<link rel = "stylesheet" type = "text/css" href = "<?php echo $webroot; ?>css/font-awesome.min.css">
 	<link rel = "stylesheet" href = "<?php echo $webroot; ?>css/magic.min.css">
 	
@@ -93,8 +90,10 @@ $pending = (isset($_GET["pending"]) && $_GET["pending"] != "") ? $_GET["pending"
 	
 	}
 	
-	.btn_yellow {
-	
+	.btn {
+		border-radius: 50px;
+		width: 150px;
+		padding: 10px 20px;
 	}
 </style>
 
@@ -115,12 +114,12 @@ $pending = (isset($_GET["pending"]) && $_GET["pending"] != "") ? $_GET["pending"
 				<?php
 					if ($mid) {
 				?>
-					<div class = "heading_holder">
-						<h3 class = " value_span9">Congratulations!</h3>
-						<p>
-							Your new account is setup and activated. Contact the manager who sent you your signup link with any questions.
-						</p>
-					</div>
+						<div class = "heading_holder">
+							<h3 class = " value_span9">Congratulations!</h3>
+							<p>
+								Your new account is set up and activated. Contact the manager who sent you your signup link with any questions.
+							</p>
+						</div>
 				<?php
 					} else { ?>
 
@@ -130,7 +129,7 @@ $pending = (isset($_GET["pending"]) && $_GET["pending"] != "") ? $_GET["pending"
 									<?php if ($pending) : ?>
 										Your account is still Pending!
 									<?php else : ?>
-										Thank you for registering with Money Lovers!
+										Thank you for registering with <?php echo env('APP_NAME'); ?>
 									<?php endif; ?>
 								</h2>
 							</div>
