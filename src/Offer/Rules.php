@@ -162,14 +162,13 @@ class Rules
     }
 
 
-    public function checkAllRules($country = null)
+    public function checkAllRules($clickCountry = null)
     {
 
         if (empty($this->rules)) {
             return true;
         }
 
-	    $clickCountry = $country;
         foreach($this->rules as $rule) {
             if ($rule['cap_status']) {
                 $cap = $rule['cap'];
@@ -222,7 +221,7 @@ class Rules
 
             if (!$rule->checkRules()) {
                 $newRules = new Rules($rule->redirectOffer, $this->ip);
-                if ($newRules->checkAllRules()) {
+                if ($newRules->checkAllRules($clickCountry)) {
                     $url = $this->buildRedirectUrl($rule->redirectOffer);
                     send_to($url);
                 }
