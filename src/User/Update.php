@@ -379,7 +379,7 @@ class Update
     public function printRadios()
     {
         $this->findUserType();
-        echo "<p>";
+        echo "<p class='value_span10'>";
 
         $cannotDownGrade = "";
         if (Tree::findChildren($this->selectedUser->lft, $this->selectedUser->rgt) !== 0) {

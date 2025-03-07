@@ -8,6 +8,7 @@ use App\Click;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use \LeadMax\TrackYourStats\System\Session;
 use LeadMax\TrackYourStats\Table\Paginate;
 use Illuminate\Support\Facades\Cache;
@@ -89,34 +90,27 @@ class UserController extends Controller
 		$date = new Date;
 		$now = Carbon::now();
 		$todaysDate = $date->convertDateTimezone($now);
-		$oneMonthAgo = $date->convertDateTimezone(Carbon::now()->subMonths(3)->startOfDay());
+		$monthsAgo = $date->convertDateTimezone(Carbon::now()->subMonths(2)->startOfDay());
 
 		$cacheKey = "user_{$affId}_subids";
-        $cacheTime = 3600; // 30 minutes
-        $data = Cache::remember($cacheKey, $cacheTime, function () use ($affId, $oneMonthAgo, $todaysDate) {
-            $blocked = DB::table('blocked_sub_ids')->where('rep_idrep', '=', $affId)->distinct()->pluck('sub_id')->toArray();
-            $subIdArray = [];
-            $mergedArray = [];
+        $cacheTime = 7200; // 60 minutes
 
-            $subIdArray = Click::where('rep_idrep', '=', $affId) 
-            ->whereBetween('first_timestamp', [$oneMonthAgo, $todaysDate])
-            ->join('click_vars', 'click_vars.click_id', '=', 'clicks.idclicks')
-            ->select('click_vars.sub1')
-            ->groupBy('click_vars.sub1')
-            ->orderBy('click_vars.sub1')->get()->toArray();
-
-            
-            foreach($subIdArray as $subId) {
-                $object = [
-                    'subId'     => preg_replace('/[^a-zA-Z0-9-_]/', '', $subId['sub1']),
-                    'blocked'   => in_array($subId['sub1'], $blocked)
-                ];
-                array_push($mergedArray, $object);
-            }
-
-            return $mergedArray;
-
-            });
+        $data = Cache::remember($cacheKey, $cacheTime, function () use ($affId, $monthsAgo, $todaysDate) {
+					return DB::select(
+								"SELECT
+							        click_vars.sub1 as subId,
+							        CASE WHEN blocked_sub_ids.sub_id IS NULL THEN FALSE ELSE TRUE END AS blocked
+								     FROM clicks
+								     JOIN click_vars ON click_vars.click_id = clicks.idclicks
+								     LEFT JOIN blocked_sub_ids ON blocked_sub_ids.sub_id = click_vars.sub1
+								     WHERE clicks.rep_idrep = ?
+								       AND clicks.first_timestamp BETWEEN ? AND ?
+								       AND click_vars.sub1 != ''
+								     GROUP BY click_vars.sub1
+								     ORDER BY click_vars.sub1",
+								[$affId, $monthsAgo, $todaysDate]
+							);
+		});
 
 		return json_encode($data);
     }

@@ -441,11 +441,8 @@ foreach ($rules->rules as $rule) {
 				cache: false,
 				success: function (result) {
 					
-					console.log(result);
-					
 					$("#deviceModal").modal("hide");
 					location.reload();
-					
 					
 				}
 				
@@ -607,7 +604,6 @@ foreach ($rules->rules as $rule) {
 				parsed = [offerID, geoRuleName, redirectOffer, countriesNotAllowed];
 			
 			for (var i = 0; i < rows.length; i++) {
-				console.log("firstChild.checked: ", rows[i].children[2].firstChild.firstChild.checked);
 				parsed.push([
 					rows[i].id, 
 					rows[i].children[0].innerText,
@@ -649,7 +645,7 @@ foreach ($rules->rules as $rule) {
 		
 		function addCountry(countryName, capStatus = 0, cap = 0, sortTableAfter = true) {
 			
-			capIsActve = capStatus ? "checked" : "";			
+			capIsActive = capStatus ? "checked" : "";
 
 			var c = $("#" + countryName);
 			
@@ -658,7 +654,7 @@ foreach ($rules->rules as $rule) {
 			if(!document.getElementById(countryName + '_capIsActive')) {
 				const html =
 					'<td class="caps">' +
-						'<span><input class="cap_active" id="' + countryName + '_capIsActive"' + capIsActve + ' type="checkbox" style = "width:15px;height:15px;">' +
+						'<span><input class="cap_active" id="' + countryName + '_capIsActive"' + capIsActive + ' type="checkbox" style = "width:15px;height:15px;">' +
 							'<span>Enable Cap</span></span>' +
 						'<span><label for = "geoCap">Cap:</label>' +
 						'<input class="cap_amount" type = "number" id = "' + countryName + '_geoCap" value=' + cap + '></span>' +

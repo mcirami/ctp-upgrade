@@ -281,7 +281,7 @@ class NavBar
 
         if ($mobile) {
             echo " <li>
-                        <a class=\"drawer-dropdown-menu-item value_span2-2 value_span3-2 value_span4 value_span5 {$css}
+                        <a class=\"drawer-dropdown-menu-item value_span2 value_span2-2 value_span3-2 value_span4 value_span5 {$css}
                        \" href=\"{$this->webRoot}{$url}\">{$name}</a></li>";
         } else {
             echo "<li>

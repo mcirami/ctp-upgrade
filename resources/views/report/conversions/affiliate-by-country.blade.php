@@ -1,3 +1,8 @@
+@php 
+    use LeadMax\TrackYourStats\System\Session;
+    use App\Privilege;
+@endphp
+
 @extends('report.template')
 
 @section('report-title')
@@ -6,6 +11,7 @@
 
 @section('table-options')
 
+@if(Session::userType() != Privilege::ROLE_AFFILIATE)
     @php
 		$data = array(
 			'd_from' 		=> $startDate,
@@ -16,6 +22,7 @@
 		);
 	@endphp
 	@include('report.options.user-clicks-view', $data)
+@endif
     @include('report.options.dates')
     
 @endsection
@@ -41,7 +48,7 @@
                 <td>{{$row['total_clicks']}}</td>
                 <td>{{$row['unique_clicks']}}</td>
                 <td>
-                    @if ($row['total_conversions'] > 0)
+                    @if ($row['total_conversions'] > 0 && Session::userType() != Privilege::ROLE_AFFILIATE)
                         <a href="/user/{{$user->idrep}}/{{$offer->idoffer}}/subid-conversions-in-country?{{$params}}&country={{$key}}">{{$row['total_conversions']}}</a>
                     @else
                         {{$row['total_conversions']}}    
