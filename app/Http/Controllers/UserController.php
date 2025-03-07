@@ -90,13 +90,13 @@ class UserController extends Controller
 		$date = new Date;
 		$now = Carbon::now();
 		$todaysDate = $date->convertDateTimezone($now);
-		$monthsAgo = $date->convertDateTimezone(Carbon::now()->subMonths(2)->startOfDay());
+		$monthsAgo = $date->convertDateTimezone(Carbon::now()->subMonths(1)->startOfDay());
 
 		$cacheKey = "user_{$affId}_subids";
         $cacheTime = 7200; // 60 minutes
 
         $data = Cache::remember($cacheKey, $cacheTime, function () use ($affId, $monthsAgo, $todaysDate) {
-					return DB::select(
+					$data = DB::select(
 								"SELECT
 							        click_vars.sub1 as subId,
 							        CASE WHEN blocked_sub_ids.sub_id IS NULL THEN FALSE ELSE TRUE END AS blocked
