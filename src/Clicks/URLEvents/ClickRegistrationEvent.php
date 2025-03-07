@@ -36,12 +36,15 @@ class ClickRegistrationEvent extends URLEvent
 
     public $ip;
 
+	public $country;
+
     public function __construct($user_id, $offer_id, $sub_variables_array, $ip)
     {
         $this->userId = $user_id;
         $this->offerId = $offer_id;
         $this->subVarArray = $sub_variables_array;
         $this->ip = $ip;
+		$this->country = preg_replace('/[^a-zA-Z]/', '', ClickGeo::findGeo($ip))['isoCode'];
     }
 
     public static function getEventString(): string
@@ -51,7 +54,7 @@ class ClickRegistrationEvent extends URLEvent
 
     public function fire()
     {
-        if ($this->registerClick($this->ip)) {
+        if ($this->registerClick()) {
             $this->sendUserToOffer();
         } else {
             return false;
@@ -76,32 +79,31 @@ class ClickRegistrationEvent extends URLEvent
 
     }
 
-    private function registerClick($ip)
+    private function registerClick()
     {
 
         if ($this->validateOffer() && $this->validateUser()) {
-           
+
             if (!$this->checkBonusOfferRequirementMet()) {
                 return false;
             }
-
 
             /* if(array_key_exists("HTTP_REFERER", $_SERVER)) {
                 Log::info('referer: ' . print_r($_SERVER["HTTP_REFERER"], true));
             } */
             //Log::info('ip: ' . print_r($ip, true));
-            $geo = preg_replace('/[^a-zA-Z]/', '', ClickGeo::findGeo($ip));
+            $geo = $this->country;
             //Log::info('geo: ' . print_r($geo, true));
 
             //Log::info('geo: ' . print_r($_SERVER, true));
             $click = new Click();
 
 	        $click->first_timestamp = date("Y-m-d H:i:s");
-            $click->ip_address = $ip; //$_SERVER["REMOTE_ADDR"];
-            $click->country_code = $geo['isoCode'];
+            $click->ip_address = $this->ip; //$_SERVER["REMOTE_ADDR"];
+            $click->country_code = $geo;
             $click->referer = array_key_exists("HTTP_REFERER", $_SERVER) ? $_SERVER["HTTP_REFERER"] : null;
             $click->browser_agent = $_SERVER["HTTP_USER_AGENT"];
-            
+
             $click->rep_idrep = $this->userId;
             $click->offer_idoffer = $this->offerId;
             $click->click_type = $this->getClickType();
@@ -112,9 +114,7 @@ class ClickRegistrationEvent extends URLEvent
                 $cookie->save();
             }
 
-
             $this->clickId = $click->id;
-
 
             if ($this->offerData->offer_type == Offer::TYPE_CPC && $click->click_type == Click::TYPE_UNIQUE) {
 
@@ -128,7 +128,6 @@ class ClickRegistrationEvent extends URLEvent
 
                 $conversion->registerSale();
             }
-
             return true;
         } else {
             return false;
@@ -181,7 +180,8 @@ class ClickRegistrationEvent extends URLEvent
     private function checkOfferRules()
     {
         $rules = new Rules($this->offerId, $this->ip);
-        if ($rules->checkAllRules() == true) {
+
+        if ($rules->checkAllRules($this->country)) {
             return true;
         } else {
             return false;
@@ -207,6 +207,7 @@ class ClickRegistrationEvent extends URLEvent
         $this->getUserDataFromDatabase($user_id);
 
         $offer_id = $this->offerId;
+
         $this->getOfferDataFromDatabase($offer_id);
         $encodedClickId = UID::encode($this->clickId);
 		$this->updateClickVars($this->clickId, $encodedClickId);

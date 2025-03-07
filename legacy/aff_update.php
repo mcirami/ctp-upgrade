@@ -208,7 +208,7 @@ $update->dumpPermissionsToJavascript();
 
 								?>
 
-								<p id = "permissionsP">
+								<p class="value_span10" id = "permissionsP">
 
 								</p>
 

@@ -8,6 +8,7 @@ use App\Click;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use \LeadMax\TrackYourStats\System\Session;
 use LeadMax\TrackYourStats\Table\Paginate;
 use Illuminate\Support\Facades\Cache;
@@ -95,28 +96,21 @@ class UserController extends Controller
         $cacheTime = 7200; // 60 minutes
 
         $data = Cache::remember($cacheKey, $cacheTime, function () use ($affId, $monthsAgo, $todaysDate) {
-            $blocked = DB::table('blocked_sub_ids')->where('rep_idrep', '=', $affId)->distinct()->pluck('sub_id')->toArray();
-            $mergedArray = [];
-
-            $subIdArray = Click::where('rep_idrep', '=', $affId) 
-            ->whereBetween('first_timestamp', [$monthsAgo, $todaysDate])
-            ->join('click_vars', 'click_vars.click_id', '=', 'clicks.idclicks')
-            ->where('click_vars.sub1', '!=', '')
-            ->select('click_vars.sub1')
-            ->groupBy('click_vars.sub1')
-            ->orderBy('click_vars.sub1')->get()->toArray();
-
-            foreach($subIdArray as $subId) {
-                $object        = [
-                    'subId'     => preg_replace('/[^a-zA-Z0-9-_]/', '', $subId['sub1']),
-                    'blocked'   => in_array($subId['sub1'], $blocked)
-                ];
-                $mergedArray[] = $object;
-            }
-
-            return $mergedArray;
-
-            });
+					return DB::select(
+								"SELECT
+							        click_vars.sub1 as subId,
+							        CASE WHEN blocked_sub_ids.sub_id IS NULL THEN FALSE ELSE TRUE END AS blocked
+								     FROM clicks
+								     JOIN click_vars ON click_vars.click_id = clicks.idclicks
+								     LEFT JOIN blocked_sub_ids ON blocked_sub_ids.sub_id = click_vars.sub1
+								     WHERE clicks.rep_idrep = ?
+								       AND clicks.first_timestamp BETWEEN ? AND ?
+								       AND click_vars.sub1 != ''
+								     GROUP BY click_vars.sub1
+								     ORDER BY click_vars.sub1",
+								[$affId, $monthsAgo, $todaysDate]
+							);
+		});
 
 		return json_encode($data);
     }
