@@ -96,7 +96,7 @@ class UserController extends Controller
         $cacheTime = 7200; // 60 minutes
 
         $data = Cache::remember($cacheKey, $cacheTime, function () use ($affId, $monthsAgo, $todaysDate) {
-					$data = DB::select(
+					return DB::select(
 								"SELECT
 							        click_vars.sub1 as subId,
 							        CASE WHEN blocked_sub_ids.sub_id IS NULL THEN FALSE ELSE TRUE END AS blocked
