@@ -119,7 +119,7 @@ Route::group(['middleware' => 'legacy.auth'], function () {
             Route::get('{id}/delete', [OfferController::class, 'delete']);
         });
         Route::get('{id}/clicks', [ClickReportController::class, 'offerClicks'])->middleware('role:0,1,2')->name('offerClicks');
-        Route::get('{id}/search-clicks', [ClickReportController::class, 'searchClicks'])->middleware('role:0')->name('clicks.search');
+        Route::get('{id}/search-clicks', [ClickReportController::class, 'searchClicks'])->middleware('role:0')->name('offer.clicks.search');
 		Route::group(['middleware' => ['permissions:' . Permissions::CREATE_OFFERS]], function () {
             Route::get('create', [OfferController::class, 'showCreate']);
             Route::post('create', [OfferController::class, 'create']);
