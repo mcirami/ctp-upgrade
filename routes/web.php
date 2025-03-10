@@ -66,7 +66,7 @@ Route::group(['middleware' => 'legacy.auth'], function () {
             function () {
                 Route::get('show', [SalaryController::class, 'showCreate'])->name('salary.show');
                 Route::post('create', [SalaryController::class, 'create'])->name('salary.create');
-                Route::get('update', [SalaryController::class, 'showUpdate'])->name('salary.update');
+                Route::get('showUpdate', [SalaryController::class, 'showUpdate'])->name('salary.show.update');
                 Route::post('update', [SalaryController::class, 'update'])->name('salary.update');
             });
         Route::get('{id}/clicks', [ClickReportController::class, 'showUsersClicks'])->middleware('role:0,1,2')->name('userClicks');
