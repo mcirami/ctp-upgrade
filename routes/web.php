@@ -64,7 +64,7 @@ Route::group(['middleware' => 'legacy.auth'], function () {
 
         Route::group(['prefix' => '/{id}/salary', 'middleware' => 'permissions:' . Permissions::EDIT_SALARIES],
             function () {
-                Route::get('create', [SalaryController::class, 'showCreate'])->name('salary.create');
+                Route::get('show', [SalaryController::class, 'showCreate'])->name('salary.show');
                 Route::post('create', [SalaryController::class, 'create'])->name('salary.create');
                 Route::get('update', [SalaryController::class, 'showUpdate'])->name('salary.update');
                 Route::post('update', [SalaryController::class, 'update'])->name('salary.update');
