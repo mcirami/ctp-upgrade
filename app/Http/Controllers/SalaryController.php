@@ -41,7 +41,7 @@ class SalaryController extends Controller
         $user = User::withRole(Privilege::ROLE_AFFILIATE)->myUsers()->findOrFail($id);
 
 
-        return view('salary.create', compact('user'));
+        return view('salary.show', compact('user'));
     }
 
 

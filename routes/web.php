@@ -64,9 +64,9 @@ Route::group(['middleware' => 'legacy.auth'], function () {
 
         Route::group(['prefix' => '/{id}/salary', 'middleware' => 'permissions:' . Permissions::EDIT_SALARIES],
             function () {
-                Route::get('create', [SalaryController::class, 'showCreate'])->name('salary.create');
+                Route::get('show', [SalaryController::class, 'showCreate'])->name('salary.show');
                 Route::post('create', [SalaryController::class, 'create'])->name('salary.create');
-                Route::get('update', [SalaryController::class, 'showUpdate'])->name('salary.update');
+                Route::get('showUpdate', [SalaryController::class, 'showUpdate'])->name('salary.show.update');
                 Route::post('update', [SalaryController::class, 'update'])->name('salary.update');
             });
         Route::get('{id}/clicks', [ClickReportController::class, 'showUsersClicks'])->middleware('role:0,1,2')->name('userClicks');
@@ -119,7 +119,7 @@ Route::group(['middleware' => 'legacy.auth'], function () {
             Route::get('{id}/delete', [OfferController::class, 'delete']);
         });
         Route::get('{id}/clicks', [ClickReportController::class, 'offerClicks'])->middleware('role:0,1,2')->name('offerClicks');
-        Route::get('{id}/search-clicks', [ClickReportController::class, 'searchClicks'])->middleware('role:0')->name('clicks.search');
+        Route::get('{id}/search-clicks', [ClickReportController::class, 'searchClicks'])->middleware('role:0')->name('offer.clicks.search');
 		Route::group(['middleware' => ['permissions:' . Permissions::CREATE_OFFERS]], function () {
             Route::get('create', [OfferController::class, 'showCreate']);
             Route::post('create', [OfferController::class, 'create']);
