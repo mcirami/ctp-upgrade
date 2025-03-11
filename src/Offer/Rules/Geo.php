@@ -308,24 +308,25 @@ class Geo implements Rule
 
     private function getISOCode()
     {
-        try {
-	        if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-		        $ip = $_SERVER['HTTP_CLIENT_IP'];
-		        if ( str_contains( $ip, ',' ) ) {
-			        $ip = substr($ip, 0, strpos($ip, ","));
-		        }
-	        } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-		        $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-		        if ( str_contains( $ip, ',' ) ) {
-			        $ip = substr($ip, 0, strpos($ip, ","));
-		        }
-	        } else {
-		        $ip = $_SERVER['REMOTE_ADDR'];
-		        if ( str_contains( $ip, ',' ) ) {
-			        $ip = substr($ip, 0, strpos($ip, ","));
-		        }
-	        }
 
+	    if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+		    $ip = $_SERVER['HTTP_CLIENT_IP'];
+		    if ( str_contains( $ip, ',' ) ) {
+			    $ip = substr($ip, 0, strpos($ip, ","));
+		    }
+	    } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+		    $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+		    if ( str_contains( $ip, ',' ) ) {
+			    $ip = substr($ip, 0, strpos($ip, ","));
+		    }
+	    } else {
+		    $ip = $_SERVER['REMOTE_ADDR'];
+		    if ( str_contains( $ip, ',' ) ) {
+			    $ip = substr($ip, 0, strpos($ip, ","));
+		    }
+	    }
+
+        try {
             //trys to get their iso code and postal
             $this->record = $this->geoReader->city($ip);
             $this->countryISO = $this->record->country->isoCode;
