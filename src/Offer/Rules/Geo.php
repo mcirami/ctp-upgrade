@@ -332,9 +332,7 @@ class Geo implements Rule
             $this->record = $reader->city($ip);
             $this->countryISO =  $this->record->country->isoCode;
 
-        } catch (\Exception $e) // if their ip wasn't in the db, set default values
-        {
-	        dd("ip: ", $ip, "geoReader: ", $e);
+        } catch (\Exception $e) { // if their ip wasn't in the db, set default values
             $this->countryISO = "UNKNOWN";
         }
     }
@@ -364,7 +362,6 @@ class Geo implements Rule
                 return true;
             } else {
 
-                dd("country list: ", $rule["country_list"], "country code: ", $this->countryISO);
                 foreach ($rule["country_list"] as $country_code) {
                     if ($this->countryISO == $country_code) {
                         return true;
