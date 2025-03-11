@@ -40,17 +40,17 @@ class ClickGeo
 	        return unKnownGeo($geo);
         }
 
-        /*$cacheKey = "geoip_{$ip}";
+        $cacheKey = "geoip_{$ip}";
         $ttl = now()->addDays(7);
-        return Cache::remember($cacheKey, $ttl, function () use ($ip, $geo) {*/
+        return Cache::remember($cacheKey, $ttl, function () use ($ip, $geo) {
             try {
 
                 $reader = new Reader(env("GEO_IP_DATABASE"));
                 $record = $reader->city($ip);
     
-                /* if($record->country->isoCode == "") {
+                 if($record->country->isoCode == "") {
                     return unKnownGeo($geo);
-                } */
+                }
     
                 $geo["isoCode"] = $record->country->isoCode; // 'US'
     
@@ -69,6 +69,6 @@ class ClickGeo
             }
 
             return $geo;
-    /*    });*/
+        });
     }
 }
