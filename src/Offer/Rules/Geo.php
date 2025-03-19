@@ -342,10 +342,7 @@ class Geo implements Rule
     {
 
         if (empty($this->filteredRules)) {
-			return [
-				'passed'    => true,
-				'country'   => $this->countryISO,
-			];
+			return true;
         }
 
         foreach ($this->filteredRules as $rule) {
@@ -357,43 +354,28 @@ class Geo implements Rule
                     if ($this->countryISO == $country_code) {
                         $this->redirectOffer = $rule["redirect_offer"];
 
-	                    return [
-		                    'passed'    => false,
-		                    'country'   => $this->countryISO,
-	                    ];
+	                    return false;
                     }
                 }
 
                 // not in list
-	            return [
-		            'passed'    => true,
-		            'country'   => $this->countryISO,
-	            ];
+	            return true;
             } else {
                 foreach ($rule["country_list"] as $country_code) {
                     if ($this->countryISO == $country_code) {
-	                    return [
-		                    'passed'    => true,
-		                    'country'   => $this->countryISO,
-	                    ];
+	                    return true;
                     }
                 }
 
                 //if the country wasn't in the allowed list...
                 $this->redirectOffer = $rule["redirect_offer"];
 
-	            return [
-		            'passed'    => false,
-		            'country'   => $this->countryISO,
-	            ];
+	            return false;
             }
 
         }
 
-	    return [
-		    'passed'    => true,
-		    'country'   => $this->countryISO,
-	    ];
+	    return true;
 
     }
 

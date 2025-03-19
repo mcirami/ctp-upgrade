@@ -57,8 +57,9 @@ class Company
     {
         $offerUrls = self::getOfferUrls();
 
-        if (is_array($offerUrls) && empty($offerUrls) == false) {
+        if ( is_array($offerUrls) && ! empty( $offerUrls ) ) {
             foreach ($offerUrls as $offer_url) {
+				dd($offer_url);
                 if ($offer_url[0] === $url) {
                     return true;
                 }
