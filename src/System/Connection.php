@@ -129,6 +129,7 @@ class Connection
             $prep->execute();
             $result = $prep->fetch(PDO::FETCH_ASSOC);
 
+			dd($result);
             $this->setSub($result["subDomain"]);
 
             $this->wasOfferUrl = true;
