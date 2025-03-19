@@ -115,7 +115,7 @@ class Connection
         $prep->execute();
         $foundOfferUrl = $prep->rowCount();
 
-
+	    dd("before if: ", $_SERVER["HTTP_HOST"]);
         // if it was a company's offer url, find their company id and fetch their sub-domain to connect to the proper db
         if ($foundOfferUrl > 0) //offerurl was found in db
         {
@@ -129,7 +129,7 @@ class Connection
             $prep->execute();
             $result = $prep->fetch(PDO::FETCH_ASSOC);
 
-			dd($result);
+			dd("found offer url: ", $result);
             $this->setSub($result["subDomain"]);
 
             $this->wasOfferUrl = true;
