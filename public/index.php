@@ -60,6 +60,7 @@ $response = $kernel->handle(
 );
 
 $urlArray = parse_url($_SERVER["REQUEST_URI"]);
+dd($urlArray);
 $file = key_exists('path', $urlArray) ? $urlArray["path"] : null;
 
 /* if ($file == "/") {
