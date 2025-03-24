@@ -55,7 +55,6 @@ class Company
 
     public function isCompanyOfferUrl($url)
     {
-		dd("company offer url: ", $url);
         $offerUrls = self::getOfferUrls();
 
         if ( is_array($offerUrls) && ! empty( $offerUrls ) ) {
