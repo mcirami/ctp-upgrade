@@ -91,13 +91,14 @@ class UserController extends Controller
 		$now = Carbon::now();
 		$todaysDate = $date->convertDateTimezone($now);
 		$monthsAgo = $date->convertDateTimezone(Carbon::now()->subMonths(1)->startOfDay());
+		$weeksAgo = $date->convertDateTimezone(Carbon::now()->subWeeks(2)->startOfDay());
 
 		$cacheKey = "user_{$affId}_subids";
         $cacheTime = 7200; // 60 minutes
 
-        $data = Cache::remember($cacheKey, $cacheTime, function () use ($affId, $monthsAgo, $todaysDate) {
-					return DB::select(
-								"SELECT
+		if($affId == 1020) {
+			$data = DB::select(
+				"SELECT
 							        click_vars.sub1 as subId,
 							        CASE WHEN blocked_sub_ids.sub_id IS NULL THEN FALSE ELSE TRUE END AS blocked
 								     FROM clicks
@@ -108,9 +109,26 @@ class UserController extends Controller
 								       AND click_vars.sub1 != ''
 								     GROUP BY click_vars.sub1
 								     ORDER BY click_vars.sub1",
-								[$affId, $monthsAgo, $todaysDate]
-							);
-		});
+				[$affId, $weeksAgo, $todaysDate]
+			);
+		} else {
+			$data = Cache::remember($cacheKey, $cacheTime, function () use ($affId, $monthsAgo, $todaysDate) {
+				return DB::select(
+					"SELECT
+							        click_vars.sub1 as subId,
+							        CASE WHEN blocked_sub_ids.sub_id IS NULL THEN FALSE ELSE TRUE END AS blocked
+								     FROM clicks
+								     JOIN click_vars ON click_vars.click_id = clicks.idclicks
+								     LEFT JOIN blocked_sub_ids ON blocked_sub_ids.sub_id = click_vars.sub1
+								     WHERE clicks.rep_idrep = ?
+								       AND clicks.first_timestamp BETWEEN ? AND ?
+								       AND click_vars.sub1 != ''
+								     GROUP BY click_vars.sub1
+								     ORDER BY click_vars.sub1",
+					[$affId, $monthsAgo, $todaysDate]
+				);
+			});
+		}
 
 		return json_encode($data);
     }
