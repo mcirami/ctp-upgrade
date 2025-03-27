@@ -47,7 +47,7 @@ class Company
         } else {
             $company = new self;
             $company->setSession();
-
+	        dd("company.php", $company);
             return $company;
         }
     }

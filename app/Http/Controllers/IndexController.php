@@ -18,6 +18,8 @@ class IndexController extends Controller
     public function index(Request $request)
     {
 
+		dd("indexcontroller", $request);
+
         if ($request->get('repid') && $request->get('offerid')) {
             return $this->clickRegistration($request);
         }
@@ -115,7 +117,6 @@ class IndexController extends Controller
             }
         }
 
-		dd("request query", $request->query());
         $clickRegistrationEvent = new ClickRegistrationEvent($request->get('repid'), $request->get('offerid'),
             $request->query(), $ip);
         if ( ! $clickRegistrationEvent->fire()) {
