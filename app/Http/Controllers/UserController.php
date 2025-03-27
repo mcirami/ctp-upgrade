@@ -91,7 +91,7 @@ class UserController extends Controller
 		$now = Carbon::now();
 		$todaysDate = $date->convertDateTimezone($now);
 		$monthsAgo = $date->convertDateTimezone(Carbon::now()->subMonths(1)->startOfDay());
-		$weeksAgo = $date->convertDateTimezone(Carbon::now()->subWeeks(2)->startOfDay());
+		$weeksAgo = $date->convertDateTimezone(Carbon::now()->subWeeks(1)->startOfDay());
 
 		$cacheKey = "user_{$affId}_subids";
         $cacheTime = 7200; // 60 minutes
