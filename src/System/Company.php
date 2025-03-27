@@ -142,6 +142,7 @@ class Company
             $this->loadCompany();
             $this->loaded();
 
+			dd($this);
             $_SESSION["company"] = serialize($this);
         }
     }
