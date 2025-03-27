@@ -97,7 +97,7 @@ class IndexController extends Controller
 			    return redirect( '404' )->setStatusCode( '404' );
 		    }
 	    }
-		dd("client IP", $_SERVER['HTTP_CLIENT_IP']);
+		dd("client IP", $_SERVER['HTTP_X_FORWARDED_FOR']);
         if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
             $ip = $_SERVER['HTTP_CLIENT_IP'];
             if ( str_contains( $ip, ',' ) ) {
