@@ -19,6 +19,7 @@ class IndexController extends Controller
     {
 
         if ($request->get('repid') && $request->get('offerid')) {
+			dd("request", $request);
             return $this->clickRegistration($request);
         }
 

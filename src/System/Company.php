@@ -59,7 +59,7 @@ class Company
 
         if ( is_array($offerUrls) && ! empty( $offerUrls ) ) {
             foreach ($offerUrls as $offer_url) {
-	            dd($offer_url[0]);
+
                 if ($offer_url[0] === $url) {
                     return true;
                 }
