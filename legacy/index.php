@@ -16,7 +16,6 @@ if (isset($_GET["uid"]))
 // if its an offer url, and there wasnt any parameters for posting or generating clicks..
 if (\LeadMax\TrackYourStats\System\Company::loadFromSession()->isCompanyOfferUrl($_SERVER["HTTP_HOST"]) == true)
 {
-	dd("HTTP_HOST", $_SERVER["HTTP_HOST"]);
 	include("404.php");
 	die();
 }
