@@ -16,6 +16,7 @@ if (isset($_GET["uid"]))
 // if its an offer url, and there wasnt any parameters for posting or generating clicks..
 if (\LeadMax\TrackYourStats\System\Company::loadFromSession()->isCompanyOfferUrl($_SERVER["HTTP_HOST"]) == true)
 {
+	dd("HTTP_HOST", $_SERVER["HTTP_HOST"]);
 	include("404.php");
 	die();
 }
@@ -26,7 +27,7 @@ if (\LeadMax\TrackYourStats\System\Company::getSub() != "trackyourstats")
 {
 	
 	$company = \LeadMax\TrackYourStats\System\Company::loadFromSession();
-	dd("response", $company);
+
 	if ($_SERVER["HTTP_HOST"] !== $company->landing_page && $_SERVER["HTTP_HOST"] !== $company->login_url)
 	{
 		// test server
