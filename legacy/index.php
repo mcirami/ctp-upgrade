@@ -26,7 +26,7 @@ if (\LeadMax\TrackYourStats\System\Company::getSub() != "trackyourstats")
 {
 	
 	$company = \LeadMax\TrackYourStats\System\Company::loadFromSession();
-	
+	dd("response", $company);
 	if ($_SERVER["HTTP_HOST"] !== $company->landing_page && $_SERVER["HTTP_HOST"] !== $company->login_url)
 	{
 		// test server
