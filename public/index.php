@@ -58,7 +58,7 @@ $kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
 $response = $kernel->handle(
     $request = Illuminate\Http\Request::capture()
 );
-
+dd("response", $response);
 $urlArray = parse_url($_SERVER["REQUEST_URI"]);
 $file = key_exists('path', $urlArray) ? $urlArray["path"] : null;
 
@@ -68,7 +68,6 @@ $file = key_exists('path', $urlArray) ? $urlArray["path"] : null;
 } */
 
 if ($file !== "/") {
-	dd("if file !== /", $file);
     $file = "../legacy".$file;
 
 
