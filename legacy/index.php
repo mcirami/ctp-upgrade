@@ -3,6 +3,7 @@
 
 if (isset($_GET["repid"]) && isset($_GET["offerid"]))
 {
+	dd("repid and offerid");
 	include("landingpage.php");
 	die();
 }
