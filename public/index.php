@@ -68,6 +68,7 @@ $file = key_exists('path', $urlArray) ? $urlArray["path"] : null;
 } */
 
 if ($file !== "/") {
+	dd("if file !== /", $file);
     $file = "../legacy".$file;
 
 
