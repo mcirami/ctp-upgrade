@@ -59,7 +59,6 @@ class Company
 
         if ( is_array($offerUrls) && ! empty( $offerUrls ) ) {
             foreach ($offerUrls as $offer_url) {
-
                 if ($offer_url[0] === $url) {
                     return true;
                 }
@@ -91,16 +90,13 @@ class Company
     {
         $sub = explode(".", $_SERVER["HTTP_HOST"]);
 
+		dd("getSub in Company.php", $sub);
         return $sub[0];
     }
 
     static function getCustomSub()
     {
-        if (isset($_SESSION["COMPANY_SUBDOMAIN"])) {
-            return $_SESSION["COMPANY_SUBDOMAIN"];
-        } else {
-            return self::getSub();
-        }
+	    return $_SESSION["COMPANY_SUBDOMAIN"] ?? self::getSub();
     }
 
 
