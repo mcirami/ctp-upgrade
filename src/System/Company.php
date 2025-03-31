@@ -90,7 +90,6 @@ class Company
     {
         $sub = explode(".", $_SERVER["HTTP_HOST"]);
 
-		dd("getSub in Company.php", $sub);
         return $sub[0];
     }
 

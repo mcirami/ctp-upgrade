@@ -39,9 +39,9 @@ class Connection
 //		}
 
         $this->loadEnv();
-        if ($this->isOfferUrl() == false) //checks if its an offer url
+        if ( ! $this->isOfferUrl() ) //checks if its an offer url
         {
-            if ($this->isLoginPage() == false && $this->isLanderPage() == false) {
+            if ( ! $this->isLoginPage() && ! $this->isLanderPage() ) {
 
                 $this->setSub(Company::getSub());
             } //if its not local or an offer url, must be an install
@@ -79,9 +79,9 @@ class Connection
     public static function createConnectionWithSubDomain($SUB_DOMAIN, $forceLive = false)
     {
         if (!$forceLive) {
-            return new PDO("".DB_TYPE.":host=".LOCALHOST.";port=". self::$port. ";dbname=".$SUB_DOMAIN."", DB_USERNAME, DB_PASSWORD);
+            return new PDO( DB_TYPE . ":host=" . LOCALHOST . ";port=" . self::$port . ";dbname=" . $SUB_DOMAIN, DB_USERNAME, DB_PASSWORD);
         } else {
-            return new PDO("".DB_TYPE.":host=".self::$host.";port=". self::$port. ";dbname=".$SUB_DOMAIN."", DB_USERNAME, DB_PASSWORD);
+            return new PDO( DB_TYPE . ":host=" . self::$host . ";port=" . self::$port . ";dbname=" . $SUB_DOMAIN, DB_USERNAME, DB_PASSWORD);
         }
     }
 
@@ -178,7 +178,7 @@ class Connection
 
     public function isDev()
     {
-        return (Company::getSub() == 'test') ? true : false;
+        return Company::getSub() == 'test';
     }
 
     public function isLocal()
