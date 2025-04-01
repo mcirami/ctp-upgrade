@@ -26,8 +26,7 @@ $dotEnv->load();
 //  TYS Install Connection
     $con = new \LeadMax\TrackYourStats\System\Connection();
     $con->setConnection();
-
-
+	dd($con);
 //	unset($_SESSION["company"]);
 
 // find company information
