@@ -62,7 +62,7 @@ $response = $kernel->handle(
 $urlArray = parse_url($_SERVER["REQUEST_URI"]);
 
 $file = key_exists('path', $urlArray) ? $urlArray["path"] : null;
-dd($file);
+
 /* if ($file == "/") {
    include("../legacy/index.php");
     die();
