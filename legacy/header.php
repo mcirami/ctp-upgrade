@@ -40,7 +40,7 @@ $navBar = new \LeadMax\TrackYourStats\System\NavBar(\LeadMax\TrackYourStats\Syst
     <link rel="stylesheet" type="text/css" href="<?php echo $webroot; ?>css/default.css?v=1.6"/>
     <link rel="stylesheet" type="text/css" href="<?php echo $webroot; ?>css/tablesorter.default.css"/>
 
-    <link rel="stylesheet" href="<?php echo $webroot; ?>css/company.php">
+    <link rel="stylesheet" href="<?php echo $webroot; ?>css/company.css">
     <link href="<?php echo $webroot; ?>css/responsive_table.css" rel="stylesheet" type="text/css"/>
     <link href="<?php echo $webroot; ?>css/drawer.min.css" rel="stylesheet">
 
