@@ -90,6 +90,10 @@ class Company
     {
         $sub = explode(".", $_SERVER["HTTP_HOST"]);
 
+		if ($sub[0] === "www" || is_int($sub[0]) ) {
+			return env("DB_DATABASE");
+		}
+
         return $sub[0];
     }
 
