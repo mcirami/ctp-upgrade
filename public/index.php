@@ -54,7 +54,7 @@ include "../bootstrap/legacy_loader.php";
 
 
 $kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
-dd($kernel);
+
 $response = $kernel->handle(
     $request = Illuminate\Http\Request::capture()
 );
@@ -62,7 +62,7 @@ $response = $kernel->handle(
 $urlArray = parse_url($_SERVER["REQUEST_URI"]);
 
 $file = key_exists('path', $urlArray) ? $urlArray["path"] : null;
-
+dd($file);
 /* if ($file == "/") {
    include("../legacy/index.php");
     die();
