@@ -43,7 +43,6 @@ class Company
     public static function loadFromSession()
     {
         if (isset($_SESSION["company"])) {
-			dd($_SESSION["company"]);
             return unserialize($_SESSION["company"]);
         } else {
             $company = new self;
