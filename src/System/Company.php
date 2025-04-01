@@ -242,6 +242,7 @@ class Company
 
             $prep = $db->prepare($sql);
             $sub  = Company::getCustomSub();
+			dd($sub);
             $prep->bindParam(":subDomain", $sub);
 
 
