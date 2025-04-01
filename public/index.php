@@ -54,11 +54,11 @@ include "../bootstrap/legacy_loader.php";
 
 
 $kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
-
+dd($kernel);
 $response = $kernel->handle(
     $request = Illuminate\Http\Request::capture()
 );
-dd($response);
+
 $urlArray = parse_url($_SERVER["REQUEST_URI"]);
 
 $file = key_exists('path', $urlArray) ? $urlArray["path"] : null;
