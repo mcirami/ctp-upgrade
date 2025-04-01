@@ -90,7 +90,7 @@ class Company
     {
         $sub = explode(".", $_SERVER["HTTP_HOST"]);
 
-		if ($sub[0] === "www" || is_int($sub[0]) ) {
+		if ($sub[0] === "www" || is_numeric($sub[0]) ) {
 			dd("in if", $sub[0]);
 			return env("DB_DATABASE");
 		}
