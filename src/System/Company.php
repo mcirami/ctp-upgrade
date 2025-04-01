@@ -88,12 +88,13 @@ class Company
     //gets sub domain of current host
     static function getSub()
     {
-        $sub = explode(".", $_SERVER["HTTP_HOST"]);
+	    return env("DB_DATABASE");
+       /* $sub = explode(".", $_SERVER["HTTP_HOST"]);
 
 		if ($sub[0] === "www" || is_numeric($sub[0]) ) {
 			return env("DB_DATABASE");
 		}
-        return $sub[0];
+        return $sub[0];*/
     }
 
     static function getCustomSub()

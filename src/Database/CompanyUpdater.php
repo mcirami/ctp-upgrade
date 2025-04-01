@@ -48,7 +48,6 @@ class CompanyUpdater
     public function findRequiredUpdates()
     {
         $report = array();
-	    dd("company: ",$this->companies);
         foreach ($this->companies as $company) {
             $con = Connection::createConnectionWithSubDomain($company["subDomain"]);
             $updater = new Updater($con);
