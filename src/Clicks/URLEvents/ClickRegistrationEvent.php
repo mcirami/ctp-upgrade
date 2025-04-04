@@ -148,9 +148,9 @@ class ClickRegistrationEvent extends URLEvent
         }
 
 
-        if (User::find($this->userId)->isBanned()) {
+        /*if (User::find($this->userId)->isBanned()) {
             return false;
-        }
+        }*/
 
         if (RepHasOffer::doesAffiliateOwnOffer($this->userId, $this->offerId) == false) {
             return false;
