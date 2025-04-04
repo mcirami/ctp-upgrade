@@ -160,6 +160,7 @@ class Connection
 
     public function setSub($sub)
     {
+		dd("SUB", $sub);
         $this->subDomain = $sub;
     }
 
