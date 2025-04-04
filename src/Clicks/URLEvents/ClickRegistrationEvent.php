@@ -84,9 +84,9 @@ class ClickRegistrationEvent extends URLEvent
 
         if ($this->validateOffer() && $this->validateUser()) {
 
-            if (!$this->checkBonusOfferRequirementMet()) {
+            /*if (!$this->checkBonusOfferRequirementMet()) {
                 return false;
-            }
+            }*/
 
             /* if(array_key_exists("HTTP_REFERER", $_SERVER)) {
                 Log::info('referer: ' . print_r($_SERVER["HTTP_REFERER"], true));
