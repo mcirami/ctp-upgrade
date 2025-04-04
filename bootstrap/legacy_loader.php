@@ -31,5 +31,4 @@ $dotEnv->load();
 
 // find company information
     $company = LeadMax\TrackYourStats\System\Company::loadFromSession();
-	dd($company);
     $company->setSession();
