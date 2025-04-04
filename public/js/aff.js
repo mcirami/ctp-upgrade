@@ -72,12 +72,11 @@ function appendToPermissions()
 
 function parseArrayToSelectBox(array)
 {
+    console.log(array);
     //find out select box
     box = $("#referrer_repid");
     //removes all options
-    box
-        .find('option')
-        .remove();
+    box.find('option').remove();
 
     //loop through passed user array and append to select box
     for(var i = 0; i < array.length; i++)
