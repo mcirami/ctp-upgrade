@@ -84,7 +84,8 @@ class ClickRegistrationEvent extends URLEvent
 
         if ($this->validateOffer() && $this->validateUser()) {
 
-            /*if (!$this->checkBonusOfferRequirementMet()) {
+	        // temporarily commented to check if it's causing error
+           /* if (!$this->checkBonusOfferRequirementMet()) {
                 return false;
             }*/
 
@@ -148,6 +149,7 @@ class ClickRegistrationEvent extends URLEvent
         }
 
 
+		// temporarily commented to check if it's causing error
         /*if (User::find($this->userId)->isBanned()) {
             return false;
         }*/
