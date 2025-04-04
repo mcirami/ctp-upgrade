@@ -145,9 +145,7 @@ class Connection
     // sets connection for class_dbcon
     public function setConnection()
     {
-		dd($this->subDomain);
         $_SESSION["COMPANY_SUBDOMAIN"] = $this->subDomain;
-
 
         define('LOCALHOST', self::$host);
         //define("DB_NAME", $this->subDomain);
