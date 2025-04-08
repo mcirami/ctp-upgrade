@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('rep', function (Blueprint $table) {
-            $table->uuid('id')->primary()->change();
+            $table->uuid('idrep')->primary()->change();
         });
     }
 
@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('rep', function (Blueprint $table) {
-	        $table->unsignedInteger('id')->primary()->change();
+	        $table->unsignedInteger('idrep')->primary()->change();
         });
     }
 };
