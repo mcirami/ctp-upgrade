@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Str;
 use LeadMax\TrackYourStats\System\Session;
 
 /**
@@ -60,6 +61,20 @@ class User extends Authenticatable
 
     public $timestamps = false;
 
+	/**
+	 * Indicates if the IDs are auto-incrementing.
+	 *
+	 * @var bool
+	 */
+	public $incrementing = false;
+
+	/**
+	 * The data type of the primary key.
+	 *
+	 * @var string
+	 */
+	protected $keyType = 'string';
+
     use Notifiable;
 
     /**
@@ -83,6 +98,14 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+	protected static function boot() {
+		parent::boot();
+		static::creating(function ($model) {
+			if(!$model->getKey()) {
+				$model->setAttribute($model->getKeyName(), (string) Str::uuid());
+			}
+		});
+	}
 
     public function scopeMyUsers(Builder $query)
     {
