@@ -37,8 +37,6 @@
                         @endif
                     </tr>
                     </thead>
-                    <tbody id="users_container">
-                    </tbody>
                 </table>
             </div>
         </div>
@@ -50,62 +48,53 @@
 @endsection
 
 @section('footer')
-    <script type="text/javascript">
-        $(document).ready(function () {
-	        const EDIT_AFFILIATES = '<?php echo \LeadMax\TrackYourStats\System\Session::permissions()->can(\LeadMax\TrackYourStats\User\Permissions::EDIT_AFFILIATES); ?>';
-	        const CREATE_AFFILIATES = '<?php echo \LeadMax\TrackYourStats\System\Session::permissions()->can(\LeadMax\TrackYourStats\User\Permissions::CREATE_AFFILIATES); ?>';
-	        const CREATE_MANAGERS = '<?php echo \LeadMax\TrackYourStats\System\Session::permissions()->can(\LeadMax\TrackYourStats\User\Permissions::CREATE_MANAGERS); ?>';
-	        const role = '<?php echo request('role',3); ?>';
 
-			let userCollection = '<?php echo $users; ?>';
-            let users = JSON.parse(userCollection);
+        @push('scripts')
+            <script src="https://cdn.datatables.net/2.2.2/js/dataTables.js"></script>
+            <script type="text/javascript">
 
-	        const itemsContainer = document.querySelector("#users_container");
+            $(document).ready(function () {
+                const table = $('#mainTable').DataTable({
+                    ajax: {
+                        url: '/user/get-all-users',
+                        dataSrc: 'data',
+                    },
+                    processing: true,
+                    serverSide: true,
+                    pageLength: 50,
+                    lengthMenu: [ [10, 25, 50, -1], [10, 25, 50, "All"] ],
+                    columns: [
+                        {data: 'idrep', name: 'idrep'},
+                        {data: 'user_name', name: 'user_name'},
+                        {data: 'actions', name: 'actions'},
+                        {data: 'referrer_repid', name: 'referrer_repid'},
+                        {data: 'rep_timestamp', name: 'rep_timestamp'},
+                    ],
+                    initComplete: function (settings, json) {
+                        // This callback runs every time the table is redrawn (including paging)
+                        $('.dt-paging .dt-paging-button.current').addClass('button active value_span2-2 value_span3-2 value_span6-1 value_span2 value_span2-2 value_span4');
+                        $('.dt-paging .dt-paging-button:not(.current)').addClass('button value_span2-2 value_span3-2 value_span6-1 value_span2 value_span2-2 value_span4')
+                        // You could also conditionally add different classes for first/last/etc
+                    },
+                    drawCallback: function (settings) {
+                        // This callback runs every time the table is redrawn (including paging)
+                        $('.dt-paging .dt-paging-button.current').addClass('button active value_span2-2 value_span3-2 value_span6-1 value_span2 value_span2-2 value_span4');
+                        $('.dt-paging .dt-paging-button:not(.current)').addClass('button value_span2-2 value_span3-2 value_span6-1 value_span2 value_span2-2 value_span4')
+                        // You could also conditionally add different classes for first/last/etc
+                    },
+                    stateLoadCallback: function (settings, callback) {
+                        console.log('state callback');
+                    }
+                });
 
-	        document.getElementById('searchBox').addEventListener('input', (e) => {
-		        const userInput = e.target.value.trim().toLowerCase();
-		        let filteredUsers = users.filter((user) => {
-			        return user.email.toLowerCase().includes(userInput) || user.user_name.toLowerCase().includes(userInput) || user.idrep.toString().includes(userInput);
-		        })
-		        showUsers(filteredUsers);
-	        });
+                $(window).on('resize', function() {
+                    // forcibly re-draw or re-apply classes
+                    // table.draw(false) will re-draw while maintaining paging
+                    table.draw(false);
+                });
 
-	        showUsers(users);
-			function showUsers(users) {
-				let html = "";
-
-				users.forEach((user) => {
-					html += "<tr> " +
-						"<td>" + user['idrep'] + "</td>" +
-						"<td>" + user['user_name'] + "</td>" +
-                        "<td class='actions'>";
-                            if (EDIT_AFFILIATES){
-								html += "<a class='btn btn-default btn-sm value_span6-1 value_span4 ' data-toggle='tooltip' title='Edit User'" +
-                                    " href='/aff_update.php?idrep=" + user['idrep'] + "'>Edit</a>";
-                            }
-							if(CREATE_AFFILIATES) {
-								html += "<a class='btn btn-default btn-sm value_span5-1 ' data-toggle='tooltip' title='Login into this user'" +
-									" href='#' onclick='adminLogin(" + user['idrep'] +")'>Login</a>";
-                            }
-							if(CREATE_MANAGERS && role == 2) {
-								html += "<a class='btn btn-sm btn-default value_span5-1 ' data-toggle='tooltip' title='View Agents'" +
-									" href='/user/" + user['idrep'] + "/affiliates'>View Agents</a>";
-                            }
-                    html +=    "</td>" +
-                        "<td>" + user['referrer']['user_name'] +
-						"<td>" + user['rep_timestamp'] + "</td>" +
-                        "</tr>";
-				})
-
-                itemsContainer.innerHTML = html;
-            }
-
-	        $("#mainTable").tablesorter(
-		        {
-			        sortList: [[0, 0]],
-			        widgets: ['staticRow']
-		        });
-        });
-    </script>
+            });
+        </script>
+    @endpush
 @endsection
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\PayoutDataRequest;
 use App\Privilege;
+use App\Services\UserService;
 use App\User;
 use App\Click;
 use Carbon\Carbon;
@@ -32,30 +33,32 @@ class UserController extends Controller
 
     public function viewManageUsers()
     {
+        return view('user.manage');
+    }
 
-        $this->validate(request(), [
-            'showInactive' => 'numeric|min:0|max:1'
-        ]);
+	public function getManageUsers(UserService $userService) {
+		$this->validate(request(), [
+			'showInactive' => 'numeric|min:0|max:1'
+		]);
 
-        $users = User::myUsers()->withRole(request('role', Privilege::ROLE_AFFILIATE))->with('referrer');
+		$users = User::myUsers()->withRole(request('role', Privilege::ROLE_AFFILIATE))->with('referrer');
 
-        if (request('showInactive', 0) == 1) {
-            $users->where('status', 0);
-        } else {
-            $users->where('status', 1);
-        }
+		if (request('showInactive', 0) == 1) {
+			$users->where('status', 0);
+		} else {
+			$users->where('status', 1);
+		}
 
 		if (Session::userType() == Privilege::ROLE_ADMIN && (request('role') == null ||  request('role') == '3')) {
 			$userId = Session::userID();
 			$managers = DB::table('rep')->where('referrer_repid', '=', $userId)->get()->pluck('idrep')->toArray();
 			$users->whereIn('referrer_repid', $managers);
 		}
-		
-        $users = $users->get();
-		$users = $this->getDiffForHumans($users);
 
-        return view('user.manage', compact('users'));
-    }
+		$users = $users->get();
+		$users = $this->getDiffForHumans($users);
+		return response()->json($userService->getUsersDataTable($users));
+	}
 
 	public function AuthRouteAPI(Request $request){
 		return $request->user();
