@@ -38,8 +38,9 @@ class ClickRegistrationEvent extends URLEvent
 
 	//public $country;
 
-    public function __construct($user_id, $offer_id, $sub_variables_array, $ip)
+    public function __construct($public_id, $offer_id, $sub_variables_array, $ip)
     {
+	    $user_id = User::where('public_id', $public_id)->get()->pluck('idrep');
         $this->userId = $user_id;
         $this->offerId = $offer_id;
         $this->subVarArray = $sub_variables_array;

@@ -61,20 +61,6 @@ class User extends Authenticatable
 
     public $timestamps = false;
 
-	/**
-	 * Indicates if the IDs are auto-incrementing.
-	 *
-	 * @var bool
-	 */
-	public $incrementing = false;
-
-	/**
-	 * The data type of the primary key.
-	 *
-	 * @var string
-	 */
-	protected $keyType = 'string';
-
     use Notifiable;
 
     /**
@@ -100,9 +86,9 @@ class User extends Authenticatable
 
 	protected static function boot() {
 		parent::boot();
-		static::creating(function ($model) {
-			if(!$model->getKey()) {
-				$model->setAttribute($model->getKeyName(), (string) Str::uuid());
+		static::creating(function ($user) {
+			if(!$user->public_id) {
+				$user->public_id = (string) Str::uuid();
 			}
 		});
 	}
