@@ -36,7 +36,7 @@ class UserController extends Controller
         return view('user.manage');
     }
 
-	public function getManageUsers(UserService $userService) {
+	public function getAllUsers(UserService $userService) {
 		$this->validate(request(), [
 			'showInactive' => 'numeric|min:0|max:1'
 		]);

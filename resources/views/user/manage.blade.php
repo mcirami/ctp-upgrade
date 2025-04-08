@@ -64,11 +64,11 @@
                     pageLength: 50,
                     lengthMenu: [ [10, 25, 50, -1], [10, 25, 50, "All"] ],
                     columns: [
-                        {data: 'idrep', name: 'idrep'},
-                        {data: 'user_name', name: 'user_name'},
-                        {data: 'actions', name: 'actions'},
-                        {data: 'referrer_repid', name: 'referrer_repid'},
-                        {data: 'rep_timestamp', name: 'rep_timestamp'},
+                        {data: 'idrep', name: 'rep.idrep'},
+                        {data: 'user_name', name: 'rep.user_name'},
+                        {data: 'actions', name: 'rep.actions'},
+                        {data: 'referrer_repid', name: 'rep.referrer_repid'},
+                        {data: 'rep_timestamp', name: 'rep.rep_timestamp'},
                     ],
                     initComplete: function (settings, json) {
                         // This callback runs every time the table is redrawn (including paging)
