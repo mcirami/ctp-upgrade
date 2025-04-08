@@ -17,6 +17,7 @@ namespace LeadMax\TrackYourStats\User;
 //include '../Permissions.php';
 
 use App\Privilege;
+use Illuminate\Support\Str;
 use LeadMax\TrackYourStats\Offer\RepHasOffer;
 use LeadMax\TrackYourStats\System\Company;
 use LeadMax\TrackYourStats\System\Mail;
@@ -534,7 +535,7 @@ class User extends Login
 
                 if ($password === $confirmpassword) {
 
-
+	                $public_id = (string) Str::uuid();
                     $first_name = filter_var(post('first_name'), FILTER_SANITIZE_STRING);
                     $last_name = filter_var(post('last_name'), FILTER_SANITIZE_STRING);
                     $cell_phone = filter_var(post('cell_phone'), FILTER_SANITIZE_STRING);
@@ -548,10 +549,11 @@ class User extends Login
                     $rep_timestamp = date('Y-m-d H:i:s');
                     $new_password = password_hash($password, PASSWORD_DEFAULT);
                     $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
-                    $sql = "INSERT INTO rep(first_name,last_name,cell_phone,email,user_name,password,status,referrer_repid,rep_timestamp, skype, company_name) VALUES(:first_name,:last_name,:cell_phone,:email,:user_name,:password,:status,:referrer_repid,:rep_timestamp, :skype,
+                    $sql = "INSERT INTO rep(public_id,first_name,last_name,cell_phone,email,user_name,password,status,referrer_repid,rep_timestamp, skype, company_name) VALUES(:public_id,:first_name,:last_name,:cell_phone,:email,:user_name,:password,:status,:referrer_repid,:rep_timestamp, :skype,
 :company_name)";
                     $stmt = $db->prepare($sql);
 
+	                $stmt->bindparam(":public_id", $public_id);
                     $stmt->bindparam(":first_name", $first_name);
                     $stmt->bindparam(":last_name", $last_name);
                     $stmt->bindparam(":cell_phone", $cell_phone);
