@@ -245,7 +245,7 @@
 						if (userType == 3) {
 							html += `<br/><span class='link_label'>Offer Link:</span><br /> ` +
 								`<span class='offer_link'>https://` + url +
-								`/?repid=` + sessionUser['public_id'] +
+								`/?repid=` + sessionUser['idrep'] +
 								`&offerid=` + offer['idoffer'] + `&sub1=</span>`;
 						}
 
@@ -256,10 +256,10 @@
 							html +=
 									`<td class='value_span10'>` +
 									`<p  style='display:none;' id='url_` + offer['idoffer'] + `'>http://` + url +
-									`/?repid=` + sessionUser['public_id'] +
+									`/?repid=` + sessionUser['idrep'] +
 											`&offerid=` + offer['idoffer'] + `&sub1=</p>` +
 									`<button data-url='https://` + url +
-									`/?repid=` + sessionUser['public_id'] +
+									`/?repid=` + sessionUser['idrep'] +
 											`&offerid=` + offer['idoffer'] + `&sub1=' data-toggle='tooltip' title='Copy My Link' ` +
 									`class='copy_button btn btn-default'>Copy My Link` +
 									`</button></td>`;

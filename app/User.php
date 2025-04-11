@@ -84,15 +84,6 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-	protected static function boot() {
-		parent::boot();
-		static::creating(function ($user) {
-			if(!$user->public_id) {
-				$user->public_id = (string) Str::uuid();
-			}
-		});
-	}
-
     public function scopeMyUsers(Builder $query)
     {
         return $query->where('lft', '>', Session::user()->lft)->where('rgt', '<', Session::user()->rgt);
