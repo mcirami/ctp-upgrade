@@ -534,8 +534,11 @@ class User extends Login
 
 
                 if ($password === $confirmpassword) {
+	                do {
+		                $randomId = mt_rand(10000, 999999);
+	                } while ( \App\User::where('idrep', $randomId)->exists());
 
-	                $public_id = (string) Str::uuid();
+
                     $first_name = filter_var(post('first_name'), FILTER_SANITIZE_STRING);
                     $last_name = filter_var(post('last_name'), FILTER_SANITIZE_STRING);
                     $cell_phone = filter_var(post('cell_phone'), FILTER_SANITIZE_STRING);
@@ -549,11 +552,11 @@ class User extends Login
                     $rep_timestamp = date('Y-m-d H:i:s');
                     $new_password = password_hash($password, PASSWORD_DEFAULT);
                     $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
-                    $sql = "INSERT INTO rep(public_id,first_name,last_name,cell_phone,email,user_name,password,status,referrer_repid,rep_timestamp, skype, company_name) VALUES(:public_id,:first_name,:last_name,:cell_phone,:email,:user_name,:password,:status,:referrer_repid,:rep_timestamp, :skype,
+                    $sql = "INSERT INTO rep(idrep,first_name,last_name,cell_phone,email,user_name,password,status,referrer_repid,rep_timestamp, skype, company_name) VALUES(:idrep,:first_name,:last_name,:cell_phone,:email,:user_name,:password,:status,:referrer_repid,:rep_timestamp, :skype,
 :company_name)";
                     $stmt = $db->prepare($sql);
 
-	                $stmt->bindparam(":public_id", $public_id);
+	                $stmt->bindparam(":idrep", $randomId);
                     $stmt->bindparam(":first_name", $first_name);
                     $stmt->bindparam(":last_name", $last_name);
                     $stmt->bindparam(":cell_phone", $cell_phone);
@@ -567,8 +570,7 @@ class User extends Login
                     $stmt->bindparam(":company_name", $company_name);
                     $stmt->execute();
 
-                    $repID = $db->lastInsertId();
-
+                    $repID = $randomId; //$db->lastInsertId();
 
                     $repType = post("priv");
                     $sql2 = 'INSERT INTO privileges (rep_idrep, ';
@@ -607,6 +609,7 @@ class User extends Login
                     $list = [];
 
                     $list = Permissions::defaultUserPermissions($list, $repType);
+
 
                     if (!empty($_POST["permissions"])) {
 

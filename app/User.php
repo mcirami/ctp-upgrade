@@ -60,6 +60,8 @@ class User extends Authenticatable
     protected $table = 'rep';
 
     public $timestamps = false;
+	public $incrementing = false;
+	protected $keyType = 'int';
 
     use Notifiable;
 
@@ -69,6 +71,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
+		'idrep',
         'name',
         'email',
         'password',
@@ -87,8 +90,12 @@ class User extends Authenticatable
 	protected static function boot() {
 		parent::boot();
 		static::creating(function ($user) {
-			if(!$user->public_id) {
-				$user->public_id = (string) Str::uuid();
+			if (!$user->idrep) {
+				do {
+					$randomId = mt_rand(10000, 999999);
+				} while (User::where('idrep', $randomId)->exists());
+				$user->idrep = $randomId;
+				// Possibly do a loop to avoid duplicates, as shown above
 			}
 		});
 	}
