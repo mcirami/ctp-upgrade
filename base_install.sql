@@ -849,7 +849,7 @@ CREATE TABLE `offer` (
   `url` varchar(555) NOT NULL,
   `offer_type` tinyint NOT NULL DEFAULT '0',
   `is_public` tinyint DEFAULT '0',
-  `payout` decimal(10,2) DEFAULT NULL,
+  `payout` decimal(10,4) DEFAULT NULL,
   `status` tinyint(1) DEFAULT NULL,
   `offer_timestamp` datetime DEFAULT NULL,
   `campaign_id` int NOT NULL,
