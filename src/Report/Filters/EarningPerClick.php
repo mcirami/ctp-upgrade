@@ -33,10 +33,15 @@ class EarningPerClick implements Filter
     {
         if (($p = strpos($val, '.')) !== false) {
             if (floatval(substr($val, 4, $p)) >= 5) {
-                $val += 0.01;
-                $val = $this->truncate($val, 2);
+                /*$val += 0.01;
+                $val = $this->truncate($val, 2);*/
+
+	            $rounded = round($val, 4);
+	            $val = number_format($rounded, 4, '.', '');
             } else {
-                $val = $this->truncate($val, 2);
+	            $rounded = round($val, 4);
+	            $val = number_format($rounded, 4, '.', '');
+                //$val = $this->truncate($val, 2);
             }
         }
 
@@ -73,9 +78,10 @@ class EarningPerClick implements Filter
 
 
             if (isset($key[$clicks]) && isset($key[$revenue])) {
-
                 if ($key[$clicks] != 0 && $key[$revenue] !== null) {
-                    $report [$row]["EPC"] = $this->roundEPC(($report[$row][$revenue] / $key[$clicks]));
+	                $rounded = round((float) $report[$row][$revenue], 4);
+	                $report [$row]["EPC"]  = number_format($rounded, 4, '.', '') / $key[$clicks];
+                    //$report [$row]["EPC"] = $this->roundEPC(($revenue / $key[$clicks]));
                 } else {
                     $report [$row]["EPC"] = 0;
                 }

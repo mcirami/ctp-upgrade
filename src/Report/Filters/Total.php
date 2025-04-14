@@ -53,10 +53,12 @@ class Total implements Filter
         foreach ($report as $key => $row) {
             foreach ($row as $name => $value) {
                 if (in_array($name, $this->totalThese)) {
+
                     if (!isset($totals[$name]) || $totals[$name] == '') {
                         $totals[$name] = 0;
                     }
-                    if (is_int($value) || is_float($value) || $name == "UniqueClicks") {
+
+                    if (is_int($value) || is_float($value) || $name == "UniqueClicks" || $name == "Revenue") {
                         $totals[$name] += $value;
                     }
                 }

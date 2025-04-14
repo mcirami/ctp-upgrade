@@ -19,8 +19,8 @@ class DollarSign implements Filter
 
     public static function dollarSignNum($num)
     {
-
-        $num = number_format((double)$num, 2);
+	    $rounded = round((float)$num, 4);
+        $num = number_format($rounded, 4, '.', '');
 
         return "$" . $num;
     }
@@ -28,6 +28,7 @@ class DollarSign implements Filter
 
     public function filter($report)
     {
+
         foreach ($report as $key => $val) {
             foreach ($val as $key2 => $val2) {
                 if (in_array($key2, $this->toDollarSign)) {

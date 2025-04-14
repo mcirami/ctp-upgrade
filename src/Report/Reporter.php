@@ -34,6 +34,7 @@ class Reporter
 
     private function filterReport($report)
     {
+
         foreach ($this->filters as $filter) {
             if ($filter instanceof Filter) {
                 $report = $filter->filter($report);
@@ -49,11 +50,8 @@ class Reporter
     public function fetchReport($dateFrom, $dateTo): array
     {
         $report = $this->repo->between($dateFrom, $dateTo);
-
         
-        $report = $this->filterReport($report);
-
-        return $report;
+        return $this->filterReport($report);
     }
 
     public function between($dateFrom, $dateTo, Formats\Format $format)

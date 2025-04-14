@@ -111,11 +111,13 @@ class Conversion
     {
         $db = DatabaseConnection::getInstance();
         $sql = "INSERT INTO conversions (user_id, click_id, timestamp, paid) VALUES (:user_id, :clickID, :timestamp, :paid)";
+		$paidRounded = round($this->paid, 4);
+	    $paid = number_format($paidRounded, 4, '.', '');
 
         $prep = $db->prepare($sql);
         $prep->bindParam(":user_id", $this->user_id);
         $prep->bindParam(":clickID", $this->click_id);
-        $prep->bindParam(":paid", $this->paid, PDO::PARAM_INT);
+        $prep->bindParam(":paid", $paid);
         $prep->bindParam(":timestamp", $this->timestamp);
 
 
