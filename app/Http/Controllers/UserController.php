@@ -91,7 +91,7 @@ class UserController extends Controller
 		$now = Carbon::now();
 		$todaysDate = $date->convertDateTimezone($now);
 		$monthsAgo = $date->convertDateTimezone(Carbon::now()->subMonths(1)->startOfDay());
-		$weeksAgo = $date->convertDateTimezone(Carbon::now()->subDay(5)->startOfDay());
+		$daysAgo = $date->convertDateTimezone(Carbon::now()->subDay(3)->startOfDay());
 
 		$cacheKey = "user_{$affId}_subids";
         $cacheTime = 7200; // 60 minutes
@@ -109,7 +109,7 @@ class UserController extends Controller
 								       AND click_vars.sub1 != ''
 								     GROUP BY click_vars.sub1
 								     ORDER BY click_vars.sub1",
-				[$affId, $weeksAgo, $todaysDate]
+				[$affId, $daysAgo, $todaysDate]
 			);
 		} else {
 			$data = Cache::remember($cacheKey, $cacheTime, function () use ($affId, $monthsAgo, $todaysDate) {

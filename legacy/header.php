@@ -3,7 +3,6 @@
 
 ini_set('display_errors', 1);
 
-
 $webroot = getWebRoot();
 
 
@@ -27,7 +26,7 @@ $navBar = new \LeadMax\TrackYourStats\System\NavBar(\LeadMax\TrackYourStats\Syst
 <html lang="">
 <head>
 
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="shortcut icon" type="image/ico"
           href="<?PHP echo \LeadMax\TrackYourStats\System\Company::loadFromSession()->getImgDir() . "/favicon.ico"; ?>"/>
@@ -35,7 +34,7 @@ $navBar = new \LeadMax\TrackYourStats\System\NavBar(\LeadMax\TrackYourStats\Syst
     <!--    <link href="css/bootstrap-theme.min.css" rel="stylesheet">-->
     <link href="css/animate.css" rel="stylesheet">
 
-	<meta name="csrf-token" content='<?php echo csrf_token(); ?>'>
+	<meta name="csrf-token" content="<?php echo csrf_token(); ?>">
 
     <link rel="stylesheet" type="text/css" href="<?php echo $webroot; ?>css/default.css?v=1.6"/>
     <link rel="stylesheet" type="text/css" href="<?php echo $webroot; ?>css/tablesorter.default.css"/>
