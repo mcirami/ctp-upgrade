@@ -81,6 +81,8 @@ class Click
 
             $this->saveSubVariables();
 
+			$this->saveSubId();
+
             $this->saveGeoData();
 
             return true;
@@ -91,6 +93,7 @@ class Click
 
     private function saveSubVariables()
     {
+
         if (isset($this->subVarArray) == false) {
             $this->subVarArray = $_GET;
         }
@@ -115,6 +118,20 @@ class Click
 
         return $stmt->execute();
     }
+
+	private function saveSubId() {
+		$sub1 = trim($this->subVarArray['sub1'] ?? '');
+		if ($sub1 === '') {
+			return false;
+		}
+		$db = DatabaseConnection::getInstance();
+		$sql = "INSERT IGNORE INTO sub_ids (idrep, sub_id) VALUES (:idrep, :sub_id)";
+		$stmt = $db->prepare($sql);
+		return $stmt->execute([
+			':idrep'  => $this->rep_idrep,
+			':sub_id' => $this->subVarArray['sub1'],
+		]);
+	}
 
     private function saveGeoData()
     {

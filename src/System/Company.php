@@ -57,7 +57,7 @@ class Company
     {
         $offerUrls = self::getOfferUrls();
 
-        if (is_array($offerUrls) && empty($offerUrls) == false) {
+        if ( is_array($offerUrls) && ! empty( $offerUrls ) ) {
             foreach ($offerUrls as $offer_url) {
                 if ($offer_url[0] === $url) {
                     return true;
@@ -88,18 +88,18 @@ class Company
     //gets sub domain of current host
     static function getSub()
     {
-        $sub = explode(".", $_SERVER["HTTP_HOST"]);
+	    return env("DB_DATABASE");
+       /* $sub = explode(".", $_SERVER["HTTP_HOST"]);
 
-        return $sub[0];
+		if ($sub[0] === "www" || is_numeric($sub[0]) ) {
+			return env("DB_DATABASE");
+		}
+        return $sub[0];*/
     }
 
     static function getCustomSub()
     {
-        if (isset($_SESSION["COMPANY_SUBDOMAIN"])) {
-            return $_SESSION["COMPANY_SUBDOMAIN"];
-        } else {
-            return self::getSub();
-        }
+	    return $_SESSION["COMPANY_SUBDOMAIN"] ?? self::getSub();
     }
 
 

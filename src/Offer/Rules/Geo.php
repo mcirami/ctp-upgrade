@@ -308,24 +308,25 @@ class Geo implements Rule
 
     private function getISOCode()
     {
-        try {
-	        if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-		        $ip = $_SERVER['HTTP_CLIENT_IP'];
-		        if ( str_contains( $ip, ',' ) ) {
-			        $ip = substr($ip, 0, strpos($ip, ","));
-		        }
-	        } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-		        $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-		        if ( str_contains( $ip, ',' ) ) {
-			        $ip = substr($ip, 0, strpos($ip, ","));
-		        }
-	        } else {
-		        $ip = $_SERVER['REMOTE_ADDR'];
-		        if ( str_contains( $ip, ',' ) ) {
-			        $ip = substr($ip, 0, strpos($ip, ","));
-		        }
-	        }
 
+	    if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+		    $ip = $_SERVER['HTTP_CLIENT_IP'];
+		    if ( str_contains( $ip, ',' ) ) {
+			    $ip = substr($ip, 0, strpos($ip, ","));
+		    }
+	    } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+		    $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+		    if ( str_contains( $ip, ',' ) ) {
+			    $ip = substr($ip, 0, strpos($ip, ","));
+		    }
+	    } else {
+		    $ip = $_SERVER['REMOTE_ADDR'];
+		    if ( str_contains( $ip, ',' ) ) {
+			    $ip = substr($ip, 0, strpos($ip, ","));
+		    }
+	    }
+
+        try {
             //trys to get their iso code and postal
             $this->record = $this->geoReader->city($ip);
             $this->countryISO = $this->record->country->isoCode;
@@ -341,7 +342,7 @@ class Geo implements Rule
     {
 
         if (empty($this->filteredRules)) {
-            return true;
+			return true;
         }
 
         foreach ($this->filteredRules as $rule) {
@@ -353,30 +354,28 @@ class Geo implements Rule
                     if ($this->countryISO == $country_code) {
                         $this->redirectOffer = $rule["redirect_offer"];
 
-                        return false;
+	                    return false;
                     }
                 }
 
                 // not in list
-                return true;
+	            return true;
             } else {
-
-                //dd($rule["country_list"]);
                 foreach ($rule["country_list"] as $country_code) {
                     if ($this->countryISO == $country_code) {
-                        return true;
+	                    return true;
                     }
                 }
 
                 //if the country wasn't in the allowed list...
                 $this->redirectOffer = $rule["redirect_offer"];
 
-                return false;
+	            return false;
             }
 
         }
 
-		return true;
+	    return true;
 
     }
 

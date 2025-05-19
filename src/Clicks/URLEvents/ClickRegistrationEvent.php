@@ -36,7 +36,7 @@ class ClickRegistrationEvent extends URLEvent
 
     public $ip;
 
-	public $country;
+	//public $country;
 
     public function __construct($user_id, $offer_id, $sub_variables_array, $ip)
     {
@@ -44,7 +44,7 @@ class ClickRegistrationEvent extends URLEvent
         $this->offerId = $offer_id;
         $this->subVarArray = $sub_variables_array;
         $this->ip = $ip;
-		$this->country = preg_replace('/[^a-zA-Z]/', '', ClickGeo::findGeo($ip))['isoCode'];
+		//$this->country = preg_replace('/[^a-zA-Z]/', '', ClickGeo::findGeo($ip))['isoCode'];
     }
 
     public static function getEventString(): string
@@ -84,15 +84,16 @@ class ClickRegistrationEvent extends URLEvent
 
         if ($this->validateOffer() && $this->validateUser()) {
 
-            if (!$this->checkBonusOfferRequirementMet()) {
+	        // temporarily commented to check if it's causing error
+           /* if (!$this->checkBonusOfferRequirementMet()) {
                 return false;
-            }
+            }*/
 
             /* if(array_key_exists("HTTP_REFERER", $_SERVER)) {
                 Log::info('referer: ' . print_r($_SERVER["HTTP_REFERER"], true));
             } */
             //Log::info('ip: ' . print_r($ip, true));
-            $geo = $this->country;
+            //$geo = $this->country;
             //Log::info('geo: ' . print_r($geo, true));
 
             //Log::info('geo: ' . print_r($_SERVER, true));
@@ -100,7 +101,7 @@ class ClickRegistrationEvent extends URLEvent
 
 	        $click->first_timestamp = date("Y-m-d H:i:s");
             $click->ip_address = $this->ip; //$_SERVER["REMOTE_ADDR"];
-            $click->country_code = $geo;
+            //$click->country_code = $geo;
             $click->referer = array_key_exists("HTTP_REFERER", $_SERVER) ? $_SERVER["HTTP_REFERER"] : null;
             $click->browser_agent = $_SERVER["HTTP_USER_AGENT"];
 
@@ -148,9 +149,10 @@ class ClickRegistrationEvent extends URLEvent
         }
 
 
-        if (User::find($this->userId)->isBanned()) {
+		// temporarily commented to check if it's causing error
+        /*if (User::find($this->userId)->isBanned()) {
             return false;
-        }
+        }*/
 
         if (RepHasOffer::doesAffiliateOwnOffer($this->userId, $this->offerId) == false) {
             return false;
@@ -181,7 +183,7 @@ class ClickRegistrationEvent extends URLEvent
     {
         $rules = new Rules($this->offerId, $this->ip);
 
-        if ($rules->checkAllRules($this->country)) {
+        if ($rules->checkAllRules()) {
             return true;
         } else {
             return false;

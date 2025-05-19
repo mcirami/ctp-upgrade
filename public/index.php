@@ -60,6 +60,7 @@ $response = $kernel->handle(
 );
 
 $urlArray = parse_url($_SERVER["REQUEST_URI"]);
+
 $file = key_exists('path', $urlArray) ? $urlArray["path"] : null;
 
 /* if ($file == "/") {
@@ -67,9 +68,8 @@ $file = key_exists('path', $urlArray) ? $urlArray["path"] : null;
     die();
 } */
 
-
 if ($file !== "/") {
-    $file = "../legacy/".$file;
+    $file = "../legacy".$file;
 
 
     if (file_exists($file)) {

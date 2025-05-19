@@ -27,7 +27,6 @@ $dotEnv->load();
     $con = new \LeadMax\TrackYourStats\System\Connection();
     $con->setConnection();
 
-
 //	unset($_SESSION["company"]);
 
 // find company information

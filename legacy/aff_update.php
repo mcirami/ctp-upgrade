@@ -410,7 +410,7 @@ $update->dumpPermissionsToJavascript();
 <?php $update->checkBox() ?>
 
 <!--right_panel-->
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios@1.8.4/dist/axios.min.js"></script>
 
 <script type = "text/javascript">
 

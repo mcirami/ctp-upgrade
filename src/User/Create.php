@@ -178,10 +178,13 @@ class Create
 
     public function dumpAdmins()
     {
+
         if(\App\Privilege::ROLE_ADMIN) {
-            Session::userID();
-            //dd($this->listAdmin[0]);
+            $id = Session::userID();
+			$username = \App\User::where('idrep', $id)->first()->user_name;
+			$this->listAdmin = [$id.';'.$username];
         }
+
         //print_r($this->listAdmin);
         echo "<script type=\"text/javascript\">";
         echo "var listAdmin = ".json_encode($this->listAdmin).";";

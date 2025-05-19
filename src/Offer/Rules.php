@@ -162,14 +162,14 @@ class Rules
     }
 
 
-    public function checkAllRules($clickCountry = null)
+    public function checkAllRules()
     {
 
         if (empty($this->rules)) {
             return true;
         }
 
-        foreach($this->rules as $rule) {
+        /*foreach($this->rules as $rule) {
             if ($rule['cap_status']) {
                 $cap = $rule['cap'];
                 $countryRule = $rule['country_code'];
@@ -215,13 +215,14 @@ class Rules
                     };
                 }
             }
-        }
+        }*/
 
         foreach ($this->ruleObjs as $key => $rule) {
 
-            if (!$rule->checkRules()) {
+			$ruleCheck = $rule->checkRules();
+            if (!$ruleCheck) {
                 $newRules = new Rules($rule->redirectOffer, $this->ip);
-                if ($newRules->checkAllRules($clickCountry)) {
+                if ($newRules->checkAllRules()) {
                     $url = $this->buildRedirectUrl($rule->redirectOffer);
                     send_to($url);
                 }
