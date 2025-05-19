@@ -212,7 +212,7 @@
 			document.getElementById('searchBox').addEventListener('input', (e) => {
 				const userInput = e.target.value.trim().toLowerCase();
 				let filteredOffers = offers.filter((offer) => {
-					return offer.offer_name.toLowerCase().includes(userInput);
+					return offer.offer_name.toLowerCase().includes(userInput) || offer.idoffer.toString().includes(userInput);
 				})
 				paginate(filteredOffers, itemsPerPage, paginationContainer);
 			});
