@@ -34,6 +34,7 @@ class ClickListener extends Listener
                 $ip = substr($ip, 0, strpos($ip, ","));
             }
         }
+
         $register = new ClickRegistrationEvent($_GET["repid"], $_GET["offerid"], $_GET, $ip);
 
         return $register->fire();
