@@ -181,7 +181,6 @@ class ClickRegistrationEvent extends URLEvent
 
     private function checkOfferRules()
     {
-		dd($this->ip);
         $rules = new Rules($this->offerId, $this->ip);
 
         if ($rules->checkAllRules()) {
