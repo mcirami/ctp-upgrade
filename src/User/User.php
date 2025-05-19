@@ -567,12 +567,11 @@ class User extends Login
 
                     $repID = $db->lastInsertId();
 
-
                     $repType = post("priv");
                     $sql2 = 'INSERT INTO privileges (rep_idrep, ';
 
+	                switch ($repType) {
 
-                    switch ($repType) {
                         case \App\Privilege::ROLE_ADMIN:
                             $sql2 .= 'is_admin ';
                             break;

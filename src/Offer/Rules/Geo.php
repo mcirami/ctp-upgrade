@@ -342,7 +342,7 @@ class Geo implements Rule
     {
 
         if (empty($this->filteredRules)) {
-            return true;
+			return true;
         }
 
         foreach ($this->filteredRules as $rule) {
@@ -354,28 +354,28 @@ class Geo implements Rule
                     if ($this->countryISO == $country_code) {
                         $this->redirectOffer = $rule["redirect_offer"];
 
-                        return false;
+	                    return false;
                     }
                 }
 
                 // not in list
-                return true;
+	            return true;
             } else {
                 foreach ($rule["country_list"] as $country_code) {
                     if ($this->countryISO == $country_code) {
-                        return true;
+	                    return true;
                     }
                 }
 
                 //if the country wasn't in the allowed list...
                 $this->redirectOffer = $rule["redirect_offer"];
 
-                return false;
+	            return false;
             }
 
         }
 
-		return true;
+	    return true;
 
     }
 
