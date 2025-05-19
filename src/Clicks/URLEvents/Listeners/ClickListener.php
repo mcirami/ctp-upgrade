@@ -18,7 +18,7 @@ class ClickListener extends Listener
 
     public function dispatch()
     {
-        if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+        /*if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
             $ip = $_SERVER['HTTP_CLIENT_IP'];
             if ( str_contains( $ip, ',' ) ) {
                 $ip = substr($ip, 0, strpos($ip, ","));
@@ -33,7 +33,8 @@ class ClickListener extends Listener
             if ( str_contains( $ip, ',' ) ) {
                 $ip = substr($ip, 0, strpos($ip, ","));
             }
-        }
+        }*/
+		$ip = '89.104.194.0';
         $register = new ClickRegistrationEvent($_GET["repid"], $_GET["offerid"], $_GET, $ip);
 
         return $register->fire();
