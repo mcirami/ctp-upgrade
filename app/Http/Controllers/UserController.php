@@ -87,49 +87,15 @@ class UserController extends Controller
 
 	public function getUserSubIds() {
         $affId = $_GET["idrep"] ?? null;
-		$date = new Date;
-		$now = Carbon::now();
-		$todaysDate = $date->convertDateTimezone($now);
-		$monthsAgo = $date->convertDateTimezone(Carbon::now()->subMonths(1)->startOfDay());
-		$daysAgo = $date->convertDateTimezone(Carbon::now()->subDay(3)->startOfDay());
-
-		$cacheKey = "user_{$affId}_subids";
-        $cacheTime = 7200; // 60 minutes
-
-		if($affId == 1020) {
-			$data = DB::select(
-				"SELECT
-							        click_vars.sub1 as subId,
-							        CASE WHEN blocked_sub_ids.sub_id IS NULL THEN FALSE ELSE TRUE END AS blocked
-								     FROM clicks
-								     JOIN click_vars ON click_vars.click_id = clicks.idclicks
-								     LEFT JOIN blocked_sub_ids ON blocked_sub_ids.sub_id = click_vars.sub1
-								     WHERE clicks.rep_idrep = ?
-								       AND clicks.first_timestamp BETWEEN ? AND ?
-								       AND click_vars.sub1 != ''
-								     GROUP BY click_vars.sub1
-								     ORDER BY click_vars.sub1",
-				[$affId, $daysAgo, $todaysDate]
-			);
-		} else {
-			$data = Cache::remember($cacheKey, $cacheTime, function () use ($affId, $monthsAgo, $todaysDate) {
-				return DB::select(
-					"SELECT
-							        click_vars.sub1 as subId,
-							        CASE WHEN blocked_sub_ids.sub_id IS NULL THEN FALSE ELSE TRUE END AS blocked
-								     FROM clicks
-								     JOIN click_vars ON click_vars.click_id = clicks.idclicks
-								     LEFT JOIN blocked_sub_ids ON blocked_sub_ids.sub_id = click_vars.sub1
-								     WHERE clicks.rep_idrep = ?
-								       AND clicks.first_timestamp BETWEEN ? AND ?
-								       AND click_vars.sub1 != ''
-								     GROUP BY click_vars.sub1
-								     ORDER BY click_vars.sub1",
-					[$affId, $monthsAgo, $todaysDate]
-				);
-			});
-		}
-
+		$data = DB::select(
+			"SELECT
+	        sub_ids.sub_id as subId,
+	        CASE WHEN blocked_sub_ids.sub_id IS NULL THEN FALSE ELSE TRUE END AS blocked
+		     FROM sub_ids
+		     LEFT JOIN blocked_sub_ids ON blocked_sub_ids.sub_id = sub_ids.sub_id
+		     WHERE sub_ids.idrep = ?
+		     GROUP BY subId", [ $affId ]
+		);
 		return json_encode($data);
     }
 
