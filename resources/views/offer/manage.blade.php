@@ -301,41 +301,36 @@
 						}
 
 						if (userType != 3) {
+							html += `<td class='value_span10 action_column'>`;
+						}
+						if (userType != 3) {
 							if (permissions.includes('create_offers')) {
-								html += `<td class='value_span10'>` +
-										`<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='Edit Offer' ` +
-										`href='/offer_update.php?idoffer=` + offer['idoffer'] + `'>Edit</a>` +
-										`</td>`;
+								html += `<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='Edit Offer' ` +
+										`href='/offer_update.php?idoffer=` + offer['idoffer'] + `'>Edit</a>`;
 							}
 						}
 
 						if(permissions.includes("edit_offer_rules") && userType != 3) {
-							html += `<td class='value_span10'>` +
-									`<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='Edit Offer Rules' ` +
-									`href='/offer_edit_rules.php?offid=` + offer[`idoffer`] + `'> Rules</a>` +
-									`</td>`;
+							html += `<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='Edit Offer Rules' ` +
+									`href='/offer_edit_rules.php?offid=` + offer[`idoffer`] + `'> Rules</a>`;
 						}
 
 						if(userType != 3) {
-							html += `<td class='value_span10'>` +
-									`<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='View Offer' ` +
-									`href='/offer_details.php?idoffer=` + offer['idoffer'] + `'> View</a>` +
-									`</td>`;
-						} else {
-							html += `<td></td>`;
+							html += `<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='View Offer' ` +
+									`href='/offer_details.php?idoffer=` + offer['idoffer'] + `'> View</a>`;
 						}
 
 						if (userType == 0) {
-							html += `<td class='value_span10'>` +
+							html +=
 									`<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='Duplicate Offer' ` +
 									`href='/offer/` + offer['idoffer'] + `/dupe'> Duplicate </a>` +
-									`</td>` +
-									`<td class='value_span10'>` +
 									`<a class='delete_offer btn btn-default btn-sm value_span11 value_span4' data-toggle='tooltip' data-offer='` + offer['idoffer'] +`' title='Delete Offer' ` +
-									`href='#'>Delete</a>` +
-									`</td>`;
+									`href='#'>Delete</a>`;
 						}
 
+						if(userType != 3) {
+							html += `</td>`;
+						}
 						html += `</tr>`;
 						itemsContainer.innerHTML = html;
 					});

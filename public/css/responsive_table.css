@@ -120,6 +120,24 @@ table.table_01 td.blue_txt {
 table.table_01 td.blue_txt .align_txt {
 	text-align:right;
 }
+.table .action_column {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-orient: horizontal;
+	-webkit-box-direction: normal;
+	-ms-flex-direction: row;
+	flex-direction: row;
+	justify-content: center;
+	-webkit-justify-content: center;
+	gap: 5px;
+	border-bottom: 0;
+}
+
+table .action_column a.btn {
+	width: auto;
+}
+
  /*@media all and (min-width:769px) and (max-width: 1200px) {*/
 /*table.table_01, table.table_01 thead, table.table_01 tbody, table.table_01 th, table.table_01 td, table.table_01 tr {*/
  /*display: block;*/
