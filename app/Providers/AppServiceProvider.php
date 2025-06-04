@@ -32,10 +32,6 @@ class AppServiceProvider extends ServiceProvider
 
 	    Paginator::defaultView('vendor/pagination/default');
 	    Paginator::defaultSimpleView('default');
-
-	    if (app()->environment('production')) {
-		    Log::info('Live DB config', config('database.connections.mysql'));
-	    }
     }
 
     /**
