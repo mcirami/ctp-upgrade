@@ -1,5 +1,12 @@
 <?php
 
+\Illuminate\Support\Facades\Log::info('DB Config Check', [
+	'DB_DATABASE' => env('DB_DATABASE'),
+	'DB_USERNAME' => env('DB_USERNAME'),
+	'host' => env('DB_HOST'),
+	'called_from' => debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 5)
+]);
+
 return [
 	
 	/*

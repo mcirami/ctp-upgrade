@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Observers\UserObserver;
 use App\User;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use LeadMax\TrackYourStats\System\NavBar;
@@ -31,6 +32,10 @@ class AppServiceProvider extends ServiceProvider
 
 	    Paginator::defaultView('vendor/pagination/default');
 	    Paginator::defaultSimpleView('default');
+
+	    if (app()->environment('production')) {
+		    Log::info('Live DB config', config('database.connections.mysql'));
+	    }
     }
 
     /**
