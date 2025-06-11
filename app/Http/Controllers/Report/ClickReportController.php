@@ -10,6 +10,7 @@ use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use LeadMax\TrackYourStats\Clicks\UID;
 use LeadMax\TrackYourStats\System\Session;
 use LeadMax\TrackYourStats\User\Permissions;
 use App\Http\Traits\ClickTraits;
@@ -220,7 +221,7 @@ class ClickReportController extends ReportController
 				[ 'offer_idoffer', '=', $id ],
 				[function ( $query ) use ( $request ) {
 					if ( $s = $request->searchValue ) {
-						$query->orWhere( 'idclicks', 'LIKE', '%' . $s . '%' );
+						$query->orWhere( 'idclicks', 'LIKE', '%' . $s . '%' )->orWhere('click_vars.encoded', 'LIKE', '%' . $s . '%' );
 					}
 				}]])->whereBetween( 'clicks.first_timestamp', [ $dates['startDate'], $dates['endDate'] ] )
 			        ->leftJoin( 'click_vars', 'click_vars.click_id', '=', 'clicks.idclicks' )
@@ -238,6 +239,7 @@ class ClickReportController extends ReportController
 				        'click_vars.sub3',
 				        'click_vars.sub4',
 				        'click_vars.sub5',
+						'click_vars.encoded',
 				        'click_geo.ip as ip_address',
 				        'clicks.offer_idoffer as offer_id',
 				        'offer.offer_name',

@@ -90,6 +90,9 @@
 					@if (\LeadMax\TrackYourStats\System\Session::permissions()->can("view_fraud_data"))
 						<th class="value_span9">Click ID</th>
 					@endif
+					@if (\LeadMax\TrackYourStats\System\Session::permissions()->can("view_fraud_data"))
+						<th class="value_span9">Encoded ID</th>
+					@endif
 					<th class="value_span9"><br>Timestamp</th>
 					<th class="value_span9">Conversion Timestamp</th>
 					<th class="value_span9">Paid</th>
@@ -127,6 +130,9 @@
 						@if (\LeadMax\TrackYourStats\System\Session::permissions()->can("view_fraud_data"))
 							<td>{{$row['id']}}</td>
 						@endif
+							@if (\LeadMax\TrackYourStats\System\Session::permissions()->can("view_fraud_data"))
+								<td>{{$row['encoded']}}</td>
+							@endif
 						<td>{{$timestamp}}</td>
 						<td>{{$convertionTimeStamp}}</td>
 						<td>{{$row['paid']}}</td>
