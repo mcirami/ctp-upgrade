@@ -19,7 +19,7 @@ class Connection
 
 {
 
-    public $subDomain = "ctpupgrade";
+    public $subDomain = "trackyourstats";
 
     private static $host;
 
