@@ -23,6 +23,7 @@ use LeadMax\TrackYourStats\Offer\Rules;
 use LeadMax\TrackYourStats\System\IPBlackList;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
+use Random\RandomException;
 
 class ClickRegistrationEvent extends URLEvent
 {
@@ -203,15 +204,21 @@ class ClickRegistrationEvent extends URLEvent
 	    return false;
     }
 
-    private function sendUserToOffer()
+	/**
+	 * @throws RandomException
+	 */
+	private function sendUserToOffer()
     {
+
         $user_id = $this->userId;
         $this->getUserDataFromDatabase($user_id);
 
         $offer_id = $this->offerId;
 
         $this->getOfferDataFromDatabase($offer_id);
-        $encodedClickId = UID::encode($this->clickId);
+		$encodedCharsInt = random_int(12, 15);
+
+        $encodedClickId = UID::encode($this->clickId, $encodedCharsInt);
 
 		$return = $this->updateClickVars($this->clickId, $encodedClickId);
 
