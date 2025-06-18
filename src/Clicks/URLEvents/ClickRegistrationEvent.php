@@ -211,7 +211,8 @@ class ClickRegistrationEvent extends URLEvent
         $offer_id = $this->offerId;
 
         $this->getOfferDataFromDatabase($offer_id);
-        $encodedClickId = UID::encode($this->clickId);
+	    $encodedCharsInt = random_int(12, 15);
+        $encodedClickId = UID::encode($this->clickId, $encodedCharsInt);
 
 		$return = $this->updateClickVars($this->clickId, $encodedClickId);
 
