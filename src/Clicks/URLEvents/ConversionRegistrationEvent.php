@@ -44,7 +44,12 @@ class ConversionRegistrationEvent extends URLEvent
         }
     }
 
-    private function registerConversion()
+	/**
+	 * @throws ConversionAlreadyPendingException
+	 * @throws InvalidClickException
+	 * @throws ClickConvertedException
+	 */
+	private function registerConversion()
     {
         $conversion = new Conversion($this->clickId);
 
@@ -55,7 +60,6 @@ class ConversionRegistrationEvent extends URLEvent
         if ($this->customPayout) {
             $conversion->paid = $this->customPayout;
         }
-
 
         if (Conversion::isClickConverted($this->clickId)) {
             throw new ClickConvertedException($this->clickId);

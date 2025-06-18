@@ -14,6 +14,7 @@ class ConversionListener extends Listener
     public function dispatch()
     {
         $customPayout = (isset($_GET["price"]) ? $_GET["price"] : false);
+		//dd($_GET["clickid"]);
         $clickId      = UID::decode($_GET["clickid"]);
         $register     = new ConversionRegistrationEvent($clickId, $customPayout);
 

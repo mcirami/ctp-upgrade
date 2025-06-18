@@ -181,6 +181,7 @@ class Conversion
 
     public static function isClickConverted($clickId)
     {
+		dd(static::selectOne($clickId)->rowCount() > 0);
         return static::selectOne($clickId)->rowCount() > 0;
     }
 
