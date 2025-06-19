@@ -752,9 +752,8 @@ class RepHasOffer
             $db->beginTransaction();
 
             try {
-
-
-                $offer_name = post('offer_name');
+				$offer_name = trim(preg_replace('/\\s+/', ' ', post('offer_name')));
+	            $offer_name = preg_replace('/[^\p{L}\p{N}\s.,!@#$%^&*()\-_=+\[\]{}:;\'"<>?\/|]/u', '', $offer_name);
                 $description = post('description');
                 $url = post('url');
                 $payout = post('payout');
