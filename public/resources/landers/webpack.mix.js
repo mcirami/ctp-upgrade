@@ -32,9 +32,10 @@ module.exports = {
 
 mix.options({ processCssUrls: false })
     .js("./ctpupgrade/assets/js/app.js", "./ctpupgrade/js/built.js")
-    .sass("./ctpupgrade/assets/sass/app.scss", "./ctpupgrade/css/app.css")
+    /*.sass("./ctpupgrade/assets/sass/app.scss", "./ctpupgrade/css/app.css")*/
+    .postCss("./ctpupgrade/css/app.css", "./ctpupgrade/css/app.tailwind.css")
     .minify("./ctpupgrade/js/built.js", "./ctpupgrade/js/built.min.js")
-    .minify("./ctpupgrade/css/app.css", "./ctpupgrade/css/app.min.css")
+    .minify("./ctpupgrade/css/app.tailwind.css", "./ctpupgrade/css/app.min.css")
     .polyfill({
         enabled: true,
         useBuiltIns: "entry",

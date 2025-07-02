@@ -2,7 +2,6 @@
 
 namespace LeadMax\TrackYourStats\System;
 
-use function Couchbase\defaultDecoder;
 use LeadMax\TrackYourStats\Database\DatabaseConnection;
 use PDO;
 
