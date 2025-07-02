@@ -58,11 +58,11 @@
 				<div class="flex items-center gap-3 mb-4">
 					<img src="/resources/landers/ctpupgrade/images/logo.png" alt="MagnetDollar$ Logo">
 				</div>
-				<nav class="hidden md:flex space-x-6 text-sm text-white">
-					<a href="#about-us" class="hover:text-accent text-lg">About Us</a>
-					<a href="#what-we-do" class="hover:text-accent text-lg">What We Do</a>
-					<a href="#why-us" class="hover:text-accent text-lg">Why Us</a>
-					<a href="#contact" class="hover:text-accent text-lg">Contact</a>
+				<nav class="flex space-x-6 text-sm text-white">
+					<a href="#about-us" class="hover:text-accent text-base text-uppercase">About Us</a>
+					<a href="#what-we-do" class="hover:text-accent text-base text-uppercase">What We Do</a>
+					<a href="#why-us" class="hover:text-accent text-base text-uppercase">Why Us</a>
+					<a href="#contact" class="hover:text-accent text-base text-uppercase">Contact</a>
 				</nav>
 			</header>
 			<!-- Intro Section -->
