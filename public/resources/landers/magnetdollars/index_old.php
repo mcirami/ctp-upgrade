@@ -4,15 +4,13 @@
 	<head>
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width" />
-		<meta http-equiv="Cache-Control" content="no-cache" />
-		<!--<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-		--><!--<link href="/resources/landers/ctpupgrade/css/app.css?v=2.1" rel="stylesheet" />-->
-		<link rel="shortcut icon" href="/resources/landers/ctpupgrade/images/favicon.ico" type="image/x-icon" />
-		<link rel="icon" href="/resources/landers/ctpupgrade/images/favicon.ico" type="image/x-icon" />
+		<meta http-equiv="content-type" content="no-cache" />
+		<link rel="shortcut icon" href="/resources/landers/magnetdollars/images/favicon.ico" type="image/x-icon" />
+		<link rel="icon" href="/resources/landers/magnetdollars/images/favicon.ico" type="image/x-icon" />
 		<!--<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 		-->
 		<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-		<script src="/resources/landers/ctpupgrade/assets/js/app.js"></script>
+		<script src="/resources/landers/magnetdollars/assets/js/app.js"></script>
 		<title>Magnet Dollars</title>
 		<style>
             .bg-accent {
@@ -29,7 +27,7 @@
             }
 
             #why-us {
-                background: url('/resources/landers/ctpupgrade/images/middle-bg.png') no-repeat center;
+                background: url('/resources/landers/magnetdollars/images/middle-bg.png') no-repeat center;
                 background-size: cover;
 	            position: relative;
 	            z-index: 1;
@@ -46,7 +44,7 @@
             }
 
             #intro {
-	            background: url('/resources/landers/ctpupgrade/images/main-bg.jpg') no-repeat center;
+	            background: url('/resources/landers/magnetdollars/images/main-bg.jpg') no-repeat center;
 	            background-size: cover;
             }
 		</style>
@@ -56,9 +54,9 @@
 		<div id="intro">
 			<header class="flex flex-col justify-center items-center px-6 py-4">
 				<div class="flex items-center gap-3 mb-4">
-					<img src="/resources/landers/ctpupgrade/images/logo.png" alt="MagnetDollar$ Logo">
+					<img src="/resources/landers/magnetdollars/images/logo.png" alt="MagnetDollar$ Logo">
 				</div>
-				<nav class="hidden md:flex space-x-6 text-sm text-white">
+				<nav class="flex space-x-6 text-sm text-white">
 					<a href="#about-us" class="hover:text-accent text-lg">About Us</a>
 					<a href="#what-we-do" class="hover:text-accent text-lg">What We Do</a>
 					<a href="#why-us" class="hover:text-accent text-lg">Why Us</a>
@@ -68,7 +66,7 @@
 			<!-- Intro Section -->
 			<section class="py-20 px-6 text-center">
 				<h1 class="text-5xl font-bold mb-4 text-white">Affiliate Marketing that Pulls in Profit</h1>
-				<p class="text-lg max-w-xl mx-auto mb-6 text-white">MagnetDollars helps you attract top-tier commissions with curated offers and tools that convert.</p>
+				<p class="text-lg max-w-xl mx-auto mb-6 text-white">MagnetDollar$ helps you attract top-tier commissions with curated offers and tools that convert.</p>
 			</section>
 
 		</div>
@@ -78,7 +76,7 @@
 			<div class="max-w-5xl mx-auto text-center">
 				<h2 class="text-6xl font-semibold mb-10">Who We Are</h2>
 				<p class="mb-6">
-					At MagnetDollars, we’re driven by one mission — to help digital marketers and entrepreneurs turn attention into income. With years of experience in affiliate marketing and performance-based partnerships, we’ve built a network that thrives on trust, results, and innovation.
+					At MagnetDollar$, we’re driven by one mission — to help digital marketers and entrepreneurs turn attention into income. With years of experience in affiliate marketing and performance-based partnerships, we’ve built a network that thrives on trust, results, and innovation.
 				</p>
 				<p>
 					Whether you're just starting out or scaling fast, we’re here to support your journey with high-converting offers and real human support.
@@ -143,10 +141,10 @@
 			<div class="max-w-5xl mx-auto text-center">
 				<h2 class="text-6xl font-semibold mb-10">What We Do</h2>
 				<p class="mb-6">
-					We believe in fully incremented support systems. We will connect you with knowledgeble staff to assure you are getting the best results possible for your traffic. Need some custom solutions? Just ask! Need a campaign review? Just ask! Have a new method you would like to discuss? Let's talk. 
+					At MagnetDollar$, we’re driven by one mission — to help digital marketers and entrepreneurs turn attention into income. With years of experience in affiliate marketing and performance-based partnerships, we’ve built a network that thrives on trust, results, and innovation.
 				</p>
 				<p>
-					The bottom line is we're here for you every step of the way on your path to success.
+					Whether you're just starting out or scaling fast, we’re here to support your journey with high-converting offers and real human support.
 				</p>
 			</div>
 		</section>
@@ -160,10 +158,9 @@
 
 		<!-- Footer -->
 		<footer class="bg-[#363636] text-white text-center py-6 border-t border-gray-200">
-			<p class="text-sm">6701 Corporate Drive, Suite N
-Johnston, IA 50131</p>
-			<p class="text-sm mt-1">Phone: (563) 208-6001</p>
-			<p class="text-sm mt-2">&copy; 2025 Magnet Traffic LLC. All rights reserved.</p>
+			<p class="text-sm">123 Affiliate Drive, Suite 100, Market City, NY 10001</p>
+			<p class="text-sm mt-1">Phone: (555) 123-4567</p>
+			<p class="text-sm mt-2">&copy; 2025 MagnetDollar$. All rights reserved.</p>
 		</footer>
 	</body>
 </html>
