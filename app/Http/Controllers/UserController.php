@@ -55,8 +55,6 @@ class UserController extends Controller
         $users = $users->get();
 		$users = $this->getDiffForHumans($users);
 
-		dd($users);
-
         return view('user.manage', compact('users'));
     }
 
