@@ -78,6 +78,17 @@ class Login
 			        $user  = $_SESSION['user_session'];
 			        $repid = $_SESSION['repid'];
 
+			        $db = DatabaseConnection::getInstance();
+			        $sql = "SELECT ip_address FROM ip_whitelist";
+			        $stmt = $db->prepare($sql);
+			        $stmt->execute();
+			        $whiteListIPs  = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+			        if(Session::userType() == \App\Privilege::ROLE_GOD &&
+			           !in_array($_SERVER['REMOTE_ADDR'], $whiteListIPs) && $_SERVER['REMOTE_ADDR'] != '127.0.0.1'
+			        ) {
+				        return self::RESULT_BANNED;
+			        }
 
 			        setcookie( "user_name", "$user", "0", "/" );
 			        setcookie( "repid", "$repid", "0", "/" );
