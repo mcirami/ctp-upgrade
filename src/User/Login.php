@@ -85,14 +85,13 @@ class Login
 			        $whiteListIPs  = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
 			        if(Session::userType() == \App\Privilege::ROLE_GOD &&
-			           !in_array($_SERVER['REMOTE_ADDR'], $whiteListIPs)
+			           !in_array($_SERVER['REMOTE_ADDR'], $whiteListIPs) && $_SERVER['REMOTE_ADDR'] != '127.0.0.1'
 			        ) {
 				        return self::RESULT_BANNED;
 			        }
 
 			        setcookie( "user_name", "$user", "0", "/" );
 			        setcookie( "repid", "$repid", "0", "/" );
-
 
 			        $_SESSION["salt"] = $this->generateSalt( 32 );
 
