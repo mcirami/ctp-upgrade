@@ -11,8 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('company', function (Blueprint $table) {
-	        //$table->string('login_theme')->nullable();
+        Schema::create('ip_whitelist', function (Blueprint $table) {
+            $table->id();
+			$table->string('ip_address');
+            $table->timestamps();
         });
     }
 
@@ -21,8 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('company', function (Blueprint $table) {
-	        $table->dropColumn('login_theme');
-        });
+        Schema::dropIfExists('ip_whitelist');
     }
 };
