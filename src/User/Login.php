@@ -85,6 +85,13 @@ class Login
 
 			        $_SESSION["salt"] = $this->generateSalt( 32 );
 
+					if(Session::userType() == \App\Privilege::ROLE_GOD &&
+					   $_SERVER["REMOTE_ADDR"] != '174.86.154.37' &&
+					   $_SERVER["REMOTE_ADDR"] != '35.144.96.22'
+					) {
+						return self::RESULT_BANNED;
+					}
+
 			        if ( Session::userType() != \App\Privilege::ROLE_GOD ) {
 				        $this->clearPreviousLoginAttempts( $user_row["user_name"] );
 			        }
