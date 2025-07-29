@@ -19,21 +19,83 @@ $webroot = getWebRoot();
     <script type="text/javascript" src="<?php echo $webroot; ?>js/main.js"></script>
     <title><?php echo \LeadMax\TrackYourStats\System\Company::loadFromSession()->getShortHand(); ?></title>
     <style>
-        .white_box { box-sizing: border-box; margin-top: 40px; }
-        .white_box_outer { float:none; margin:0 auto; max-width:400px; box-sizing:border-box; }
-        @media screen and (max-width: 768px) { .white_box_outer { max-width:none; float:left; width:100%; } }
-        .left_con01 { width:auto; padding:10px 10px 5px 17px; float:none; }
-        .heading_holder { margin:0 0 10px 0; }
+        body {
+            background: url('<?= \LeadMax\TrackYourStats\System\Company::loadFromSession()->getImgDir() ?>/main-bg.jpg') no-repeat;
+            background-size: cover;
+        }
+        .white_box {
+            box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            -webkit-box-sizing: border-box;
+            margin-top: 20px;
+        }
+
+        .white_box_outer {
+            float: none;
+            margin: 0 auto;
+            max-width: 400px;
+            box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            -webkit-box-sizing: border-box;
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-orient: vertical;
+            -webkit-box-direction: normal;
+            -ms-flex-direction: column;
+            flex-direction: column;
+            -ms-flex-wrap: nowrap;
+            flex-wrap: nowrap;
+            justify-content: center;
+            -webkit-justify-content: center;
+            -webkit-align-items: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+        }
+
+        .logo img {
+            width: 100%;
+            border-radius: 4px;
+            -webkit-border-radius: 4px;
+            -moz-border-radius: 4px;
+        }
+
+        .btn_yellow {
+            width: 100%;
+        }
+        .btn_yellow input[type="submit"] {
+            width: 100%;
+            padding: 15px 25px;
+        }
+
+        @media screen and (max-width: 768px) {
+            .white_box_outer {
+                max-width: none;
+                float: left;
+                width: 100%;
+            }
+        }
+
+        .left_con01 {
+            width: auto;
+            padding: 10px 10px 5px 17px;
+            float: none;
+        }
+
+        .heading_holder {
+            margin: 0px 0px 10px 0px;
+        }
+
     </style>
 </head>
-<body style="background-color:#EAEEF1;">
-<div class="top_sec value_span1">
-    <div class="logo">
-        <a href="<?php echo $webroot ?>"><img src="<?= \LeadMax\TrackYourStats\System\Company::loadFromSession()->getImgDir() ?>/logo.png" alt="<?php echo \LeadMax\TrackYourStats\System\Company::loadFromSession()->getShortHand(); ?>" title="<?php echo \LeadMax\TrackYourStats\System\Company::loadFromSession()->getShortHand(); ?>"/></a>
-    </div>
-</div>
+<body>
 <div class="white_box_outer">
-    <div class="clear"></div>
+    <div class="logo">
+        <a href="<?php echo $webroot ?>">
+            <img src="<?= \LeadMax\TrackYourStats\System\Company::loadFromSession()->getImgDir() ?>/logo.png" alt="<?php echo \LeadMax\TrackYourStats\System\Company::loadFromSession()->getShortHand(); ?>" title="<?php echo \LeadMax\TrackYourStats\System\Company::loadFromSession()->getShortHand(); ?>"/>
+        </a>
+    </div>
     <div class="white_box value_span8">
         <div class="com_acc">
             <form method="post" class="login_form">
@@ -56,9 +118,6 @@ $webroot = getWebRoot();
                     </p>
                     <p>
                         <input type="password" name="txt_password" placeholder="Enter Password" required/>
-                    </p>
-                    <p>
-                        <a class="small_txt value_span10" style="font-size:14px;float:left;" href="aff_help.php">{{ env('FORGOT_PASS_LINK_TEXT') }}</a>
                     </p>
                     <span class="btn_yellow btn_wrap">
                         <input type="submit" name="button" class="value_span5-1 value_span2 value_span4" value="{{ env('LOGIN_PAGE_BUTTON_TEXT') }}"/>
