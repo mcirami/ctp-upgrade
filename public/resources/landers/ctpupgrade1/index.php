@@ -47,7 +47,7 @@
 									</li>
 								</ul>
 								<div class="buttons_wrap">
-									<a class="button white" href="/login.php">Login</a>
+									<a class="button white" href="/login">Login</a>
 									<a class="button pink" href="/signup.php?mid=1003">Sign Up</a>
 								</div>
 							</div>
@@ -286,7 +286,7 @@
 					</li>
 				</ul>
 				<div class="buttons_wrap">
-					<a class="button white" href="/login.php">Login</a>
+					<a class="button white" href="/login">Login</a>
 					<a class="button pink" href="/signup.php">Sign Up</a>
 				</div>
 			</div>

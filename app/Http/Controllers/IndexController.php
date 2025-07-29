@@ -37,7 +37,7 @@ class IndexController extends Controller
 
             if ($request->getHttpHost() !== $company->landing_page && $request->getHttpHost() !== $company->login_url) {
                 if (Company::getCustomSub() == "debug") {
-                    return redirect('login.php');
+                    return redirect('login');
                 }
             }
 
