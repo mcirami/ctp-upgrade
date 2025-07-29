@@ -27,7 +27,7 @@ bin/
 misc/
 GeoIP2-City.mmdb
 _ide_helper.php
-
+.htaccess
 .phpstorm.meta.php
 
 composer-setup.php
