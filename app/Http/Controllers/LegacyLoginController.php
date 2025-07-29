@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use LeadMax\TrackYourStats\User\Login;
 use LeadMax\TrackYourStats\User\User;
 use LeadMax\TrackYourStats\System\Company;
 
@@ -39,20 +40,20 @@ class LegacyLoginController extends Controller
 
 			$result = $user->login($username, $username, $password);
 
-			if ($result == \LeadMax\TrackYourStats\User\Login::RESULT_SUCCESS) {
+			if ($result == Login::RESULT_SUCCESS) {
 				if ($request->has('redirectUri')) {
 					return redirect(urldecode($request->get('redirectUri')));
 				}
 
 				return redirect('dashboard');
-			} elseif ($result == \LeadMax\TrackYourStats\User\Login::RESULT_PENDING) {
+			} elseif ($result == Login::RESULT_PENDING) {
 				return redirect('signup_success.php?pending=1');
 			} else {
 				$user->badLoginAttempt();
 
-				if ($result == \LeadMax\TrackYourStats\User\Login::RESULT_INVALID_CRED) {
+				if ($result == Login::RESULT_INVALID_CRED) {
 					$error = "Wrong Details ! <p>You have {$user->count} / 5 login attempts remaining. </p>";
-				} elseif ($result == \LeadMax\TrackYourStats\User\Login::RESULT_BANNED) {
+				} elseif ($result == Login::RESULT_BANNED) {
 					$error = "This account has been banned. Login attempt has been logged and an administrator will be notified. ";
 				}
 			}
@@ -95,7 +96,7 @@ class LegacyLoginController extends Controller
 
         $user_logout->logout();
 
-        return redirect('/login.php');
+        return redirect('/login');
     }
 
 

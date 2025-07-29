@@ -23,7 +23,7 @@
 					<a href="{landing_page}"><img src="/resources/landers/daricbennett/images/logo.png" alt=""></a>
 				</div>
 				<div class="button_wrap float-right">
-					<a class="button red" href="http://affiliate.daricbennett.com/login.php">Login</a>
+					<a class="button red" href="http://affiliate.daricbennett.com/login">Login</a>
 				</div>
 			</div>
 		</div>
@@ -96,7 +96,7 @@
 						<div class="column">
 							<h3>Members Area</h3>
 							<ul>
-								<li><a href="http://affiliate.daricbennett.com/login.php">Login Now</a></li>
+								<li><a href="http://affiliate.daricbennett.com/login">Login Now</a></li>
 								<li><a href="http://affiliate.daricbennett.com/signup.php">Become An Affiliate</a></li>
 							</ul>
 						</div>

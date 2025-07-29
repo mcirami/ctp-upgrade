@@ -47,7 +47,7 @@
 									</li>
 								</ul>
 								<div class="buttons_wrap">
-									<a class="button white" href="https://model.cash/login.php">Login</a>
+									<a class="button white" href="https://model.cash/login">Login</a>
 									<a class="button pink" href="https://model.cash/signup.php?mid=1003">Sign Up</a>
 								</div>
 							</div>
@@ -286,7 +286,7 @@
 					</li>
 				</ul>
 				<div class="buttons_wrap">
-					<a class="button white" href="https://model.cash/login.php">Login</a>
+					<a class="button white" href="https://model.cash/login">Login</a>
 					<a class="button pink" href="https://model.cash/signup.php">Sign Up</a>
 				</div>
 			</div>

@@ -42,8 +42,8 @@ use App\Http\Controllers\Report\ConversionReportController;
 
 Route::get('/', [IndexController::class, 'index']);
 Route::post('/', [IndexController::class, 'index']);
-Route::get('login.php', [LegacyLoginController::class, 'showLoginForm']);
-Route::post('login.php', [LegacyLoginController::class, 'login']);
+Route::get('/login', [LegacyLoginController::class, 'showLoginForm']);
+Route::post('/login', [LegacyLoginController::class, 'login']);
 Route::any('/resources/landers/{subDomain}/{asset}', [LanderController::class, 'getAsset'])->where('asset', '.*');
 Route::get('/logout', [LegacyLoginController::class, 'logout']);
 Route::post('email/incoming', [RelevanceReactorController::class, 'incomingEmail']);

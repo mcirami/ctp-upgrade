@@ -30,7 +30,7 @@
 					<p class="dark">Become a part of our Pride and prove you are a Lion among marketers.</p>
 					<p>Top offers, the best rates, and weekly payment.</p>
 					<div class="button_wrap">
-						<a class="button" href="https://liontracking.com/login.php">Login</a>
+						<a class="button" href="https://liontracking.com/login">Login</a>
 					</div>
 				</div>
 			</div>
