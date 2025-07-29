@@ -83,17 +83,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 			$mail->IsSMTP(); // set mailer to use SMTP
 			$mail->Host = "smtp.gmail.com";  // specify main and backup server
 			$mail->SMTPAuth = true;     // turn on SMTP authentication
-			$mail->Username = "test@test.com";  // SMTP username
+			$mail->Username = "admin@chattingresources.com";  // SMTP username
 			$mail->Password = "J7#us73@20s"; // SMTP password
 			$mail->SMTPSecure = "tls";
 			$mail->Port = 587;
 			$mail->setFrom($email);
 
 			if($_SERVER['REMOTE_ADDR'] !== '192.168.10.1') {
-				//$mail->AddAddress("test@test.com");
-				$mail->AddAddress("test@test.com");
+				//$mail->AddAddress("jeff@moneylovers.com");
+				$mail->AddAddress("admin@chattingresources.com");
 			}else {
-				$mail->AddAddress("test@test.com");
+				$mail->AddAddress("matteo@mscwebservices.net");
 			}
 			//$mail->AddAddress("ellen@example.com");                  // name is optional
 			$mail->AddReplyTo($email, $name);
@@ -185,7 +185,7 @@ function test_input($data) {
 							</li>
 							<li class="nav-item">
 								<div class="button_wrap">
-									<a class="button" href="http://stats.chattingresources.com/login.php">Login</a>
+									<a class="button" href="http://stats.chattingresources.com/login">Login</a>
 								</div>
 							</li>
 						</ul>
@@ -249,21 +249,21 @@ function test_input($data) {
 				<div class="full_width">
 					<ul class="list-inline">
 						<li class="list-inline-item">
-							<a href="#">Signup</a>
+							<a href="http://chattingresources.com/signup.php">Signup</a>
 						</li>
 						<li class="list-inline-item">
-							<a href="#">Training</a>
+							<a href="https://training.chattingresources.com/member-access20035741?page_id=20035740&page_key=9n0t3t9ubgq2sw79&page_hash=c3bbeb71605&login_redirect=1">Training</a>
 						</li>
 						<li class="list-inline-item">
-							<a href="#">Contact Us</a>
+							<a href="/?section=contact">Contact Us</a>
 						</li>
 						<li class="list-inline-item">
-							<a href="#">Login</a>
+							<a href="http://stats.chattingresources.com/login">Login</a>
 						</li>
 					</ul>
 				</div>
 				<div class="full_width">
-					<p>Copyright 2018 test.com. All rights reserved.</p>
+					<p>Copyright 2018 chattingresources.com. All rights reserved.</p>
 				</div>
 			</div>
 		</div>

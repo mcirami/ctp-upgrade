@@ -9,7 +9,7 @@ $webroot = getWebRoot();
 //verify user session
 $user = new \LeadMax\TrackYourStats\User\User;
 if (!$user->verify_login_session()) {
-    send_to("login.php?redirectUri=" . urlencode(findProtocol() . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"]));
+    send_to("login?redirectUri=" . urlencode(findProtocol() . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"]));
 }
 
 
