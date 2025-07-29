@@ -4,7 +4,6 @@
 /public/.well-known
 /public/sale_log
 /public/GeoIP2-City.mmdb
-/public/images/galaxy3
 /storage/GeoIP2-City.mmdb
 /storage/clockwork/
 /storage/logs/
@@ -30,7 +29,7 @@ bin/
 misc/
 GeoIP2-City.mmdb
 _ide_helper.php
-
+.htaccess
 .phpstorm.meta.php
 
 composer-setup.php
