@@ -43,7 +43,7 @@
 							</li>
 							<li class="nav-item">
 								<div class="button_wrap">
-									<a class="button" href="http://stats.chattingresources.com/login.php">Login</a>
+									<a class="button" href="http://stats.chattingresources.com/login">Login</a>
 								</div>
 							</li>
 						</ul>
@@ -192,7 +192,7 @@
 							<a href="/?section=contact">Contact Us</a>
 						</li>
 						<li class="list-inline-item">
-							<a href="http://stats.chattingresources.com/login.php">Login</a>
+							<a href="http://stats.chattingresources.com/login">Login</a>
 						</li>
 					</ul>
 				</div>
