@@ -62,7 +62,7 @@ $pending = (isset($_GET["pending"]) && $_GET["pending"] != "") ? $_GET["pending"
 								</li>
 							</ul>
 							<div class="buttons_wrap">
-								<a class="button white" href="/login.php">Login</a>
+								<a class="button white" href="/login">Login</a>
 								<a class="button value_span11 value_span2 value_span4" href="/signup.php?mid=1003">Sign Up</a>
 							</div>
 						</div>
@@ -142,7 +142,7 @@ $pending = (isset($_GET["pending"]) && $_GET["pending"] != "") ? $_GET["pending"
 							<p class="mb-2">
 								Click the Login Now! button below to log into your account and get started on your path to more cash with Model.Cash!
 							</p>
-							<a href="/login.php" class="btn value_span5-1 value_span2 value_span4">Login Now!</a>
+							<a href="/login" class="btn value_span5-1 value_span2 value_span4">Login Now!</a>
 							<p class="mb-0">If you have any questions, feel free to <a class="text-decoration-underline" href="/contact">Contact Us</a> at any time and we'll get right back with you!</p>
 						</div>
 				<?php

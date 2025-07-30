@@ -1,4 +1,7 @@
 <?php
+
+use LeadMax\TrackYourStats\User\User;
+
 if(isset($_GET["adminLogin"]))
 {
     unset($_SESSION["adminLogin"]);
@@ -12,7 +15,7 @@ exit;
 }
 
 
-$user_logout = new \LeadMax\TrackYourStats\User\User();
+$user_logout = new User();
 
 $user_logout->logout();
-send_to('login.php');
+send_to('login');

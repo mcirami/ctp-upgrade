@@ -24,7 +24,7 @@
 					<a href="/"><img src="/resources/landers/cashplatoon/images/logo.png" alt=""></a>
 				</div>
 				<div class="button_wrap float-right">
-					<a class="button" href="http://stats.cashplatoon.com/login.php">Login</a>
+					<a class="button" href="http://stats.cashplatoon.com/login">Login</a>
 				</div>
 			</div>
 		</div>

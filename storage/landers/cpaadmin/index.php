@@ -46,7 +46,7 @@
 									</li>
 								</ul>
 								<div class="buttons_wrap">
-									<a class="button blue" href="https://cpaadmin.com/login.php">Sign In</a>
+									<a class="button blue" href="https://cpaadmin.com/login">Sign In</a>
 								</div>
 							</div>
 						</div>
@@ -338,7 +338,7 @@
 					<a href="#faq">FAQ</a>
 				</li>
 				<li>
-					<a href="https://cpaadmin.com/login.php">Sign In</a>
+					<a href="https://cpaadmin.com/login">Sign In</a>
 				</li>
 			</ul>
 			<p class="copy">&copy; CPA Admin | All rights reserved.</p>

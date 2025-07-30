@@ -66,7 +66,7 @@ $mid = (isset($_GET["mid"]) && $_GET["mid"] != "") ? $_GET["mid"] : "";
 								</li>
 							</ul>
 							<div class="buttons_wrap">
-								<a class="button white" href="/login.php">Login</a>
+								<a class="button white" href="/login">Login</a>
 								<a class="button value_span11 value_span2 value_span4" href="/signup.php?mid=1003">Sign Up</a>
 							</div>
 						</div>
@@ -232,7 +232,7 @@ $mid = (isset($_GET["mid"]) && $_GET["mid"] != "") ? $_GET["mid"] : "";
 					</li>
 				</ul>
 				<div class="buttons_wrap">
-					<a class="button white mr-4" href="/login.php">Login</a>
+					<a class="button white mr-4" href="/login">Login</a>
 					<a class="button value_span11 value_span2 value_span4" href="/signup.php?mid=1003">Sign Up</a>
 				</div>
 			</div>
