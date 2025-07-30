@@ -82,7 +82,7 @@ $webroot = getWebRoot();
                             </li>
                         </ul>
                         <div class="buttons_wrap">
-                            <a class="button blue" href="{{$webroot}}login.php">Sign In</a>
+                            <a class="button blue" href="{{$webroot}}login">Sign In</a>
                             <a class="button transparent" href="{{$webroot}}contact-us">Contact us</a>
                         </div>
                     </div>

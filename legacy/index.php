@@ -32,7 +32,7 @@ if (\LeadMax\TrackYourStats\System\Company::getSub() != "trackyourstats")
 		// test server
 		if (\LeadMax\TrackYourStats\System\Company::getCustomSub() == "debug")
 		{
-			send_to('login.php');
+			send_to('login');
 		}
 		
 	}
@@ -64,7 +64,7 @@ if (\LeadMax\TrackYourStats\System\Company::getSub() != "trackyourstats")
 	<div class = "top_sec">
 		<div class = "holder">
 			<div class = "logo"><a href = "#"><img src = "images/logo.png" alt = "<?php echo \LeadMax\TrackYourStats\System\Company::loadFromSession()->getShortHand(); ?>" title = "<?php echo \LeadMax\TrackYourStats\System\Company::loadFromSession()->getShortHand(); ?>"/></a></div>
-			<div class = "btn_login"><a href = "login.php">Log In</a></div>
+			<div class = "btn_login"><a href = "/login">Log In</a></div>
 			<ul>
 				<li><a href = "#">Pricing</a></li>
 				<li><a href = "#">Contacts</a></li>

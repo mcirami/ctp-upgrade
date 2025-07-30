@@ -23,7 +23,7 @@
 					<a href="/"><img src="/resources/landers/ballerbucks/images/logo.png" alt=""></a>
 				</div>
 				<div class="button_wrap float-right">
-					<a class="button" href="http://ballerbucks.com/login.php">Login</a>
+					<a class="button" href="http://ballerbucks.com/login">Login</a>
 				</div>
 			</div>
 		</div>

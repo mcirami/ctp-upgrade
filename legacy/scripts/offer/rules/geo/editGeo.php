@@ -11,7 +11,7 @@
 //verify user session
 $user = new \LeadMax\TrackYourStats\User\User();
 if (!$user->verify_login_session() )
-    send_to("login.php");
+    send_to("login");
 
 
 if(isset($_POST["ruleData"]))

@@ -26,7 +26,7 @@
                     <li><a href="#content">Features</a></li>
                     <li><a href="#contact">Contact Us</a></li>
                 </ul>
-                <a class="btn" href="login.php">Login</a>
+                <a class="btn" href="/login">Login</a>
             </div>
             
         </div>
@@ -34,7 +34,7 @@
     <div class="header_sec">
         <div class="holder">
                 <h2>Custom Tracking for Serious Marketers!</h2>
-<b>
+            <br/>
             <div class="text_wrap column">
                 <h3>Monitor productivity of all your employees and traffic in one easy place.</h3>
                 <p>Our platform offers tiered management, agent tracking, privatized domain names, and unique design services that will make us a one stop shop for your affiliate tracking and help you stand out! Get in touch today for more information!</p>

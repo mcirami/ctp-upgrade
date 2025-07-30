@@ -21,7 +21,7 @@ class LegacyUserAuth
         if ($user->verify_login_session()) {
             return $next($request);
         } else {
-            return redirect('/login.php');
+            return redirect('/login');
         }
     }
 }
