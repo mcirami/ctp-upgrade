@@ -85,8 +85,9 @@ class Login
 			        $whiteListIPs  = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
 			        if(Session::userType() == \App\Privilege::ROLE_GOD &&
-			           !in_array($_SERVER['REMOTE_ADDR'], $whiteListIPs) && $_SERVER['REMOTE_ADDR'] != '127.0.0.1'
+			           !in_array($this->getClientIPv4(), $whiteListIPs) && $_SERVER['REMOTE_ADDR'] != '127.0.0.1'
 			        ) {
+				        error_log("Login attempt from IP: " . $this->getClientIPv4());
 				        return self::RESULT_BANNED;
 			        }
 
@@ -392,5 +393,26 @@ class Login
         return -1;
     }
 
+	private function getClientIPv4() {
+		$ipSources = [
+			'HTTP_CF_CONNECTING_IP',
+			'HTTP_X_FORWARDED_FOR',
+			'HTTP_CLIENT_IP',
+			'REMOTE_ADDR'
+		];
 
+		foreach ($ipSources as $key) {
+			if (!empty($_SERVER[$key])) {
+				$ipList = explode(',', $_SERVER[$key]);
+				foreach ($ipList as $ip) {
+					$ip = trim($ip);
+					if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
+						return $ip;
+					}
+				}
+			}
+		}
+
+		return $_SERVER["REMOTE_ADDR"];
+	}
 }
