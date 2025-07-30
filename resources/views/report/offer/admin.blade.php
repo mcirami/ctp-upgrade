@@ -1,4 +1,4 @@
-@php use LeadMax\TrackYourStats\System\Session; @endphp
+@php use App\Privilege;use LeadMax\TrackYourStats\System\Session; @endphp
 @extends('report.template')
 
 @section('report-title')
@@ -21,7 +21,8 @@
             <th class="value_span9">Free Sign Ups</th>
             <th class="value_span9">Pending Conversion</th>
             <th class="value_span9">Conversion</th>
-            @if (Session::userType() == \App\Privilege::ROLE_GOD)
+            @if (Session::userType() == Privilege::ROLE_GOD ||
+                (Session::userType() == Privilege::ROLE_ADMIN && Session::permissions()->can("view_payouts") ))
                 <th class="value_span9">Revenue</th>
                 <th class="value_span9">Deductions</th>
                 <th class="value_span9">EPC</th>
@@ -30,7 +31,9 @@
         </thead>
         <tbody>
         @php
-            if (Session::userType() == \App\Privilege::ROLE_GOD) {
+            if (Session::userType() == Privilege::ROLE_GOD ||
+                (Session::userType() == Privilege::ROLE_ADMIN && Session::permissions()->can("view_payouts") )
+            ) {
 				$array = ['idoffer', 'offer_name', 'Clicks', 'UniqueClicks', 'FreeSignUps', 'PendingConversions', 'Conversions', 'Revenue', 'Deductions', 'EPC'];
             } else {
                 $array = ['idoffer', 'offer_name', 'Clicks', 'UniqueClicks', 'FreeSignUps', 'PendingConversions', 'Conversions'];

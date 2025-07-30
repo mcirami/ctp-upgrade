@@ -72,7 +72,6 @@ function appendToPermissions()
 
 function parseArrayToSelectBox(array)
 {
-    console.log(array);
     //find out select box
     box = $("#referrer_repid");
     //removes all options

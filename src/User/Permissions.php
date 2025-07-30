@@ -44,6 +44,7 @@ class Permissions
     const APPROVE_AFFILIATE_SIGN_UPS = "approve_affiliate_sign_ups";
     const EDIT_AFFILIATES = "edit_affiliates";
     const EDIT_REPORT_PERMISSIONS = "edit_report_permissions";
+	const VIEW_PAYOUTS = "view_payouts";
     const ADJUST_SALES = "adjust_sales";
     const BAN_USERS = "ban_users";
     const EMAIL_POOLS = 'email_pools';
@@ -142,6 +143,11 @@ class Permissions
             "allowed_user_types" => [\App\Privilege::ROLE_GOD, \App\Privilege::ROLE_ADMIN, Privilege::ROLE_MANAGER],
         ],
 
+	    self::VIEW_PAYOUTS => [
+			"description" => "Can View Payouts",
+			"allowed_user_types" => [\App\Privilege::ROLE_GOD, \App\Privilege::ROLE_ADMIN],
+	    ],
+
         self::ADJUST_SALES => ["description" => "Can Adjust Sales", "allowed_user_types" => [\App\Privilege::ROLE_GOD]],
 
 
@@ -186,7 +192,6 @@ class Permissions
         }
 
         $permissionDetails = self::$permissionsArray[$permission];
-
 
         if (isset($permissionDetails["allowed_user_types"])) {
             //check editing user
