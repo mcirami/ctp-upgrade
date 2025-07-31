@@ -33,12 +33,18 @@ class UserController extends Controller
 
     public function viewManageUsers()
     {
+		$userType = Session::userType();
+		$canViewUsers = Session::permissions()->can('view_all_users');
 
         $this->validate(request(), [
             'showInactive' => 'numeric|min:0|max:1'
         ]);
 
-        $users = User::myUsers()->withRole(request('role', Privilege::ROLE_AFFILIATE))->with('referrer');
+        $users =
+	        ($userType == Privilege::ROLE_ADMIN && $canViewUsers) || $userType == Privilege::ROLE_GOD ?
+		        User::withRole(request('role', Privilege::ROLE_AFFILIATE))->with('referrer')
+		        :
+		        User::myUsers()->withRole(request('role', Privilege::ROLE_AFFILIATE))->with('referrer');
 
         if (request('showInactive', 0) == 1) {
             $users->where('status', 0);
@@ -46,15 +52,16 @@ class UserController extends Controller
             $users->where('status', 1);
         }
 
-		if (Session::userType() == Privilege::ROLE_ADMIN && (request('role') == null ||  request('role') == '3')) {
+		/*if (Session::userType() == Privilege::ROLE_ADMIN && (request('role') == null ||  request('role') == '3')) {
 			$userId = Session::userID();
 			$managers = DB::table('rep')->where('referrer_repid', '=', $userId)->get()->pluck('idrep')->toArray();
 			$users->whereIn('referrer_repid', $managers);
-		}
+		}*/
 		
         $users = $users->get();
 		$users = $this->getDiffForHumans($users);
 
+		//dd($users);
         return view('user.manage', compact('users'));
     }
 

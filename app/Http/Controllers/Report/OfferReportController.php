@@ -47,7 +47,10 @@ class OfferReportController extends ReportController
     public function admin()
     {
         $dates = self::getDates();
-        $repo = new AdminOfferRepository(\DB::getPdo());
+        $repo = Session::permissions()->can('view_all_users') ?
+	        new GodOfferRepository(\DB::getPdo())
+	        :
+	        new AdminOfferRepository(\DB::getPdo());
 
         $reporter = new Reporter($repo);
 
