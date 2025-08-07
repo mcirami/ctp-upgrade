@@ -97,7 +97,7 @@ class NavBar
             "Advertiser Report" => [
                 'url' => '/report/advertiser',
                 "required_user_types" => [\App\Privilege::ROLE_GOD],
-                "required_permissions" => ["create_offers"],
+                /*"required_permissions" => ["create_offers"],*/
             ],
 
 
