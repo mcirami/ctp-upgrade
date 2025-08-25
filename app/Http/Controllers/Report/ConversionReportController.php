@@ -61,7 +61,7 @@ class ConversionReportController extends ReportController
 		$endDate = $dates['originalEnd'];
 		$dateSelect = request()->query('dateSelect');
 
-        $user = User::myUsers()->findOrFail($userId);
+        $user = User::findOrFail($userId);
 
 		$clicksSubquery = Click::where('rep_idrep', '=', $userId)
 			->whereBetween('first_timestamp', [$dates['startDate'], $dates['endDate']])
