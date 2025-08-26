@@ -1,3 +1,4 @@
+@php use LeadMax\TrackYourStats\Report\Formats\HTML; @endphp
 @extends('report.template')
 
 @section('report-title')
@@ -31,7 +32,7 @@
         <tbody>
         @php
             $reporter->between($dates['startDate'], $dates['endDate'],
-            new \LeadMax\TrackYourStats\Report\Formats\HTML(true, [
+            new HTML(true, [
                 'idrep',
                 'user_name',
                 'Clicks',
@@ -53,12 +54,12 @@
 
 @section('footer')
     <script type="text/javascript">
-        $(document).ready(function () {
-            $("#mainTable").tablesorter(
-                {
-                    sortList: [[7, 1]],
-                    widgets: ['staticRow']
-                });
-        });
+		$(document).ready(function() {
+			$("#mainTable").tablesorter(
+				{
+					sortList: [[7, 1]],
+					widgets: ['staticRow']
+				});
+		});
     </script>
 @endsection

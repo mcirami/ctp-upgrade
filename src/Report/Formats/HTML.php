@@ -46,7 +46,6 @@ class HTML implements Format
 
         $report = $this->resetArrayKeys($report);
 
-
         foreach ($report as $key => $row) {
             if ($this->lastRowStatic && $key == count($report) - 1) {
                 echo "<tr class='static'>";
@@ -77,8 +76,13 @@ class HTML implements Format
                             } else {
                                 echo "<td><a href='/report/offer/{$row['idoffer']}/user-conversions?{$params}'>$row[$toPrint]</a></td>";
                             }
-						} elseif($toPrint == "Conversions" && $row[$toPrint] > 0 && (key_exists('idrep', $row) && $row[$toPrint] != "TOTAL")) 
-                            echo "<td><a target='_blank' href='/user/{$row['idrep']}/conversions-by-offer?{$params}'>$row[$toPrint]</a></td>";
+						} elseif($toPrint == "Conversions" && $row[$toPrint] > 0 && (key_exists('idrep', $row) && $row[$toPrint] != "TOTAL"))
+							 if(isset($_GET['role']) && $_GET['role'] == 2) {
+								 echo "<td><a target='_blank' href='/report/manager/{$row['idrep']}/conversions-by-offer?{$params}'>$row[$toPrint]</a></td>";
+							 } else {
+								 echo "<td><a target='_blank' href='/user/{$row['idrep']}/conversions-by-offer?{$params}'>$row[$toPrint]</a></td>";
+							 }
+
                         else {
 							echo "<td>$row[$toPrint]</td>";
 						}

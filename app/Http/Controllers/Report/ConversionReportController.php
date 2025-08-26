@@ -188,4 +188,60 @@ class ConversionReportController extends ReportController
 			'offer',
 		));
 	}
+
+	public function showManagerConversionsByOffer(User $user) {
+
+		$dates = self::getDates();
+		$startDate = $dates['originalStart'];
+		$endDate = $dates['originalEnd'];
+		$dateSelect = request()->query('dateSelect');
+		$managerId = $user->idrep;
+
+		$clicksSubquery = Click::whereBetween('first_timestamp', [$dates['startDate'], $dates['endDate']])
+		                       ->whereIn('rep_idrep', function ($query) use ($managerId) {
+			                       $query->select('idrep')->from('rep')->where('referrer_repid', '=', $managerId);
+		                       })
+		                       ->where('clicks.click_type', '!=', Click::TYPE_BLACKLISTED)
+		                       ->select(
+			                       'offer_idoffer',
+			                       DB::raw('COUNT(idclicks) as clicks'),
+			                       DB::raw('SUM(clicks.click_type = ' . Click::TYPE_UNIQUE . ') as unique_clicks')
+		                       )
+		                       ->groupBy('offer_idoffer');
+
+		$conversionsSubquery = Conversion::whereBetween('timestamp', [$dates['startDate'], $dates['endDate']])
+		                                 ->whereIn('user_id', function ($query) use ($managerId) {
+			                                 $query->select('idrep')->from('rep')
+			                                       ->where('rep.referrer_repid', '=', $managerId);
+		                                 })
+		                                 ->join('clicks', 'clicks.idclicks', '=', 'conversions.click_id')
+		                                 ->select(
+			                                 'clicks.offer_idoffer',
+			                                 DB::raw('COUNT(conversions.id) as conversions'))
+		                                 ->groupBy('clicks.offer_idoffer');
+
+		$report = DB::table(DB::raw("({$clicksSubquery->toSql()}) as clicks"))
+		            ->mergeBindings($clicksSubquery->getQuery())
+		            ->join(DB::raw("({$conversionsSubquery->toSql()}) as conversions"), 'clicks.offer_idoffer', '=', 'conversions.offer_idoffer')
+		            ->mergeBindings($conversionsSubquery->getQuery())
+		            ->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
+		            ->select(
+			            'offer.idoffer',
+			            'offer.offer_name',
+			            'clicks.clicks as total_clicks',
+			            'clicks.unique_clicks as unique_clicks',
+			            DB::raw('COALESCE(conversions.conversions, 0) as conversions')
+		            )
+		            ->orderBy('conversions', 'DESC')
+		            ->paginate(100);
+
+		return view('report.conversions.affiliate-by-offer',
+			compact(
+				'user',
+				'report',
+				'startDate',
+				'endDate',
+				'dateSelect'
+			));
+	}
 }

@@ -158,5 +158,4 @@ class OfferReportController extends ReportController
         return view('report.offer.conversions-by-country', compact('affiliateReport', 'offer'));
 
 	}
-
 }
