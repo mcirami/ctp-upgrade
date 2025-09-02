@@ -129,22 +129,46 @@ class OfferAffiliateClicksRepository implements Repository
 
     public function getOfferConversionsForGod($start, $end) {
 
-        return DB::table('clicks')
-        ->where('offer_idoffer', '=', $this->offerId)
-        ->whereBetween('first_timestamp',[$start, $end])
-        ->join('rep', 'idrep', '=', 'clicks.rep_idrep')
-        ->leftJoin('conversions', 'conversions.click_id', '=', 'clicks.idclicks')
-        ->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
-        ->select(
-            'rep.idrep as user_id', 
-            'rep.user_name', 
-            'offer.idoffer as offer_id', 
-            'offer.offer_name', 
-        DB::raw('COUNT(clicks.idclicks) as clicks'),
-        DB::raw('SUM(clicks.click_type = 0) as unique_clicks'),
-        DB::raw('COUNT(conversions.click_id) as conversions'))
-        ->groupBy('rep.user_name', 'rep.idrep', 'offer_id')
-        ->orderBy('conversions', 'DESC');
+	    $clicksSubquery = Click::where('offer_idoffer', '=', $this->offerId)
+	                           ->whereBetween('first_timestamp',[$start, $end])
+	                           ->where('clicks.click_type', '!=', 2)
+	                           ->join('rep', 'idrep', '=', 'clicks.rep_idrep')
+	                           ->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
+	                           ->groupBy('rep.user_name', 'rep.idrep', 'offer.idoffer')
+	                           ->select(
+		                           'rep.idrep as user_id',
+		                           'rep.user_name',
+		                           'offer.idoffer as offer_id',
+		                           'offer.offer_name',
+		                           DB::raw('COUNT(clicks.idclicks) as clicks'),
+		                           DB::raw('SUM(clicks.click_type = 0) as unique_clicks')
+	                           );
+
+	    $conversionsSubquery = Conversion::whereBetween('timestamp', [$start, $end])
+	                                     ->join('clicks', 'conversions.click_id', '=', 'clicks.idclicks') // Join instead of whereIn
+	                                     ->where('clicks.offer_idoffer', '=', $this->offerId)
+	                                     ->groupBy('clicks.offer_idoffer', 'clicks.rep_idrep')
+	                                     ->select('clicks.offer_idoffer as conv_offer_id',
+		                                     'clicks.rep_idrep as user_id',
+		                                     DB::raw('COUNT(conversions.id) as conversions')
+	                                     );
+
+	    return DB::table(DB::raw("({$clicksSubquery->toSql()}) as clicks"))
+	             ->mergeBindings($clicksSubquery->getQuery())
+	             ->leftJoin(DB::raw("({$conversionsSubquery->toSql()}) as conversions"), function ($join) {
+		             $join->on('clicks.offer_id', '=', 'conversions.conv_offer_id') // Match offer_id
+		                  ->on('clicks.user_id', '=', 'conversions.user_id'); // Match user_id
+	             }
+	             )
+	             ->mergeBindings($conversionsSubquery->getQuery())
+	             ->select(
+		             'clicks.user_id',
+		             'clicks.user_name',
+		             'clicks.clicks as clicks',
+		             'clicks.unique_clicks as unique_clicks',
+		             DB::raw('COALESCE(conversions.conversions, 0) as conversions')
+	             )
+	             ->orderBy('conversions', 'DESC');
     }
 
     public function getOfferConversionsByCountry($start, $end) {
