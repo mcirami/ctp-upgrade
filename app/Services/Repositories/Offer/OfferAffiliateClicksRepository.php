@@ -129,22 +129,41 @@ class OfferAffiliateClicksRepository implements Repository
 
     public function getOfferConversionsForGod($start, $end) {
 
-        return DB::table('clicks')
-        ->where('offer_idoffer', '=', $this->offerId)
+	    $clicksSubquery = Click::where('offer_idoffer', '=', $this->offerId)
         ->whereBetween('first_timestamp',[$start, $end])
+        ->where('clicks.click_type', '!=', 2)
         ->join('rep', 'idrep', '=', 'clicks.rep_idrep')
-        ->leftJoin('conversions', 'conversions.click_id', '=', 'clicks.idclicks')
         ->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
         ->select(
             'rep.idrep as user_id', 
-            'rep.user_name', 
-            'offer.idoffer as offer_id', 
+            'rep.user_name',
+            'offer.idoffer as offer_id',
             'offer.offer_name', 
         DB::raw('COUNT(clicks.idclicks) as clicks'),
-        DB::raw('SUM(clicks.click_type = 0) as unique_clicks'),
-        DB::raw('COUNT(conversions.click_id) as conversions'))
-        ->groupBy('rep.user_name', 'rep.idrep', 'offer_id')
-        ->orderBy('conversions', 'DESC');
+        DB::raw('SUM(clicks.click_type = 0) as unique_clicks'))
+        ->groupBy('rep.user_name', 'rep.idrep', 'offer_id');
+
+	    $conversionsSubquery = Conversion::whereBetween('timestamp', [$start, $end])
+		    ->join('clicks', 'conversions.click_id', '=', 'clicks.idclicks') // Join instead of whereIn
+		    ->where('clicks.offer_idoffer', '=', $this->offerId)
+		    ->leftJoin('rep', 'rep.idrep', '=', 'conversions.user_id')
+		    ->select('clicks.offer_idoffer as conv_offer_id',
+			    DB::raw('COUNT(conversions.id) as conversions'))
+		    ->groupBy('rep.user_name', 'rep.idrep');
+
+	    return DB::table(DB::raw("({$clicksSubquery->toSql()}) as clicks"))
+	                ->mergeBindings($clicksSubquery->getQuery())
+	                ->join(DB::raw("({$conversionsSubquery->toSql()}) as conversions"), 'clicks.offer_id', '=', 'conversions.conv_offer_id')
+	                ->mergeBindings($conversionsSubquery->getQuery())
+	                ->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_id')
+	                ->select(
+						'clicks.user_id',
+						'clicks.user_name',
+		                'clicks.clicks as clicks',
+		                'clicks.unique_clicks as unique_clicks',
+		                DB::raw('COALESCE(conversions.conversions, 0) as conversions')
+	                )
+	                ->orderBy('conversions', 'DESC');
     }
 
     public function getOfferConversionsByCountry($start, $end) {
