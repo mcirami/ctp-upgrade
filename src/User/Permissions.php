@@ -28,6 +28,7 @@ class Permissions
     const CREATE_ADMINS = "create_admins";
     const CREATE_MANAGERS = "create_managers";
     const CREATE_AFFILIATES = "create_affiliates";
+	const VIEW_ALL_USERS = "view_all_users";
     const CREATE_OFFERS = "create_offers";
     const EDIT_OFFER_RULES = "edit_offer_rules";
     const VIEW_POSTBACK = "view_postback";
@@ -70,6 +71,11 @@ class Permissions
             /*"required_permissions" => [self::CREATE_AFFILIATES],*/
             "allowed_user_types" => [\App\Privilege::ROLE_GOD, \App\Privilege::ROLE_ADMIN, Privilege::ROLE_MANAGER, Privilege::ROLE_AFFILIATE],
         ],
+
+	    self::VIEW_ALL_USERS => [
+			"description" => "Can View All Users",
+		    "allowed_user_types" => [\App\Privilege::ROLE_GOD, \App\Privilege::ROLE_ADMIN]
+	    ],
 
         self::CREATE_OFFERS => ["description" => "Can Create Offers", "allowed_user_types" => [\App\Privilege::ROLE_GOD]],
 

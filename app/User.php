@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -164,10 +165,9 @@ class User extends Authenticatable
     }
 
     /**
-     * @return Builder|\Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return Builder|BelongsToMany
      */
-    public function offers()
-    {
+    public function offers(): Builder|BelongsToMany {
         switch ($this->getRole()) {
             case Privilege::ROLE_GOD:
             case Privilege::ROLE_ADMIN:
