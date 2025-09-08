@@ -145,6 +145,7 @@ class OfferReportController extends ReportController
 		$affiliateRepo = new OfferAffiliateClicksRepository( $offer->idoffer, Session::user() );
 		$affiliateReport = $affiliateRepo->between( $start, $end );
 
+		//dd($affiliateReport);
 		return view('report.offer.conversions', compact('affiliateReport', 'offer'));
 	}
 

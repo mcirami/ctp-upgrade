@@ -116,20 +116,46 @@ class OfferAffiliateClicksRepository implements Repository
 
         $managers = User::where('referrer_repid', $this->user->idrep)->pluck('idrep')->toArray();
 
-        return DB::table('clicks')
-        ->where('offer_idoffer', '=', $this->offerId)
-        ->whereBetween('first_timestamp',[$start, $end])
-        ->join('rep', function($query) use($managers) {
-            $query->on('idrep', '=', 'clicks.rep_idrep')
-            ->whereIn('rep.referrer_repid', $managers);
-        })
-        ->rightJoin('conversions', 'conversions.click_id', '=', 'clicks.idclicks')
-        ->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
-        ->select('rep.idrep as user_id', 'rep.user_name', 'offer.idoffer as offer_id', 'offer.offer_name', 
-        DB::raw('COUNT(clicks.idclicks) as clicks'),
-        DB::raw('SUM(clicks.click_type = 0) as unique_clicks'),
-        DB::raw('COUNT(conversions.click_id) as conversions'))
-        ->groupBy('rep.user_name', 'rep.idrep', 'offer_id')->orderBy('conversions', 'DESC');
+	    $clicksSubquery = Click::query()
+	                           ->where('clicks.offer_idoffer', '=', $this->offerId)
+	                           ->whereBetween('clicks.first_timestamp',[$start, $end])
+	                           ->where('clicks.click_type', '!=', 2)
+	                           ->join('rep', function($query) use($managers) {
+								   $query->on('idrep', '=', 'clicks.rep_idrep')
+								         ->whereIn('rep.referrer_repid', $managers);
+							   })
+	                           ->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
+	                           ->selectRaw('rep.idrep AS user_id,rep.user_name, offer.idoffer AS offer_id, offer.offer_name,
+		                           COUNT(clicks.idclicks) AS clicks,
+		                           SUM(clicks.click_type = 0) AS unique_clicks')
+	                           ->groupBy('rep.user_name', 'rep.idrep', 'offer_id');
+
+	    $conversionsSubquery = Conversion::query()
+	                                     ->whereBetween('conversions.timestamp', [$start, $end])
+	                                     ->join('clicks', 'conversions.click_id', '=', 'clicks.idclicks') // Join instead of whereIn
+	                                     ->where('clicks.offer_idoffer', '=', $this->offerId)
+	                                     ->join('rep', function($query) use($managers) {
+										    $query->on('rep.idrep', '=', 'clicks.rep_idrep')
+										          ->whereIn('rep.referrer_repid', $managers);
+										 })
+	                                     ->selectRaw('clicks.rep_idrep AS user_id, clicks.offer_idoffer AS offer_id, 
+	                                     COUNT(conversions.id) AS conversions')
+	                                     ->groupBy('clicks.rep_idrep', 'clicks.offer_idoffer');;
+
+	    return DB::query()  // neutral builder
+	              ->fromSub($clicksSubquery, 'clicks')
+	              ->leftJoinSub($conversionsSubquery, 'conversions', function ($join) {
+		              $join->on('clicks.offer_id', '=', 'conversions.offer_id')
+		                   ->on('clicks.user_id', '=', 'conversions.user_id');
+	              })
+	              ->select([
+		              'clicks.user_id',
+		              'clicks.user_name',
+		              'clicks.clicks',
+		              'clicks.unique_clicks',
+		              DB::raw('COALESCE(conversions.conversions, 0) AS conversions'),
+	              ])
+	              ->orderByDesc('conversions');
     }
 
     public function getOfferConversionsForGod($start, $end) {
