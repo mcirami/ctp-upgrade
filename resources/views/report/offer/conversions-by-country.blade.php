@@ -1,7 +1,7 @@
 @extends('report.template')
 
 @section('report-title')
-    {{$offer->offer_name}}'s Conversions By Country
+    {{$offer?->offer_name}} Conversions By Country
 @endsection
 
 @section('table-options')
@@ -10,11 +10,14 @@
 			'd_from' 		=> request()->query('d_from'),
 			'd_to'			=> request()->query('d_to'),
 			'dateSelect'	=> request()->query('dateSelect'),
-			'offerId' 		=> $offer->idoffer
+			'offerId' 		=> $offer ? $offer->idoffer : null
 		);
+		if ($offer) :
 	@endphp
-	@include('report.options.offer_conversions_view', $data)
-    @include('report.options.dates')
+		@include('report.options.offer_conversions_view', $data)
+	@php endif @endphp
+
+	@include('report.options.dates')
 @endsection
 
 @section('table')

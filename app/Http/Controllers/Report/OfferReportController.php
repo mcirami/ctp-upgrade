@@ -149,14 +149,15 @@ class OfferReportController extends ReportController
 		return view('report.offer.conversions', compact('affiliateReport', 'offer'));
 	}
 
-    public function showConversionsByCountry(Offer $offer) {
+    public function showConversionsByCountry(?Offer $offer = null) {
 		$dates = self::getDates();
 
         $start = Carbon::parse( $dates['startDate'], 'America/New_York' );
 		$end   = Carbon::parse( $dates['endDate'], 'America/New_York' );
 
-        $affiliateRepo = new OfferAffiliateClicksRepository( $offer->idoffer, Session::user() );
-		$affiliateReport = $affiliateRepo->getOfferConversionsByCountry( $start, $end );
+        $affiliateRepo = new OfferAffiliateClicksRepository( $offer?->idoffer, Session::user() );
+
+		$affiliateReport = $affiliateRepo->conversionsByCountry( $start, $end);
 
         return view('report.offer.conversions-by-country', compact('affiliateReport', 'offer'));
 

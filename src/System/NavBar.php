@@ -105,6 +105,11 @@ class NavBar
                 'url' => '/report/offer',
             ],
 
+            "Country Report" => [
+	            'url' => '/report/offer/conversions-by-country',
+	            "required_user_types" => [\App\Privilege::ROLE_GOD],
+            ],
+
 
             "Sub Report" => ['url' => '/report/sub', "required_user_types" => [\App\Privilege::ROLE_AFFILIATE]],
 
