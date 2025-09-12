@@ -146,14 +146,14 @@
 						<td>{{$row['offer_id']}}</td>
 						<td>{{$row['referer']}}</td>
 						@if ( Session::permissions()->can("view_fraud_data"))
-							<td>{{isset($row['ip_address']) ?? ""}}</td>
-							<td>{{isset($row['subDivision']) ?? ""}}</td>
-							<td>{{isset($row['city']) ?? ""}}</td>
-							<td>{{isset($row['postal']) ?? ""}}</td>
-							<td>{{isset($row['latitude']) ?? ""}}</td>
-							<td>{{isset($row['longitude']) ?? ""}}</td>
+							<td>{{isset($row['ip_address']) ? $row['ip_address'] : ""}}</td>
+							<td>{{isset($row['subDivision']) ? $row['subDivision'] : ""}}</td>
+							<td>{{isset($row['city']) ? $row['city'] : ""}}</td>
+							<td>{{isset($row['postal']) ? $row['postal'] : ""}}</td>
+							<td>{{isset($row['latitude']) ? $row['latitude'] : ""}}</td>
+							<td>{{isset($row['longitude']) ? $row['longitude'] : ""}}</td>
 						@endif
-						<td>{{isset($row['isoCode']) ?? ""}}</td>
+						<td>{{isset($row['isoCode']) ? $row['isoCode'] : ""}}</td>
 					</tr>
 				@endforeach
 				<tr>
