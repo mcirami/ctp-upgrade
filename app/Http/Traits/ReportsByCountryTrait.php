@@ -17,6 +17,11 @@ trait ReportsByCountryTrait
 	 * Public entry point replacing both getOfferConversionsByCountry() and getAllConversionsByCountry().
 	 * If $offerId is null -> all offers in range. If set -> filtered to that offer only.
 	 */
+	/**
+	 * Fetch conversions grouped by country for the supplied range.
+	 *
+	 * @return array{rows: array<int, array<string, int|string>>, totals: array<string, int>}
+	 */
 	public function getConversionsByCountry($start, $end, ?int $offerId = null): array
 	{
 		$clicksSub = $this->buildClicksSubquery($start, $end, $offerId);
@@ -41,12 +46,19 @@ trait ReportsByCountryTrait
 		          ->orderByDesc('total_conversions')
 		          ->get();
 
-		// Fill missing country codes via geo lookup
-		$rows->transform(function ($item) {
-			if (is_null($item->country_code)) {
-				$geo = ClickGeo::findGeo($item->ip_address); // returns ['isoCode' => 'US'] per your code
-				$item->country_code = $geo['isoCode'] ?? null;
+		$geoCache = [];
+
+		$rows->transform(function ($item) use (&$geoCache) {
+			if (is_null($item->country_code) || $item->country_code === '') {
+				$ip = $item->ip_address;
+
+				if (!array_key_exists($ip, $geoCache)) {
+					$geoCache[$ip] = ClickGeo::findGeo($ip)['isoCode'] ?? null;
+				}
+
+				$item->country_code = $geoCache[$ip];
 			}
+
 			return $item;
 		});
 
@@ -98,10 +110,19 @@ trait ReportsByCountryTrait
 	/** Collapse IP-level rows into country totals */
 	protected function aggregateByCountry(Collection $rows): array
 	{
+
 		$reports = [];
+		$totals = [
+			'total_clicks'      => 0,
+			'unique_clicks'     => 0,
+			'total_conversions' => 0,
+		];
 
 		foreach ($rows as $item) {
-			$code = $item->country_code ?? 'ZZ'; // Unknown
+			$code = $item->country_code;
+			if (empty($code) || $code === 'UNKNOWN') {
+				$code = 'ZZ'; // Unknown placeholder
+			}
 			if (!isset($reports[$code])) {
 				$reports[$code] = [
 					'country_code'      => $code,
@@ -113,6 +134,10 @@ trait ReportsByCountryTrait
 			$reports[$code]['total_clicks']      += (int) $item->total_clicks;
 			$reports[$code]['unique_clicks']     += (int) $item->unique_clicks;
 			$reports[$code]['total_conversions'] += (int) $item->total_conversions;
+
+			$totals['total_clicks']      += (int) $item->total_clicks;
+			$totals['unique_clicks']     += (int) $item->unique_clicks;
+			$totals['total_conversions'] += (int) $item->total_conversions;
 		}
 
 		// Optional: sort by conversions desc
@@ -120,6 +145,9 @@ trait ReportsByCountryTrait
 			return $b['total_conversions'] <=> $a['total_conversions'];
 		});
 
-		return $reports;
+		return [
+			'rows'   => array_values($reports),
+			'totals' => $totals,
+		];
 	}
 }
