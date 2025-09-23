@@ -15,7 +15,7 @@ class SunUsersSeeder extends Seeder
      */
     public function run()
     {
-        foreach (range(1, 2) as $index) {
+        foreach (range(2, 3) as $index) {
             $userName = sprintf('SUN%02d', $index);
 
             if (User::where('user_name', $userName)->exists()) {
