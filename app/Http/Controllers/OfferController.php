@@ -58,6 +58,26 @@ class OfferController extends Controller
 
 		$urls = \App\Company::instance()->first()->offerUrls()->where('status',1)->get();
 		/* @var $urls Collection */
+		$company = \App\Company::instance()->first();
+		$urlQuery = $company->offerUrls()->where('status', 1);
+
+		$user = \LeadMax\TrackYourStats\System\Session::user();
+		$urls = new Collection();
+
+		if ($user->getRole() === Privilege::ROLE_AFFILIATE || $user->getRole() === Privilege::ROLE_MANAGER) {
+			$managerId = $user->getRole() === Privilege::ROLE_AFFILIATE ? $user->referrer_repid : $user->idrep;
+			$managerUrls = (clone $urlQuery)->where('assigned_manager_id', $managerId)->get();
+
+			if ($managerUrls->isNotEmpty()) {
+				$urls = $managerUrls;
+			} else {
+				$urls = (clone $urlQuery)->whereNull('assigned_manager_id')->get();
+			}
+		} else {
+			$urls = $urlQuery->get();
+		}
+
+		/* @var $urls Collection */
 		if ($urls->isEmpty()) {
 			$url = new OfferURL();
 			$url->url = request()->getHttpHost();
