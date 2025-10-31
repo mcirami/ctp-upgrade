@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        /*Schema::table('permissions', function (Blueprint $table) {
+        Schema::table('permissions', function (Blueprint $table) {
             $table->boolean('view_payouts')->default(false)->after('edit_report_permissions');
-        });*/
+        });
     }
 
     /**
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        /*Schema::table('permissions', function (Blueprint $table) {
+        Schema::table('permissions', function (Blueprint $table) {
             $table->dropColumn('view_payouts');
-        });*/
+        });
     }
 };
