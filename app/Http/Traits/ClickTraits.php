@@ -15,6 +15,7 @@ trait ClickTraits {
 	 * @return object
 	 */
 	public function formatResults(object $results): object {
+
 		$per = Permissions::loadFromSession();
 		if ($per->can("view_fraud_data")) {
 			foreach ($results as $row => $val) {

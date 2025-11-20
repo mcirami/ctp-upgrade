@@ -47,7 +47,10 @@ class OfferReportController extends ReportController
     public function admin()
     {
         $dates = self::getDates();
-        $repo = new AdminOfferRepository(\DB::getPdo());
+        $repo = Session::permissions()->can('view_all_users') ?
+	        new GodOfferRepository(\DB::getPdo())
+	        :
+	        new AdminOfferRepository(\DB::getPdo());
 
         $reporter = new Reporter($repo);
 
@@ -142,17 +145,19 @@ class OfferReportController extends ReportController
 		$affiliateRepo = new OfferAffiliateClicksRepository( $offer->idoffer, Session::user() );
 		$affiliateReport = $affiliateRepo->between( $start, $end );
 
+		//dd($affiliateReport);
 		return view('report.offer.conversions', compact('affiliateReport', 'offer'));
 	}
 
-    public function showConversionsByCountry(Offer $offer) {
+    public function showConversionsByCountry(?Offer $offer = null) {
 		$dates = self::getDates();
 
         $start = Carbon::parse( $dates['startDate'], 'America/New_York' );
 		$end   = Carbon::parse( $dates['endDate'], 'America/New_York' );
 
-        $affiliateRepo = new OfferAffiliateClicksRepository( $offer->idoffer, Session::user() );
-		$affiliateReport = $affiliateRepo->getOfferConversionsByCountry( $start, $end );
+        $affiliateRepo = new OfferAffiliateClicksRepository( $offer?->idoffer, Session::user() );
+
+		$affiliateReport = $affiliateRepo->conversionsByCountry( $start, $end);
 
         return view('report.offer.conversions-by-country', compact('affiliateReport', 'offer'));
 

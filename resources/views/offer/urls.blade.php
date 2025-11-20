@@ -17,6 +17,7 @@
                     <tr>
                         <th class = "value_span9">Offer URL</th>
                         <th class = "value_span9">Status</th>
+                        <th class = "value_span9">Assigned To</th>
                         <th class = "value_span9">Created On</th>
                         <th class = "value_span9">Actions</th>
 
@@ -38,6 +39,17 @@
 						{
 							echo "<td><span style='color:red'>IN-ACTIVE</span>";
 						}
+
+						$assignmentLabel = 'All';
+						if (!is_null($url['assigned_manager_id'])) {
+							$managerName = $url['manager_username'] ?? '';
+							$assignmentLabel = trim($managerName) !== ''
+								? $managerName . " (ID: " . $url['assigned_manager_id'] . ")"
+								: "ID: " . $url['assigned_manager_id'];
+						}
+
+						echo "<td>" . htmlspecialchars($assignmentLabel, ENT_QUOTES, 'UTF-8') . "</td>";
+
 
 						echo "<td>" . \Carbon\Carbon::createFromFormat("Y-m-d H:i:s", $url["timestamp"])->toFormattedDateString() . "</td>";
 

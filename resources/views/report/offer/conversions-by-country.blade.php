@@ -1,7 +1,7 @@
 @extends('report.template')
 
 @section('report-title')
-    {{$offer->offer_name}}'s Conversions By Country
+    {{$offer?->offer_name}} Conversions By Country
 @endsection
 
 @section('table-options')
@@ -10,11 +10,14 @@
 			'd_from' 		=> request()->query('d_from'),
 			'd_to'			=> request()->query('d_to'),
 			'dateSelect'	=> request()->query('dateSelect'),
-			'offerId' 		=> $offer->idoffer
+			'offerId' 		=> $offer ? $offer->idoffer : null
 		);
+		if ($offer) :
 	@endphp
-	@include('report.options.offer_conversions_view', $data)
-    @include('report.options.dates')
+		@include('report.options.offer_conversions_view', $data)
+	@php endif @endphp
+
+	@include('report.options.dates')
 @endsection
 
 @section('table')
@@ -29,18 +32,35 @@
 		</tr>
 		</thead>
 		<tbody>
-		@if(!empty($affiliateReport))
-			@foreach($affiliateReport as $report)
-				<tr>
-					<td>{{$report['country_code']}}</td>
-					<td>{{$report['total_clicks']}}</td>
-					<td>{{$report['unique_clicks']}}</td>
-					<td>{{$report['total_conversions']}}</td>
-				</tr>
+        @php
+            $rows = $affiliateReport['rows'] ?? [];
+            $totals = $affiliateReport['totals'] ?? null;
+        @endphp
 
-			@endforeach
-		@endif
+        @forelse($rows as $report)
+            <tr>
+                <td>{{$report['country_code'] === 'ZZ' ? 'Unknown' : $report['country_code']}}</td>
+                <td>{{$report['total_clicks']}}</td>
+                <td>{{$report['unique_clicks']}}</td>
+                <td>{{$report['total_conversions']}}</td>
+            </tr>
+        @empty
+            <tr>
+                <td colspan="4" class="text-center">No data available for the selected range.</td>
+            </tr>
+        @endforelse
+
 		</tbody>
+        @if(!empty($rows) && $totals)
+            <tfoot>
+            <tr class="static">
+                <td><strong>Total</strong></td>
+                <td><strong>{{$totals['total_clicks']}}</strong></td>
+                <td><strong>{{$totals['unique_clicks']}}</strong></td>
+                <td><strong>{{$totals['total_conversions']}}</strong></td>
+            </tr>
+            </tfoot>
+        @endif
 	</table>
 @endsection
 

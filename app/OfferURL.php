@@ -26,4 +26,19 @@ class OfferURL extends Model
     protected $table = 'offer_urls';
     protected $connection = 'master';
 
+	protected $fillable = [
+		'url',
+		'status',
+		'company_id',
+		'assigned_manager_id',
+	];
+
+	protected $casts = [
+		'assigned_manager_id' => 'integer',
+	];
+
+	public function assignedManager()
+	{
+		return $this->belongsTo(User::class, 'assigned_manager_id', 'idrep');
+	}
 }

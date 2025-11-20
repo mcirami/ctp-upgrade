@@ -21,7 +21,6 @@ $offerURLs = new \LeadMax\TrackYourStats\Offer\URLs(\LeadMax\TrackYourStats\Syst
 
 $urls = $offerURLs->getOfferUrls()->fetchAll(PDO::FETCH_ASSOC);
 
-
 ?>
 
 <!--right_panel-->
@@ -40,10 +39,9 @@ $urls = $offerURLs->getOfferUrls()->fetchAll(PDO::FETCH_ASSOC);
 				<tr>
 					<th class = "value_span9">Offer URL</th>
 					<th class = "value_span9">Status</th>
+					<th class = "value_span9">Assigned To</th>
 					<th class = "value_span9">Created On</th>
 					<th class = "value_span9">Actions</th>
-				
-				
 				</tr>
 				</thead>
 				<tbody>
@@ -61,11 +59,14 @@ $urls = $offerURLs->getOfferUrls()->fetchAll(PDO::FETCH_ASSOC);
 					{
 						echo "<td><span style='color:red'>IN-ACTIVE</span>";
 					}
+					echo "<td>";
+					echo $url['manager_username'] ?: "All";
+					echo $url['assigned_manager_id'] ? " (ID:" . $url['assigned_manager_id'] . ")" : "" ;
+					echo "</td>";
 					
 					echo "<td>" . \Carbon\Carbon::createFromFormat("Y-m-d H:i:s", $url["timestamp"])->toFormattedDateString() . "</td>";
-					
 					echo "<td>";
-					echo "<a class='btn btn-default btn-sm' href='edit_offer_url.php?id={$url["id"]}'>Edit</a>";
+					echo "<a class='btn btn-default btn-sm value_span11 value_span2 value_span4' href='edit_offer_url.php?id={$url["id"]}'>Edit</a>";
 					echo "</td>";
 					echo "</tr>";
 				}

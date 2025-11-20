@@ -28,6 +28,7 @@ class Permissions
     const CREATE_ADMINS = "create_admins";
     const CREATE_MANAGERS = "create_managers";
     const CREATE_AFFILIATES = "create_affiliates";
+	const VIEW_ALL_USERS = "view_all_users";
     const CREATE_OFFERS = "create_offers";
     const EDIT_OFFER_RULES = "edit_offer_rules";
     const VIEW_POSTBACK = "view_postback";
@@ -44,6 +45,7 @@ class Permissions
     const APPROVE_AFFILIATE_SIGN_UPS = "approve_affiliate_sign_ups";
     const EDIT_AFFILIATES = "edit_affiliates";
     const EDIT_REPORT_PERMISSIONS = "edit_report_permissions";
+	const VIEW_PAYOUTS = "view_payouts";
     const ADJUST_SALES = "adjust_sales";
     const BAN_USERS = "ban_users";
     const EMAIL_POOLS = 'email_pools';
@@ -69,6 +71,11 @@ class Permissions
             /*"required_permissions" => [self::CREATE_AFFILIATES],*/
             "allowed_user_types" => [\App\Privilege::ROLE_GOD, \App\Privilege::ROLE_ADMIN, Privilege::ROLE_MANAGER, Privilege::ROLE_AFFILIATE],
         ],
+
+	    self::VIEW_ALL_USERS => [
+			"description" => "Can View All Users",
+		    "allowed_user_types" => [\App\Privilege::ROLE_GOD, \App\Privilege::ROLE_ADMIN]
+	    ],
 
         self::CREATE_OFFERS => ["description" => "Can Create Offers", "allowed_user_types" => [\App\Privilege::ROLE_GOD]],
 
@@ -142,6 +149,11 @@ class Permissions
             "allowed_user_types" => [\App\Privilege::ROLE_GOD, \App\Privilege::ROLE_ADMIN, Privilege::ROLE_MANAGER],
         ],
 
+	    self::VIEW_PAYOUTS => [
+			"description" => "Can View Payouts",
+			"allowed_user_types" => [\App\Privilege::ROLE_GOD, \App\Privilege::ROLE_ADMIN],
+	    ],
+
         self::ADJUST_SALES => ["description" => "Can Adjust Sales", "allowed_user_types" => [\App\Privilege::ROLE_GOD]],
 
 
@@ -186,7 +198,6 @@ class Permissions
         }
 
         $permissionDetails = self::$permissionsArray[$permission];
-
 
         if (isset($permissionDetails["allowed_user_types"])) {
             //check editing user

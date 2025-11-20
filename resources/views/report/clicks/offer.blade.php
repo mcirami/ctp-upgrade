@@ -1,13 +1,13 @@
-@php use LeadMax\TrackYourStats\System\Session; @endphp
+@php use App\Privilege;use LeadMax\TrackYourStats\System\Session; @endphp
 
 @extends('report.template')
 
 @section('report-title')
-    {{$offer->offer_name}}'s Clicks
+	{{$offer->offer_name}}'s Clicks
 @endsection
 
 @section('table-options')
-    @include('report.options.dates')
+	@include('report.options.dates')
 @endsection
 
 {{--@section('filters')
@@ -67,7 +67,7 @@
 		</form>
 	</div>--}}
 	<div class="form-group searchDiv">
-		@if (\LeadMax\TrackYourStats\System\Session::permissions()->can("view_fraud_data"))
+		@if ( Session::permissions()->can("view_fraud_data"))
 			<form action="/offer/{{$offer->idoffer}}/search-clicks" method="GET">
 				<input id="searchBox"
 					   class="form-control"
@@ -83,18 +83,20 @@
 			</form>
 		@endif
 	</div>
-    <div class="white_box_x_scroll white_box manage_aff large_table value_span8  one_hungee_table adjust_overflow"
-         style="width:100%;!important;">
+	<div class="white_box_x_scroll white_box manage_aff large_table value_span8  one_hungee_table adjust_overflow"
+		 style="width:100%;!important;">
 		<div class="table_wrap">
 			<table id="clicks" class="table table-striped table-bordered table_01 tablesorter">
 				<thead>
 				<tr>
-					@if (\LeadMax\TrackYourStats\System\Session::permissions()->can("view_fraud_data"))
+					@if ( Session::permissions()->can("view_fraud_data"))
 						<th class="value_span9">Click ID</th>
 					@endif
 					<th class="value_span9"><br>Timestamp</th>
 					<th class="value_span9">Conversion Timestamp</th>
-					@if(Session::userType() == \App\Privilege::ROLE_GOD)
+					@if(Session::userType() == Privilege::ROLE_GOD ||
+							(Session::userType() == Privilege::ROLE_ADMIN && Session::permissions()->can("view_payouts") )
+						)
 						<th class="value_span9">Paid</th>
 					@endif
 					<th class="value_span9">Sub 1</th>
@@ -105,7 +107,7 @@
 					<th class="value_span9">Affiliate</th>
 					<th class="value_span9">Offer</th>
 					<th class="value_span9">Referer Url</th>
-					@if (\LeadMax\TrackYourStats\System\Session::permissions()->can("view_fraud_data"))
+					@if ( Session::permissions()->can("view_fraud_data"))
 						<th class="value_span9">Ip Address</th>
 						<th class="value_span9">Sub Division</th>
 						<th class="value_span9">City</th>
@@ -119,8 +121,8 @@
 				<tbody>
 				@php $myReport = new LeadMax\TrackYourStats\Table\Date;  @endphp
 				@foreach($report as $row)
-				
-					@php 
+
+					@php
 						$timestamp = $myReport->convertToEST($row['timestamp']);
 						$conversionTimeStamp = "";
 						if ($row->conversion_timestamp) {
@@ -128,13 +130,14 @@
 						}
 					@endphp
 					<tr>
-						@if (\LeadMax\TrackYourStats\System\Session::permissions()->can("view_fraud_data"))
+						@if ( Session::permissions()->can("view_fraud_data"))
 							<td>{{$row['id']}}</td>
 						@endif
 						<td>{{$row['timestamp']}}</td>
 						<td>{{$conversionTimeStamp}}</td>
-						@if (\LeadMax\TrackYourStats\System\Session::permissions()->can("view_fraud_data"))
-						<td>{{$row['paid']}}</td>
+						@if ( Session::permissions()->can("view_fraud_data") ||
+							(Session::userType() == Privilege::ROLE_ADMIN && Session::permissions()->can("view_payouts") ))
+							<td>{{$row['paid']}}</td>
 						@endif
 						@for($i = 1; $i <= 3; $i++)
 							<td>{{$row['sub' . $i]}}</td>
@@ -142,7 +145,7 @@
 						<td>{{$row['affiliate_id']}}</td>
 						<td>{{$row['offer_id']}}</td>
 						<td>{{$row['referer']}}</td>
-						@if (\LeadMax\TrackYourStats\System\Session::permissions()->can("view_fraud_data"))
+						@if ( Session::permissions()->can("view_fraud_data"))
 							<td>{{isset($row['ip_address']) ? $row['ip_address'] : ""}}</td>
 							<td>{{isset($row['subDivision']) ? $row['subDivision'] : ""}}</td>
 							<td>{{isset($row['city']) ? $row['city'] : ""}}</td>
@@ -158,34 +161,36 @@
 				</tbody>
 			</table>
 		</div>
-@endsection
+		@endsection
 
-@section('extra')
+		@section('extra')
 			{{ $reportCollection->links() }}
-@endsection
+		@endsection
 
-@section('footer')
-    <script type="text/javascript">
+		@section('footer')
+			<script type="text/javascript">
 
-        $(document).ready(function () {
-			$("#clicks")
-					// Initialize tablesorter
-					// ***********************
-					.tablesorter({
-						sortList: [[3, 1]],
-						widgets: ['staticRow']
-					})
+				$(document).ready(function() {
+					$("#clicks")
+							// Initialize tablesorter
+							// ***********************
+							.tablesorter({
+								sortList: [[3, 1]],
+								widgets: ['staticRow']
+							})
 
-					// bind to pager events
-					// *********************
-					.bind('pagerChange pagerComplete pagerInitialized pageMoved', function(e, c) {
-						var msg = '"</span> event triggered, ' + (e.type === 'pagerChange' ? 'going to' : 'now on') +
-								' page <span class="typ">' + (c.page + 1) + '/' + c.totalPages + '</span>';
-						$('#display')
-						.append('<li><span class="str">"' + e.type + msg + '</li>')
-						.find('li:first').remove();
-					})
-        });
+							// bind to pager events
+							// *********************
+							.bind('pagerChange pagerComplete pagerInitialized pageMoved', function(e, c) {
+								var msg = '"</span> event triggered, ' +
+										(e.type === 'pagerChange' ? 'going to' : 'now on') +
+										' page <span class="typ">' + (c.page + 1) + '/' + c.totalPages + '</span>';
+								$('#display').
+										append('<li><span class="str">"' + e.type + msg + '</li>').
+										find('li:first').
+										remove();
+							})
+				});
 
-    </script>
+			</script>
 @endsection

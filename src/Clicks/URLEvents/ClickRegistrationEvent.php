@@ -56,9 +56,9 @@ class ClickRegistrationEvent extends URLEvent
     {
         if ($this->registerClick()) {
             $this->sendUserToOffer();
-        } else {
-            return false;
         }
+
+	    return false;
     }
 
     private function getClickType()
@@ -102,8 +102,9 @@ class ClickRegistrationEvent extends URLEvent
 	        $click->first_timestamp = date("Y-m-d H:i:s");
             $click->ip_address = $this->ip; //$_SERVER["REMOTE_ADDR"];
             //$click->country_code = $geo;
-            $click->referer = array_key_exists("HTTP_REFERER", $_SERVER) ? $_SERVER["HTTP_REFERER"] : null;
-            $click->browser_agent = $_SERVER["HTTP_USER_AGENT"];
+            //$click->referer = array_key_exists("HTTP_REFERER", $_SERVER) ? $_SERVER["HTTP_REFERER"] : null;
+	        $click->referer = $this->resolveReferer();
+	        $click->browser_agent = $_SERVER["HTTP_USER_AGENT"];
 
             $click->rep_idrep = $this->userId;
             $click->offer_idoffer = $this->offerId;
@@ -130,9 +131,9 @@ class ClickRegistrationEvent extends URLEvent
                 $conversion->registerSale();
             }
             return true;
-        } else {
-            return false;
         }
+
+	    return false;
     }
 
 
@@ -179,7 +180,46 @@ class ClickRegistrationEvent extends URLEvent
 
     }
 
-    private function checkOfferRules()
+	private function resolveReferer(): ?string
+	{
+		if (!array_key_exists('HTTP_REFERER', $_SERVER)) {
+			return null;
+		}
+
+		$rawReferer = $_SERVER['HTTP_REFERER'];
+		$parts = parse_url($rawReferer);
+
+		if ($parts === false) {
+			return $rawReferer;
+		}
+
+		$path = $parts['path'] ?? '';
+		$slug = trim($path, '/');
+		$query = isset($parts['query']) ? '?' . $parts['query'] : '';
+
+		$host = '';
+
+		if (isset($parts['scheme'])) {
+			$host .= $parts['scheme'] . '://';
+		}
+
+		if (isset($parts['host'])) {
+			$host .= $parts['host'];
+		}
+
+		if (isset($parts['port'])) {
+			$host .= ':' . $parts['port'];
+		}
+
+		if ($slug !== '') {
+			$host .= '/' . $slug;
+		}
+
+		return $host . $query;
+	}
+
+
+	private function checkOfferRules()
     {
         $rules = new Rules($this->offerId, $this->ip);
 

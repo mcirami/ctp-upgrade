@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('company', function (Blueprint $table) {
-            $table->string('login_theme')->nullable();
+        Schema::table('permissions', function (Blueprint $table) {
+            $table->boolean('view_all_users')->default(false)->after('create_affiliates');
         });
     }
 
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('company', function (Blueprint $table) {
-            $table->dropColumn('login_theme');
+        Schema::table('permissions', function (Blueprint $table) {
+            $table->dropColumn('view_all_users');
         });
     }
 };

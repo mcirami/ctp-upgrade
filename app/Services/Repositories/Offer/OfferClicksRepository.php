@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
 use LeadMax\TrackYourStats\Clicks\ClickGeo;
+use LeadMax\TrackYourStats\System\Session;
 use LeadMax\TrackYourStats\User\Permissions;
 use App\Http\Traits\ClickTraits;
 
@@ -77,17 +78,31 @@ class OfferClicksRepository implements Repository
             'clicks.offer_idoffer as offer_id',
             'click_geo.ip as ip_address'
         ]);
-        return Click::leftJoin('click_vars', 'click_vars.click_id', 'clicks.idclicks')
-            ->leftJoin('click_geo', 'click_geo.click_id', 'clicks.idclicks')
-            ->leftJoin('conversions', 'conversions.click_id', 'clicks.idclicks')
-            ->join('rep', 'rep.idrep', 'clicks.rep_idrep')
-            ->where('offer_idoffer', $this->offerId)
-            ->where('rep.lft', '>', $this->user->lft)
-            ->where('rep.rgt', '<', $this->user->rgt)
-            ->whereBetween('clicks.first_timestamp', [$start, $end])
-            ->select($select)
-            ->orderBy('paid', 'DESC')
-            ->paginate(100);
+
+	    if(Session::permissions()->can('view_all_users')) {
+		    return Click::leftJoin('click_vars', 'click_vars.click_id', 'clicks.idclicks')
+		                ->leftJoin('click_geo', 'click_geo.click_id', 'clicks.idclicks')
+		                ->leftJoin('conversions', 'conversions.click_id', 'clicks.idclicks')
+		                ->join('rep', 'rep.idrep', 'clicks.rep_idrep')
+		                ->where('offer_idoffer', $this->offerId)
+		                ->whereBetween('clicks.first_timestamp', [$start, $end])
+		                ->select($select)
+		                ->orderBy('paid', 'DESC')
+		                ->paginate(100);
+	    } else {
+		    return Click::leftJoin('click_vars', 'click_vars.click_id', 'clicks.idclicks')
+		                ->leftJoin('click_geo', 'click_geo.click_id', 'clicks.idclicks')
+		                ->leftJoin('conversions', 'conversions.click_id', 'clicks.idclicks')
+		                ->join('rep', 'rep.idrep', 'clicks.rep_idrep')
+		                ->where('offer_idoffer', $this->offerId)
+		                ->where('rep.lft', '>', $this->user->lft)
+		                ->where('rep.rgt', '<', $this->user->rgt)
+		                ->whereBetween('clicks.first_timestamp', [$start, $end])
+		                ->select($select)
+		                ->orderBy('paid', 'DESC')
+		                ->paginate(100);
+	    }
+
     }
 
     /**

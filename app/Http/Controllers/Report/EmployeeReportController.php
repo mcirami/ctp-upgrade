@@ -64,7 +64,10 @@ class EmployeeReportController extends ReportController
                 $repository = new GodEmployeeRepository(\DB::getPdo());
                 break;
             case Privilege::ROLE_ADMIN:
-                $repository = new AdminEmployeeRepository(\DB::getPdo());
+                $repository = Session::permissions()->can('view_all_users') ?
+	                new GodEmployeeRepository(\DB::getPdo())
+	                :
+	                new AdminEmployeeRepository(\DB::getPdo());
                 break;
             case Privilege::ROLE_MANAGER:
                 $repository = new ManagerEmployeeRepository(\DB::getPdo());
