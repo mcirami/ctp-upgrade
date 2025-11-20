@@ -3,6 +3,11 @@
         Options -MultiViews
     </IfModule>
 
+    <IfModule mod_headers.c>
+        # Allow browsers to send the full referrer (including path/query) when redirecting to this app.
+        Header set Referrer-Policy "no-referrer-when-downgrade"
+    </IfModule>
+
     RewriteEngine On
 
     # Redirect Trailing Slashes If Not A Folder...
