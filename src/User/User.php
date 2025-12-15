@@ -476,7 +476,7 @@ class User extends Login
     public static function SelectOne($id)
     {
         $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
-        $sql = "SELECT * FROM rep WHERE idrep=:id ";
+        $sql = "SELECT * FROM rep LEFT JOIN permissions AS p ON rep.idrep = p.aff_id WHERE idrep=:id ";
         $stmt = $db->prepare($sql);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
@@ -689,8 +689,7 @@ class User extends Login
 
         $currentrep = User::SelectOne(Session::userID());
 
-
-        if ($rep["lft"] > $currentrep->lft && $rep["rgt"] < $currentrep->rgt) {
+        if ( ($rep["lft"] > $currentrep->lft && $rep["rgt"] < $currentrep->rgt) || $currentrep->view_all_users) {
             return true;
         }
 
