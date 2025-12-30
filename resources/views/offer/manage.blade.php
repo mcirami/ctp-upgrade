@@ -95,7 +95,7 @@ Session::userType() !== \App\Privilege::ROLE_ADMIN)
 						@if (Session::userType() !== \App\Privilege::ROLE_AFFILIATE &&
 Session::userType() !== \App\Privilege::ROLE_MANAGER &&
 Session::userType() !== \App\Privilege::ROLE_ADMIN)
-							<th class="value_span9">Status</th>
+							<th class="value_span9">Adv</th>
 						@endif
 						{{--@if (\LeadMax\TrackYourStats\System\Session::userType() == \App\Privilege::ROLE_AFFILIATE)
 							<th class="value_span9">Postback Options</th>
@@ -103,7 +103,7 @@ Session::userType() !== \App\Privilege::ROLE_ADMIN)
 
 						@if (Session::userType() != \App\Privilege::ROLE_AFFILIATE &&
 Session::userType() !== \App\Privilege::ROLE_MANAGER &&
-Session::userType() !== \App\Privilege::ROLE_ADMIN)
+Session::userType() !== \App\Privilege::ROLE_ADMIN):
 							<th class="value_span9">Offer Timestamp</th>
 						@endif
 
@@ -125,7 +125,7 @@ Session::userType() !== \App\Privilege::ROLE_ADMIN
 								<td>{{$offer->offer_name}}</td>
 								<td>Requires Offer</td>
 								<td>${{$offer->payout}}</td>
-								<td>{{$offer->status}}</td>
+								<td>{{$offer->campaign_name}}</td>
 								<td>Requires Offer</td>
 								<td>
 									<button id='btn_{{$offer->idoffer}}' class='btn btn-sm btn-default'
@@ -293,14 +293,12 @@ Session::userType() !== \App\Privilege::ROLE_ADMIN
 						}
 
 						if (userType != 3 && userType != 1 && userType != 2) {
-							html += `<td class='value_span10'>`;
-							if (offer['status'] === 1) {
+							html += `<td class='value_span10'>` + offer['campaign_name'] + `</td>`;
+							/*if (offer['status'] === 1) {
 								html += `Active`;
 							} else {
 								html += `Inactive`;
-							}
-
-							html += `</td>`;
+							}*/
 						}
 
 						/*if (userType == 3) {
