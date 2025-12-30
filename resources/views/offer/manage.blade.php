@@ -88,7 +88,7 @@
 							<th class="value_span8">Payout</th>
 						@endif
 
-						<th class="value_span9">Status</th>
+						<th class="value_span9">Adv</th>
 						@if (\LeadMax\TrackYourStats\System\Session::userType() == \App\Privilege::ROLE_AFFILIATE)
 							<th class="value_span9">Postback Options</th>
 						@endif
@@ -112,7 +112,7 @@
 								<td>{{$offer->offer_name}}</td>
 								<td>Requires Offer</td>
 								<td>${{$offer->payout}}</td>
-								<td>{{$offer->status}}</td>
+								<td>{{$offer->campaign_name}}</td>
 								<td>Requires Offer</td>
 								<td>
 									<button id='btn_{{$offer->idoffer}}' class='btn btn-sm btn-default'
@@ -279,14 +279,13 @@
 							}
 						}
 
-						html += `<td class='value_span10'>`;
-						if (offer['status'] === 1) {
+						html += `<td class='value_span10'>` + offer['campaign_name'] + `</td>`;
+						/*if (offer['status'] === 1) {
 							html += `Active`;
 						} else {
 							html += `Inactive`;
-						}
+						}*/
 
-						html += `</td>`;
 
 						if (userType == 3) {
 							html += `<td class='value_span10'>` +

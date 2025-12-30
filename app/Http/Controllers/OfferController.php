@@ -68,7 +68,10 @@ class OfferController extends Controller
 
 
 		$status = request('showInactive', 0) == 1 ? 0 : 1;
-		$offers = \LeadMax\TrackYourStats\System\Session::user()->offers()->where('offer.status','=', $status);
+		$offers = \LeadMax\TrackYourStats\System\Session::user()->offers()
+		                                                        ->where('offer.status','=', $status)
+		                                                        ->leftJoin('campaigns', 'offer.campaign_id', '=', 'campaigns.id')
+		                                                        ->select('offer.*', 'campaigns.name as campaign_name');
 
 		if (\LeadMax\TrackYourStats\System\Session::userType() == Privilege::ROLE_AFFILIATE) {
 			$offers = $offers->leftJoin('bonus_offers', 'bonus_offers.offer_id', '=', 'offer.idoffer')->get();
