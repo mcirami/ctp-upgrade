@@ -91,10 +91,12 @@ Route::group(['middleware' => 'legacy.auth'], function () {
         Route::get('offer/{offer}/conversions-by-country', [OfferReportController::class, 'showConversionsByCountry'])->name('offer.conversions.by.country');
 	    Route::get('offer/conversions-by-country', [OfferReportController::class, 'showConversionsByCountry'])->name('conversions.by.country');
 		Route::group(['middleware' => 'role:' . Privilege::ROLE_GOD], function () {
-            Route::get('advertiser', [AdvertiserReportController::class, 'show']);
             Route::get('blacklist', [BlackListReportController::class, 'show']);
         });
-        Route::get('adjustments', [AdjustmentsReportController::class, 'show'])->middleware([
+	    Route::get('advertiser', [AdvertiserReportController::class, 'show'])
+	         ->middleware(['permissions:' . Permissions::VIEW_ADV_REPORTS,'role:0,1']);
+
+		Route::get('adjustments', [AdjustmentsReportController::class, 'show'])->middleware([
             'permissions:' . Permissions::ADJUST_SALES,
             'role:' . Privilege::ROLE_GOD . ',' . Privilege::ROLE_ADMIN
         ]);
