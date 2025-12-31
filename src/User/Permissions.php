@@ -28,6 +28,7 @@ class Permissions
     const CREATE_ADMINS = "create_admins";
     const CREATE_MANAGERS = "create_managers";
     const CREATE_AFFILIATES = "create_affiliates";
+	const VIEW_ALL_USERS = "view_all_users";
     const CREATE_OFFERS = "create_offers";
     const EDIT_OFFER_RULES = "edit_offer_rules";
     const VIEW_POSTBACK = "view_postback";
@@ -44,6 +45,8 @@ class Permissions
     const APPROVE_AFFILIATE_SIGN_UPS = "approve_affiliate_sign_ups";
     const EDIT_AFFILIATES = "edit_affiliates";
     const EDIT_REPORT_PERMISSIONS = "edit_report_permissions";
+	const VIEW_ADV_REPORTS = "view_adv_reports";
+	const VIEW_PAYOUTS = "view_payouts";
     const ADJUST_SALES = "adjust_sales";
     const BAN_USERS = "ban_users";
     const EMAIL_POOLS = 'email_pools';
@@ -68,6 +71,11 @@ class Permissions
             "description" => "Can Edit Agent Accounts",
             /*"required_permissions" => [self::CREATE_AFFILIATES],*/
             "allowed_user_types" => [\App\Privilege::ROLE_GOD, \App\Privilege::ROLE_ADMIN, Privilege::ROLE_MANAGER, Privilege::ROLE_AFFILIATE],
+        ],
+
+        self::VIEW_ALL_USERS => [
+	        "description" => "Can View All Users",
+	        "allowed_user_types" => [\App\Privilege::ROLE_GOD, \App\Privilege::ROLE_ADMIN]
         ],
 
         self::CREATE_OFFERS => ["description" => "Can Create Offers", "allowed_user_types" => [\App\Privilege::ROLE_GOD]],
@@ -140,6 +148,16 @@ class Permissions
         self::EDIT_REPORT_PERMISSIONS => [
             "description" => "Can Edit Affiliate Report Permissions",
             "allowed_user_types" => [\App\Privilege::ROLE_GOD, \App\Privilege::ROLE_ADMIN, Privilege::ROLE_MANAGER],
+        ],
+
+        self::VIEW_PAYOUTS => [
+	        "description" => "Can View Payouts",
+	        "allowed_user_types" => [\App\Privilege::ROLE_GOD, \App\Privilege::ROLE_ADMIN],
+        ],
+
+        self::VIEW_ADV_REPORTS => [
+	        "description" => "Can View Adv Reports",
+	        "allowed_user_types" => [\App\Privilege::ROLE_GOD, \App\Privilege::ROLE_ADMIN],
         ],
 
         self::ADJUST_SALES => ["description" => "Can Adjust Sales", "allowed_user_types" => [\App\Privilege::ROLE_GOD]],

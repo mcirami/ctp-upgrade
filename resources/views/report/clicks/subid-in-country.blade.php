@@ -1,3 +1,9 @@
+@php
+    use LeadMax\TrackYourStats\System\Session;
+	use App\Privilege;
+	$canViewFraudData = Session::permissions()->can("view_fraud_data");
+@endphp
+
 @extends('report.template')
 
 @section('report-title')
@@ -45,7 +51,9 @@
 				@endif
 				<th class="value_span9">Timestamp</th>
 				<th class="value_span9">Conversion Timestamp</th>
-				<th class="value_span9">Paid</th>
+                @if ($canViewFraudData || (Session::userType() == Privilege::ROLE_ADMIN && Session::permissions()->can("view_payouts") ))
+                    <th class="value_span9">Paid</th>
+                @endif
 				<th class="value_span9">Referer Url</th>
 				@if (\LeadMax\TrackYourStats\System\Session::permissions()->can("view_fraud_data"))
 					<th class="value_span9">IP Address</th>
@@ -77,7 +85,9 @@
 					@endif
 					<td>{{$timestamp}}</td>
 					<td>{{$convertionTimeStamp}}</td>
-					<td>{{$row->paid}}</td>
+                    @if ($canViewFraudData || (Session::userType() == Privilege::ROLE_ADMIN && Session::permissions()->can("view_payouts") ))
+                        <td>{{$row->paid}}</td>
+                    @endif
 					<td>{{$row->referer}}</td>
 					@if (\LeadMax\TrackYourStats\System\Session::permissions()->can("view_fraud_data"))
 						<td>{{$row->ip_address}}</td>

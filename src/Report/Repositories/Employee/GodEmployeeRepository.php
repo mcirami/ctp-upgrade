@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use LeadMax\TrackYourStats\Report\Repositories\Repository;
 use LeadMax\TrackYourStats\System\Session;
 use LeadMax\TrackYourStats\Table\Date;
+use LeadMax\TrackYourStats\User\Permissions;
 use Termwind\Components\Raw;
 
 class GodEmployeeRepository extends Repository
@@ -115,13 +116,17 @@ class GodEmployeeRepository extends Repository
 				
 				INNER JOIN privileges p on rep.idrep = p.rep_idrep AND  " . $this->returnQueryBasedOnUserType($userType);
 
-        $sql .= " WHERE rep.lft > :left AND rep.rgt < :right";
+	    if(!Session::permissions()->can('view_all_users')) {
+		    $sql .= " WHERE rep.lft > :left AND rep.rgt < :right";
+	    }
 
 
         $prep = $db->prepare($sql);
 
-        $prep->bindParam(":left", Session::userData()->lft);
-        $prep->bindParam(":right", Session::userData()->rgt);
+	    if(!Session::permissions()->can('view_all_users')) {
+		    $prep->bindParam( ":left", Session::userData()->lft );
+		    $prep->bindParam( ":right", Session::userData()->rgt );
+	    }
 
         $prep->execute();
 

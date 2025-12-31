@@ -1,3 +1,8 @@
+@php
+    use App\Privilege;
+	use LeadMax\TrackYourStats\System\Session;
+@endphp
+
 @extends('report.template')
 
 @section('report-title')
@@ -65,7 +70,7 @@
 		</form>
 	</div>--}}
 	<div class="form-group searchDiv">
-		@if (\LeadMax\TrackYourStats\System\Session::permissions()->can("view_fraud_data"))
+		@if (Session::permissions()->can("view_fraud_data"))
 			<form action="/offer/{{$offer->idoffer}}/search-clicks" method="GET">
 				<input id="searchBox"
 					   class="form-control"
@@ -87,14 +92,19 @@
 			<table id="clicks" class="table table-striped table-bordered table_01 tablesorter">
 				<thead>
 				<tr>
-					@if (\LeadMax\TrackYourStats\System\Session::permissions()->can("view_fraud_data"))
+					@if (Session::permissions()->can("view_fraud_data"))
 						<th class="value_span9">Click ID</th>
 					@endif
-					@if (\LeadMax\TrackYourStats\System\Session::permissions()->can("view_fraud_data"))
+					@if (Session::permissions()->can("view_fraud_data"))
 						<th class="value_span9">Encoded ID</th>
 					@endif
 					<th class="value_span9"><br>Timestamp</th>
 					<th class="value_span9">Conversion Timestamp</th>
+                    @if(Session::userType() == Privilege::ROLE_GOD ||
+                        (Session::userType() == Privilege::ROLE_ADMIN && Session::permissions()->can("view_payouts") )
+                    )
+                        <th class="value_span9">Paid</th>
+                    @endif
 					<th class="value_span9">Paid</th>
 					<th class="value_span9">Sub 1</th>
 					<th class="value_span9">Sub 2</th>
@@ -104,7 +114,7 @@
 					<th class="value_span9">Affiliate</th>
 					<th class="value_span9">Offer</th>
 					<th class="value_span9">Referer Url</th>
-					@if (\LeadMax\TrackYourStats\System\Session::permissions()->can("view_fraud_data"))
+					@if (Session::permissions()->can("view_fraud_data"))
 						<th class="value_span9">Ip Address</th>
 						<th class="value_span9">Sub Division</th>
 						<th class="value_span9">City</th>
@@ -127,30 +137,33 @@
 						}
 					@endphp
 					<tr>
-						@if (\LeadMax\TrackYourStats\System\Session::permissions()->can("view_fraud_data"))
+						@if (Session::permissions()->can("view_fraud_data"))
 							<td>{{$row['id']}}</td>
 						@endif
-							@if (\LeadMax\TrackYourStats\System\Session::permissions()->can("view_fraud_data"))
-								<td>{{$row['encoded']}}</td>
-							@endif
+                        @if (Session::permissions()->can("view_fraud_data"))
+                            <td>{{$row['encoded']}}</td>
+                        @endif
 						<td>{{$timestamp}}</td>
 						<td>{{$convertionTimeStamp}}</td>
-						<td>{{$row['paid']}}</td>
+                        @if ( Session::permissions()->can("view_fraud_data") ||
+                            (Session::userType() == Privilege::ROLE_ADMIN && Session::permissions()->can("view_payouts") ))
+                            <td>{{$row['paid']}}</td>
+                        @endif
 						@for($i = 1; $i <= 3; $i++)
 							<td>{{$row['sub' . $i]}}</td>
 						@endfor
 						<td>{{$row['affiliate_id']}}</td>
 						<td>{{$row['offer_id']}}</td>
 						<td>{{$row['referer']}}</td>
-						@if (\LeadMax\TrackYourStats\System\Session::permissions()->can("view_fraud_data"))
-							<td>{{isset($row['ip_address']) ? $row['ip_address'] : ""}}</td>
-							<td>{{isset($row['subDivision']) ? $row['subDivision'] : ""}}</td>
-							<td>{{isset($row['city']) ? $row['city'] : ""}}</td>
-							<td>{{isset($row['postal']) ? $row['postal'] : ""}}</td>
-							<td>{{isset($row['latitude']) ? $row['latitude'] : ""}}</td>
-							<td>{{isset($row['longitude']) ? $row['longitude'] : ""}}</td>
+						@if (Session::permissions()->can("view_fraud_data"))
+                                <td>{{isset($row['ip_address']) ?? ""}}</td>
+                                <td>{{isset($row['subDivision']) ?? ""}}</td>
+                                <td>{{isset($row['city']) ?? ""}}</td>
+                                <td>{{isset($row['postal']) ?? ""}}</td>
+                                <td>{{isset($row['latitude']) ?? ""}}</td>
+                                <td>{{isset($row['longitude']) ?? ""}}</td>
 						@endif
-						<td>{{isset($row['isoCode']) ? $row['isoCode'] : ""}}</td>
+                            <td>{{isset($row['isoCode']) ?? ""}}</td>
 					</tr>
 				@endforeach
 				<tr>
