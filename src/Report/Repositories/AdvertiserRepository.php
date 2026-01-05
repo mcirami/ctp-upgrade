@@ -4,6 +4,10 @@
 namespace LeadMax\TrackYourStats\Report\Repositories;
 
 
+use App\Click;
+use App\Conversion;
+use Illuminate\Support\Facades\DB;
+
 class AdvertiserRepository extends Repository
 {
 
@@ -80,6 +84,7 @@ class AdvertiserRepository extends Repository
 				SELECT
 				    campaigns.id,
 				    campaigns.name,
+				    'advertiser' as type,
 					count(f.id) FreeSignUps,
 					count(conversions.id) Conversions,
 					sum(conversions.paid) Revenue,
@@ -124,4 +129,50 @@ class AdvertiserRepository extends Repository
         return $this->mergeReport($this->clicks($dateFrom, $dateTo), $this->conversions($dateFrom, $dateTo));
 //        return $this->query($dateFrom, $dateTo)->fetchAll(\PDO::FETCH_ASSOC);
     }
+
+	public function getAdvConversionsByOffer( $id, $dateFrom, $dateTo) {
+
+		$clicksSubquery = Click::query()
+		                       ->whereBetween('first_timestamp', [$dateFrom, $dateTo])
+		                       ->where('clicks.click_type', '!=', Click::TYPE_BLACKLISTED)
+		                       ->join('offer', function ($join) use ($id) {
+								   $join->on('offer.idoffer', '=', 'clicks.offer_idoffer')
+			                       ->where('offer.campaign_id', '=', $id);
+		                       })
+		                       ->selectRaw('
+							        clicks.offer_idoffer AS offer_id,
+							        offer.offer_name,
+							        COUNT(clicks.idclicks) AS clicks,
+							        SUM(clicks.click_type = ?) AS unique_clicks', [Click::TYPE_UNIQUE]
+		                       )
+		                       ->groupBy('clicks.offer_idoffer', 'offer.offer_name');
+
+		$conversionsSubquery = Conversion::query()
+		                                 ->whereBetween('timestamp', [$dateFrom, $dateTo])
+		                                 ->join('clicks', 'clicks.idclicks', '=', 'conversions.click_id')
+										->join('offer', function ($join) use ($id) {
+											$join->on('offer.idoffer', '=', 'clicks.offer_idoffer')
+											     ->where('offer.campaign_id', '=', $id);
+										})
+										->selectRaw('
+									        clicks.offer_idoffer AS offer_id,
+									        COUNT(conversions.id) AS conversions,
+									        COALESCE(SUM(conversions.paid), 0) AS total
+									    ')
+										->groupBy('clicks.offer_idoffer');
+
+		return DB::query()->fromSub($clicksSubquery, "clicks")
+					->leftJoinSub($conversionsSubquery, 'conversions', function ($join) {
+						$join->on('clicks.offer_id', '=', 'conversions.offer_id');
+					})
+					->selectRaw('
+				        clicks.offer_name,
+				        clicks.clicks AS total_clicks,
+				        clicks.unique_clicks AS unique_clicks,
+				        COALESCE(conversions.conversions, 0) AS conversions,
+				        COALESCE(conversions.total, 0) AS total
+				    ')
+					->orderByDesc('conversions')->paginate(100);
+
+	}
 }

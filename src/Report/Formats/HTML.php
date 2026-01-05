@@ -65,7 +65,6 @@ class HTML implements Format
 
                 foreach ($this->printTheseArrayKeys as $toPrint) {
 
-
                     if (isset($row[$toPrint])) {
 						if($toPrint == "offer_name") {
 							echo "<td><a href='/offer_update.php?idoffer=" . $row['idoffer'] . "'>$row[$toPrint]</a></td>";
@@ -76,17 +75,17 @@ class HTML implements Format
                             } else {
                                 echo "<td><a href='/report/offer/{$row['idoffer']}/user-conversions?{$params}'>$row[$toPrint]</a></td>";
                             }
-						} elseif($toPrint == "Conversions" && $row[$toPrint] > 0 && (key_exists('idrep', $row) && $row[$toPrint] != "TOTAL"))
-							 if(isset($_GET['role']) && $_GET['role'] == 2) {
-								 echo "<td><a target='_blank' href='/report/manager/{$row['idrep']}/conversions-by-offer?{$params}'>$row[$toPrint]</a></td>";
-							 } else {
-								 echo "<td><a target='_blank' href='/user/{$row['idrep']}/conversions-by-offer?{$params}'>$row[$toPrint]</a></td>";
-							 }
-
-                        else {
+						} elseif($toPrint == "Conversions" && $row[$toPrint] > 0 && (key_exists('idrep', $row) && $row[$toPrint] != "TOTAL")) {
+							if ( isset( $_GET['role'] ) && $_GET['role'] == 2 ) {
+								echo "<td><a target='_blank' href='/report/manager/{$row['idrep']}/conversions-by-offer?{$params}'>$row[$toPrint]</a></td>";
+							} else {
+								echo "<td><a target='_blank' href='/user/{$row['idrep']}/conversions-by-offer?{$params}'>$row[$toPrint]</a></td>";
+							}
+						} elseif ($toPrint == "Conversions" && $row[$toPrint] > 0 && ($row['type'] == 'advertiser' && $row[$toPrint] != "TOTAL")) {
+							echo "<td><a target='_blank' href='/report/advertiser/{$row['id']}/conversions-by-offer?{$params}'>$row[$toPrint]</a></td>";
+						} else {
 							echo "<td>$row[$toPrint]</td>";
 						}
-
 
                     }
                 }

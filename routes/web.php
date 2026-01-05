@@ -97,6 +97,9 @@ Route::group(['middleware' => 'legacy.auth'], function () {
 	    Route::get('advertiser', [AdvertiserReportController::class, 'show'])
 	         ->middleware(['permissions:' . Permissions::VIEW_ADV_REPORTS,'role:0,1']);
 
+	    Route::get('advertiser/{id}/conversions-by-offer', [AdvertiserReportController::class, 'showConversionsByOffer'])
+	         ->middleware(['permissions:' . Permissions::VIEW_ADV_REPORTS,'role:0,1']);
+
 		Route::get('adjustments', [AdjustmentsReportController::class, 'show'])->middleware([
             'permissions:' . Permissions::ADJUST_SALES,
             'role:' . Privilege::ROLE_GOD . ',' . Privilege::ROLE_ADMIN

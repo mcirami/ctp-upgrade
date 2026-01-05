@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Report;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use LeadMax\TrackYourStats\Report\Filters\DollarSign;
 use LeadMax\TrackYourStats\Report\Filters\EarningPerClick;
@@ -25,5 +26,22 @@ class AdvertiserReportController extends ReportController
 
         return view('report.advertiser', compact('reporter', 'dates'));
     }
+
+	public function showConversionsByOffer($id) {
+		$dates = self::getDates();
+		$startDate = $dates['originalStart'];
+		$endDate = $dates['originalEnd'];
+		$dateSelect = request()->query('dateSelect');
+		$repository = new AdvertiserRepository(\DB::getPdo());
+		$affiliateReport = $repository->getAdvConversionsByOffer($id, $dates['startDate'], $dates['endDate']);
+
+		return view('report.advertiser-offer-conversions',
+			compact(
+				'startDate',
+				'endDate',
+				'dateSelect',
+				'affiliateReport'
+			));
+	}
 
 }
