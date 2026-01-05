@@ -81,7 +81,11 @@ class HTML implements Format
 							} else {
 								echo "<td><a target='_blank' href='/user/{$row['idrep']}/conversions-by-offer?{$params}'>$row[$toPrint]</a></td>";
 							}
-						} elseif ($toPrint == "Conversions" && $row[$toPrint] > 0 && ($row['type'] == 'advertiser' && $row[$toPrint] != "TOTAL")) {
+						} elseif ($toPrint == "Conversions" &&
+						          $row[$toPrint] > 0 &&
+						          (key_exists('type', $row) &&
+						           $row['type'] == "advertiser" &&
+						           $row[$toPrint] != "TOTAL")) {
 							echo "<td><a target='_blank' href='/report/advertiser/{$row['id']}/conversions-by-offer?{$params}'>$row[$toPrint]</a></td>";
 						} else {
 							echo "<td>$row[$toPrint]</td>";
