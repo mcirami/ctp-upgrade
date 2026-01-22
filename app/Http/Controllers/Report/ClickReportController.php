@@ -91,12 +91,13 @@ class ClickReportController extends ReportController
 
     public function showUsersClicks($userId)
     {
+
         $dates = self::getDates();
 		$startDate = $dates['originalStart'];
 		$endDate = $dates['originalEnd'];
 		$dateSelect = request()->query('dateSelect');
 
-        $user = User::myUsers()->findOrFail($userId);
+        $user = User::findOrFail($userId);
 
 	    $reportCollection = Click::where('rep_idrep', '=', $userId)
 	                ->where('clicks.click_type', '!=', 2)
