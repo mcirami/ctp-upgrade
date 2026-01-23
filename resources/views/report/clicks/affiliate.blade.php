@@ -4,6 +4,7 @@
 	use \LeadMax\TrackYourStats\System\Session;
 	use App\Privilege;
 	$canViewFraudData = Session::permissions()->can("view_fraud_data");
+	$userType = Session::userType();
 @endphp
 
 @extends('report.template')
@@ -14,7 +15,7 @@
 
 @section('table-options')
     @include('report.options.dates')
-	@if ($canViewFraudData)
+	@if ($userType == 0 || $userType == 1)
 		<div class="button_wrap" style="width: 100%; display:inline-block; margin-top: 10px;">
 			<a style="
 			width: 170px; 
@@ -23,7 +24,7 @@
 			font-size: 18px;
 			border-radius: 6px;
 			color: #676767;" 
-			class="btn btn-default btn-sm" href="/user/{{$user->idrep}}/clicks/export?d_from={{$startDate}}&d_to={{$endDate}}&dateSelect={{$dateSelect}}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4">
+			class="btn btn-default btn-sm" href="/user/{{$user->idrep}}/clicks/export?d_from={{$startDate}}&d_to={{$endDate}}&dateSelect={{$dateSelect}}">
 				Export Data
 			</a>
 		</div>

@@ -1,6 +1,7 @@
 @php
     use App\Privilege;
 	use LeadMax\TrackYourStats\System\Session;
+	$userType = Session::userType();
 @endphp
 @extends('report.template')
 
@@ -11,6 +12,20 @@
 @section('table-options')
     @include('report.options.user-type')
     @include('report.options.dates')
+    @if ($userType == 0 || $userType == 1)
+        <div class="button_wrap" style="width: 100%; display:inline-block; margin-top: 10px;">
+            <a style="
+			width: 170px;
+			border:none;
+			padding: 10px;
+			font-size: 18px;
+			border-radius: 6px;
+			color: #676767;"
+               class="btn btn-default btn-sm" href="/report/aff-data/export?d_from={{$startDate}}&d_to={{$endDate}}&dateSelect={{$dateSelect}}&role={{$role}}">
+                Export Data
+            </a>
+        </div>
+    @endif
 @endsection
 
 @section('table')

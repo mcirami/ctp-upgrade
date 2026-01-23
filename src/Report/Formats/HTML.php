@@ -57,7 +57,7 @@ class HTML implements Format
             if (empty($this->printTheseArrayKeys)) {
                 foreach ($row as $item => $val) {
 					if($item == "conversions" && $val > 0 && (key_exists('sub', $row) && $row["sub"] != "TOTAL") ) {
-						echo "<td><a href='/report/sub/conversions?subid={$row["sub"]}". "&" . "{$params}'>{$val}</a></td>";
+						echo "<td>{$val}</td>";
 					} else {
 						if($item !== "revenue") {
 							echo "<td>{$val}</td>";
@@ -71,7 +71,7 @@ class HTML implements Format
 
                     if (isset($row[$toPrint])) {
 						if($toPrint == "offer_name") {
-							if (Session::userType() == Privilege::ROLE_ADMIN) {
+							if (Session::userType() == Privilege::ROLE_ADMIN || Session::userType() == Privilege::ROLE_AFFILIATE) {
 								echo "<td>{$row[$toPrint]}</td>";
 							} else {
 								echo "<td><a href='/offer_update.php?idoffer=" . $row['idoffer'] . "'>$row[$toPrint]</a></td>";

@@ -13,8 +13,6 @@ use Illuminate\Support\Facades\DB;
 use LeadMax\TrackYourStats\System\Session;
 use LeadMax\TrackYourStats\User\Permissions;
 use App\Http\Traits\ClickTraits;
-use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\ClicksExport;
 
 class ClickReportController extends ReportController
 {
@@ -256,35 +254,4 @@ class ClickReportController extends ReportController
 		}
 	}
 
-	public function exportUsersClicks($userId) {
-
-		$dates = self::getDates();
-		$startDate = $dates['originalStart'];
-		$endDate = $dates['originalEnd'];
-	
-		// Replicate the query used for the view
-		$reportCollection = Click::where('rep_idrep', '=', $userId)
-			->where('clicks.click_type', '!=', 2)
-			->whereBetween('clicks.first_timestamp', [$dates['startDate'], $dates['endDate']])
-			->leftJoin('click_vars', 'click_vars.click_id', '=', 'clicks.idclicks')
-			->leftJoin('click_geo', 'click_geo.click_id', '=', 'clicks.idclicks')
-			->leftJoin('conversions', 'conversions.click_id', '=', 'clicks.idclicks')
-			->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
-			->select(
-				'clicks.idclicks',
-				'clicks.first_timestamp as timestamp',
-				'offer.offer_name',
-				'conversions.timestamp as conversion_timestamp',
-				'conversions.paid as paid',
-				'click_vars.url',
-				'click_vars.sub1',
-				'click_vars.sub2',
-				'click_vars.sub3',
-				'clicks.referer',
-				'click_geo.ip as ip_address',
-			)
-			->orderBy('paid', 'DESC')->get();
-			$report = $this->formatResults($reportCollection);
-		return Excel::download(new ClicksExport($report), 'clicks.xlsx');
-	}
 }
