@@ -1,6 +1,6 @@
 @php
 
-    $filterValue = isset($_GET['filter']) ? $_GET['filter'] : "subid";
+    $filterValue = isset($_GET['filter']) ? $_GET['filter'] : "country";
 
 @endphp
 <style>
@@ -26,8 +26,8 @@
 </style>
 
 <select name="filter" id="filter" class="selectBox" onchange="getConversionsView(this);" style="width: 170px; margin-bottom: 20px;">
-    <option value="subid" @php if($filterValue == "subid") { echo "selected"; } @endphp>SubId View</option>
     <option value="country" @php if($filterValue == "country") { echo "selected"; } @endphp>Country View</option>
+    <option value="subid" @php if($filterValue == "subid") { echo "selected"; } @endphp>SubId View</option>
 </select>
 <div id="loading_spinner">
     <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -61,7 +61,7 @@
 	        const spinner = document.getElementById('loading_spinner');
 	        spinner.style.display = 'flex';
 
-            if (element.value == "subid") {
+            if (element.value === "subid") {
                 $slug = "conversions-by-subid";
                 $filter = "subid";
             } else {

@@ -48,11 +48,7 @@
                 <td>{{$row['total_clicks']}}</td>
                 <td>{{$row['unique_clicks']}}</td>
                 <td>
-                    @if ($row['total_conversions'] > 0 && Session::userType() != Privilege::ROLE_AFFILIATE)
-                        <a href="/user/{{$user->idrep}}/{{$offer->idoffer}}/subid-conversions-in-country?{{$params}}&country={{$key}}">{{$row['total_conversions']}}</a>
-                    @else
-                        {{$row['total_conversions']}}    
-                    @endif
+                    {{$row['total_conversions']}}
                 </td>
             </tr>
         @endforeach
