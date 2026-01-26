@@ -84,7 +84,7 @@ class HTML implements Format
                                 echo "<td><a href='/report/offer/{$row['idoffer']}/user-conversions?{$params}'>$row[$toPrint]</a></td>";
                             }
 						} elseif($toPrint == "Conversions" && $row[$toPrint] > 0 && (key_exists('idrep', $row) && $row[$toPrint] != "TOTAL")) 
-                            echo "<td><a target='_blank' href='/user/{$row['idrep']}/conversions-by-offer?{$params}'>$row[$toPrint]</a></td>";
+                            echo "<td><a href='/user/{$row['idrep']}/conversions-by-offer?{$params}'>$row[$toPrint]</a></td>";
                         else {
 							echo "<td>$row[$toPrint]</td>";
 						}
