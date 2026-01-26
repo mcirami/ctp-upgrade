@@ -79,12 +79,12 @@ class HTML implements Format
 						} elseif ($toPrint == "Conversions" && $row[$toPrint] > 0 && (key_exists('idoffer', $row) && $row["idoffer"] != "TOTAL") ) {
                             if(Session::userType() == Privilege::ROLE_AFFILIATE) {
                                 $userId = Session::userID();
-                                echo "<td><a href='/user/{$userId}/{$row['idoffer']}/conversions-by-country?{$params}'>$row[$toPrint]</a></td>";
+                                echo "<td><a class='load_click' href='/user/{$userId}/{$row['idoffer']}/conversions-by-country?{$params}'>$row[$toPrint]</a></td>";
                             } else {
-                                echo "<td><a href='/report/offer/{$row['idoffer']}/user-conversions?{$params}'>$row[$toPrint]</a></td>";
+                                echo "<td><a class='load_click' href='/report/offer/{$row['idoffer']}/user-conversions?{$params}'>$row[$toPrint]</a></td>";
                             }
-						} elseif($toPrint == "Conversions" && $row[$toPrint] > 0 && (key_exists('idrep', $row) && $row[$toPrint] != "TOTAL")) 
-                            echo "<td><a href='/user/{$row['idrep']}/conversions-by-offer?{$params}'>$row[$toPrint]</a></td>";
+						} elseif($toPrint == "Conversions" && $row[$toPrint] > 0 && (key_exists('idrep', $row) && $row['idrep'] != "TOTAL"))
+                            echo "<td><a class='load_click' href='/user/{$row['idrep']}/conversions-by-offer?{$params}'>$row[$toPrint]</a></td>";
                         else {
 							echo "<td>$row[$toPrint]</td>";
 						}

@@ -46,7 +46,7 @@ class EmployeeReportController extends ReportController
                 foreach ($data as $key => &$row) {
                     if (isset($row['Clicks']) && is_numeric($row['idrep'])) {
                         $queryString = http_build_query(request()->query());
-                        $row['Clicks'] = "<a href='/user/{$row['idrep']}/clicks?{$queryString}'>{$row['Clicks']}</a>";
+                        $row['Clicks'] = "<a class='load_click' href='/user/{$row['idrep']}/clicks?{$queryString}'>{$row['Clicks']}</a>";
                     }
                 }
 
