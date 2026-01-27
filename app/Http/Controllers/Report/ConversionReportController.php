@@ -197,40 +197,15 @@ class ConversionReportController extends ReportController
 		$endDate = $dates['originalEnd'];
 		$dateSelect = request()->query('dateSelect');
 
-		$clicksSubquery = Click::whereBetween('first_timestamp', [$dates['startDate'], $dates['endDate']])
-		                       ->where('clicks.click_type', '!=', 2)
-		                       ->select(
-			                       'idclicks',
-			                       'ip_address',
-			                       'country_code',
-			                       'click_type',
-			                       DB::raw('COUNT(idclicks) as clicks'),
-			                       DB::raw('SUM(clicks.click_type = 0) as unique_clicks'))
-		                       ->groupBy('ip_address');
-
 		$conversionsSubquery = Conversion::whereBetween('timestamp', [$dates['startDate'], $dates['endDate']])
 		                                 ->leftJoin('clicks', 'clicks.idclicks', '=', 'conversions.click_id')
 		                                 ->select(
 			                                 'clicks.ip_address',
 			                                 'clicks.country_code' ,
-			                                 DB::raw('COUNT(conversions.id) as conversions'))
-		                                 ->groupBy('clicks.ip_address', 'clicks.country_code');
+			                                 DB::raw('COUNT(conversions.id) as total_conversions'))
+		                                 ->groupBy('clicks.ip_address', 'clicks.country_code')->get();
 
-		$reportCollection = DB::table(DB::raw("({$clicksSubquery->toSql()}) as clicks"))
-		                      ->mergeBindings($clicksSubquery->getQuery())
-		                      ->leftJoin(DB::raw("({$conversionsSubquery->toSql()}) as conversions"), 'clicks.ip_address', '=', 'conversions.ip_address')
-		                      ->mergeBindings($conversionsSubquery->getQuery())
-		                      ->select(
-			                      'clicks.ip_address',
-			                      'clicks.country_code',
-			                      DB::raw('SUM(clicks.clicks) as total_clicks'),
-			                      DB::raw('SUM(clicks.unique_clicks) as unique_clicks'),
-			                      DB::raw('SUM(COALESCE(conversions.conversions, 0)) as total_conversions'),
-		                      )
-		                      ->groupBy('clicks.ip_address', 'clicks.country_code')
-		                      ->orderBy('total_conversions', 'DESC')->get();
-
-		foreach($reportCollection as $item) {
+		foreach($conversionsSubquery as $item) {
 			if (is_null($item->country_code)) {
 				$geo = ClickGeo::findGeo($item->ip_address);
 				$item->country_code = $geo['isoCode'];
@@ -239,18 +214,14 @@ class ConversionReportController extends ReportController
 
 		$reports = [];
 
-		foreach ($reportCollection as $item) {
+		foreach ($conversionsSubquery as $item) {
 			$countryCode = $item->country_code;
 			if (!isset($reports[$countryCode])) {
 				$reports[$countryCode] = [
 					'country_code' => $countryCode,
-					'total_clicks' => 0,
-					'unique_clicks' => 0,
 					'total_conversions' => 0
 				];
 			}
-			$reports[$countryCode]['total_clicks'] += $item->total_clicks;
-			$reports[$countryCode]['unique_clicks'] += $item->unique_clicks;
 			$reports[$countryCode]['total_conversions'] += $item->total_conversions;
 		}
 
@@ -270,41 +241,7 @@ class ConversionReportController extends ReportController
 		$dateSelect = request()->query('dateSelect');
 		$geoCode = request()->query('country');
 
-		$ipsMissingGeo = Click::query()
-		                      ->whereBetween('first_timestamp', [$dates['startDate'], $dates['endDate']])
-		                      ->where('click_type', '!=', 2)
-		                      ->whereNull('country_code')              // clicks table doesn't have it stored
-		                      ->distinct()
-		                      ->pluck('ip_address');
-
-		foreach ($ipsMissingGeo as $ip) {
-			$geo = ClickGeo::findGeo($ip); // your existing lookup
-			if (!empty($geo['isoCode'])) {
-				// Upsert into a local cache table keyed by ip
-				ClickGeoCache::updateOrCreate(
-					['ip_address' => $ip],
-					['country_code' => $geo['isoCode']]
-				);
-			}
-		}
-
-		$clicksByOffer = Click::query()
-	                       ->whereBetween('first_timestamp', [$dates['startDate'], $dates['endDate']])
-	                       ->where('clicks.click_type', '!=', 2)
-	                       ->leftJoin('click_geo_cache as geo', 'geo.ip_address', '=', 'clicks.ip_address')
-	                       ->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
-							->selectRaw('
-								offer.offer_name,
-						        clicks.offer_idoffer AS offer_id,
-						        COALESCE(clicks.country_code, geo.country_code) AS country_code,
-						        COUNT(*) AS total_clicks,
-						        SUM(clicks.click_type = 0) AS unique_clicks
-						    ')
-							->when($geoCode, fn ($q) => $q->whereRaw('COALESCE(clicks.country_code, geo.country_code) = ?', [$geoCode]))
-							->groupBy('clicks.offer_idoffer', DB::raw('COALESCE(clicks.country_code, geo.country_code)'));
-
-		$conversionsByOffer = Conversion::query()
-                             ->whereBetween('conversions.timestamp', [$dates['startDate'], $dates['endDate']])
+		$conversionsByOffer = Conversion::whereBetween('conversions.timestamp', [$dates['startDate'], $dates['endDate']])
                              ->join('clicks', 'clicks.idclicks', '=', 'conversions.click_id')
                              ->leftJoin('click_geo_cache as geo', 'geo.ip_address', '=', 'clicks.ip_address')
 							->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
@@ -317,30 +254,29 @@ class ConversionReportController extends ReportController
                              ->when($geoCode, fn ($q) => $q->whereRaw('COALESCE(clicks.country_code, geo.country_code) = ?', [$geoCode]))
                              ->groupBy('clicks.offer_idoffer',
                                  DB::raw('COALESCE(clicks.country_code, geo.country_code)'
-                                 ));
+                                 ))->get();
 
 
-		$report = DB::query()
-		            ->fromSub($clicksByOffer, 'c')
-		            ->leftJoinSub($conversionsByOffer, 'v', function ($join) {
-			            $join->on('c.offer_id', '=', 'v.offer_id')
-			                 ->on('c.country_code', '=', 'v.country_code');
-		            })
-		            ->selectRaw('
-		        c.offer_name,
-		        c.offer_id,
-		        c.country_code,
-		        c.total_clicks,
-		        c.unique_clicks,
-		        COALESCE(v.total_conversions, 0) AS total_conversions
-		    ')
-            ->orderByDesc('total_conversions')
-            ->get();
+		foreach($conversionsByOffer as $item) {
+			if (is_null($item->country_code)) {
+				$geo = ClickGeo::findGeo($item->ip_address);
+				$item->country_code = $geo['isoCode'];
+			}
+		}
+
+		$report = [];
+		$totalConversions = 0;
+		foreach ($conversionsByOffer as $item) {
+			$report[$item->offer_name] = [
+				'offer_name' => $item->offer_name,
+				'total_conversions' => 0,
+			];
+			$report[$item->offer_name]['total_conversions'] += $item->total_conversions;
+			$totalConversions += $item->total_conversions;
+		}
 
 		$totals = [
-			'total_clicks' => (int) $report->sum('total_clicks'),
-			'unique_clicks' => (int) $report->sum('unique_clicks'),
-			'total_conversions' => (int) $report->sum('total_conversions'),
+			'total_conversions' => (int) $totalConversions,
 		];
 
 		return view('report.conversions.offer-geo',

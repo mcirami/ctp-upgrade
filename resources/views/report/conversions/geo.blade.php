@@ -50,8 +50,6 @@
             <thead>
             <tr>
                 <th class="value_span9">Country</th>
-                <th class="value_span9">Clicks</th>
-                <th class="value_span9">Unique Clicks</th>
                 <th class="value_span9">Conversions</th>
             </tr>
             </thead>
@@ -62,8 +60,6 @@
             @foreach($reports as $key => $row)
                 <tr role="row">
                     <td>{{$key}}</td>
-                    <td>{{$row['total_clicks']}}</td>
-                    <td>{{$row['unique_clicks']}}</td>
                     <td>
                         @if ($row['total_conversions'] > 0 && (Session::userType() == Privilege::ROLE_GOD || Session::userType() == Privilege::ROLE_ADMIN))
                             <a class='load_click' href="/report/geo-by-offer?{{$params}}&country={{$key}}">{{$row['total_conversions']}}</a>
