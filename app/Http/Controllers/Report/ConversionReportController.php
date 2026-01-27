@@ -2,13 +2,11 @@
 
 namespace App\Http\Controllers\Report;
 
-use App\ClickGeoCache;
 use App\Conversion;
 use App\User;
 use App\Click;
 use App\Offer;
 use App\Http\Traits\ClickTraits;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use LeadMax\TrackYourStats\Clicks\ClickGeo;
 
