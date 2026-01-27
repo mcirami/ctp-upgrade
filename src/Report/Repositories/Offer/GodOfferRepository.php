@@ -37,7 +37,6 @@ class GodOfferRepository extends Repository
             'EPC' => 0,
         ]);
 
-
         return $report;
     }
 

@@ -38,22 +38,13 @@
 				<tr role="row">
 					<td>{{$row->sub1}}</td>
 					<td>
-						<a href="/user/{{$user->idrep}}/{{$offerData->idoffer}}/subid-clicks-by-offer?{{$params}}&subId={{$row->sub1}}">
-							{{$row->clicks}}
-						</a>
-
+                        {{$row->clicks}}
 					</td>
 					<td>
 						{{$row->unique_clicks}}
 					</td>
 					<td>
-						@if($row->conversions > 0)
-							<a href="/user/{{$user->idrep}}/{{$offerData->idoffer}}/subid-offer-conversions-by-country?{{$params}}&subid={{$row->sub1}}">
-								{{$row->conversions}}
-							</a>
-						@else
-							{{$row->conversions}}
-						@endif
+                        {{$row->conversions}}
 					</td>
 				</tr>
 			@endforeach

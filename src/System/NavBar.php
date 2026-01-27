@@ -46,7 +46,7 @@ class NavBar
 
             "Pending Users" => [
                 'url' => '/view_pending_affiliates.php',
-                "required_user_types" => [\App\Privilege::ROLE_GOD],
+                'required_permissions' => ['approve_affiliate_sign_ups'],
             ],
 
             "Banned Users" => [
@@ -69,10 +69,10 @@ class NavBar
             ],
 
 
-            /*"Global PostBack" => [
+            "Global PostBack" => [
                 'url' => '/global_postback.php',
                 'required_user_types' => [\App\Privilege::ROLE_AFFILIATE],
-            ],*/
+            ],
 
             'Multi-Assign Offers' => [
                 'url' => '/offer/mass-assign',
@@ -96,18 +96,13 @@ class NavBar
 
             "Advertiser Report" => [
                 'url' => '/report/advertiser',
-                "required_user_types" => [\App\Privilege::ROLE_GOD],
-                "required_permissions" => ["create_offers"],
+                "required_user_types" => [\App\Privilege::ROLE_GOD, \App\Privilege::ROLE_ADMIN],
+                "required_permissions" => ["view_adv_reports"],
             ],
 
 
             "Offer Report" => [
                 'url' => '/report/offer',
-            ],
-
-            "Country Report" => [
-	            'url' => '/report/offer/conversions-by-country',
-	            "required_user_types" => [\App\Privilege::ROLE_GOD],
             ],
 
 
@@ -118,8 +113,13 @@ class NavBar
                 "required_user_types" => [\App\Privilege::ROLE_GOD, \App\Privilege::ROLE_ADMIN, \App\Privilege::ROLE_MANAGER],
             ],
 
+            "GEO Report" => [
+	            'url' => '/report/geo',
+	            "required_user_types" => [\App\Privilege::ROLE_GOD, \App\Privilege::ROLE_ADMIN],
+            ],
 
-            /*"Payout Report" => ['url' => '/report/payout', "required_user_types" => [\App\Privilege::ROLE_AFFILIATE]],*/
+
+           /* "Payout Report" => ['url' => '/report/payout', "required_user_types" => [\App\Privilege::ROLE_AFFILIATE]],*/
 
             "Blacklist Report" => ["url" => "/report/blacklist", "required_user_types" => [\App\Privilege::ROLE_GOD]],
 

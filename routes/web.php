@@ -39,6 +39,7 @@ use App\Http\Controllers\Sms\SmsController;
 use App\Http\Controllers\Sms\SmsClientController;
 use App\Http\Controllers\ChatLogController;
 use App\Http\Controllers\Report\ConversionReportController;
+use App\Http\Controllers\ExportDataController;
 
 Route::get('/', [IndexController::class, 'index']);
 Route::post('/', [IndexController::class, 'index']);
@@ -72,7 +73,7 @@ Route::group(['middleware' => 'legacy.auth'], function () {
                 Route::post('update', [SalaryController::class, 'update'])->name('salary.update');
             });
         Route::get('{id}/clicks', [ClickReportController::class, 'showUsersClicks'])->middleware('role:0,1,2')->name('userClicks');
-        Route::get('{id}/clicks/export', [ClickReportController::class, 'exportUsersClicks'])->middleware('role:0,1,2')->name('exportUserClicks');
+        Route::get('{id}/clicks/export', [ExportDataController::class, 'exportUsersClicks'])->middleware('role:0,1')->name('exportUserClicks');
         Route::get('{id}/search-clicks', [ClickReportController::class, 'searchClicks'])->middleware('role:0')->name('clicks.search');
 
         Route::get('{id}/conversions-by-offer', [ConversionReportController::class, 'showUserConversionsByOffer'])->middleware('role:0,1,2')->name('userConversionsByOffer');
@@ -86,19 +87,25 @@ Route::group(['middleware' => 'legacy.auth'], function () {
     });
     Route::group(['prefix' => 'report'], function () {
         Route::get('daily', [AggregateReportController::class, 'show']);
+	    Route::get('geo', [ConversionReportController::class, 'showConversionsByCountry'])->middleware('role:0,1');
+	    Route::get('geo-by-offer', [ConversionReportController::class, 'showGeoByOffer'])->middleware('role:0,1');
         Route::get('offer', [OfferReportController::class, 'show']);
+	    Route::get('offer-data/export', [ExportDataController::class, 'exportOfferData'])->middleware('role:0,1')->name('exportOfferData');
 	    Route::get('offer/{offer}/user-conversions', [OfferReportController::class, 'showConversionsByUser']);
         Route::get('offer/{offer}/conversions-by-country', [OfferReportController::class, 'showConversionsByCountry'])->name('offer.conversions.by.country');
 	    Route::get('offer/conversions-by-country', [OfferReportController::class, 'showConversionsByCountry'])->name('conversions.by.country');
 		Route::group(['middleware' => 'role:' . Privilege::ROLE_GOD], function () {
-            Route::get('advertiser', [AdvertiserReportController::class, 'show']);
             Route::get('blacklist', [BlackListReportController::class, 'show']);
         });
-        Route::get('adjustments', [AdjustmentsReportController::class, 'show'])->middleware([
+	    Route::get('advertiser', [AdvertiserReportController::class, 'show'])
+	         ->middleware(['permissions:' . Permissions::VIEW_ADV_REPORTS,'role:0,1']);
+
+		Route::get('adjustments', [AdjustmentsReportController::class, 'show'])->middleware([
             'permissions:' . Permissions::ADJUST_SALES,
             'role:' . Privilege::ROLE_GOD . ',' . Privilege::ROLE_ADMIN
         ]);
         Route::get('sale-log', [ChatLogReportController::class, 'affiliate']);
+	    Route::get('aff-data/export', [ExportDataController::class, 'exportAffData'])->middleware('role:0,1')->name('exportAffData');
         Route::group(['middleware' => 'role:' . Privilege::ROLE_GOD . ',' . Privilege::ROLE_ADMIN . ',' . Privilege::ROLE_MANAGER],
             function () {
                 Route::get('chat-log', [ChatLogReportController::class, 'show']);

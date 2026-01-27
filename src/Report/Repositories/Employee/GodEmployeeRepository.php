@@ -21,6 +21,7 @@ class GodEmployeeRepository extends Repository
     {
         $report = $this->mergeReport($this->getClicks($dateFrom, $dateTo), $this->getConversions($dateFrom, $dateTo));
 
+
         $report = $this->mergeReport($report, $this->getBonusesRevenue($dateFrom, $dateTo));
 
 
@@ -45,7 +46,6 @@ class GodEmployeeRepository extends Repository
 
 
         $report = $this->sortByRequestedUserType($report);
-
 
         return $report;
     }
@@ -109,6 +109,7 @@ class GodEmployeeRepository extends Repository
 
     private function queryGetRequestedUserType($userType)
     {
+
         $db = $this->getDB();
         $sql = "SELECT
 					rep.idrep, rep.user_name, rep.lft, rep.rgt
