@@ -31,6 +31,13 @@ class Update
 
     public $cannotUpgrade = false;
 
+	public $assignTos = [];
+
+	public $listGod = [];
+
+	public $listAdmin = [];
+
+	public $listManager = [];
 
     private $type = array("is_admin" => "", "is_manager" => "", "is_rep" => "");
 
