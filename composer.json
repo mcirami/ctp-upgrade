@@ -8,7 +8,7 @@
     "license": "MIT",
     "type": "project",
     "require": {
-        "php": "^8.3",
+        "php": "^8.4",
         "ext-curl": "*",
         "ext-pdo": "*",
         "barryvdh/laravel-snappy": "v1.0.2",
@@ -66,6 +66,9 @@
         "optimize-autoloader": true,
         "allow-plugins": {
             "kylekatarnls/update-helper": false
+        },
+        "platform": {
+            "php": "8.4"
         }
     }
 }
