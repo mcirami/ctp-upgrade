@@ -89,6 +89,8 @@ Route::group(['middleware' => 'legacy.auth'], function () {
         Route::get('daily', [AggregateReportController::class, 'show']);
 	    Route::get('geo', [ConversionReportController::class, 'showConversionsByCountry'])->middleware('role:0,1');
 	    Route::get('geo-by-offer', [ConversionReportController::class, 'showGeoByOffer'])->middleware('role:0,1');
+	    Route::get('geo/clicks-in-country', [ClickReportController::class, 'clicksInCountry'])->middleware('role:0,1');
+	    Route::get('geo/clicks-in-country/export', [ExportDataController::class, 'exportCountryClicks'])->middleware('role:0,1');
         Route::get('offer', [OfferReportController::class, 'show']);
 	    Route::get('offer-data/export', [ExportDataController::class, 'exportOfferData'])->middleware('role:0,1')->name('exportOfferData');
 	    Route::get('offer/{offer}/user-conversions', [OfferReportController::class, 'showConversionsByUser']);

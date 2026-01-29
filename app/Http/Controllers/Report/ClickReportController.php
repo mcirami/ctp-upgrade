@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Report;
 
 use App\Click;
+use App\ClickGeoCache;
 use App\Offer;
 use App\Privilege;
 use App\Services\Repositories\Offer\OfferClicksRepository;
@@ -10,6 +11,7 @@ use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use LeadMax\TrackYourStats\Clicks\ClickGeo;
 use LeadMax\TrackYourStats\System\Session;
 use LeadMax\TrackYourStats\User\Permissions;
 use App\Http\Traits\ClickTraits;
@@ -252,6 +254,76 @@ class ClickReportController extends ReportController
 		} else {
 			return view('report.clicks.offer', compact('offer', 'report', 'reportCollection', 'startDate', 'endDate', 'dateSelect'));
 		}
+	}
+
+	public function clicksInCountry() {
+		$dates = self::getDates();
+		$geoCode = request()->query('country');
+		$startDate = $dates['originalStart'];
+		$endDate = $dates['originalEnd'];
+		$dateSelect = request()->query('dateSelect');
+
+		$ips = Click::query()
+                      ->whereBetween('first_timestamp', [$dates['startDate'], $dates['endDate']])
+                      ->where('click_type', '!=', 2)
+                      ->whereNull('country_code')              // clicks table doesn't have it stored
+                      ->distinct()
+                      ->pluck('ip_address');
+
+		$ipsToLookup = ClickGeoCache::query()
+		                            ->whereIn('ip_address', $ips)
+		                            ->pluck('ip_address')
+		                            ->all();
+		$ipsMissingGeo = $ips->diff($ipsToLookup);
+
+		foreach ($ipsMissingGeo as $ip) {
+			$geo = ClickGeo::findGeo($ip); // your existing lookup
+			if (!empty($geo['isoCode'])) {
+				// Upsert into a local cache table keyed by ip
+				ClickGeoCache::updateOrCreate(
+					['ip_address' => $ip],
+					['country_code' => $geo['isoCode']]
+				);
+			}
+		}
+
+		$report = Click::query()
+                    ->leftJoin('click_vars', 'click_vars.click_id', '=', 'clicks.idclicks')
+					->leftJoin('conversions', 'conversions.click_id', '=', 'clicks.idclicks')
+					->leftJoin('click_geo_cache as geo', 'geo.ip_address', '=', 'clicks.ip_address')
+					->join('rep', 'rep.idrep', '=', 'clicks.rep_idrep')
+					->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
+					->whereBetween('first_timestamp', [$dates['startDate'], $dates['endDate']])
+					->where('clicks.click_type', '!=', 2)
+					->when($geoCode, function ($q) use ($geoCode) {
+						$q->whereRaw(
+							'COALESCE(clicks.country_code, geo.country_code) = ?',
+							[$geoCode]
+						);
+					})
+					->select([
+						'clicks.idclicks',
+						'clicks.first_timestamp',
+						'conversions.timestamp as conversion_timestamp',
+						'conversions.paid',
+						'click_vars.sub1',
+						'click_vars.sub2',
+						'click_vars.sub3',
+						'clicks.rep_idrep',
+						'clicks.offer_idoffer',
+						'clicks.referer',
+						'geo.ip_address as click_geo_ip',
+					])
+					->orderByDesc('conversions.paid')->paginate(100);
+
+		return view('report.clicks.clicks-in-country',
+			compact(
+				'report',
+				'geoCode',
+				'startDate',
+				'endDate',
+				'dateSelect'
+			));
 	}
 
 }

@@ -7,8 +7,10 @@ use App\Services\Repositories\Repository;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
+use LaravelIdea\Helper\App\_IH_Click_C;
 use LeadMax\TrackYourStats\Clicks\ClickGeo;
 use LeadMax\TrackYourStats\System\Session;
 use LeadMax\TrackYourStats\User\Permissions;
@@ -56,7 +58,7 @@ class OfferClicksRepository implements Repository
 	 * @param Carbon $start
 	 * @param Carbon $end
 	 *
-	 * @return mixed
+	 * @return Click[]|LengthAwarePaginator|_IH_Click_C
 	 */
     public function query(Carbon $start, Carbon $end)
     {
@@ -107,12 +109,13 @@ class OfferClicksRepository implements Repository
 
     /**
      * Fetch results with the given dates, with additional result formatting.
+     *
      * @param Carbon $start
      * @param Carbon $end
-     * @return mixed
+     *
+     * @return object
      */
-    public function between(Carbon $start, Carbon $end)
-    {
+    public function between(Carbon $start, Carbon $end): object {
         return $this->formatResults($this->query($start, $end));
     }
 

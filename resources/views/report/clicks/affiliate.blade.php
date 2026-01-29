@@ -1,5 +1,4 @@
 @php
-	use App\Exports\DataExport;
 	use Maatwebsite\Excel\Facades\Excel;
 	use \LeadMax\TrackYourStats\System\Session;
 	use App\Privilege;
