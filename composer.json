@@ -8,7 +8,7 @@
     "license": "MIT",
     "type": "project",
     "require": {
-        "php": "^8.3",
+        "php": "^8.4",
         "ext-curl": "*",
         "ext-pdo": "*",
         "barryvdh/laravel-snappy": "v1.0.2",
@@ -28,7 +28,6 @@
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.4",
         "fakerphp/faker": "^1.23",
-        "mockery/mockery": "0.9.*",
         "phpunit/phpunit": "^10.0",
         "spatie/laravel-ignition": "^2.4"
     },
