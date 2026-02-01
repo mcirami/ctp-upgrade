@@ -18,12 +18,12 @@ if (\LeadMax\TrackYourStats\System\Session::permissions()->can("create_offers") 
 {
 	send_to('home.php');
 }
-
+*/
 
 if (\LeadMax\TrackYourStats\Offer\RepHasOffer::noneRepOwnOffer($id, \LeadMax\TrackYourStats\System\Session::userID()) == false)
 {
 	send_to('home.php');
-}*/
+}
 
 $offer = \LeadMax\TrackYourStats\Offer\Offer::selectOneQuery($id)->fetch(PDO::FETCH_OBJ);
 if ($offer->parent != null)
