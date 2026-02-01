@@ -70,9 +70,7 @@
 
 			<div class="clear"></div>
 			<div class="white_box manage_aff white_box_x_scroll large_table value_span8">
-
-
-				<table class="table table-condensed table-bordered table_01" id="mainTable">
+                <table class="table table-condensed table-bordered table_01" id="mainTable">
 					<thead>
 
 					<tr>
@@ -82,8 +80,8 @@
 
 						@if (Session::userType() == \App\Privilege::ROLE_AFFILIATE)
 							<th class="value_span9">Offer Link</th>
-						@elseif(Session::userType() != \App\Privilege::ROLE_MANAGER)
-							<th class="value_span9">Affiliate Access</th>
+						{{--@elseif(Session::userType() != \App\Privilege::ROLE_MANAGER)
+							<th class="value_span9">Affiliate Access</th>--}}
 						@endif
 
 
@@ -277,12 +275,12 @@ Session::userType() !== \App\Privilege::ROLE_ADMIN
 									`</button></td>`;
 						}
 
-						if (permissions.includes('create_offers') && userType != 3 && userType != 2) {
+						/*if (permissions.includes('create_offers') && userType != 3 && userType != 2) {
 							html += `<td class='value_span10'>` +
 									`<a target='_blank' class='btn btn-sm btn-default value_span5-1' href='/offer_access.php?id=` +
 									offer['idoffer'] + `'>Affiliate Access</a>` +
 									`</td>`;
-						}
+						}*/
 
 						if (userType != 2 && userType != 3 && userType != 1) {
 							/*if (userType == 3) {
