@@ -12,8 +12,8 @@ $assignments = new \LeadMax\TrackYourStats\Table\Assignments(['!id' => 0]);
 $assignments->getAssignments();
 $assignments->setGlobals();
 
-$id = (int)$id;
-
+$id = (int) $id;
+/*
 if (\LeadMax\TrackYourStats\System\Session::permissions()->can("create_offers") == false)
 {
 	send_to('home.php');
@@ -23,7 +23,7 @@ if (\LeadMax\TrackYourStats\System\Session::permissions()->can("create_offers") 
 if (\LeadMax\TrackYourStats\Offer\RepHasOffer::noneRepOwnOffer($id, \LeadMax\TrackYourStats\System\Session::userID()) == false)
 {
 	send_to('home.php');
-}
+}*/
 
 $offer = \LeadMax\TrackYourStats\Offer\Offer::selectOneQuery($id)->fetch(PDO::FETCH_OBJ);
 if ($offer->parent != null)
