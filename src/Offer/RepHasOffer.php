@@ -293,7 +293,7 @@ class RepHasOffer
     static function noneRepOwnOffer($id, $userID)
     {
         //TODO: Does this effect the system ?
-        if (Session::userType() == \App\Privilege::ROLE_GOD) {
+        if (Session::userType() == \App\Privilege::ROLE_GOD || Session::userType() == \App\Privilege::ROLE_ADMIN) {
             return true;
         }
 

@@ -12,13 +12,13 @@ $assignments = new \LeadMax\TrackYourStats\Table\Assignments(['!id' => 0]);
 $assignments->getAssignments();
 $assignments->setGlobals();
 
-$id = (int)$id;
-
+$id = (int) $id;
+/*
 if (\LeadMax\TrackYourStats\System\Session::permissions()->can("create_offers") == false)
 {
 	send_to('home.php');
 }
-
+*/
 
 if (\LeadMax\TrackYourStats\Offer\RepHasOffer::noneRepOwnOffer($id, \LeadMax\TrackYourStats\System\Session::userID()) == false)
 {
@@ -89,6 +89,7 @@ if (isset($updateOccurred))
 																											  All</a>
 					<p>
 						<?php
+						unset( $user );
 						foreach ($users as $user)
 						{
 							$checked = ($user["has_offer"] == 1) ? "checked" : "";

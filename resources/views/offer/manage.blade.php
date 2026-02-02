@@ -70,7 +70,9 @@
 
 			<div class="clear"></div>
 			<div class="white_box manage_aff white_box_x_scroll large_table value_span8">
-                <table class="table table-condensed table-bordered table_01" id="mainTable">
+
+
+				<table class="table table-condensed table-bordered table_01" id="mainTable">
 					<thead>
 
 					<tr>
@@ -80,8 +82,10 @@
 
 						@if (Session::userType() == \App\Privilege::ROLE_AFFILIATE)
 							<th class="value_span9">Offer Link</th>
-						{{--@elseif(Session::userType() != \App\Privilege::ROLE_MANAGER)
-							<th class="value_span9">Affiliate Access</th>--}}
+						@elseif(Session::permissions()->can("edit_affiliates") &&
+                                Session::userType() != \App\Privilege::ROLE_AFFILIATE &&
+                                Session::userType() != \App\Privilege::ROLE_MANAGER)
+							<th class="value_span9">Affiliate Access</th>
 						@endif
 
 
@@ -243,15 +247,17 @@ Session::userType() !== \App\Privilege::ROLE_ADMIN
 
 					let html = "";
 					let userType = '<?php echo Session::userType(); ?>';
+
 					let url = '<?php echo $urls[ request( 'url', 0 ) ]; ?>';
 					let permissions = '<?php echo json_encode( Session::permissions() ); ?>'
+					permissions = JSON.parse(permissions);
 					const sessionUser = '<?php echo Session::userID(); ?>';
 					pageItems.forEach((offer) => {
 						html += `<tr id='offer_row'>` +
 								`<td>` + offer['idoffer'] + `</td>` +
 								`<td>` + offer['offer_name'];
 
-						if (userType == 3) {
+						if (parseInt(userType) === 3) {
 							html += `<br/><span class='link_label'>Offer Link:</span><br /> ` +
 								`<span class='offer_link'>https://` + url +
 								`/?repid=` + sessionUser +
@@ -261,7 +267,7 @@ Session::userType() !== \App\Privilege::ROLE_ADMIN
 						html += `</td>` +
 								`<td>CPA</td>`;
 								
-						if (userType == 3) {
+						if (parseInt(userType) === 3) {
 							html +=
 									`<td class='value_span10'>` +
 									`<p  style='display:none;' id='url_` + offer['idoffer'] + `'>http://` + url +
@@ -275,14 +281,15 @@ Session::userType() !== \App\Privilege::ROLE_ADMIN
 									`</button></td>`;
 						}
 
-						/*if (permissions.includes('create_offers') && userType != 3 && userType != 2) {
+						if (permissions.permissions.edit_affiliates &&
+                            (parseInt(userType) === 0 || parseInt(userType) === 1)) {
 							html += `<td class='value_span10'>` +
 									`<a target='_blank' class='btn btn-sm btn-default value_span5-1' href='/offer_access.php?id=` +
 									offer['idoffer'] + `'>Affiliate Access</a>` +
 									`</td>`;
-						}*/
+						}
 
-						if (userType != 2 && userType != 3 && userType != 1) {
+						if (parseInt(userType) === 0) {
 							/*if (userType == 3) {
 								html += `<td class='value_span10'>$` + offer['pivot']['payout'] + `</td>`;
 							} else {*/
@@ -290,7 +297,7 @@ Session::userType() !== \App\Privilege::ROLE_ADMIN
 							/*}*/
 						}
 
-						if (userType != 3 && userType != 1 && userType != 2) {
+						if (parseInt(userType) === 0) {
 							html += `<td class='value_span10'>` + offer['campaign_name'] + `</td>`;
 							/*if (offer['status'] === 1) {
 								html += `Active`;
@@ -307,39 +314,39 @@ Session::userType() !== \App\Privilege::ROLE_ADMIN
 									`</td>`;
 						}*/
 
-						if (userType != 3 && userType != 2 && userType != 1) {
+						if (parseInt(userType) === 0) {
 							html += `<td class='value_span10'>` + offer['offer_timestamp'] + `</td>`;
 						}
-						if (permissions.includes("edit_offer_rules") && userType != 3 && userType != 2 && userType != 1) {
+						if (permissions.permissions.edit_offer_rules) {
 							html += `<td class='value_span10 action_column'>`;
 						}
-						if (userType != 3 && userType != 2 && userType != 1) {
-							if (permissions.includes('create_offers')) {
+						if (parseInt(userType) === 0) {
+							if (permissions.permissions.create_offers) {
 								html += `<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='Edit Offer' ` +
 										`href='/offer_update.php?idoffer=` + offer['idoffer'] + `'>Edit</a>`;
 							}
 						}
 
-						if (permissions.includes("edit_offer_rules") && userType != 3 && userType != 2 && userType != 1) {
+						if (permissions.permissions.edit_offer_rules) {
 							html += `<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='Edit Offer Rules' ` +
 									`href='/offer_edit_rules.php?offid=` + offer[`idoffer`] + `'> Rules</a>`;
 						}
 
-						if (userType != 3 && userType != 2 && userType != 1) {
+						if (parseInt(userType) === 0) {
 							html += `<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='View Offer' ` +
 									`href='/offer_details.php?idoffer=` + offer['idoffer'] + `'> View</a>`;
 						}/* else {
 							html += `<td></td>`;
 						}*/
 
-						if (userType == 0) {
+						if (parseInt(userType) === 0) {
 							html += `<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='Duplicate Offer' ` +
 									`href='/offer/` + offer['idoffer'] + `/dupe'> Duplicate </a>` +
 									`<a class='delete_offer btn btn-default btn-sm value_span11 value_span4' data-toggle='tooltip' data-offer='` +
 									offer['idoffer'] + `' title='Delete Offer' ` +
 									`href='#'>Delete</a>`;
 						}
-						if (permissions.includes("edit_offer_rules") && userType != 3 && userType != 2 && userType != 1) {
+						if (permissions.permissions.edit_offer_rules) {
 							html += `</td>`;
 						}
 						html += `</tr>`;
