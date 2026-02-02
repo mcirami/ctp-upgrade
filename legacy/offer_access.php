@@ -89,6 +89,7 @@ if (isset($updateOccurred))
 																											  All</a>
 					<p>
 						<?php
+						unset( $user );
 						foreach ($users as $user)
 						{
 							$checked = ($user["has_offer"] == 1) ? "checked" : "";
