@@ -78,6 +78,9 @@
 					<tr>
 						<th class="value_span9">Offer ID</th>
 						<th class="value_span9">Offer Name</th>
+                        @if(Session::permissions()->can("view_payouts") )
+                            <th class="value_span9">Payout</th>
+                        @endif
 						<th class="value_span9">Offer Type</th>
 
 						@if (Session::userType() == \App\Privilege::ROLE_AFFILIATE)
@@ -264,8 +267,13 @@ Session::userType() !== \App\Privilege::ROLE_ADMIN
 								`&offerid=` + offer['idoffer'] + `&sub1=</span>`;
 						}
 
-						html += `</td>` +
-								`<td>CPA</td>`;
+						html += `</td>`;
+
+						if (permissions.permissions.view_payouts) {
+							html += `<td class='value_span10'>$` + offer['payout'] + `</td>`;
+						}
+
+						html += `<td>CPA</td>`;
 								
 						if (parseInt(userType) === 3) {
 							html +=
@@ -287,14 +295,6 @@ Session::userType() !== \App\Privilege::ROLE_ADMIN
 									`<a target='_blank' class='btn btn-sm btn-default value_span5-1' href='/offer_access.php?id=` +
 									offer['idoffer'] + `'>Affiliate Access</a>` +
 									`</td>`;
-						}
-
-						if (parseInt(userType) === 0) {
-							/*if (userType == 3) {
-								html += `<td class='value_span10'>$` + offer['pivot']['payout'] + `</td>`;
-							} else {*/
-							html += `<td class='value_span10'>$` + offer['payout'] + `</td>`;
-							/*}*/
 						}
 
 						if (parseInt(userType) === 0) {
