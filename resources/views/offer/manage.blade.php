@@ -27,7 +27,6 @@
 				</div>
 			@endif
 
-
 			<script type="text/javascript">
 				function handleSelect(elm) {
 					window.location = '/{{request()->path()}}?url=' + elm.value
@@ -91,12 +90,6 @@
 							<th class="value_span9">Affiliate Access</th>
 						@endif
 
-
-						@if (Session::userType() !== \App\Privilege::ROLE_MANAGER &&
-Session::userType() !== \App\Privilege::ROLE_AFFILIATE &&
-Session::userType() !== \App\Privilege::ROLE_ADMIN)
-							<th class="value_span8">Payout</th>
-						@endif
 						@if (Session::userType() !== \App\Privilege::ROLE_AFFILIATE &&
 Session::userType() !== \App\Privilege::ROLE_MANAGER &&
 Session::userType() !== \App\Privilege::ROLE_ADMIN)
