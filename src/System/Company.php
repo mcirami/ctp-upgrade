@@ -99,6 +99,7 @@ class Company
 
     static function getCustomSub()
     {
+		dd($_SESSION["COMPANY_SUBDOMAIN"]);
 	    return $_SESSION["COMPANY_SUBDOMAIN"] ?? self::getSub();
     }
 
