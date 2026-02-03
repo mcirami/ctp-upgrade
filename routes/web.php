@@ -86,6 +86,8 @@ Route::group(['middleware' => 'legacy.auth'], function () {
     });
     Route::group(['prefix' => 'report'], function () {
         Route::get('daily', [AggregateReportController::class, 'show']);
+	    Route::get('geo', [ConversionReportController::class, 'showConversionsByCountry'])->middleware('role:0,1');
+	    Route::get('geo-by-offer', [ConversionReportController::class, 'showGeoByOffer'])->middleware('role:0,1');
         Route::get('offer', [OfferReportController::class, 'show']);
 	    Route::get('offer/{offer}/user-conversions', [OfferReportController::class, 'showConversionsByUser']);
         Route::get('offer/{offer}/conversions-by-country', [OfferReportController::class, 'showConversionsByCountry']);

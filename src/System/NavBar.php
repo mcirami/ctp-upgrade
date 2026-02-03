@@ -2,8 +2,6 @@
 
 namespace LeadMax\TrackYourStats\System;
 
-
-use function Couchbase\defaultDecoder;
 use LeadMax\TrackYourStats\Table\Date;
 use LeadMax\TrackYourStats\User\Permissions;
 
@@ -113,6 +111,10 @@ class NavBar
                 "required_user_types" => [\App\Privilege::ROLE_GOD, \App\Privilege::ROLE_ADMIN, \App\Privilege::ROLE_MANAGER],
             ],
 
+            "GEO Report" => [
+	            'url' => '/report/geo',
+	            "required_user_types" => [\App\Privilege::ROLE_GOD, \App\Privilege::ROLE_ADMIN],
+            ],
 
             "Payout Report" => ['url' => '/report/payout', "required_user_types" => [\App\Privilege::ROLE_AFFILIATE]],
 

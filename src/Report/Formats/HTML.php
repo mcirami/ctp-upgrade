@@ -86,7 +86,7 @@ class HTML implements Format
 						          (key_exists('type', $row) &&
 						           $row['type'] == "advertiser" &&
 						           $row[$toPrint] != "TOTAL")) {
-							echo "<td><a target='_blank' href='/report/advertiser/{$row['id']}/conversions-by-offer?{$params}'>$row[$toPrint]</a></td>";
+							echo "<td><a href='/report/advertiser/{$row['id']}/conversions-by-offer?{$params}'>$row[$toPrint]</a></td>";
 						} else {
 							echo "<td>$row[$toPrint]</td>";
 						}
