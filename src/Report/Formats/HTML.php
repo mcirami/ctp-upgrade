@@ -77,9 +77,9 @@ class HTML implements Format
                             }
 						} elseif($toPrint == "Conversions" && $row[$toPrint] > 0 && (key_exists('idrep', $row) && $row[$toPrint] != "TOTAL")) {
 							if ( isset( $_GET['role'] ) && $_GET['role'] == 2 ) {
-								echo "<td><a target='_blank' href='/report/manager/{$row['idrep']}/conversions-by-offer?{$params}'>$row[$toPrint]</a></td>";
+								echo "<td><a href='/report/manager/{$row['idrep']}/conversions-by-offer?{$params}'>$row[$toPrint]</a></td>";
 							} else {
-								echo "<td><a target='_blank' href='/user/{$row['idrep']}/conversions-by-offer?{$params}'>$row[$toPrint]</a></td>";
+								echo "<td><a href='/user/{$row['idrep']}/conversions-by-offer?{$params}'>$row[$toPrint]</a></td>";
 							}
 						} elseif ($toPrint == "Conversions" &&
 						          $row[$toPrint] > 0 &&

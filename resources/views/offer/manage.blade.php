@@ -1,3 +1,4 @@
+@php use LeadMax\TrackYourStats\System\Session; @endphp
 @extends('layouts.master')
 
 @section('content')
@@ -7,17 +8,17 @@
 		<div class="white_box_outer large_table">
 			<div class="heading_holder">
 				<span class="lft value_span9">Offers</span>
-				@if (\LeadMax\TrackYourStats\System\Session::permissions()->can("create_offers"))
+				@if ( Session::permissions()->can("create_offers"))
 					<a style='margin-left: 1%; margin-top:.3%;' href="/offer_add.php"
 					   class='btn btn-default btn-sm value_span5-1 value_span6-5 value_span2'>Create New Offer</a>
 				@endif
 			</div>
 
-			@if(\LeadMax\TrackYourStats\System\Session::userType() !== \App\Privilege::ROLE_AFFILIATE)
+			@if( Session::userType() !== \App\Privilege::ROLE_AFFILIATE)
 				@include('report.options.active')
 			@endif
 
-			@if(\LeadMax\TrackYourStats\System\Session::userType() == \App\Privilege::ROLE_AFFILIATE)
+			@if( Session::userType() == \App\Privilege::ROLE_AFFILIATE)
 				<div class='form-group'>
 					<p class='form-control'>
 						Add up to 5 Sub variables as follows: http://domain.com/?repid=1&offerid=1&sub1=XXX&sub2=YYY&sub3=ZZZ&sub4=AAA&sub5=BBB
@@ -37,7 +38,7 @@
 
 			<div style="margin:0 0 1px 0; padding:5px; width:250px;">
 
-				@if(\LeadMax\TrackYourStats\System\Session::userType() == \App\Privilege::ROLE_AFFILIATE)
+				@if( Session::userType() == \App\Privilege::ROLE_AFFILIATE)
 
 					<label class="value_span9">Offer URLS: </label>
 					<select onchange='handleSelect(this);' class="form-control input-sm " id="offer_url"
@@ -77,27 +78,29 @@
 						<th class="value_span9">Offer Name</th>
 						<th class="value_span9">Offer Type</th>
 
-						@if (\LeadMax\TrackYourStats\System\Session::userType() == \App\Privilege::ROLE_AFFILIATE)
+						@if ( Session::userType() == \App\Privilege::ROLE_AFFILIATE)
 							<th class="value_span9">Offer Link</th>
-						{{--@elseif(\LeadMax\TrackYourStats\System\Session::permissions()->can("create_offers"))
-							<th class="value_span9">Affiliate Access</th>--}}
-						@endif
+                        @elseif( Session::permissions()->can("edit_affiliates") &&
+        Session::userType() != \App\Privilege::ROLE_AFFILIATE &&
+        Session::userType() != \App\Privilege::ROLE_MANAGER)
+                            <th class="value_span9">Affiliate Access</th>
+                        @endif
 
 
-						@if (\LeadMax\TrackYourStats\System\Session::userType() !== \App\Privilege::ROLE_MANAGER)
+						@if ( Session::userType() !== \App\Privilege::ROLE_MANAGER)
 							<th class="value_span8">Payout</th>
 						@endif
 
 						<th class="value_span9">Adv</th>
-						@if (\LeadMax\TrackYourStats\System\Session::userType() == \App\Privilege::ROLE_AFFILIATE)
+						@if ( Session::userType() == \App\Privilege::ROLE_AFFILIATE)
 							<th class="value_span9">Postback Options</th>
 						@endif
 
-						@if (\LeadMax\TrackYourStats\System\Session::userType() != \App\Privilege::ROLE_AFFILIATE)
+						@if ( Session::userType() != \App\Privilege::ROLE_AFFILIATE)
 							<th class="value_span9">Offer Timestamp</th>
 						@endif
 
-						@if (\LeadMax\TrackYourStats\System\Session::userType() != \App\Privilege::ROLE_AFFILIATE)
+						@if ( Session::userType() != \App\Privilege::ROLE_AFFILIATE)
 							<th class="value_span9">Actions</th>
 						@endif
 					</tr>
@@ -232,10 +235,11 @@
 					itemsContainer.innerHTML = "";
 
 					let html = "";
-					let userType = '<?php echo \LeadMax\TrackYourStats\System\Session::userType(); ?>';
+					let userType = '<?php echo Session::userType(); ?>';
 					let url = '<?php echo $urls[request('url',0)]; ?>';
-					let permissions = '<?php echo json_encode(\LeadMax\TrackYourStats\System\Session::permissions()); ?>'
-					const sessionUser = '<?php echo \LeadMax\TrackYourStats\System\Session::userID(); ?>';
+					let permissions = '<?php echo json_encode( Session::permissions()); ?>'
+					permissions = JSON.parse(permissions);
+					const sessionUser = '<?php echo Session::userID(); ?>';
 					pageItems.forEach((offer) => {
 						html += `<tr id='offer_row'>` +
 								`<td>` + offer['idoffer'] + `</td>` +
@@ -250,8 +254,8 @@
 
 						html += `</td>` +
 								`<td>CPA</td>`;
-								
-						if (userType == 3) {
+
+						if (parseInt(userType) === 3) {
 							html +=
 									`<td class='value_span10'>` +
 									`<p  style='display:none;' id='url_` + offer['idoffer'] + `'>http://` + url +
@@ -264,15 +268,16 @@
 									`</button></td>`;
 						}
 
-						/*if (permissions.includes('create_offers') && userType != 3 ) {
+						if (permissions.permissions.edit_affiliates &&
+							(parseInt(userType) === 0 || parseInt(userType) === 1)) {
 							html += `<td class='value_span10'>` +
-									`<a target='_blank' class='btn btn-sm btn-default value_span5-1' href='/offer_access.php?id=` +
-									offer['idoffer'] + `'>Affiliate Access</a>` +
-									`</td>`;
-						}*/
+								`<a target='_blank' class='btn btn-sm btn-default value_span5-1' href='/offer_access.php?id=` +
+								offer['idoffer'] + `'>Affiliate Access</a>` +
+								`</td>`;
+						}
 
-						if (userType != 2) {
-							if (userType == 3) {
+						if (parseInt(userType) !== 2) {
+							if (parseInt(userType) === 3) {
 								html += `<td class='value_span10'>$` + offer['pivot']['payout'] + `</td>`;
 							} else {
 								html += `<td class='value_span10'>$` + offer['payout'] + `</td>`;
@@ -287,7 +292,7 @@
 						}*/
 
 
-						if (userType == 3) {
+						if (parseInt(userType) === 3) {
 							html += `<td class='value_span10'>` +
 									`<a class='btn btn-default value_span6-1 value_span4' data-toggle='tooltip' title='Offer PostBack Options' ` +
 									`href='/offer_edit_pb.php?offid='` + offer['idoffer'] + `'>` +
@@ -295,31 +300,31 @@
 									`</td>`;
 						}
 
-						if (userType != 3) {
+						if (parseInt(userType) !== 3) {
 							html += `<td class='value_span10'>` + offer['offer_timestamp'] + `</td>`;
 						}
 
-						if (userType != 3) {
+						if (parseInt(userType) !== 3) {
 							html += `<td class='value_span10 action_column'>`;
 						}
-						if (userType != 3) {
-							if (permissions.includes('create_offers')) {
+						if (parseInt(userType) !== 3) {
+							if (permissions.permissions.create_offers) {
 								html += `<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='Edit Offer' ` +
 										`href='/offer_update.php?idoffer=` + offer['idoffer'] + `'>Edit</a>`;
 							}
 						}
 
-						if(permissions.includes("edit_offer_rules") && userType != 3) {
+						if(permissions.permissions.edit_offer_rules && parseInt(userType) !== 3) {
 							html += `<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='Edit Offer Rules' ` +
 									`href='/offer_edit_rules.php?offid=` + offer[`idoffer`] + `'> Rules</a>`;
 						}
 
-						if(userType != 3) {
+						if(parseInt(userType) !== 3) {
 							html += `<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='View Offer' ` +
 									`href='/offer_details.php?idoffer=` + offer['idoffer'] + `'> View</a>`;
 						}
 
-						if (userType == 0) {
+						if (parseInt(userType) === 0) {
 							html +=
 									`<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='Duplicate Offer' ` +
 									`href='/offer/` + offer['idoffer'] + `/dupe'> Duplicate </a>` +
@@ -327,7 +332,7 @@
 									`href='#'>Delete</a>`;
 						}
 
-						if(userType != 3) {
+						if(parseInt(userType) !== 3) {
 							html += `</td>`;
 						}
 						html += `</tr>`;

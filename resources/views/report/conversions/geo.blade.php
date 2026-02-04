@@ -42,8 +42,16 @@
             @foreach($reports as $key => $row)
                 <tr role="row">
                     <td>{{$key}}</td>
-                    <td>{{$row['total_clicks']}}</td>
-                    <td>{{$row['unique_clicks']}}</td>
+                    <td>
+                        @if ($row['total_clicks'] > 0 && (Session::userType() == Privilege::ROLE_GOD || Session::userType() == Privilege::ROLE_ADMIN))
+                            <a class='load_click' href="/report/geo/clicks-in-country?{{$params}}&country={{$key}}">{{$row['total_clicks']}}</a>
+                        @else
+                            {{$row['total_clicks']}}
+                        @endif
+                    </td>
+                    <td>
+                        {{$row['unique_clicks']}}
+                    </td>
                     <td>
                         @if ($row['total_conversions'] > 0 && (Session::userType() == Privilege::ROLE_GOD || Session::userType() == Privilege::ROLE_ADMIN))
                             <a href="/report/geo-by-offer?{{$params}}&country={{$key}}">{{$row['total_conversions']}}</a>

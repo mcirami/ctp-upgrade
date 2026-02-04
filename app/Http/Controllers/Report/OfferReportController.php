@@ -24,7 +24,9 @@ class OfferReportController extends ReportController
         $repo = new GodOfferRepository(\DB::getPdo());
 
         $reporter = new Reporter($repo);
-
+	    $startDate = $dates['originalStart'];
+	    $endDate = $dates['originalEnd'];
+	    $dateSelect = request()->query('dateSelect');
 
         $reporter
             ->addFilter(new Filters\DeductionColumnFilter())
@@ -41,7 +43,8 @@ class OfferReportController extends ReportController
             ->addFilter(new Filters\DollarSign(['Revenue', 'Deductions', 'EPC']))
             ->addFilter(new Filters\ClickLink(request()));
 
-        return view('report.offer.admin', compact('reporter', 'dates'));
+        return view('report.offer.admin',
+	        compact('reporter', 'dates', 'startDate', 'endDate', 'dateSelect'));
     }
 
     public function admin()
@@ -53,7 +56,9 @@ class OfferReportController extends ReportController
 		    new AdminOfferRepository(\DB::getPdo());
 
         $reporter = new Reporter($repo);
-
+	    $startDate = $dates['originalStart'];
+	    $endDate = $dates['originalEnd'];
+	    $dateSelect = request()->query('dateSelect');
 
         $reporter
             ->addFilter(new Filters\DeductionColumnFilter())
@@ -70,7 +75,8 @@ class OfferReportController extends ReportController
             ->addFilter(new Filters\DollarSign(['Revenue', 'Deductions', 'EPC']))
             ->addFilter(new Filters\ClickLink(request()));
 
-        return view('report.offer.admin', compact('reporter', 'dates'));
+        return view('report.offer.admin',
+	        compact('reporter', 'dates', 'startDate', 'endDate', 'dateSelect'));
     }
 
     public function manager()
@@ -79,7 +85,6 @@ class OfferReportController extends ReportController
         $repo = new ManagerOfferRepository(\LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance());
 
         $reporter = new Reporter($repo);
-
 
         $reporter
             ->addFilter(new Filters\DeductionColumnFilter())

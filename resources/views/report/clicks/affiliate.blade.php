@@ -1,5 +1,4 @@
 @php
-	//use App\Exports\DataExport;
 	use Maatwebsite\Excel\Facades\Excel;
 	use \LeadMax\TrackYourStats\System\Session;
 	use App\Privilege;
@@ -23,7 +22,7 @@
             border-radius: 6px;
             color: #676767;"
 		class="btn btn-default btn-sm"
-           href="/user/{{$user->idrep}}/clicks/export?d_from={{$startDate}}&d_to={{$endDate}}&dateSelect={{$dateSelect}}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4">
+           href="/user/{{$user->idrep}}/clicks/export?d_from={{$startDate}}&d_to={{$endDate}}&dateSelect={{$dateSelect}}">
 			Export Data
 		</a>
 	</div>
