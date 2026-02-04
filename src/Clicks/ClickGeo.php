@@ -10,6 +10,7 @@ namespace LeadMax\TrackYourStats\Clicks;
 
 use GeoIp2\Database\Reader;
 use Illuminate\Support\Facades\Cache;
+use MaxMind\Db\Reader\InvalidDatabaseException;
 
 function unKnownGeo( array $geo ): array {
 	$geo["isoCode"] = "UNKNOWN";
@@ -30,6 +31,27 @@ function unKnownGeo( array $geo ): array {
 class ClickGeo
 {
 
+	/**
+	 * Shared GeoIP reader instance so we do not pay the cost of reloading the
+	 * MaxMind database for every lookup. The GeoIP2 reader is thread-safe for
+	 * concurrent reads and dramatically faster when reused.
+	 *
+	 * @var Reader|null
+	 */
+	protected static ?Reader $reader = null;
+
+	/**
+	 * Lazily instantiate the GeoIP2 reader.
+	 * @throws InvalidDatabaseException
+	 */
+	protected static function reader(): Reader
+	{
+		if (self::$reader === null) {
+			self::$reader = new Reader(config('services.geo.ip_database'));
+		}
+
+		return self::$reader;
+	}
 
     // INPUT: IP Address
     // OUTPUT: array with much geo info
@@ -45,7 +67,7 @@ class ClickGeo
         return Cache::remember($cacheKey, $ttl, function () use ($ip, $geo) {
             try {
 
-                $reader = new Reader(env("GEO_IP_DATABASE"));
+                $reader = self::reader();
                 $record = $reader->city($ip);
     
                  if($record->country->isoCode == "") {
