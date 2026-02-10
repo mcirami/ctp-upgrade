@@ -92,7 +92,7 @@ else
 		<div class="row h-100">
 			<div class="col-12 page_wrapper text-center d-flex align-content-center justify-content-center">
 				<div class="row my-auto">
-					<div class="col-5 mx-auto">
+					<div class="col-11 col-md-4 mx-auto">
 						<div class="row">
 							<div class="col-12 mx-auto mb-4 p-0">
 								<img src="<?= \LeadMax\TrackYourStats\System\Company::loadFromSession()->getImgDir() ?>/logo.png" alt="">
