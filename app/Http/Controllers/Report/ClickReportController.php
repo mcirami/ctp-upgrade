@@ -17,6 +17,7 @@ use LeadMax\TrackYourStats\Clicks\ClickGeo;
 use LeadMax\TrackYourStats\System\Session;
 use LeadMax\TrackYourStats\User\Permissions;
 use App\Http\Traits\ClickTraits;
+use App\Services\ClickGeoCacheService;
 
 class ClickReportController extends ReportController
 {
@@ -260,7 +261,7 @@ class ClickReportController extends ReportController
 		}
 	}
 
-	public function clicksInCountry() {
+	public function clicksInCountry(ClickGeoCacheService $geoCache) {
 		$dates = self::getDates();
 		$geoCode = request()->query('country');
 		$startDate = $dates['originalStart'];
@@ -274,22 +275,7 @@ class ClickReportController extends ReportController
 		            ->distinct()
 		            ->pluck('ip_address');
 
-		$ipsToLookup = ClickGeoCache::query()
-		                            ->whereIn('ip_address', $ips)
-		                            ->pluck('ip_address')
-		                            ->all();
-		$ipsMissingGeo = $ips->diff($ipsToLookup);
-
-		foreach ($ipsMissingGeo as $ip) {
-			$geo = ClickGeo::findGeo($ip); // your existing lookup
-			if (!empty($geo['isoCode'])) {
-				// Upsert into a local cache table keyed by ip
-				ClickGeoCache::updateOrCreate(
-					['ip_address' => $ip],
-					['country_code' => $geo['isoCode']]
-				);
-			}
-		}
+		$geoCache->warm($ips);
 
 		$report = Click::query()
 		               ->leftJoin('click_vars', 'click_vars.click_id', '=', 'clicks.idclicks')

@@ -15,6 +15,7 @@ use LeadMax\TrackYourStats\Clicks\ClickGeo;
 use LeadMax\TrackYourStats\Report\Repositories\Employee\GodEmployeeRepository;
 use LeadMax\TrackYourStats\Report\Repositories\Offer\GodOfferRepository;
 use PhpOffice\PhpSpreadsheet\Exception;
+use App\Services\ClickGeoCacheService;
 class ExportDataController extends ReportController
 {
 	use ClickTraits;
@@ -84,7 +85,7 @@ class ExportDataController extends ReportController
 	 * @throws Exception
 	 * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
 	 */
-	public function exportCountryClicks() {
+	public function exportCountryClicks(ClickGeoCacheService $geoCache) {
 		$dates = self::getDates();
 		$geoCode = request()->query('country');
 
@@ -95,22 +96,7 @@ class ExportDataController extends ReportController
 		            ->distinct()
 		            ->pluck('ip_address');
 
-		$ipsToLookup = ClickGeoCache::query()
-		                            ->whereIn('ip_address', $ips)
-		                            ->pluck('ip_address')
-		                            ->all();
-		$ipsMissingGeo = $ips->diff($ipsToLookup);
-
-		foreach ($ipsMissingGeo as $ip) {
-			$geo = ClickGeo::findGeo($ip); // your existing lookup
-			if (!empty($geo['isoCode'])) {
-				// Upsert into a local cache table keyed by ip
-				ClickGeoCache::updateOrCreate(
-					['ip_address' => $ip],
-					['country_code' => $geo['isoCode']]
-				);
-			}
-		}
+		$geoCache->warm($ips);
 
 		$report = Click::query()
 		               ->leftJoin('click_vars', 'click_vars.click_id', '=', 'clicks.idclicks')
