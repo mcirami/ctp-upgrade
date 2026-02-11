@@ -35,4 +35,8 @@ return [
         'secret' => env('STRIPE_SECRET'),
     ],
 
+    'geo' => [
+	    'ip_database' => env('GEO_IP_DATABASE'),
+    ],
+
 ];
