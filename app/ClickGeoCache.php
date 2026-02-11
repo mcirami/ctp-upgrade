@@ -14,6 +14,11 @@ class ClickGeoCache extends Model
 	protected $fillable = [
 		'ip_address',
 		'country_code',
+		'subDivision',
+		'city',
+		'postal',
+		'latitude',
+		'longitude',
 		'source',
 		'resolved_at',
 	];
