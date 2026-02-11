@@ -3,11 +3,12 @@
 namespace App\Services;
 
 use App\ClickGeoCache;
-use LeadMax\TrackYourStats\Clicks\ClickGeo;
 use Illuminate\Support\Collection;
+use LeadMax\TrackYourStats\Clicks\ClickGeo;
+
 class ClickGeoCacheService {
 	/**
-	 * Ensure ClickGeoCache has country_code rows for the given IPs.
+	 * Ensure ClickGeoCache has geo rows for the given IPs.
 	 */
 	public function warm(Collection|array $ips): void
 	{
@@ -20,18 +21,26 @@ class ClickGeoCacheService {
 		// Pull cached IPs as a collection so diff() stays collection-native.
 		$ips->chunk(1000)->each(function ($chunk) {
 			$cachedIps = ClickGeoCache::query()
-			                          ->whereIn( 'ip_address', $chunk )
-			                          ->pluck( 'ip_address' );
+			                          ->whereIn('ip_address', $chunk)
+			                          ->pluck('ip_address');
 
-			$missing = $chunk->diff( $cachedIps );
+			$missing = $chunk->diff($cachedIps);
 
-			foreach ( $missing as $ip ) {
-				$geo = ClickGeo::findGeo( $ip );
+			foreach ($missing as $ip) {
+				$geo = ClickGeo::findGeo($ip);
 
-				if ( ! empty( $geo['isoCode'] ) ) {
+				if (!empty($geo['isoCode'])) {
 					ClickGeoCache::updateOrCreate(
-						[ 'ip_address' => $ip ],
-						[ 'country_code' => $geo['isoCode'] ]
+						['ip_address' => $ip],
+						[
+							'country_code' => $geo['isoCode'],
+							'subDivision' => $geo['subDivision'] ?? null,
+							'city' => $geo['city'] ?? null,
+							'postal' => $geo['postal'] ?? null,
+							'latitude' => $geo['latitude'] ?? null,
+							'longitude' => $geo['longitude'] ?? null,
+							'resolved_at' => now(),
+						]
 					);
 				}
 			}
