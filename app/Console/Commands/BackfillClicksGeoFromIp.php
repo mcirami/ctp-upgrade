@@ -37,6 +37,7 @@ class BackfillClicksGeoFromIp extends Command
         $totalProcessed = 0;
         $totalUpdated = 0;
         $totalCached = 0;
+        $totalCachePatched = 0;
 
         DB::table('clicks')
             ->select('idclicks', 'ip_address')
@@ -44,7 +45,7 @@ class BackfillClicksGeoFromIp extends Command
             ->whereNotNull('ip_address')
             ->where('first_timestamp', '>=', $from)
             ->orderBy('idclicks')
-            ->chunkById(500, function ($rows) use (&$totalProcessed, &$totalUpdated, &$totalCached) {
+            ->chunkById(500, function ($rows) use (&$totalProcessed, &$totalUpdated, &$totalCached, &$totalCachePatched) {
                 foreach ($rows as $row) {
                     $totalProcessed++;
 
@@ -82,11 +83,27 @@ class BackfillClicksGeoFromIp extends Command
 
                     if ($created->wasRecentlyCreated) {
                         $totalCached++;
+                        continue;
+                    }
+
+                    $cacheUpdates = [];
+                    foreach (['subDivision', 'city', 'postal', 'latitude', 'longitude'] as $field) {
+                        if (is_null($created->{$field}) && !is_null($cache[$field])) {
+                            $cacheUpdates[$field] = $cache[$field];
+                        }
+                    }
+
+                    if (!empty($cacheUpdates)) {
+                        $cacheUpdates['updated_at'] = Carbon::now();
+                        ClickGeoCache::query()
+                            ->whereKey($created->getKey())
+                            ->update($cacheUpdates);
+                        $totalCachePatched++;
                     }
                 }
             }, 'idclicks');
 
-        $this->info("Done. Processed: {$totalProcessed}, Clicks updated: {$totalUpdated}, Cache inserted: {$totalCached}");
+        $this->info("Done. Processed: {$totalProcessed}, Clicks updated: {$totalUpdated}, Cache inserted: {$totalCached}, Cache patched: {$totalCachePatched}");
 
         return self::SUCCESS;
     }
