@@ -5,6 +5,7 @@ namespace App\Services\Repositories\Offer;
 
 
 use App\Click;
+use App\ClickGeoCache;
 use App\Conversion;
 use App\Privilege;
 use App\Services\Repositories\Repository;
@@ -216,8 +217,14 @@ class OfferAffiliateClicksRepository implements Repository
 		
 		foreach($reportCollection as $item) {
 			if (is_null($item->country_code)) {
-				$geo = ClickGeo::findGeo($item->ip_address);
-				$item->country_code = $geo['isoCode'];
+				$geo = ClickGeoCache::query()
+				                    ->where('ip_address', $item->ip_address)->first();
+				if($geo) {
+					$item->country_code = $geo->country_code;
+				} else {
+					$geo = ClickGeo::findGeo($item->ip_address);
+					$item->country_code = $geo['isoCode'];
+				}
 			}
 		}
 

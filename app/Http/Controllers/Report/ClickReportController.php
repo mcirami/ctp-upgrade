@@ -72,10 +72,7 @@ class ClickReportController extends ReportController
             'd_from' => Carbon::today()->format('Y-m-d'),
             'd_to' => Carbon::today()->format('Y-m-d'),
             'dateSelect' => 0,
-
             'rpp' => 10,
-
-
             'idoffer' => $id,
         );
 
@@ -107,7 +104,6 @@ class ClickReportController extends ReportController
 	                ->where('clicks.click_type', '!=', 2)
 	                ->whereBetween('clicks.first_timestamp', [$dates['startDate'], $dates['endDate']])
 	                ->leftJoin('click_vars', 'click_vars.click_id', '=', 'clicks.idclicks')
-	                ->leftJoin('click_geo', 'click_geo.click_id', '=', 'clicks.idclicks')
 	                ->leftJoin('conversions', 'conversions.click_id', '=', 'clicks.idclicks')
 	                ->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
 	                ->select(
@@ -121,8 +117,8 @@ class ClickReportController extends ReportController
 						'click_vars.sub2',
 		                'click_vars.sub3',
 						'clicks.referer',
-						'click_geo.ip  as ip_address',
-						'clicks.offer_idoffer  as offer_id'
+						'clicks.ip_address as ip_address',
+						'clicks.offer_idoffer as offer_id'
 	                )
 	                ->orderBy('paid', 'DESC')->paginate(100);
 
@@ -199,7 +195,6 @@ class ClickReportController extends ReportController
 					}
 				]])->whereBetween( 'clicks.first_timestamp', [ $dates['startDate'], $dates['endDate'] ] )
 			       ->leftJoin( 'click_vars', 'click_vars.click_id', '=', 'clicks.idclicks' )
-			       ->leftJoin( 'click_geo', 'click_geo.click_id', '=', 'clicks.idclicks' )
 			       ->leftJoin( 'conversions', 'conversions.click_id', '=', 'clicks.idclicks' )
 			       ->leftJoin( 'offer', 'offer.idoffer', '=', 'clicks.offer_idoffer' )
 			       ->select(
@@ -214,7 +209,7 @@ class ClickReportController extends ReportController
 				       'click_vars.sub3',
 				       'click_vars.sub4',
 				       'click_vars.sub5',
-				       'click_geo.ip as ip_address',
+				       'clicks.ip_address as ip_address',
 				       'clicks.offer_idoffer  as offer_id'
 			       )
 			       ->orderBy( 'conversions.paid', 'DESC' )->paginate( 100 );
@@ -229,7 +224,6 @@ class ClickReportController extends ReportController
 					}
 				}]])->whereBetween( 'clicks.first_timestamp', [ $dates['startDate'], $dates['endDate'] ] )
 			        ->leftJoin( 'click_vars', 'click_vars.click_id', '=', 'clicks.idclicks' )
-			        ->leftJoin( 'click_geo', 'click_geo.click_id', '=', 'clicks.idclicks' )
 			        ->leftJoin( 'conversions', 'conversions.click_id', '=', 'clicks.idclicks' )
 			        ->leftJoin( 'offer', 'offer.idoffer', '=', 'clicks.offer_idoffer' )
 			        ->select(
@@ -244,7 +238,7 @@ class ClickReportController extends ReportController
 				        'click_vars.sub4',
 				        'click_vars.sub5',
 						'click_vars.encoded',
-				        'click_geo.ip as ip_address',
+				        'clicks.ip_address as ip_address',
 				        'clicks.offer_idoffer as offer_id',
 				        'offer.offer_name',
 			        )
