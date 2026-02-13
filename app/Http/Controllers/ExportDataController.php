@@ -27,15 +27,12 @@ class ExportDataController extends ReportController
 	public function exportUsersClicks($userId) {
 
 		$dates = self::getDates();
-		$startDate = $dates['originalStart'];
-		$endDate = $dates['originalEnd'];
 
 		// Replicate the query used for the view
 		$reportCollection = Click::where('rep_idrep', '=', $userId)
 		                         ->where('clicks.click_type', '!=', 2)
 		                         ->whereBetween('clicks.first_timestamp', [$dates['startDate'], $dates['endDate']])
 		                         ->leftJoin('click_vars', 'click_vars.click_id', '=', 'clicks.idclicks')
-		                         ->leftJoin('click_geo', 'click_geo.click_id', '=', 'clicks.idclicks')
 		                         ->leftJoin('conversions', 'conversions.click_id', '=', 'clicks.idclicks')
 		                         ->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
 		                         ->select(
@@ -49,7 +46,7 @@ class ExportDataController extends ReportController
 			                         'click_vars.sub2',
 			                         'click_vars.sub3',
 			                         'clicks.referer',
-			                         'click_geo.ip as ip_address',
+			                         'clicks.ip_address as ip_address',
 		                         )
 		                         ->orderBy('paid', 'DESC')->get();
 		$report = $this->formatResults($reportCollection);
