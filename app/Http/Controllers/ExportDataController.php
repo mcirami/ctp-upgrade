@@ -15,6 +15,7 @@ use LeadMax\TrackYourStats\Clicks\ClickGeo;
 use LeadMax\TrackYourStats\Report\Repositories\Employee\GodEmployeeRepository;
 use LeadMax\TrackYourStats\Report\Repositories\Offer\GodOfferRepository;
 use PhpOffice\PhpSpreadsheet\Exception;
+use App\Services\ClickGeoCacheService;
 class ExportDataController extends ReportController
 {
 	use ClickTraits;
@@ -26,15 +27,12 @@ class ExportDataController extends ReportController
 	public function exportUsersClicks($userId) {
 
 		$dates = self::getDates();
-		$startDate = $dates['originalStart'];
-		$endDate = $dates['originalEnd'];
 
 		// Replicate the query used for the view
 		$reportCollection = Click::where('rep_idrep', '=', $userId)
 		                         ->where('clicks.click_type', '!=', 2)
 		                         ->whereBetween('clicks.first_timestamp', [$dates['startDate'], $dates['endDate']])
 		                         ->leftJoin('click_vars', 'click_vars.click_id', '=', 'clicks.idclicks')
-		                         ->leftJoin('click_geo', 'click_geo.click_id', '=', 'clicks.idclicks')
 		                         ->leftJoin('conversions', 'conversions.click_id', '=', 'clicks.idclicks')
 		                         ->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
 		                         ->select(
@@ -48,7 +46,7 @@ class ExportDataController extends ReportController
 			                         'click_vars.sub2',
 			                         'click_vars.sub3',
 			                         'clicks.referer',
-			                         'click_geo.ip as ip_address',
+			                         'clicks.ip_address as ip_address',
 		                         )
 		                         ->orderBy('paid', 'DESC')->get();
 		$report = $this->formatResults($reportCollection);
@@ -84,7 +82,7 @@ class ExportDataController extends ReportController
 	 * @throws Exception
 	 * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
 	 */
-	public function exportCountryClicks() {
+	public function exportCountryClicks(ClickGeoCacheService $geoCache) {
 		$dates = self::getDates();
 		$geoCode = request()->query('country');
 
@@ -95,22 +93,7 @@ class ExportDataController extends ReportController
 		            ->distinct()
 		            ->pluck('ip_address');
 
-		$ipsToLookup = ClickGeoCache::query()
-		                            ->whereIn('ip_address', $ips)
-		                            ->pluck('ip_address')
-		                            ->all();
-		$ipsMissingGeo = $ips->diff($ipsToLookup);
-
-		foreach ($ipsMissingGeo as $ip) {
-			$geo = ClickGeo::findGeo($ip); // your existing lookup
-			if (!empty($geo['isoCode'])) {
-				// Upsert into a local cache table keyed by ip
-				ClickGeoCache::updateOrCreate(
-					['ip_address' => $ip],
-					['country_code' => $geo['isoCode']]
-				);
-			}
-		}
+		$geoCache->warm($ips);
 
 		$report = Click::query()
 		               ->leftJoin('click_vars', 'click_vars.click_id', '=', 'clicks.idclicks')

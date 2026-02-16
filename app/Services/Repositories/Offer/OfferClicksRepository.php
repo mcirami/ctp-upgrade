@@ -78,11 +78,11 @@ class OfferClicksRepository implements Repository
             'clicks.referer',
             'clicks.rep_idrep as affiliate_id',
             'clicks.offer_idoffer as offer_id',
-            'click_geo.ip as ip_address'
+	        'clicks.ip_address as ip_address',
+	        'clicks.country_code as isoCode'
         ]);
 	    if(Session::permissions()->can('view_all_users')) {
 		    return Click::leftJoin('click_vars', 'click_vars.click_id', 'clicks.idclicks')
-		                ->leftJoin('click_geo', 'click_geo.click_id', 'clicks.idclicks')
 		                ->leftJoin('conversions', 'conversions.click_id', 'clicks.idclicks')
 		                ->join('rep', 'rep.idrep', 'clicks.rep_idrep')
 		                ->where('offer_idoffer', $this->offerId)
@@ -92,7 +92,6 @@ class OfferClicksRepository implements Repository
 		                ->paginate(100);
 	    } else {
 		    return Click::leftJoin('click_vars', 'click_vars.click_id', 'clicks.idclicks')
-		                ->leftJoin('click_geo', 'click_geo.click_id', 'clicks.idclicks')
 		                ->leftJoin('conversions', 'conversions.click_id', 'clicks.idclicks')
 		                ->join('rep', 'rep.idrep', 'clicks.rep_idrep')
 		                ->where('offer_idoffer', $this->offerId)

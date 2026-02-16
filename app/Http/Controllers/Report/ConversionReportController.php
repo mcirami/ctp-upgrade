@@ -157,8 +157,16 @@ class ConversionReportController extends ReportController
 		
 		foreach($reportCollection as $item) {
 			if (is_null($item->country_code)) {
-				$geo = ClickGeo::findGeo($item->ip_address);
-				$item->country_code = $geo['isoCode'];
+				$cachedIP = ClickGeoCache::query()
+				                         ->where('ip_address', $item->ip_address)
+				                         ->pluck('country_code')
+				                         ->first();
+				if ($cachedIP) {
+					$item->country_code = $cachedIP;
+				} else {
+					$geo = ClickGeo::findGeo($item->ip_address);
+					$item->country_code = $geo['isoCode'];
+				}
 			}
 		}
 
@@ -277,14 +285,16 @@ class ConversionReportController extends ReportController
 		                      ->distinct()
 		                      ->pluck('ip_address');
 
-		foreach ($ipsMissingGeo as $ip) {
-			$geo = ClickGeo::findGeo($ip); // your existing lookup
-			if (!empty($geo['isoCode'])) {
-				// Upsert into a local cache table keyed by ip
-				ClickGeoCache::updateOrCreate(
-					['ip_address' => $ip],
-					['country_code' => $geo['isoCode']]
-				);
+		if (count($ipsMissingGeo) > 0) {
+			foreach ( $ipsMissingGeo as $ip ) {
+				$geo = ClickGeo::findGeo( $ip ); // your existing lookup
+				if ( ! empty( $geo['isoCode'] ) ) {
+					// Upsert into a local cache table keyed by ip
+					ClickGeoCache::updateOrCreate(
+						[ 'ip_address' => $ip ],
+						[ 'country_code' => $geo['isoCode'] ]
+					);
+				}
 			}
 		}
 
