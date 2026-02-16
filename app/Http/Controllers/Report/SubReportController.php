@@ -6,12 +6,14 @@ use App\Click;
 use App\Offer;
 use App\User;
 use App\Conversion;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use LeadMax\TrackYourStats\Report\Reporter;
 use LeadMax\TrackYourStats\Report\Repositories\SubVarRepository;
 use LeadMax\TrackYourStats\Report\Filters;
-use phpDocumentor\Reflection\Types\Object_;
 use App\Http\Traits\ClickTraits;
 use LeadMax\TrackYourStats\Clicks\ClickGeo;
 
@@ -39,7 +41,7 @@ class SubReportController extends ReportController
         return view('report.sub', compact('reporter', 'dates'));
     }
 
-	public function showSubConversions(Request $request): \Illuminate\Contracts\View\View|\Illuminate\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\Foundation\Application {
+	public function showSubConversions(Request $request): View|Application|Factory|\Illuminate\Contracts\Foundation\Application {
 
 		$subID = $request->get('subid');
 		$dates = self::getDates();
@@ -109,10 +111,6 @@ class SubReportController extends ReportController
 						->whereRaw('clicks.first_timestamp >= NOW() - INTERVAL 2 YEAR');
 					})
 					->where('click_vars.sub1', '=', $subId)
-	                ->leftJoin('click_geo', function($query) {
-						$query->on('click_geo.click_id', '=', 'clicks.idclicks')
-						->whereRaw('clicks.first_timestamp >= NOW() - INTERVAL 2 YEAR');
-					})
 	                ->leftJoin('conversions', 'conversions.click_id', '=', 'clicks.idclicks')
 	                ->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
 	                ->select(
@@ -124,7 +122,7 @@ class SubReportController extends ReportController
 						'click_vars.url',
 						'click_vars.sub1 as subId',
 						'clicks.referer',
-						'click_geo.ip  as ip_address',
+						'clicks.ip_address  as ip_address',
 						'clicks.offer_idoffer  as offer_id'
 	                )
 	                ->orderBy('paid', 'DESC')->paginate(100);
@@ -271,7 +269,6 @@ class SubReportController extends ReportController
 							$subQuery->whereIn('ip_address', $matchingIPs);
 						});
 					})
-	                ->leftJoin('click_geo', 'click_geo.click_id', '=', 'clicks.idclicks')
 	                ->leftJoin('conversions', 'conversions.click_id', '=', 'clicks.idclicks')
 	                ->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
 	                ->select(
@@ -283,7 +280,7 @@ class SubReportController extends ReportController
 						'click_vars.url',
 						'click_vars.sub1 as subId',
 						'clicks.referer',
-						'click_geo.ip  as ip_address',
+						'clicks.ip_address  as ip_address',
 						'clicks.offer_idoffer  as offer_id'
 	                )
 	                ->orderBy('paid', 'DESC')->paginate(100);

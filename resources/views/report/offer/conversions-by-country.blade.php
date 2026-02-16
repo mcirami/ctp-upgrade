@@ -32,35 +32,19 @@
 		</tr>
 		</thead>
 		<tbody>
-        @php
-            $rows = $affiliateReport['rows'] ?? [];
-            $totals = $affiliateReport['totals'] ?? null;
-        @endphp
+        @if(!empty($affiliateReport))
+            @foreach($affiliateReport as $report)
+                <tr>
+                    <td>{{$report['country_code']}}</td>
+                    <td>{{$report['total_clicks']}}</td>
+                    <td>{{$report['unique_clicks']}}</td>
+                    <td>{{$report['total_conversions']}}</td>
+                </tr>
 
-        @forelse($rows as $report)
-            <tr>
-                <td>{{$report['country_code'] === 'ZZ' ? 'Unknown' : $report['country_code']}}</td>
-                <td>{{$report['total_clicks']}}</td>
-                <td>{{$report['unique_clicks']}}</td>
-                <td>{{$report['total_conversions']}}</td>
-            </tr>
-        @empty
-            <tr>
-                <td colspan="4" class="text-center">No data available for the selected range.</td>
-            </tr>
-        @endforelse
+            @endforeach
+        @endif
 
 		</tbody>
-        @if(!empty($rows) && $totals)
-            <tfoot>
-            <tr class="static">
-                <td><strong>Total</strong></td>
-                <td><strong>{{$totals['total_clicks']}}</strong></td>
-                <td><strong>{{$totals['unique_clicks']}}</strong></td>
-                <td><strong>{{$totals['total_conversions']}}</strong></td>
-            </tr>
-            </tfoot>
-        @endif
 	</table>
 @endsection
 

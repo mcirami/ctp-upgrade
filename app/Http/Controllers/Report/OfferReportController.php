@@ -173,7 +173,7 @@ class OfferReportController extends ReportController
 
         $affiliateRepo = new OfferAffiliateClicksRepository( $offer?->idoffer, Session::user() );
 
-		$affiliateReport = $affiliateRepo->conversionsByCountry( $start, $end);
+		$affiliateReport = $affiliateRepo->getOfferConversionsByCountry( $start, $end);
 
         return view('report.offer.conversions-by-country', compact('affiliateReport', 'offer'));
 
