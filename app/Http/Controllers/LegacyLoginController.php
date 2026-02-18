@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use LeadMax\TrackYourStats\System\Session;
 use LeadMax\TrackYourStats\User\Login;
 use LeadMax\TrackYourStats\User\User;
 use LeadMax\TrackYourStats\System\Company;
@@ -41,11 +42,35 @@ class LegacyLoginController extends Controller
 			$result = $user->login($username, $username, $password);
 
 			if ($result == Login::RESULT_SUCCESS) {
+				// At this point legacy login session is created.
+				// Now check if this user is God/Admin and requires 2FA.
+				//$loggedInUser = new User(); // or however you load the current user in your legacy system
+				// If you have a method like loadFromSession(), use that instead:
+				$loggedInUser = Session::user();
+
+				if ($loggedInUser->requiresTwoFactor()) {
+
+					// If 2FA is enabled, require challenge
+					if ( $loggedInUser->two_factor_enabled ) {
+						session( [
+							'2fa.required' => true,
+							'2fa.passed'   => false,
+						] );
+
+						return redirect()->route( '2fa.challenge' );
+					}
+
+					// If 2FA not enabled yet, force enrollment for these roles
+					return redirect()->route( '2fa.enroll' );
+				}
+
+				// Non-top-level roles continue normally
 				if ($request->has('redirectUri')) {
 					return redirect(urldecode($request->get('redirectUri')));
 				}
 
 				return redirect('dashboard');
+
 			} elseif ($result == Login::RESULT_PENDING) {
 				return redirect('signup_success.php?pending=1');
 			} else {

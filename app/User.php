@@ -35,6 +35,10 @@ use LeadMax\TrackYourStats\System\Session;
  * @property int|null $rgt
  * @property string|null $skype
  * @property string $company_name
+ * @property string|null $two_factor_secret
+ * @property string|null $two_factor_enabled
+ * @property string|null $two_factor_recovery_codes
+ * @property string|null $two_factor_confirmed_at
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereCellPhone($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereCompanyName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereEmail($value)
@@ -83,6 +87,12 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
+
+	protected $casts = [
+		'two_factor_recovery_codes' => 'array',
+		'two_factor_confirmed_at' => 'datetime',
+		'two_factor_enabled' => 'boolean',
+	];
 
 
     public function scopeMyUsers(Builder $query)
@@ -164,10 +174,7 @@ class User extends Authenticatable
         return $this->hasOne(Privilege::class, 'rep_idrep', 'idrep');
     }
 
-    /**
-     * @return Builder|BelongsToMany
-     */
-    public function offers(): Builder|BelongsToMany {
+    public function offers() {
         switch ($this->getRole()) {
             case Privilege::ROLE_GOD:
             case Privilege::ROLE_ADMIN:
@@ -184,6 +191,8 @@ class User extends Authenticatable
             case Privilege::ROLE_AFFILIATE:
                 return $this->belongsToMany(Offer::class, 'rep_has_offer', 'rep_idrep', 'offer_idoffer')
                     ->withPivot('payout');
+			default:
+				return 0;
         }
     }
 
@@ -210,5 +219,23 @@ class User extends Authenticatable
         return $this->hasOne(Salary::class, 'user_id', 'idrep');
     }
 
+	// Encrypt/decrypt secret at rest
+	public function setTwoFactorSecretAttribute($value)
+	{
+		$this->attributes['two_factor_secret'] = $value ? encrypt($value) : null;
+	}
 
+	public function getTwoFactorSecretAttribute($value)
+	{
+		return $value ? decrypt($value) : null;
+	}
+
+	public function requiresTwoFactor(): bool
+	{
+		// Adapt to however you store roles
+		// Examples:
+		// return in_array($this->role, ['God', 'Admin'], true);
+
+		return $this->getRole() === Privilege::ROLE_GOD;
+	}
 }

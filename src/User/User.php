@@ -16,6 +16,7 @@ namespace LeadMax\TrackYourStats\User;
 //include '../modifiedPreorderTreeTraversalfiedPreorderTreeTraversal.php';
 //include '../Permissions.php';
 
+use AllowDynamicProperties;
 use App\Privilege;
 use LeadMax\TrackYourStats\Offer\RepHasOffer;
 use LeadMax\TrackYourStats\System\Company;
@@ -24,6 +25,7 @@ use LeadMax\TrackYourStats\System\Session;
 use PDO;
 
 //Begin class
+#[AllowDynamicProperties]
 class User extends Login
 {
 

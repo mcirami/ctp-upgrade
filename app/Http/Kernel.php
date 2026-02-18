@@ -3,6 +3,7 @@
 namespace App\Http;
 
 use App\Http\Middleware\AdminLoginMiddleware;
+use App\Http\Middleware\EnsureTwoFactorPassed;
 use App\Http\Middleware\LegacyAccountTypeMiddleware;
 use App\Http\Middleware\LegacyPermissionMiddleware;
 use App\Http\Middleware\LegacyUserAuth;
@@ -64,5 +65,6 @@ class Kernel extends HttpKernel
         'legacy.auth' => LegacyUserAuth::class,
         'permissions' => LegacyPermissionMiddleware::class,
         'role'        => LegacyAccountTypeMiddleware::class,
+	    '2fa'         => EnsureTwoFactorPassed::class
     ];
 }
