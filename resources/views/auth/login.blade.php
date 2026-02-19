@@ -29,7 +29,10 @@ $webroot = getWebRoot();
 <body style="background-color:#EAEEF1;">
 <div class="top_sec value_span1">
     <div class="logo">
-        <a href="<?php echo $webroot ?>"><img src="<?= \LeadMax\TrackYourStats\System\Company::loadFromSession()->getImgDir() ?>/logo.png" alt="<?php echo \LeadMax\TrackYourStats\System\Company::loadFromSession()->getShortHand(); ?>" title="<?php echo \LeadMax\TrackYourStats\System\Company::loadFromSession()->getShortHand(); ?>"/></a>
+        <?php echo \LeadMax\TrackYourStats\System\Company::loadFromSession()->getImgDir(); ?>
+        <a href="<?php echo $webroot ?>">
+            <img src="<?= \LeadMax\TrackYourStats\System\Company::loadFromSession()->getImgDir() ?>/logo.png" alt="<?php echo \LeadMax\TrackYourStats\System\Company::loadFromSession()->getShortHand(); ?>" title="<?php echo \LeadMax\TrackYourStats\System\Company::loadFromSession()->getShortHand(); ?>"/>
+        </a>
     </div>
 </div>
 <div class="white_box_outer">

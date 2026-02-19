@@ -19,29 +19,27 @@ class EnsureTwoFactorPassed
     {
 	    $user = new User();
 
-	    // If not logged in, let your existing guest/auth middleware handle it
 	    if (!$user->is_loggedin() || !$user->verify_login_session()) {
 		    return $next($request);
 	    }
 
 		$sessionUser = Session::user();
+		if (!$sessionUser) {
+			return redirect('/login');
+		}
 
-	    // Only enforce for top-level accounts
 	    if ($sessionUser->requiresTwoFactor()) {
+		    if (!$request->routeIs('2fa.*')) {
+			    if (!$sessionUser->two_factor_enabled || !$sessionUser->two_factor_confirmed_at) {
+				    return redirect()->route('2fa.enroll');
+			    }
 
-		    // If 2FA is enabled for them, require passing the challenge
-		    if ($sessionUser->two_factor_enabled && !session('2fa.passed')) {
-
-			    // Prevent redirect loop if already on 2FA pages
-			    if (!$request->routeIs('2fa.*')) {
+			    if (!session('2fa.passed')) {
 				    return redirect()->route('2fa.challenge');
 			    }
 		    }
-
-		    // If they require 2FA but haven’t enrolled yet, push them to enroll
-		    if (!$sessionUser->two_factor_enabled && !$request->routeIs('2fa.*')) {
-			    return redirect()->route('2fa.enroll');
-		    }
+	    } else {
+		    session()->forget(['2fa.required', '2fa.passed', '2fa.redirect_uri']);
 	    }
 
 	    return $next($request);

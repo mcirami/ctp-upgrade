@@ -42,29 +42,25 @@ class LegacyLoginController extends Controller
 			$result = $user->login($username, $username, $password);
 
 			if ($result == Login::RESULT_SUCCESS) {
-				// At this point legacy login session is created.
-				// Now check if this user is God/Admin and requires 2FA.
-				//$loggedInUser = new User(); // or however you load the current user in your legacy system
-				// If you have a method like loadFromSession(), use that instead:
 				$loggedInUser = Session::user();
 
-				if ($loggedInUser->requiresTwoFactor()) {
-
-					// If 2FA is enabled, require challenge
-					if ( $loggedInUser->two_factor_enabled ) {
-						session( [
-							'2fa.required' => true,
-							'2fa.passed'   => false,
-						] );
-
-						return redirect()->route( '2fa.challenge' );
+				if ($loggedInUser && $loggedInUser->requiresTwoFactor()) {
+					if ($request->filled('redirectUri')) {
+						session(['2fa.redirect_uri' => urldecode($request->get('redirectUri'))]);
 					}
 
-					// If 2FA not enabled yet, force enrollment for these roles
-					return redirect()->route( '2fa.enroll' );
+					if ($loggedInUser->two_factor_enabled && $loggedInUser->two_factor_confirmed_at) {
+						session([
+							'2fa.required' => true,
+							'2fa.passed' => false,
+						]);
+
+						return redirect()->route('2fa.challenge');
+					}
 				}
 
-				// Non-top-level roles continue normally
+				session()->forget(['2fa.required', '2fa.passed', '2fa.redirect_uri']);
+
 				if ($request->has('redirectUri')) {
 					return redirect(urldecode($request->get('redirectUri')));
 				}
@@ -110,6 +106,8 @@ class LegacyLoginController extends Controller
 	}
     public function logout()
     {
+		session()->forget(['2fa.required', '2fa.passed', '2fa.redirect_uri']);
+
         if (isset($_GET["adminLogin"])) {
             unset($_SESSION["adminLogin"]);
 

@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Query\JoinClause;
@@ -227,15 +228,30 @@ class User extends Authenticatable
 
 	public function getTwoFactorSecretAttribute($value)
 	{
-		return $value ? decrypt($value) : null;
+		if (!$value) {
+			return null;
+		}
+
+		try {
+			return decrypt($value);
+		} catch (DecryptException $e) {
+			return $value;
+		}
 	}
 
 	public function requiresTwoFactor(): bool
 	{
-		// Adapt to however you store roles
-		// Examples:
-		// return in_array($this->role, ['God', 'Admin'], true);
+		$role = $this->getRole();
+		if ((string) $role === (string) Privilege::ROLE_GOD) {
+			return true;
+		}
 
-		return $this->getRole() === Privilege::ROLE_GOD;
+		$rawRole = $this->attributes['role'] ?? null;
+		if (!is_string($rawRole)) {
+			return false;
+		}
+
+		$rawRole = strtolower(trim($rawRole));
+		return $rawRole === 'god' || $rawRole === '0';
 	}
 }
