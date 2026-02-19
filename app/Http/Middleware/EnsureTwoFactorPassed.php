@@ -38,8 +38,6 @@ class EnsureTwoFactorPassed
 				    return redirect()->route('2fa.challenge');
 			    }
 		    }
-	    } else {
-		    session()->forget(['2fa.required', '2fa.passed', '2fa.redirect_uri']);
 	    }
 
 	    return $next($request);
