@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Report;
 
 use App\Click;
 use App\Offer;
+use App\Services\CountryReportBuilderService;
 use App\User;
 use App\Conversion;
 use Illuminate\Http\Request;
@@ -12,7 +13,6 @@ use LeadMax\TrackYourStats\Report\Reporter;
 use LeadMax\TrackYourStats\Report\Repositories\SubVarRepository;
 use LeadMax\TrackYourStats\Report\Filters;
 use App\Http\Traits\ClickTraits;
-use LeadMax\TrackYourStats\Clicks\ClickGeo;
 
 class SubReportController extends ReportController
 {
@@ -300,7 +300,7 @@ class SubReportController extends ReportController
 		));
 	}
 
-	public function subIdOfferConverisonsByCountry(User $user, Offer $offer) {
+	public function subIdOfferConverisonsByCountry(User $user, Offer $offer, CountryReportBuilderService $countryReportBuilderService) {
 		$dates = self::getDates();
 		$startDate = $dates['originalStart'];
 		$endDate = $dates['originalEnd'];
@@ -338,43 +338,10 @@ class SubReportController extends ReportController
 			
 			->groupBy('clicks.ip_address', 'clicks.country_code');
 
-			$reportCollection = DB::table(DB::raw("({$clicksSubquery->toSql()}) as clicks"))
-			->mergeBindings($clicksSubquery->getQuery())
-			->leftJoin(DB::raw("({$conversionsSubquery->toSql()}) as conversions"), 'clicks.ip_address', '=', 'conversions.ip_address')
-			->mergeBindings($conversionsSubquery->getQuery())
-			->select(
-				'clicks.ip_address',
-				'clicks.country_code',
-				DB::raw('SUM(clicks.clicks) as total_clicks'),
-				DB::raw('SUM(clicks.unique_clicks) as unique_clicks'),
-				DB::raw('SUM(COALESCE(conversions.conversions, 0)) as total_conversions'),
-			)
-			->groupBy('clicks.ip_address', 'clicks.country_code')
-			->orderBy('total_conversions', 'DESC')->get();
-		
-		foreach($reportCollection as $item) {
-			if (is_null($item->country_code)) {
-				$geo = ClickGeo::findGeo($item->ip_address);
-				$item->country_code = $geo['isoCode'];
-			}
-		}
-
-		$reports = [];
-
-		foreach ($reportCollection as $item) {
-			$countryCode = $item->country_code;
-			if (!isset($reports[$countryCode])) {
-				$reports[$countryCode] = [
-					'country_code' => $countryCode,
-					'total_clicks' => 0,
-					'unique_clicks' => 0,
-					'total_conversions' => 0
-				];
-			}
-			$reports[$countryCode]['total_clicks'] += $item->total_clicks;
-			$reports[$countryCode]['unique_clicks'] += $item->unique_clicks;
-			$reports[$countryCode]['total_conversions'] += $item->total_conversions;
-		}
+		$countryReports = $countryReportBuilderService
+			->buildFromIpSubqueries($clicksSubquery, $conversionsSubquery);
+		$reportCollection = $countryReports['reportCollection'];
+		$reports = $countryReports['reports'];
 
 		return view('report.conversions.affiliate-subid-by-country', 
 		compact(

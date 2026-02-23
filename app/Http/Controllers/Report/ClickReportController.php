@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Report;
 
 use App\Click;
-use App\ClickGeoCache;
 use App\Offer;
 use App\Privilege;
 use App\Services\Repositories\Offer\OfferClicksRepository;
@@ -13,8 +12,8 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
-use LeadMax\TrackYourStats\Clicks\ClickGeo;
 use LeadMax\TrackYourStats\System\Session;
+use LeadMax\TrackYourStats\Table\Assignments;
 use LeadMax\TrackYourStats\User\Permissions;
 use App\Http\Traits\ClickTraits;
 use App\Services\ClickGeoCacheService;
@@ -77,7 +76,7 @@ class ClickReportController extends ReportController
         );
 
 
-        $assign = new \LeadMax\TrackYourStats\Table\Assignments($myAssignments);
+        $assign = new Assignments($myAssignments);
 
         $assign->getAssignments();
         $report = new \LeadMax\TrackYourStats\Report\ID\Offer($assign);
