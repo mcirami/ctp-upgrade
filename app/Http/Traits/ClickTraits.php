@@ -17,19 +17,20 @@ trait ClickTraits {
 	 */
 	public function formatResults(object $results): object {
 		$per = Permissions::loadFromSession();
+		$geoCacheByIp = $this->loadGeoCacheByIp($results);
+		$resolvedGeoByIp = [];
+
 		if ($per->can("view_fraud_data")) {
 			foreach ($results as $row => $val) {
 
 				if ($val->isoCode) {
-					$geo = ClickGeoCache::query()
-					                    ->where('ip_address', $val->ip_address)->first();
-					if($geo) {
-						$geo = $geo->toArray();
+					if (isset($geoCacheByIp[$val->ip_address])) {
+						$geo = $geoCacheByIp[$val->ip_address];
 					} else {
-						$geo = ClickGeo::findGeo($val->ip_address);
+						$geo = $this->resolveGeoByIp($val->ip_address, $resolvedGeoByIp);
 					}
 				} else {
-					$geo = ClickGeo::findGeo($val->ip_address);
+					$geo = $this->resolveGeoByIp($val->ip_address, $resolvedGeoByIp);
 				}
 
 				foreach ($geo as $key => $val2) {
@@ -38,12 +39,55 @@ trait ClickTraits {
 			}
 		} else {
 			foreach ($results as $row => $val) {
-				$geo = ClickGeo::findGeo($val->ip_address);
-				$val->isoCode = $geo["isoCode"];
+				$geo = $this->resolveGeoByIp($val->ip_address, $resolvedGeoByIp, $geoCacheByIp);
+				$val->isoCode = $geo["isoCode"] ?? $geo["country_code"] ?? null;
 				unset($val->ip);
 			}
 		}
 
 		return $results;
+	}
+
+	private function loadGeoCacheByIp(object $results): array
+	{
+		$ips = [];
+
+		foreach ($results as $result) {
+			if (!empty($result->ip_address)) {
+				$ips[] = $result->ip_address;
+			}
+		}
+
+		$ips = array_values(array_unique($ips));
+
+		if (empty($ips)) {
+			return [];
+		}
+
+		return ClickGeoCache::query()
+		                    ->whereIn('ip_address', $ips)
+		                    ->get()
+		                    ->keyBy('ip_address')
+		                    ->map(function ($row) {
+			                    return $row->toArray();
+		                    })
+		                    ->toArray();
+	}
+
+	private function resolveGeoByIp(?string $ipAddress, array &$resolvedGeoByIp, ?array $geoCacheByIp = null): array
+	{
+		if (empty($ipAddress)) {
+			return [];
+		}
+
+		if ($geoCacheByIp !== null && isset($geoCacheByIp[$ipAddress])) {
+			return $geoCacheByIp[$ipAddress];
+		}
+
+		if (!isset($resolvedGeoByIp[$ipAddress])) {
+			$resolvedGeoByIp[$ipAddress] = ClickGeo::findGeo($ipAddress);
+		}
+
+		return $resolvedGeoByIp[$ipAddress];
 	}
 }

@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Carbon;
 
 /**
  * App\Click
@@ -53,6 +54,21 @@ class Click extends Model
 	protected static function booted()
 	{
 		static::addGlobalScope('ignore_old_records', function (Builder $builder) {
+			$requestedFrom = request()->query('d_from');
+
+			if (!empty($requestedFrom)) {
+				try {
+					$fromDate = Carbon::parse($requestedFrom);
+
+					// If the requested range starts earlier than the rolling cutoff, don't clamp it.
+					if ($fromDate->lt(Carbon::now()->subMonths(6))) {
+						return;
+					}
+				} catch (\Throwable $e) {
+					// Ignore parse issues and keep default 6-month guard.
+				}
+			}
+
 			$builder->where('first_timestamp', '>=', DB::raw('NOW() - INTERVAL 6 MONTH'));
 		});
 	}
@@ -65,6 +81,36 @@ class Click extends Model
 		             ->whereNull('country_code')
 		             ->distinct()
 		             ->pluck('ip_address');
+	}
+
+	public function scopeUserClicksReport(
+		Builder $query,
+		int $userId,
+		string $startDate,
+		string $endDate
+	): Builder {
+		return $query
+			->where('rep_idrep', '=', $userId)
+			->where('clicks.click_type', '!=', self::TYPE_BLACKLISTED)
+			->whereBetween('clicks.first_timestamp', [$startDate, $endDate])
+			->leftJoin('click_vars', 'click_vars.click_id', '=', 'clicks.idclicks')
+			->leftJoin('conversions', 'conversions.click_id', '=', 'clicks.idclicks')
+			->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
+			->select(
+				'clicks.idclicks',
+				'clicks.first_timestamp as timestamp',
+				'offer.offer_name',
+				'conversions.timestamp as conversion_timestamp',
+				'conversions.paid as paid',
+				'click_vars.url',
+				'click_vars.sub1',
+				'click_vars.sub2',
+				'click_vars.sub3',
+				'clicks.referer',
+				'clicks.ip_address as ip_address',
+				'clicks.offer_idoffer as offer_id'
+			)
+			->orderBy('paid', 'DESC');
 	}
 
 	public function scopeCountryClicksInGeo(

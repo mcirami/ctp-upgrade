@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Report;
 
-use App\ClickGeoCache;
 use App\Conversion;
 use App\User;
 use App\Click;
@@ -11,7 +10,6 @@ use App\Services\ClickGeoCacheService;
 use App\Services\CountryReportBuilderService;
 use App\Http\Traits\ClickTraits;
 use Illuminate\Support\Facades\DB;
-use LeadMax\TrackYourStats\Clicks\ClickGeo;
 
 class ConversionReportController extends ReportController
 {
@@ -111,7 +109,11 @@ class ConversionReportController extends ReportController
 			));
 	}
 
-    public function showUserOfferConversionsByCountry(User $user, Offer $offer) {
+    public function showUserOfferConversionsByCountry(
+		User $user,
+		Offer $offer,
+		CountryReportBuilderService $countryReportBuilderService
+	) {
 		$dates = self::getDates();
 		$startDate = $dates['originalStart'];
 		$endDate = $dates['originalEnd'];
@@ -125,51 +127,10 @@ class ConversionReportController extends ReportController
 		$conversionsSubquery = Conversion::query()
 			->countryConversionsByIpInGeo($dates['startDate'], $dates['endDate'], $userId, $offerId);
 
-			$reportCollection = DB::table(DB::raw("({$clicksSubquery->toSql()}) as clicks"))
-			->mergeBindings($clicksSubquery->getQuery())
-			->leftJoin(DB::raw("({$conversionsSubquery->toSql()}) as conversions"), 'clicks.ip_address', '=', 'conversions.ip_address')
-			->mergeBindings($conversionsSubquery->getQuery())
-			->select(
-				'clicks.ip_address',
-				'clicks.country_code',
-				DB::raw('SUM(clicks.clicks) as total_clicks'),
-				DB::raw('SUM(clicks.unique_clicks) as unique_clicks'),
-				DB::raw('SUM(COALESCE(conversions.conversions, 0)) as total_conversions'),
-			)
-			->groupBy('clicks.ip_address', 'clicks.country_code')
-			->orderBy('total_conversions', 'DESC')->get();
-		
-		foreach($reportCollection as $item) {
-			if (is_null($item->country_code)) {
-				$cachedIP = ClickGeoCache::query()
-				                         ->where('ip_address', $item->ip_address)
-				                         ->pluck('country_code')
-				                         ->first();
-				if ($cachedIP) {
-					$item->country_code = $cachedIP;
-				} else {
-					$geo = ClickGeo::findGeo($item->ip_address);
-					$item->country_code = $geo['isoCode'];
-				}
-			}
-		}
-
-		$reports = [];
-
-		foreach ($reportCollection as $item) {
-			$countryCode = $item->country_code;
-			if (!isset($reports[$countryCode])) {
-				$reports[$countryCode] = [
-					'country_code' => $countryCode,
-					'total_clicks' => 0,
-					'unique_clicks' => 0,
-					'total_conversions' => 0
-				];
-			}
-			$reports[$countryCode]['total_clicks'] += $item->total_clicks;
-			$reports[$countryCode]['unique_clicks'] += $item->unique_clicks;
-			$reports[$countryCode]['total_conversions'] += $item->total_conversions;
-		}
+		$countryReports = $countryReportBuilderService
+			->buildFromIpSubqueries($clicksSubquery, $conversionsSubquery);
+		$reportCollection = $countryReports['reportCollection'];
+		$reports = $countryReports['reports'];
 
 		return view('report.conversions.affiliate-by-country', 
 		compact(

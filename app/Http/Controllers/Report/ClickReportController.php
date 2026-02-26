@@ -99,27 +99,9 @@ class ClickReportController extends ReportController
 
         $user = User::myUsers()->findOrFail($userId);
 
-	    $reportCollection = Click::where('rep_idrep', '=', $userId)
-	                ->where('clicks.click_type', '!=', 2)
-	                ->whereBetween('clicks.first_timestamp', [$dates['startDate'], $dates['endDate']])
-	                ->leftJoin('click_vars', 'click_vars.click_id', '=', 'clicks.idclicks')
-	                ->leftJoin('conversions', 'conversions.click_id', '=', 'clicks.idclicks')
-	                ->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
-	                ->select(
-						'clicks.idclicks',
-						'clicks.first_timestamp as timestamp',
-						'offer.offer_name',
-						'conversions.timestamp as conversion_timestamp',
-						'conversions.paid as paid',
-						'click_vars.url',
-						'click_vars.sub1',
-						'click_vars.sub2',
-		                'click_vars.sub3',
-						'clicks.referer',
-						'clicks.ip_address as ip_address',
-						'clicks.offer_idoffer as offer_id'
-	                )
-	                ->orderBy('paid', 'DESC')->paginate(100);
+		    $reportCollection = Click::query()
+		                ->userClicksReport($userId, $dates['startDate'], $dates['endDate'])
+		                ->paginate(100);
 
 		$report = $this->formatResults($reportCollection);
 
@@ -158,13 +140,13 @@ class ClickReportController extends ReportController
 			          ])
 			          ->get();
 
-			$object = [
+			$object      = [
 				'user_id' => $manager->idrep,
 				'user_name' => $manager->user_name,
 				'clicks' =>  $data[0]->clicks,
 				'conversions' => $data[0]->conversions
 			];
-			array_push($affClicks, (object) $object);
+			$affClicks[] = (object) $object;
 		}
 
 		return $affClicks;

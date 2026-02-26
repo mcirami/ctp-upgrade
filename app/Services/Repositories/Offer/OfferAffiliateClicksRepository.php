@@ -12,6 +12,7 @@ use App\Services\Repositories\Repository;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Database\Query\Builder;
+use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Facades\DB;
 use LeadMax\TrackYourStats\System\Session;
 
@@ -78,57 +79,73 @@ class OfferAffiliateClicksRepository implements Repository
         return $this->query($start, $end)->get();
     }
 
-    public function getOfferConversionsForAgent($start, $end) {
-        return DB::table('clicks')
-        ->where('offer_idoffer', '=', $this->offerId)
-        ->where('rep_idrep', '=', $this->user->idrep)
-        ->whereBetween('first_timestamp',[$start, $end])
-        ->join('rep', 'idrep', '=', 'clicks.rep_idrep')
-        ->rightJoin('conversions', 'conversions.click_id', '=', 'clicks.idclicks')
-        ->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
-        ->select('rep.idrep as user_id', 'rep.user_name', 'offer.idoffer as offer_id', 'offer.offer_name', 
-        DB::raw('COUNT(clicks.idclicks) as clicks'),
-        DB::raw('SUM(clicks.click_type = 0) as unique_clicks'),
-        DB::raw('COUNT(conversions.click_id) as conversions'))
-        ->groupBy('rep.user_name', 'rep.idrep', 'offer_id')->orderBy('conversions', 'DESC');
+    public function getOfferConversionsForAgent($start, $end): Builder {
+        return $this->buildRoleScopedOfferConversionsQuery(
+            $start,
+            $end,
+            function (JoinClause $join) {
+                $join->on('idrep', '=', 'clicks.rep_idrep');
+            },
+            function (Builder $query) {
+                $query->where('rep_idrep', '=', $this->user->idrep);
+            }
+        );
     }
 
     public function getOfferConversionsForManager($start, $end) {
-
-        return DB::table('clicks')
-        ->where('offer_idoffer', '=', $this->offerId)
-        ->whereBetween('first_timestamp',[$start, $end])
-        ->join('rep', function($query) {
-            $query->on('idrep', '=', 'clicks.rep_idrep')
-            ->where('rep.referrer_repid', $this->user->idrep);
-        })
-        ->rightJoin('conversions', 'conversions.click_id', '=', 'clicks.idclicks')
-        ->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
-        ->select('rep.idrep as user_id', 'rep.user_name', 'offer.idoffer as offer_id', 'offer.offer_name', 
-        DB::raw('COUNT(clicks.idclicks) as clicks'),
-        DB::raw('SUM(clicks.click_type = 0) as unique_clicks'),
-        DB::raw('COUNT(conversions.click_id) as conversions'))
-        ->groupBy('rep.user_name', 'rep.idrep', 'offer_id')->orderBy('conversions', 'DESC');
+        return $this->buildRoleScopedOfferConversionsQuery(
+            $start,
+            $end,
+            function (JoinClause $join) {
+                $join->on('idrep', '=', 'clicks.rep_idrep')
+                    ->where('rep.referrer_repid', $this->user->idrep);
+            }
+        );
     }
 
-    public function getOfferConversionsForAdmin($start, $end) {
+    public function getOfferConversionsForAdmin($start, $end): Builder {
 
         $managers = User::where('referrer_repid', $this->user->idrep)->pluck('idrep')->toArray();
 
-        return DB::table('clicks')
-        ->where('offer_idoffer', '=', $this->offerId)
-        ->whereBetween('first_timestamp',[$start, $end])
-        ->join('rep', function($query) use($managers) {
-            $query->on('idrep', '=', 'clicks.rep_idrep')
-            ->whereIn('rep.referrer_repid', $managers);
-        })
-        ->rightJoin('conversions', 'conversions.click_id', '=', 'clicks.idclicks')
-        ->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
-        ->select('rep.idrep as user_id', 'rep.user_name', 'offer.idoffer as offer_id', 'offer.offer_name', 
-        DB::raw('COUNT(clicks.idclicks) as clicks'),
-        DB::raw('SUM(clicks.click_type = 0) as unique_clicks'),
-        DB::raw('COUNT(conversions.click_id) as conversions'))
-        ->groupBy('rep.user_name', 'rep.idrep', 'offer_id')->orderBy('conversions', 'DESC');
+        return $this->buildRoleScopedOfferConversionsQuery(
+            $start,
+            $end,
+            function (JoinClause $join) use ($managers) {
+                $join->on('idrep', '=', 'clicks.rep_idrep')
+                    ->whereIn('rep.referrer_repid', $managers);
+            }
+        );
+    }
+
+    private function buildRoleScopedOfferConversionsQuery(
+        $start,
+        $end,
+        callable $repJoinCallback,
+        ?callable $additionalClickFilters = null
+    ): Builder {
+        $query = DB::table('clicks')
+            ->where('offer_idoffer', '=', $this->offerId)
+            ->whereBetween('first_timestamp', [$start, $end]);
+
+        if ($additionalClickFilters !== null) {
+            $additionalClickFilters($query);
+        }
+
+        return $query
+            ->join('rep', $repJoinCallback)
+            ->rightJoin('conversions', 'conversions.click_id', '=', 'clicks.idclicks')
+            ->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
+            ->select(
+                'rep.idrep as user_id',
+                'rep.user_name',
+                'offer.idoffer as offer_id',
+                'offer.offer_name',
+                DB::raw('COUNT(clicks.idclicks) as clicks'),
+                DB::raw('SUM(clicks.click_type = 0) as unique_clicks'),
+                DB::raw('COUNT(conversions.click_id) as conversions')
+            )
+            ->groupBy('rep.user_name', 'rep.idrep', 'offer_id')
+            ->orderBy('conversions', 'DESC');
     }
 
     public function getOfferConversionsForGod($start, $end) {
