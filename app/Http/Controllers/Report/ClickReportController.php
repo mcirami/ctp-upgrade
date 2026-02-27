@@ -96,12 +96,13 @@ class ClickReportController extends ReportController
 		$startDate = $dates['originalStart'];
 		$endDate = $dates['originalEnd'];
 		$dateSelect = request()->query('dateSelect');
+		$selectedRole = (int) request()->query('role', Privilege::ROLE_AFFILIATE);
 
         $user = User::myUsers()->findOrFail($userId);
 
-		    $reportCollection = Click::query()
-		                ->userClicksReport($userId, $dates['startDate'], $dates['endDate'])
-		                ->paginate(100);
+		$reportCollection = Click::query()
+			->userClicksReportByRole($userId, $dates['startDate'], $dates['endDate'], $selectedRole)
+			->paginate(100);
 
 		$report = $this->formatResults($reportCollection);
 
@@ -112,7 +113,8 @@ class ClickReportController extends ReportController
 			'reportCollection', 
 			'startDate', 
 			'endDate', 
-			'dateSelect'
+			'dateSelect',
+			'selectedRole'
 		));
     }
 

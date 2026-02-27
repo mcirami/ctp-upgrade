@@ -6,6 +6,7 @@ use App\Conversion;
 use App\User;
 use App\Click;
 use App\Offer;
+use App\Privilege;
 use App\Services\ClickGeoCacheService;
 use App\Services\CountryReportBuilderService;
 use App\Http\Traits\ClickTraits;
@@ -61,10 +62,28 @@ class ConversionReportController extends ReportController
 		$startDate = $dates['originalStart'];
 		$endDate = $dates['originalEnd'];
 		$dateSelect = request()->query('dateSelect');
+		$selectedRole = (int) request()->query('role', Privilege::ROLE_AFFILIATE);
 
         $user = User::findOrFail($userId);
 
-		$clicksSubquery = Click::where('rep_idrep', '=', $userId)
+		$affiliateScope = function ($query, string $column) use ($userId, $selectedRole) {
+			if (in_array($selectedRole, [Privilege::ROLE_GOD, Privilege::ROLE_ADMIN, Privilege::ROLE_MANAGER], true)) {
+				$query->whereIn($column, function ($subQuery) use ($userId) {
+					$subQuery->from('rep as child')
+						->select('child.idrep')
+						->join('privileges as p', 'p.rep_idrep', '=', 'child.idrep')
+						->where('p.is_rep', '=', 1)
+						->whereRaw('child.lft > (SELECT lft FROM rep WHERE idrep = ?)', [$userId])
+						->whereRaw('child.rgt < (SELECT rgt FROM rep WHERE idrep = ?)', [$userId]);
+				});
+			} else {
+				$query->where($column, '=', $userId);
+			}
+		};
+
+		$clicksSubquery = Click::query();
+		$affiliateScope($clicksSubquery, 'rep_idrep');
+		$clicksSubquery
 			->whereBetween('first_timestamp', [$dates['startDate'], $dates['endDate']])
 			->select(
 				'ip_address', 
@@ -77,7 +96,9 @@ class ConversionReportController extends ReportController
 				)
 			->groupBy('offer_idoffer');
 
-		$conversionsSubquery = Conversion::where('user_id', '=', $userId)
+		$conversionsSubquery = Conversion::query();
+		$affiliateScope($conversionsSubquery, 'user_id');
+		$conversionsSubquery
 			->whereBetween('timestamp', [$dates['startDate'], $dates['endDate']])
 			->leftJoin('clicks', 'clicks.idclicks', '=', 'conversions.click_id')
 			->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')

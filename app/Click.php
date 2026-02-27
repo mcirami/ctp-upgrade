@@ -113,6 +113,49 @@ class Click extends Model
 			->orderBy('paid', 'DESC');
 	}
 
+	public function scopeUserClicksReportByRole(
+		Builder $query,
+		int $userId,
+		string $startDate,
+		string $endDate,
+		int $role
+	): Builder {
+		if (in_array($role, [Privilege::ROLE_GOD, Privilege::ROLE_ADMIN, Privilege::ROLE_MANAGER], true)) {
+			$query->whereIn('rep_idrep', function ($subQuery) use ($userId) {
+				$subQuery->from('rep as child')
+					->select('child.idrep')
+					->join('privileges as p', 'p.rep_idrep', '=', 'child.idrep')
+					->where('p.is_rep', '=', 1)
+					->whereRaw('child.lft > (SELECT lft FROM rep WHERE idrep = ?)', [$userId])
+					->whereRaw('child.rgt < (SELECT rgt FROM rep WHERE idrep = ?)', [$userId]);
+			});
+		} else {
+			$query->where('rep_idrep', '=', $userId);
+		}
+
+		return $query
+			->where('clicks.click_type', '!=', self::TYPE_BLACKLISTED)
+			->whereBetween('clicks.first_timestamp', [$startDate, $endDate])
+			->leftJoin('click_vars', 'click_vars.click_id', '=', 'clicks.idclicks')
+			->leftJoin('conversions', 'conversions.click_id', '=', 'clicks.idclicks')
+			->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
+			->select(
+				'clicks.idclicks',
+				'clicks.first_timestamp as timestamp',
+				'offer.offer_name',
+				'conversions.timestamp as conversion_timestamp',
+				'conversions.paid as paid',
+				'click_vars.url',
+				'click_vars.sub1',
+				'click_vars.sub2',
+				'click_vars.sub3',
+				'clicks.referer',
+				'clicks.ip_address as ip_address',
+				'clicks.offer_idoffer as offer_id'
+			)
+			->orderBy('paid', 'DESC');
+	}
+
 	public function scopeCountryClicksInGeo(
 		Builder $query,
 		string $startDate,

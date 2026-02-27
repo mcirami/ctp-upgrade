@@ -8,6 +8,7 @@ use App\Exports\ClicksExport;
 use App\Exports\OfferDataExport;
 use App\Exports\AffDataExport;
 use App\Exports\CountryClicksExport;
+use App\Privilege;
 use App\Http\Controllers\Report\ReportController;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Traits\ClickTraits;
@@ -27,10 +28,11 @@ class ExportDataController extends ReportController
 	public function exportUsersClicks($userId) {
 
 		$dates = self::getDates();
+		$selectedRole = (int) request()->query('role', Privilege::ROLE_AFFILIATE);
 
-			$reportCollection = Click::query()
-			                         ->userClicksReport($userId, $dates['startDate'], $dates['endDate'])
-			                         ->get();
+		$reportCollection = Click::query()
+			->userClicksReportByRole($userId, $dates['startDate'], $dates['endDate'], $selectedRole)
+			->get();
 		$report = $this->formatResults($reportCollection);
 		return Excel::download(new ClicksExport($report), 'clicks.xlsx');
 	}
