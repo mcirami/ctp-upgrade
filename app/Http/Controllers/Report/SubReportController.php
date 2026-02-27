@@ -59,9 +59,7 @@ class SubReportController extends ReportController
 
 	public function showUserConversionsBySubId($userId, $offer) {
 		$dates = self::getDates();
-		$startDate = $dates['originalStart'];
-		$endDate = $dates['originalEnd'];
-		$dateSelect = request()->query('dateSelect');
+		['startDate' => $startDate, 'endDate' => $endDate, 'dateSelect' => $dateSelect] = $this->reportDateContext($dates);
 		$offerData = Offer::findOrFail($offer);
 		$user = User::findOrFail($userId);
 
@@ -94,9 +92,7 @@ class SubReportController extends ReportController
 
 	public function showSubIdClicksByOffer(User $user, Offer $offer) {
 		$dates = self::getDates();
-		$startDate = $dates['originalStart'];
-		$endDate = $dates['originalEnd'];
-		$dateSelect = request()->query('dateSelect');
+		['startDate' => $startDate, 'endDate' => $endDate, 'dateSelect' => $dateSelect] = $this->reportDateContext($dates);
 		$subId = request()->query('subId');
 
 	    $reportCollection = Click::where('rep_idrep', '=', $user->idrep)
@@ -143,9 +139,7 @@ class SubReportController extends ReportController
 
 	public function showSubIdConversionsInCountry(User $user, Offer $offer) {
 		$dates = self::getDates();
-		$startDate = $dates['originalStart'];
-		$endDate = $dates['originalEnd'];
-		$dateSelect = request()->query('dateSelect');
+		['startDate' => $startDate, 'endDate' => $endDate, 'dateSelect' => $dateSelect] = $this->reportDateContext($dates);
 		$country = request()->query('country');
 		$userId = $user->idrep;
 		$offerId = $offer->idoffer;
@@ -230,9 +224,7 @@ class SubReportController extends ReportController
 
 	public function showSubIdClicksByOfferInCountry(User $user, Offer $offer) {
 		$dates = self::getDates();
-		$startDate = $dates['originalStart'];
-		$endDate = $dates['originalEnd'];
-		$dateSelect = request()->query('dateSelect');
+		['startDate' => $startDate, 'endDate' => $endDate, 'dateSelect' => $dateSelect] = $this->reportDateContext($dates);
 		$subId = request()->query('subid');
 		$country = request()->query('country');
 		$userId = $user->idrep;
@@ -302,9 +294,7 @@ class SubReportController extends ReportController
 
 	public function subIdOfferConverisonsByCountry(User $user, Offer $offer, CountryReportBuilderService $countryReportBuilderService) {
 		$dates = self::getDates();
-		$startDate = $dates['originalStart'];
-		$endDate = $dates['originalEnd'];
-		$dateSelect = request()->query('dateSelect');
+		['startDate' => $startDate, 'endDate' => $endDate, 'dateSelect' => $dateSelect] = $this->reportDateContext($dates);
 		$subId = request()->query('subid');
         $userId = $user->idrep;
 		$offerId = $offer->idoffer;

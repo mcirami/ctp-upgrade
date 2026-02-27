@@ -18,9 +18,7 @@ class ConversionReportController extends ReportController
 
     public function showUserConversions($userId) {
 		$dates = self::getDates();
-		$startDate = $dates['originalStart'];
-		$endDate = $dates['originalEnd'];
-		$dateSelect = request()->query('dateSelect');
+		['startDate' => $startDate, 'endDate' => $endDate, 'dateSelect' => $dateSelect] = $this->reportDateContext($dates);
 		$offerId = request()->query('offer');
 
         $user = User::myUsers()->findOrFail($userId);
@@ -59,9 +57,7 @@ class ConversionReportController extends ReportController
 
     public function showUserConversionsByOffer($userId) {
 		$dates = self::getDates();
-		$startDate = $dates['originalStart'];
-		$endDate = $dates['originalEnd'];
-		$dateSelect = request()->query('dateSelect');
+		['startDate' => $startDate, 'endDate' => $endDate, 'dateSelect' => $dateSelect] = $this->reportDateContext($dates);
 		$selectedRole = (int) request()->query('role', Privilege::ROLE_AFFILIATE);
 
         $user = User::findOrFail($userId);
@@ -136,10 +132,8 @@ class ConversionReportController extends ReportController
 		CountryReportBuilderService $countryReportBuilderService
 	) {
 		$dates = self::getDates();
-		$startDate = $dates['originalStart'];
-		$endDate = $dates['originalEnd'];
-		$dateSelect = request()->query('dateSelect');
-        $userId = $user->idrep;
+		['startDate' => $startDate, 'endDate' => $endDate, 'dateSelect' => $dateSelect] = $this->reportDateContext($dates);
+	        $userId = $user->idrep;
 		$offerId = $offer->idoffer;
 
 		$clicksSubquery = Click::query()
@@ -167,9 +161,7 @@ class ConversionReportController extends ReportController
 
 	public function showConversionsByCountry(CountryReportBuilderService $countryReportBuilderService) {
 		$dates = self::getDates();
-		$startDate = $dates['originalStart'];
-		$endDate = $dates['originalEnd'];
-		$dateSelect = request()->query('dateSelect');
+		['startDate' => $startDate, 'endDate' => $endDate, 'dateSelect' => $dateSelect] = $this->reportDateContext($dates);
 
 		$clicksSubquery = Click::query()
 		                       ->countryClicksByIpInGeo($dates['startDate'], $dates['endDate']);
@@ -192,9 +184,7 @@ class ConversionReportController extends ReportController
 
 	public function showGeoByOffer(ClickGeoCacheService $geoCache) {
 		$dates = self::getDates();
-		$startDate = $dates['originalStart'];
-		$endDate = $dates['originalEnd'];
-		$dateSelect = request()->query('dateSelect');
+		['startDate' => $startDate, 'endDate' => $endDate, 'dateSelect' => $dateSelect] = $this->reportDateContext($dates);
 		$geoCode = request()->query('country');
 
 		$ipsMissingGeo = Click::missingCountryCodeIps($dates['startDate'], $dates['endDate']);
@@ -245,9 +235,7 @@ class ConversionReportController extends ReportController
 	public function showManagerConversionsByOffer(User $user) {
 
 		$dates = self::getDates();
-		$startDate = $dates['originalStart'];
-		$endDate = $dates['originalEnd'];
-		$dateSelect = request()->query('dateSelect');
+		['startDate' => $startDate, 'endDate' => $endDate, 'dateSelect' => $dateSelect] = $this->reportDateContext($dates);
 		$managerId = $user->idrep;
 
 		$clicksSubquery = Click::whereBetween('first_timestamp', [$dates['startDate'], $dates['endDate']])

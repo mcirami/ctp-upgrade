@@ -33,9 +33,7 @@ class OfferReportController extends ReportController
         $repo = new GodOfferRepository(\DB::getPdo());
 
         $reporter = new Reporter($repo);
-	    $startDate = $dates['originalStart'];
-	    $endDate = $dates['originalEnd'];
-	    $dateSelect = request()->query('dateSelect');
+	    ['startDate' => $startDate, 'endDate' => $endDate, 'dateSelect' => $dateSelect] = $this->reportDateContext($dates);
 
 		$this->applyAdminStyleOfferFilters($reporter);
 
@@ -52,9 +50,7 @@ class OfferReportController extends ReportController
 		    new AdminOfferRepository(\DB::getPdo());
 
         $reporter = new Reporter($repo);
-	    $startDate = $dates['originalStart'];
-	    $endDate = $dates['originalEnd'];
-	    $dateSelect = request()->query('dateSelect');
+	    ['startDate' => $startDate, 'endDate' => $endDate, 'dateSelect' => $dateSelect] = $this->reportDateContext($dates);
 
 		$this->applyAdminStyleOfferFilters($reporter);
 
