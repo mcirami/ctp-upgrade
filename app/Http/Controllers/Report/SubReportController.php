@@ -66,14 +66,14 @@ class SubReportController extends ReportController
 		$report = Click::where('rep_idrep', '=', $userId)
 			->whereBetween('clicks.first_timestamp', [$dates['startDate'], $dates['endDate']])
 			->where('clicks.offer_idoffer', '=', $offer)
-			->where('clicks.click_type', '!=', 2)
+			->where('clicks.click_type', '!=', Click::TYPE_BLACKLISTED)
 			->leftJoin('click_vars', 'click_vars.click_id', '=', 'clicks.idclicks')
 			->leftJoin('conversions', 'conversions.click_id', '=', 'clicks.idclicks')
 			->select(
 				('click_vars.sub1'),
 				DB::raw('COUNT(conversions.id) as conversions'),
 				DB::raw('COUNT(clicks.idclicks) as clicks'),
-				DB::raw('SUM(clicks.click_type = 0) as unique_clicks')
+				DB::raw('SUM(clicks.click_type = ' . Click::TYPE_UNIQUE . ') as unique_clicks')
 			)
 			->groupBy('click_vars.sub1')
 			->orderBy('conversions', 'DESC')
@@ -97,7 +97,7 @@ class SubReportController extends ReportController
 
 	    $reportCollection = Click::where('rep_idrep', '=', $user->idrep)
 					->where('clicks.offer_idoffer', '=', $offer->idoffer)
-	                ->where('clicks.click_type', '!=', 2)
+	                ->where('clicks.click_type', '!=', Click::TYPE_BLACKLISTED)
 	                ->whereBetween('clicks.first_timestamp', [$dates['startDate'], $dates['endDate']])
 	                ->leftJoin('click_vars', function($query) {
 						$query->on('click_vars.click_id', '=', 'clicks.idclicks')
@@ -146,7 +146,7 @@ class SubReportController extends ReportController
 
 		$ipAddresses = Click::where('rep_idrep', '=', $userId)
 		->where('offer_idoffer', '=', $offerId)
-		->where('clicks.click_type', '!=', 2)
+		->where('clicks.click_type', '!=', Click::TYPE_BLACKLISTED)
 		->whereBetween('first_timestamp', [$dates['startDate'], $dates['endDate']])
 		->where(function ($query) {
 			$query->whereNull('country_code')
@@ -162,7 +162,7 @@ class SubReportController extends ReportController
 
 		$clicksSubquery = Click::where('rep_idrep', '=', $userId)
 		->where('offer_idoffer', '=', $offerId)
-		->where('clicks.click_type', '!=', 2)
+		->where('clicks.click_type', '!=', Click::TYPE_BLACKLISTED)
 		->whereBetween('first_timestamp', [$dates['startDate'], $dates['endDate']])
 		->where(function ($query) use($matchingIPs, $country) {
 			$query->where('country_code', '=', $country)
@@ -176,7 +176,7 @@ class SubReportController extends ReportController
 		->select(
 			'click_vars.sub1 as subId',
 			DB::raw('COUNT(clicks.idclicks) as clicks'), 
-			DB::raw('SUM(clicks.click_type = 0) as unique_clicks'))
+			DB::raw('SUM(clicks.click_type = ' . Click::TYPE_UNIQUE . ') as unique_clicks'))
 		->groupBy('subId');
 
 		$conversionsSubquery = Conversion::where('user_id', '=', $userId)
@@ -232,7 +232,7 @@ class SubReportController extends ReportController
 
 		$ipAddresses = Click::where('rep_idrep', '=', $userId)
 		->where('offer_idoffer', '=', $offerId)
-		->where('clicks.click_type', '!=', 2)
+		->where('clicks.click_type', '!=', Click::TYPE_BLACKLISTED)
 		->whereBetween('first_timestamp', [$dates['startDate'], $dates['endDate']])
 		->where(function ($query) {
 			$query->whereNull('country_code')
@@ -248,7 +248,7 @@ class SubReportController extends ReportController
 
 	    $reportCollection = Click::where('rep_idrep', '=', $user->idrep)
 					->where('clicks.offer_idoffer', '=', $offer->idoffer)
-	                ->where('clicks.click_type', '!=', 2)
+	                ->where('clicks.click_type', '!=', Click::TYPE_BLACKLISTED)
 	                ->whereBetween('clicks.first_timestamp', [$dates['startDate'], $dates['endDate']])
 	                ->leftJoin('click_vars', 'click_vars.click_id', '=', 'clicks.idclicks')
 					->where('click_vars.sub1', '=', $subId)
@@ -302,7 +302,7 @@ class SubReportController extends ReportController
 		$clicksSubquery = Click::whereBetween('first_timestamp', [$dates['startDate'], $dates['endDate']])
 		->where('rep_idrep', '=', $userId)
 		->where('offer_idoffer', '=', $offerId)
-		->where('clicks.click_type', '!=', 2)
+		->where('clicks.click_type', '!=', Click::TYPE_BLACKLISTED)
 		->leftJoin('click_vars', 'click_vars.click_id', '=', 'clicks.idclicks')
 		->where('click_vars.sub1', '=', $subId)
 		->select(
@@ -312,7 +312,7 @@ class SubReportController extends ReportController
 			'country_code',
 			'click_type',
 			DB::raw('COUNT(idclicks) as clicks'),
-			DB::raw('SUM(clicks.click_type = 0) as unique_clicks'))
+			DB::raw('SUM(clicks.click_type = ' . Click::TYPE_UNIQUE . ') as unique_clicks'))
 		->groupBy('ip_address');
 
 		$conversionsSubquery = Conversion::where('user_id', '=', $userId)

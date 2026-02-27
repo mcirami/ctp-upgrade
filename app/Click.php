@@ -199,6 +199,7 @@ class Click extends Model
 		?string $geoCode = null
 	): Builder {
 		$geoCountryCode = self::GEO_COUNTRY_CODE_SQL;
+		$uniqueClickType = self::TYPE_UNIQUE;
 
 		return $query
 			->whereBetween('first_timestamp', [$startDate, $endDate])
@@ -210,7 +211,7 @@ class Click extends Model
 				clicks.offer_idoffer AS offer_id,
 				{$geoCountryCode} AS country_code,
 				COUNT(*) AS total_clicks,
-				SUM(clicks.click_type = 0) AS unique_clicks
+				SUM(clicks.click_type = {$uniqueClickType}) AS unique_clicks
 			")
 			->when($geoCode, fn (Builder $builder) => $builder->whereRaw("{$geoCountryCode} = ?", [$geoCode]))
 			->groupBy('clicks.offer_idoffer', DB::raw($geoCountryCode));

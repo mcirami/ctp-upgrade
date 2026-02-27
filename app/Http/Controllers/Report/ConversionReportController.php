@@ -88,7 +88,7 @@ class ConversionReportController extends ReportController
 				'offer_idoffer', 
 				'click_type', 
 				DB::raw('COUNT(idclicks) as clicks'),
-				DB::raw('SUM(clicks.click_type = 0) as unique_clicks')
+				DB::raw('SUM(clicks.click_type = ' . Click::TYPE_UNIQUE . ') as unique_clicks')
 				)
 			->groupBy('offer_idoffer');
 

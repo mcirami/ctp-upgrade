@@ -141,7 +141,7 @@ class OfferAffiliateClicksRepository implements Repository
                 'offer.idoffer as offer_id',
                 'offer.offer_name',
                 DB::raw('COUNT(clicks.idclicks) as clicks'),
-                DB::raw('SUM(clicks.click_type = 0) as unique_clicks'),
+                DB::raw('SUM(clicks.click_type = ' . Click::TYPE_UNIQUE . ') as unique_clicks'),
                 DB::raw('COUNT(conversions.click_id) as conversions')
             )
             ->groupBy('rep.user_name', 'rep.idrep', 'offer_id')
@@ -152,7 +152,7 @@ class OfferAffiliateClicksRepository implements Repository
 
 	    $clicksSubquery = Click::where('offer_idoffer', '=', $this->offerId)
 	        ->whereBetween('first_timestamp',[$start, $end])
-	        ->where('clicks.click_type', '!=', 2)
+	        ->where('clicks.click_type', '!=', Click::TYPE_BLACKLISTED)
 	        ->join('rep', 'idrep', '=', 'clicks.rep_idrep')
 	        ->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
 		    ->groupBy('rep.user_name', 'rep.idrep', 'offer.idoffer')
@@ -162,7 +162,7 @@ class OfferAffiliateClicksRepository implements Repository
 	            'offer.idoffer as offer_id',
 	            'offer.offer_name',
 	            DB::raw('COUNT(clicks.idclicks) as clicks'),
-	            DB::raw('SUM(clicks.click_type = 0) as unique_clicks')
+	            DB::raw('SUM(clicks.click_type = ' . Click::TYPE_UNIQUE . ') as unique_clicks')
 		    );
 
 	    $conversionsSubquery = Conversion::whereBetween('timestamp', [$start, $end])
@@ -196,7 +196,7 @@ class OfferAffiliateClicksRepository implements Repository
 
         $clicksSubquery = Click::whereBetween('first_timestamp', [$start, $end])
             ->where('offer_idoffer', '=', $this->offerId)
-            ->where('clicks.click_type', '!=', 2)
+            ->where('clicks.click_type', '!=', Click::TYPE_BLACKLISTED)
             ->leftJoin('click_vars', 'click_vars.click_id', '=', 'clicks.idclicks')
             ->select(
                 'idclicks',
@@ -204,7 +204,7 @@ class OfferAffiliateClicksRepository implements Repository
                 'country_code',
                 'click_type',
                 DB::raw('COUNT(idclicks) as clicks'),
-                DB::raw('SUM(clicks.click_type = 0) as unique_clicks')
+                DB::raw('SUM(clicks.click_type = ' . Click::TYPE_UNIQUE . ') as unique_clicks')
             )
             ->groupBy('ip_address', 'clicks.country_code');
 
