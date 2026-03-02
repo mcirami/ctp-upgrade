@@ -27,8 +27,8 @@ use Illuminate\Support\Facades\DB;
 class Conversion extends Model
 {
 	use HasFactory;
-    protected $table = 'conversions';
-    public $timestamps = false;
+	    protected $table = 'conversions';
+	    public $timestamps = false;
 
 	/**
 	 * Create a new factory instance for the model.

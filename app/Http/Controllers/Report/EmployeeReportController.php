@@ -77,9 +77,7 @@ class EmployeeReportController extends ReportController
         }
 
         $dates = self::getDates();
-	    $startDate = $dates['originalStart'];
-	    $endDate = $dates['originalEnd'];
-	    $dateSelect = request()->query('dateSelect');
+	    ['startDate' => $startDate, 'endDate' => $endDate, 'dateSelect' => $dateSelect] = $this->reportDateContext($dates);
 	    $role = request()->query('role', 3);
         $reporter = $this->report($repository, $request);
 

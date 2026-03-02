@@ -96,6 +96,8 @@ Route::group(['middleware' => 'legacy.auth'], function () {
 	    Route::get('offer/{offer}/user-conversions', [OfferReportController::class, 'showConversionsByUser']);
         Route::get('offer/{offer}/conversions-by-country', [OfferReportController::class, 'showConversionsByCountry'])->name('offer.conversions.by.country');
 	    Route::get('offer/conversions-by-country', [OfferReportController::class, 'showConversionsByCountry'])->name('conversions.by.country');
+
+	    Route::get('manager/{user}/conversions-by-offer', [ConversionReportController::class, 'showManagerConversionsByOffer']);
 		Route::group(['middleware' => 'role:' . Privilege::ROLE_GOD], function () {
             Route::get('blacklist', [BlackListReportController::class, 'show']);
         });

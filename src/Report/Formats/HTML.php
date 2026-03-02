@@ -35,11 +35,14 @@ class HTML implements Format
         return $temp;
     }
 
-    public function output($report)
+	public function output($report)
     {
 		$params = "";
 		if(isset($_GET['d_from']) && isset($_GET['d_to']) && isset($_GET['dateSelect']) ) {
 			$params = "d_from=" . $_GET['d_from'] . "&d_to=" . $_GET['d_to'] . "&dateSelect=" . $_GET["dateSelect"];
+			if (isset($_GET['role'])) {
+				$params .= "&role=" . $_GET['role'];
+			}
 		}  elseif (isset($this->dates['originalStart']) && isset($this->dates['originalEnd'])) {
             $params = "d_from=" . $this->dates['originalStart'] . "&d_to=" . $this->dates['originalEnd'] . "&dateSelect=";
         }
@@ -57,7 +60,7 @@ class HTML implements Format
             if (empty($this->printTheseArrayKeys)) {
                 foreach ($row as $item => $val) {
 					if($item == "conversions" && $val > 0 && (key_exists('sub', $row) && $row["sub"] != "TOTAL") ) {
-						echo "<td>{$val}</td>";
+						echo "<td><a href='/report/sub/conversions?subid={$row["sub"]}". "&" . "{$params}'>{$val}</a></td>";
 					} else {
 						if($item !== "revenue") {
 							echo "<td>{$val}</td>";
@@ -83,9 +86,19 @@ class HTML implements Format
                             } else {
                                 echo "<td><a class='load_click' href='/report/offer/{$row['idoffer']}/user-conversions?{$params}'>$row[$toPrint]</a></td>";
                             }
-						} elseif($toPrint == "Conversions" && $row[$toPrint] > 0 && (key_exists('idrep', $row) && $row['idrep'] != "TOTAL"))
-                            echo "<td><a class='load_click' href='/user/{$row['idrep']}/conversions-by-offer?{$params}'>$row[$toPrint]</a></td>";
-                        else {
+						} elseif($toPrint == "Conversions" && $row[$toPrint] > 0 && (key_exists('idrep', $row) && $row['idrep'] != "TOTAL")) {
+							if ( isset( $_GET['role'] ) && $_GET['role'] == 2 ) {
+								echo "<td><a class='load_click' href='/report/manager/{$row['idrep']}/conversions-by-offer?{$params}'>$row[$toPrint]</a></td>";
+							} else {
+								echo "<td><a class='load_click' href='/user/{$row['idrep']}/conversions-by-offer?{$params}'>$row[$toPrint]</a></td>";
+							}
+						} elseif ($toPrint == "Conversions" &&
+						          $row[$toPrint] > 0 &&
+						          (key_exists('type', $row) &&
+						           $row['type'] == "advertiser" &&
+						           $row[$toPrint] != "TOTAL")) {
+							echo "<td><a class='load_click' href='/report/advertiser/{$row['id']}/conversions-by-offer?{$params}'>$row[$toPrint]</a></td>";
+						} else {
 							echo "<td>$row[$toPrint]</td>";
 						}
 
