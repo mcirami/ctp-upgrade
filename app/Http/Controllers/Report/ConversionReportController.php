@@ -101,10 +101,11 @@ class ConversionReportController extends ReportController
 			->select('offer.idoffer', DB::raw('COUNT(conversions.id) as conversions'))
 			->groupBy('offer.idoffer');
 
-		$report = DB::table(DB::raw("({$clicksSubquery->toSql()}) as clicks"))
-			->mergeBindings($clicksSubquery->getQuery())
-			->leftJoin(DB::raw("({$conversionsSubquery->toSql()}) as conversions"), 'clicks.offer_idoffer', '=', 'conversions.idoffer')
-			->mergeBindings($conversionsSubquery->getQuery())
+		$report = DB::query()
+			->fromSub($clicksSubquery, 'clicks')
+			->leftJoinSub($conversionsSubquery, 'conversions', function ($join) {
+				$join->on('clicks.offer_idoffer', '=', 'conversions.idoffer');
+			})
 			->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
 			->select(
 				'offer.idoffer',
@@ -261,10 +262,11 @@ class ConversionReportController extends ReportController
 			                                 DB::raw('COUNT(conversions.id) as conversions'))
 		                                 ->groupBy('clicks.offer_idoffer');
 
-		$report = DB::table(DB::raw("({$clicksSubquery->toSql()}) as clicks"))
-		            ->mergeBindings($clicksSubquery->getQuery())
-		            ->join(DB::raw("({$conversionsSubquery->toSql()}) as conversions"), 'clicks.offer_idoffer', '=', 'conversions.offer_idoffer')
-		            ->mergeBindings($conversionsSubquery->getQuery())
+		$report = DB::query()
+		            ->fromSub($clicksSubquery, 'clicks')
+		            ->joinSub($conversionsSubquery, 'conversions', function ($join) {
+			            $join->on('clicks.offer_idoffer', '=', 'conversions.offer_idoffer');
+		            })
 		            ->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
 		            ->select(
 			            'offer.idoffer',

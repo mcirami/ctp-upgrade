@@ -197,10 +197,11 @@ class SubReportController extends ReportController
 			->groupBy('click_vars.sub1')
 			->orderBy('total_conversions');
 
-			$reportCollection = DB::table(DB::raw("({$clicksSubquery->toSql()}) as clicks"))
-			->mergeBindings($clicksSubquery->getQuery())
-			->leftJoin(DB::raw("({$conversionsSubquery->toSql()}) as conversions"), 'clicks.subId', '=', 'conversions.subId')
-			->mergeBindings($conversionsSubquery->getQuery())
+			$reportCollection = DB::query()
+			->fromSub($clicksSubquery, 'clicks')
+			->leftJoinSub($conversionsSubquery, 'conversions', function ($join) {
+				$join->on('clicks.subId', '=', 'conversions.subId');
+			})
 			->select(
 				'clicks.subId',
 				DB::raw('SUM(clicks.clicks) as total_clicks'),

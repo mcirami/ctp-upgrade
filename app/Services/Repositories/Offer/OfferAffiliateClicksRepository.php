@@ -174,14 +174,13 @@ class OfferAffiliateClicksRepository implements Repository
 			    DB::raw('COUNT(conversions.id) as conversions')
 		    );
 
-	    return DB::table(DB::raw("({$clicksSubquery->toSql()}) as clicks"))
-	                ->mergeBindings($clicksSubquery->getQuery())
-	                ->leftJoin(DB::raw("({$conversionsSubquery->toSql()}) as conversions"), function ($join) {
+	    return DB::query()
+	                ->fromSub($clicksSubquery, 'clicks')
+	                ->leftJoinSub($conversionsSubquery, 'conversions', function ($join) {
 		                $join->on('clicks.offer_id', '=', 'conversions.conv_offer_id') // Match offer_id
 		                     ->on('clicks.user_id', '=', 'conversions.user_id'); // Match user_id
 	                }
 	                )
-	                ->mergeBindings($conversionsSubquery->getQuery())
 	                ->select(
 						'clicks.user_id',
 						'clicks.user_name',
@@ -192,7 +191,7 @@ class OfferAffiliateClicksRepository implements Repository
 	                ->orderBy('conversions', 'DESC');
     }
 
-    public function getOfferConversionsByCountry($start, $end) {
+    public function getOfferConversionsByCountry(CountryReportBuilderService $service, $start, $end) {
 
         $clicksSubquery = Click::whereBetween('first_timestamp', [$start, $end])
             ->where('offer_idoffer', '=', $this->offerId)
@@ -218,8 +217,7 @@ class OfferAffiliateClicksRepository implements Repository
             )
             ->groupBy('clicks.ip_address', 'clicks.country_code');
 
-        $countryReports = app(CountryReportBuilderService::class)
-            ->buildFromIpSubqueries($clicksSubquery, $conversionsSubquery);
+        $countryReports = $service->buildFromIpSubqueries($clicksSubquery, $conversionsSubquery);
 
         return $countryReports['reports'];
     }

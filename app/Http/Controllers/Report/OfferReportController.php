@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Report;
 
 use App\Privilege;
 use App\Offer;
+use App\Services\CountryReportBuilderService;
 use App\Services\Repositories\Offer\OfferAffiliateClicksRepository;
 use Carbon\Carbon;
 use LeadMax\TrackYourStats\Report\Affiliate;
@@ -124,7 +125,7 @@ class OfferReportController extends ReportController
 		return view('report.offer.conversions', compact('affiliateReport', 'offer'));
 	}
 
-	public function showConversionsByCountry(Offer $offer)
+	public function showConversionsByCountry(Offer $offer, CountryReportBuilderService $countryReportBuilderService)
 	{
 		$dates = self::getDates();
 
@@ -132,7 +133,7 @@ class OfferReportController extends ReportController
 		$end = Carbon::parse($dates['endDate'], 'America/New_York');
 
 		$affiliateRepo = new OfferAffiliateClicksRepository($offer->idoffer, Session::user());
-		$affiliateReport = $affiliateRepo->getOfferConversionsByCountry($start, $end);
+		$affiliateReport = $affiliateRepo->getOfferConversionsByCountry($countryReportBuilderService, $start, $end);
 
 		return view('report.offer.conversions-by-country', compact('affiliateReport', 'offer'));
 	}
