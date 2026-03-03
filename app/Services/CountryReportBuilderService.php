@@ -10,10 +10,11 @@ class CountryReportBuilderService
 {
 	public function buildFromIpSubqueries(object $clicksSubquery, object $conversionsSubquery): array
 	{
-		$reportCollection = DB::table(DB::raw("({$clicksSubquery->toSql()}) as clicks"))
-		                      ->mergeBindings($clicksSubquery->getQuery())
-		                      ->leftJoin(DB::raw("({$conversionsSubquery->toSql()}) as conversions"), 'clicks.ip_address', '=', 'conversions.ip_address')
-		                      ->mergeBindings($conversionsSubquery->getQuery())
+		$reportCollection = DB::query()
+		                      ->fromSub($clicksSubquery, 'clicks')
+		                      ->leftJoinSub($conversionsSubquery, 'conversions', function ($join) {
+			                      $join->on('clicks.ip_address', '=', 'conversions.ip_address');
+		                      })
 		                      ->select(
 			                      'clicks.ip_address',
 			                      'clicks.country_code',
@@ -59,7 +60,7 @@ class CountryReportBuilderService
 
 		return [
 			'reportCollection' => $reportCollection,
-			'reports' => $reports,
+			'reports' => collect($reports)->sortByDesc('total_conversions'),
 		];
 	}
 }

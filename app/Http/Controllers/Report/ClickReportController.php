@@ -31,15 +31,12 @@ class ClickReportController extends ReportController
      *
      * @return Factory|View
      */
-    public function offerClicks($id)
-    {
-        $offer = Offer::findOrFail($id);
+	    public function offerClicks($id)
+	    {
+	        $offer = Offer::findOrFail($id);
 
-        $dates = self::getDates();
-
-	    $startDate = $dates['originalStart'];
-	    $endDate = $dates['originalEnd'];
-	    $dateSelect = request()->query('dateSelect');
+	        $dates = self::getDates();
+		    ['startDate' => $startDate, 'endDate' => $endDate, 'dateSelect' => $dateSelect] = $this->reportDateContext($dates);
 
 	    $start = Carbon::parse( $dates['startDate'], 'America/New_York' );
 	    $end   = Carbon::parse( $dates['endDate'], 'America/New_York' );
@@ -93,33 +90,14 @@ class ClickReportController extends ReportController
     public function showUsersClicks($userId)
     {
         $dates = self::getDates();
-		$startDate = $dates['originalStart'];
-		$endDate = $dates['originalEnd'];
-		$dateSelect = request()->query('dateSelect');
+		['startDate' => $startDate, 'endDate' => $endDate, 'dateSelect' => $dateSelect] = $this->reportDateContext($dates);
+		$selectedRole = (int) request()->query('role', Privilege::ROLE_AFFILIATE);
 
         $user = User::myUsers()->findOrFail($userId);
 
-	    $reportCollection = Click::where('rep_idrep', '=', $userId)
-	                ->where('clicks.click_type', '!=', 2)
-	                ->whereBetween('clicks.first_timestamp', [$dates['startDate'], $dates['endDate']])
-	                ->leftJoin('click_vars', 'click_vars.click_id', '=', 'clicks.idclicks')
-	                ->leftJoin('conversions', 'conversions.click_id', '=', 'clicks.idclicks')
-	                ->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
-	                ->select(
-						'clicks.idclicks',
-						'clicks.first_timestamp as timestamp',
-						'offer.offer_name',
-						'conversions.timestamp as conversion_timestamp',
-						'conversions.paid as paid',
-						'click_vars.url',
-						'click_vars.sub1',
-						'click_vars.sub2',
-		                'click_vars.sub3',
-						'clicks.referer',
-						'clicks.ip_address as ip_address',
-						'clicks.offer_idoffer as offer_id'
-	                )
-	                ->orderBy('paid', 'DESC')->paginate(100);
+		$reportCollection = Click::query()
+			->userClicksReportByRole($userId, $dates['startDate'], $dates['endDate'], $selectedRole)
+			->paginate(100);
 
 		$report = $this->formatResults($reportCollection);
 
@@ -130,7 +108,8 @@ class ClickReportController extends ReportController
 			'reportCollection', 
 			'startDate', 
 			'endDate', 
-			'dateSelect'
+			'dateSelect',
+			'selectedRole'
 		));
     }
 
@@ -158,13 +137,13 @@ class ClickReportController extends ReportController
 			          ])
 			          ->get();
 
-			$object = [
+			$object      = [
 				'user_id' => $manager->idrep,
 				'user_name' => $manager->user_name,
 				'clicks' =>  $data[0]->clicks,
 				'conversions' => $data[0]->conversions
 			];
-			array_push($affClicks, (object) $object);
+			$affClicks[] = (object) $object;
 		}
 
 		return $affClicks;
@@ -174,10 +153,7 @@ class ClickReportController extends ReportController
 	public function searchClicks(Request $request, $id) {
 
 		$dates = self::getDates();
-
-		$startDate = $dates['originalStart'];
-		$endDate = $dates['originalEnd'];
-		$dateSelect = request()->query('dateSelect');
+		['startDate' => $startDate, 'endDate' => $endDate, 'dateSelect' => $dateSelect] = $this->reportDateContext($dates);
 		$searchType = request()->query('searchType');
 		$user = null;
 		$offer = null;
@@ -257,9 +233,7 @@ class ClickReportController extends ReportController
 	public function clicksInCountry(ClickGeoCacheService $geoCache) {
 		$dates = self::getDates();
 		$geoCode = request()->query('country');
-		$startDate = $dates['originalStart'];
-		$endDate = $dates['originalEnd'];
-		$dateSelect = request()->query('dateSelect');
+		['startDate' => $startDate, 'endDate' => $endDate, 'dateSelect' => $dateSelect] = $this->reportDateContext($dates);
 
 		$ips = Click::missingCountryCodeIps($dates['startDate'], $dates['endDate']);
 

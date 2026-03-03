@@ -52,5 +52,21 @@ class ReportController extends Controller
         return $data;
     }
 
+	/**
+	 * Return shared date variables commonly used by report views.
+	 *
+	 * @param array|null $dates
+	 * @return array{startDate:string,endDate:string,dateSelect:mixed}
+	 */
+	protected function reportDateContext(?array $dates = null): array
+	{
+		$dates = $dates ?? self::getDates();
+
+		return [
+			'startDate' => $dates['originalStart'],
+			'endDate' => $dates['originalEnd'],
+			'dateSelect' => request()->query('dateSelect'),
+		];
+	}
 
 }

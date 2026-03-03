@@ -8,6 +8,7 @@ use App\Exports\ClicksExport;
 use App\Exports\OfferDataExport;
 use App\Exports\AffDataExport;
 use App\Exports\CountryClicksExport;
+use App\Privilege;
 use App\Http\Controllers\Report\ReportController;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Traits\ClickTraits;
@@ -27,28 +28,11 @@ class ExportDataController extends ReportController
 	public function exportUsersClicks($userId) {
 
 		$dates = self::getDates();
+		$selectedRole = (int) request()->query('role', Privilege::ROLE_AFFILIATE);
 
-		// Replicate the query used for the view
-		$reportCollection = Click::where('rep_idrep', '=', $userId)
-		                         ->where('clicks.click_type', '!=', 2)
-		                         ->whereBetween('clicks.first_timestamp', [$dates['startDate'], $dates['endDate']])
-		                         ->leftJoin('click_vars', 'click_vars.click_id', '=', 'clicks.idclicks')
-		                         ->leftJoin('conversions', 'conversions.click_id', '=', 'clicks.idclicks')
-		                         ->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
-		                         ->select(
-			                         'clicks.idclicks',
-			                         'clicks.first_timestamp as timestamp',
-			                         'offer.offer_name',
-			                         'conversions.timestamp as conversion_timestamp',
-			                         'conversions.paid as paid',
-			                         'click_vars.url',
-			                         'click_vars.sub1',
-			                         'click_vars.sub2',
-			                         'click_vars.sub3',
-			                         'clicks.referer',
-			                         'clicks.ip_address as ip_address',
-		                         )
-		                         ->orderBy('paid', 'DESC')->get();
+		$reportCollection = Click::query()
+			->userClicksReportByRole($userId, $dates['startDate'], $dates['endDate'], $selectedRole)
+			->get();
 		$report = $this->formatResults($reportCollection);
 		return Excel::download(new ClicksExport($report), 'clicks.xlsx');
 	}

@@ -29,9 +29,7 @@ class AdvertiserReportController extends ReportController
 
 	public function showConversionsByOffer($id) {
 		$dates = self::getDates();
-		$startDate = $dates['originalStart'];
-		$endDate = $dates['originalEnd'];
-		$dateSelect = request()->query('dateSelect');
+		['startDate' => $startDate, 'endDate' => $endDate, 'dateSelect' => $dateSelect] = $this->reportDateContext($dates);
 		$repository = new AdvertiserRepository(\DB::getPdo());
 		$affiliateReport = $repository->getAdvConversionsByOffer($id, $dates['startDate'], $dates['endDate']);
 

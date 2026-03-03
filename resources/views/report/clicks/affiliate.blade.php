@@ -14,18 +14,18 @@
 @section('table-options')
     @include('report.options.dates')
 	<div class="button_wrap" style="width: 100%; display:inline-block; margin-top: 10px;">
-		<a style="
-            width: 170px;
-            border:none;
-            padding: 10px;
-            font-size: 18px;
-            border-radius: 6px;
-            color: #676767;"
-		class="btn btn-default btn-sm"
-           href="/user/{{$user->idrep}}/clicks/export?d_from={{$startDate}}&d_to={{$endDate}}&dateSelect={{$dateSelect}}">
-			Export Data
-		</a>
-	</div>
+			<a style="
+	            width: 170px;
+	            border:none;
+	            padding: 10px;
+	            font-size: 18px;
+	            border-radius: 6px;
+	            color: #676767;"
+			class="btn btn-default btn-sm"
+	           href="/user/{{$user->idrep}}/clicks/export?d_from={{$startDate}}&d_to={{$endDate}}&dateSelect={{$dateSelect}}@if(request()->has('role'))&role={{request()->query('role')}}@endif">
+				Export Data
+			</a>
+		</div>
 @endsection
 
 @section('table')
@@ -120,7 +120,7 @@
 			</tbody>
 		</table>
 	</div>
-	{{ $reportCollection->links() }}
+		{{ $reportCollection->withQueryString()->links() }}
 
 @endsection
 

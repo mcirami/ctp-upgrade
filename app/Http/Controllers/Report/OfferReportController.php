@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Report;
 
 use App\Privilege;
 use App\Offer;
+use App\Services\CountryReportBuilderService;
 use App\Services\Repositories\Offer\OfferAffiliateClicksRepository;
 use Carbon\Carbon;
 use LeadMax\TrackYourStats\Report\Affiliate;
@@ -18,33 +19,27 @@ use LeadMax\TrackYourStats\Report\Repositories\Offer\GodOfferRepository;
 
 class OfferReportController extends ReportController
 {
+	private const array OFFER_TOTAL_COLUMNS = [
+		'Clicks',
+		'UniqueClicks',
+		'FreeSignUps',
+		'PendingConversions',
+		'Conversions',
+		'Revenue',
+		'Deductions',
+	];
 
     public function god() {
         $dates = self::getDates();
         $repo = new GodOfferRepository(\DB::getPdo());
 
         $reporter = new Reporter($repo);
-	    $startDate = $dates['originalStart'];
-	    $endDate = $dates['originalEnd'];
-	    $dateSelect = request()->query('dateSelect');
+	    ['startDate' => $startDate, 'endDate' => $endDate, 'dateSelect' => $dateSelect] = $this->reportDateContext($dates);
 
-        $reporter
-            ->addFilter(new Filters\DeductionColumnFilter())
-            ->addFilter(new Filters\Total([
-                'Clicks', 
-                'UniqueClicks', 
-                'FreeSignUps', 
-                'PendingConversions', 
-                'Conversions', 
-                'Revenue', 
-                'Deductions'
-            ]))
-            ->addFilter(new Filters\EarningPerClick('UniqueClicks', 'Revenue'))
-            ->addFilter(new Filters\DollarSign(['Revenue', 'Deductions', 'EPC']))
-            ->addFilter(new Filters\ClickLink(request()));
+		$this->applyAdminStyleOfferFilters($reporter);
 
         return view('report.offer.admin',
-	        compact('reporter', 'dates', 'startDate', 'endDate', 'dateSelect'));
+		        compact('reporter', 'dates', 'startDate', 'endDate', 'dateSelect'));
     }
 
     public function admin()
@@ -56,27 +51,12 @@ class OfferReportController extends ReportController
 		    new AdminOfferRepository(\DB::getPdo());
 
         $reporter = new Reporter($repo);
-	    $startDate = $dates['originalStart'];
-	    $endDate = $dates['originalEnd'];
-	    $dateSelect = request()->query('dateSelect');
+	    ['startDate' => $startDate, 'endDate' => $endDate, 'dateSelect' => $dateSelect] = $this->reportDateContext($dates);
 
-        $reporter
-            ->addFilter(new Filters\DeductionColumnFilter())
-            ->addFilter(new Filters\Total([
-                'Clicks', 
-                'UniqueClicks', 
-                'FreeSignUps', 
-                'PendingConversions', 
-                'Conversions', 
-                'Revenue', 
-                'Deductions'
-            ]))
-            ->addFilter(new Filters\EarningPerClick('UniqueClicks', 'Revenue'))
-            ->addFilter(new Filters\DollarSign(['Revenue', 'Deductions', 'EPC']))
-            ->addFilter(new Filters\ClickLink(request()));
+		$this->applyAdminStyleOfferFilters($reporter);
 
         return view('report.offer.admin',
-	        compact('reporter', 'dates', 'startDate', 'endDate', 'dateSelect'));
+		        compact('reporter', 'dates', 'startDate', 'endDate', 'dateSelect'));
     }
 
     public function manager()
@@ -86,12 +66,7 @@ class OfferReportController extends ReportController
 
         $reporter = new Reporter($repo);
 
-        $reporter
-            ->addFilter(new Filters\DeductionColumnFilter())
-            ->addFilter(new Filters\Total(['Clicks', 'UniqueClicks', 'FreeSignUps', 'PendingConversions', 'Conversions', 'Revenue', 'Deductions']))
-            ->addFilter(new Filters\EarningPerClick('UniqueClicks', 'Revenue'))
-            ->addFilter(new Filters\DollarSign(['Revenue', 'Deductions', 'EPC']))
-            ->addFilter(new Filters\ClickLink(request()));
+		$this->applyAdminStyleOfferFilters($reporter);
 
         return view('report.offer.admin', compact('reporter', 'dates'));
     }
@@ -107,11 +82,7 @@ class OfferReportController extends ReportController
 
         $reporter = new Reporter($repo);
 
-        $reporter
-            ->addFilter(new Filters\DeductionColumnFilter())
-            ->addFilter(new Filters\Total(['Clicks', 'UniqueClicks', 'FreeSignUps', 'PendingConversions', 'Conversions', 'Revenue', 'Deductions', 'TOTAL'], ['Revenue', 'Deductions']))
-            ->addFilter(new Filters\EarningPerClick('UniqueClicks', 'Revenue'))
-            ->addFilter(new Filters\DollarSign(['Revenue', 'Deductions', 'EPC', 'TOTAL']));
+		$this->applyAffiliateOfferFilters($reporter);
 
         if (\request()->expectsJson()) {
             return response($reporter->fetchReport($dates['startDate'], $dates['endDate']));
@@ -140,30 +111,50 @@ class OfferReportController extends ReportController
         }
     }
 
-    public function showConversionsByUser(Offer $offer) {
-
+	public function showConversionsByUser(Offer $offer)
+	{
 		$dates = self::getDates();
 		//$offer = Offer::findOrFail($offerId);
 
-		$start = Carbon::parse( $dates['startDate'], 'America/New_York' );
-		$end   = Carbon::parse( $dates['endDate'], 'America/New_York' );
+		$start = Carbon::parse($dates['startDate'], 'America/New_York');
+		$end = Carbon::parse($dates['endDate'], 'America/New_York');
 
-		$affiliateRepo = new OfferAffiliateClicksRepository( $offer->idoffer, Session::user() );
-		$affiliateReport = $affiliateRepo->between( $start, $end );
+		$affiliateRepo = new OfferAffiliateClicksRepository($offer->idoffer, Session::user());
+		$affiliateReport = $affiliateRepo->between($start, $end);
 
 		return view('report.offer.conversions', compact('affiliateReport', 'offer'));
 	}
 
-    public function showConversionsByCountry(Offer $offer) {
+	public function showConversionsByCountry(Offer $offer, CountryReportBuilderService $countryReportBuilderService)
+	{
 		$dates = self::getDates();
 
-        $start = Carbon::parse( $dates['startDate'], 'America/New_York' );
-		$end   = Carbon::parse( $dates['endDate'], 'America/New_York' );
+		$start = Carbon::parse($dates['startDate'], 'America/New_York');
+		$end = Carbon::parse($dates['endDate'], 'America/New_York');
 
-        $affiliateRepo = new OfferAffiliateClicksRepository( $offer->idoffer, Session::user() );
-		$affiliateReport = $affiliateRepo->getOfferConversionsByCountry( $start, $end );
+		$affiliateRepo = new OfferAffiliateClicksRepository($offer->idoffer, Session::user());
+		$affiliateReport = $affiliateRepo->getOfferConversionsByCountry($countryReportBuilderService, $start, $end);
 
-        return view('report.offer.conversions-by-country', compact('affiliateReport', 'offer'));
+		return view('report.offer.conversions-by-country', compact('affiliateReport', 'offer'));
+	}
 
+	private function applyAdminStyleOfferFilters(Reporter $reporter): void {
+		$reporter
+			->addFilter( new Filters\DeductionColumnFilter() )
+			->addFilter( new Filters\Total( self::OFFER_TOTAL_COLUMNS ) )
+			->addFilter( new Filters\EarningPerClick( 'UniqueClicks', 'Revenue' ) )
+			->addFilter( new Filters\DollarSign( [ 'Revenue', 'Deductions', 'EPC' ] ) )
+			->addFilter( new Filters\ClickLink( request() ) );
+	}
+
+	private function applyAffiliateOfferFilters(Reporter $reporter): void {
+		$reporter
+			->addFilter( new Filters\DeductionColumnFilter() )
+			->addFilter( new Filters\Total(
+				array_merge( self::OFFER_TOTAL_COLUMNS, [ 'TOTAL' ] ),
+				[ 'Revenue', 'Deductions' ]
+			) )
+			->addFilter( new Filters\EarningPerClick( 'UniqueClicks', 'Revenue' ) )
+			->addFilter( new Filters\DollarSign( [ 'Revenue', 'Deductions', 'EPC', 'TOTAL' ] ) );
 	}
 }
