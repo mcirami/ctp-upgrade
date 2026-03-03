@@ -60,7 +60,7 @@ class CountryReportBuilderService
 
 		return [
 			'reportCollection' => $reportCollection,
-			'reports' => $reports,
+			'reports' => collect($reports)->sortByDesc('total_conversions'),
 		];
 	}
 }
