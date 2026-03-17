@@ -7,14 +7,14 @@
 
 	<!-- Bootstrap CSS -->
 	<link
-		href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-		rel="stylesheet"
+			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+			rel="stylesheet"
 	/>
 
 	<!-- Bootstrap Icons -->
 	<link
-		rel="stylesheet"
-		href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+			rel="stylesheet"
+			href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
 	/>
 
 	<style>
@@ -62,9 +62,9 @@
         }
 
         .btn-primary-small {
-	        background: #323645;
+            background: #323645;
             padding: 0.4rem 1rem;
-	        color: #fff;
+            color: #fff;
         }
 
         .btn-primary-small:hover {
@@ -250,23 +250,7 @@
         .footer-logo img {
             max-width: 220px;
             height: auto;
-        }
-
-        .footer-title {
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-bottom: 1.25rem;
-	        text-align: right;
-        }
-
-        .footer-contact-item {
-            display: flex;
-            align-items: center;
-	        justify-content: flex-end;
-            gap: 0.75rem;
-            color: rgba(255, 255, 255, 0.85);
-            margin-bottom: 1rem;
-            font-size: 1rem;
+            margin: 0 auto;
         }
 
         .footer-contact-item i {
@@ -275,38 +259,7 @@
         }
 
         .footer-contact-item a {
-	        color: #fff;
-        }
-
-        .social-links {
-            display: flex;
-            gap: 0.75rem;
-            justify-content: start;
-            flex-wrap: wrap;
-        }
-
-        .social-links a {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            background: var(--primary-blue);
             color: #fff;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            transition: 0.25s ease;
-        }
-
-        .social-links a:hover {
-            background: var(--primary-blue-dark);
-            transform: translateY(-2px);
-            color: #fff;
-        }
-
-        .footer-divider {
-            border-color: rgba(255, 255, 255, 0.12);
-            margin: 2rem 0 1.25rem;
         }
 
         .footer-bottom {
@@ -336,13 +289,6 @@
                 display: inline-block;
             }
 
-            .footer-logo {
-	            text-align: center;
-            }
-            .footer-title, .footer-contact-item {
-	            text-align: center;
-	            justify-content: center;
-            }
         }
 
         @media (max-width: 767.98px) {
@@ -354,16 +300,8 @@
                 height: 220px;
             }
 
-            .footer-title {
-                margin-top: 1.5rem;
-            }
-
-            .social-links {
-                justify-content: flex-start;
-            }
-
             .hero-section {
-	            background-position: left;
+                background-position: left;
             }
         }
 	</style>
@@ -375,19 +313,19 @@
 	<div class="container">
 		<a class="navbar-brand d-flex align-items-center" href="#">
 			<img
-				src="/resources/landers/ctpupgrade/images/logo.png"
-				alt="Resurge Alliance Logo"
+					src="/resources/landers/ctpupgrade/images/logo.png"
+					alt="Resurge Alliance Logo"
 			/>
 		</a>
 
 		<button
-			class="navbar-toggler"
-			type="button"
-			data-bs-toggle="collapse"
-			data-bs-target="#mainNav"
-			aria-controls="mainNav"
-			aria-expanded="false"
-			aria-label="Toggle navigation"
+				class="navbar-toggler"
+				type="button"
+				data-bs-toggle="collapse"
+				data-bs-target="#mainNav"
+				aria-controls="mainNav"
+				aria-expanded="false"
+				aria-label="Toggle navigation"
 		>
 			<span class="navbar-toggler-icon"></span>
 		</button>
@@ -396,13 +334,11 @@
 			<ul class="navbar-nav mb-2 mb-lg-0 align-items-lg-center">
 				<li class="nav-item"><a class="nav-link" href="#">Home</a></li>
 				<li class="nav-item"><a class="nav-link active" href="#services">Services</a></li>
-				<li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
-				<li class="nav-item"><a class="btn btn-primary-small" href="https://resurgealliance.com/login">Login</a></li>
 			</ul>
 		</div>
 
 		<div class="d-none d-lg-block">
-			<a href="https://resurgealliance.com/signup.php" class="btn btn-primary-custom">Register Now</a>
+			<a href="https://resurgealliance.com/login" class="btn btn-primary-custom">Login</a>
 		</div>
 	</div>
 </nav>
@@ -417,7 +353,7 @@
 					<p>
 						Strategic campaigns, SEO, and social media solutions to surge your ROI.
 					</p>
-					<a href="https://resurgealliance.com/signup.php" class="btn btn-primary-custom btn-lg">Start Your Surge</a>
+					<a href="https://resurgealliance.com/login" class="btn btn-primary-custom btn-lg">Start Your Surge</a>
 				</div>
 			</div>
 
@@ -479,8 +415,8 @@
 				<div class="case-card">
 					<div class="card-img-wrap">
 						<img
-							src="/resources/landers/ctpupgrade/images/column1.png"
-							alt="Case Study 1"
+								src="/resources/landers/ctpupgrade/images/column1.png"
+								alt="Case Study 1"
 						/>
 					</div>
 					<div class="card-body">
@@ -496,8 +432,8 @@
 				<div class="case-card">
 					<div class="card-img-wrap">
 						<img
-							src="/resources/landers/ctpupgrade/images/column2.png"
-							alt="Case Study 2"
+								src="/resources/landers/ctpupgrade/images/column2.png"
+								alt="Case Study 2"
 						/>
 					</div>
 					<div class="card-body">
@@ -513,8 +449,8 @@
 				<div class="case-card">
 					<div class="card-img-wrap">
 						<img
-							src="/resources/landers/ctpupgrade/images/column3.png"
-							alt="Case Study 3"
+								src="/resources/landers/ctpupgrade/images/column3.png"
+								alt="Case Study 3"
 						/>
 					</div>
 					<div class="card-body">
@@ -534,57 +470,21 @@
 
 <footer class="site-footer" id="contact">
 	<div class="container">
-		<div class="row g-4 align-items-center">
-			<div class="col-12 col-lg-4 order-0">
+		<div class="row g-4 align-items-center flex-column justify-content-center">
+			<div class="col-12 text-center">
 				<div class="footer-logo">
 					<img
-						src="/resources/landers/ctpupgrade/images/logo-no-bg.png"
-						alt="Resurge Alliance Footer Logo"
+							src="/resources/landers/ctpupgrade/images/logo-no-bg.png"
+							alt="Resurge Alliance Footer Logo"
 					/>
 				</div>
 			</div>
 
-			<div class="col-12 col-lg-4 order-2 order-lg-1">
+			<div class="col-12">
 				<div class="footer-bottom">
 					© 2026 Resurge Alliance. All Rights Reserved.
 				</div>
 			</div>
-			<div class="col-12 col-lg-4 ml-auto order-1 order-lg-2">
-				<h3 class="footer-title">Contact Us</h3>
-
-				<div class="row">
-					<!--
-					<div class="col-sm-6">
-						<div class="footer-contact-item">
-							<i class="bi bi-telephone"></i>
-							<a href="tel:188830135886"><span>888 301-35886</span></a>
-						</div>
-						<div class="footer-contact-item">
-							<i class="bi bi-telephone"></i>
-							<span>000831 538</span>
-						</div>
-					</div>-->
-
-					<div class="">
-						<!--<div class="footer-contact-item">
-							<i class="bi bi-geo-alt"></i>
-							<span>Address Placeholder</span>
-						</div>-->
-						<div class="footer-contact-item">
-							<i class="bi bi-envelope-paper"></i>
-							<a href="mailto:support@surgealliance.com"><span>support@surgealliance.com</span></a>
-						</div>
-					</div>
-				</div>
-			</div>
-
-			<!--<div class="col-md-6 col-lg-3">
-				<div class="social-links mt-lg-5">
-					<a href="#" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
-					<a href="#" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
-					<a href="#" aria-label="Twitter"><i class="bi bi-twitter-x"></i></a>
-				</div>
-			</div>-->
 		</div>
 
 	</div>
@@ -592,7 +492,7 @@
 
 <!-- Bootstrap JS -->
 <script
-	src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
 ></script>
 </body>
 </html>
