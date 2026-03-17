@@ -2,6 +2,8 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\SmsOrderController;
+use App\Http\Controllers\SmsPoolWebhookController;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,3 +20,7 @@ use Illuminate\Support\Facades\Route;
     return $request->user();
 });*/
 Route::middleware('auth:api')->get('/user', 'UserController@AuthRouteAPI');
+
+Route::post('/sms-orders', [SmsOrderController::class, 'store']);
+Route::get('/sms-orders/{smsOrder}', [SmsOrderController::class, 'show']);
+Route::post('/webhooks/smspool', [SmsPoolWebhookController::class, 'handle']);
