@@ -31,8 +31,8 @@ class SmsOrderController extends Controller
 			 * SMSPool response keys may vary a bit depending on endpoint/version.
 			 * Adjust these mappings if your live response uses different names.
 			 */
-			$smspoolOrderId = $result['orderid'] ?? $result['order_id'] ?? null;
-			$phoneNumber = $result['phonenumber'] ?? $result['number'] ?? $result['phone_number'] ?? null;
+			$smspoolOrderId = $result['order_id'] ?? $result['orderid'] ?? null;
+			$phoneNumber = $result['number'] ?? $result['phonenumber'] ?? null;
 
 			if (! $smspoolOrderId) {
 				return response()->json([
