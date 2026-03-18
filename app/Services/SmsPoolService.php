@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Services;
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 
@@ -21,6 +22,9 @@ class SmsPoolService {
 		], $data));
 	}
 
+	/**
+	 * @throws RequestException
+	 */
 	public function orderSms(string $country, ?string $service = null, ?string $pool = null): array
 	{
 		$payload = [
@@ -39,6 +43,9 @@ class SmsPoolService {
 		return $response->json();
 	}
 
+	/**
+	 * @throws RequestException
+	 */
 	public function checkSms(string $orderId): array
 	{
 		$response = $this->post('sms/check', [
@@ -50,6 +57,9 @@ class SmsPoolService {
 		return $response->json();
 	}
 
+	/**
+	 * @throws RequestException
+	 */
 	public function getActiveOrders(): array
 	{
 		$response = $this->post('request/active');
