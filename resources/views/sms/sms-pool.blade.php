@@ -17,7 +17,7 @@
                 <p class="value_span9" style="margin: 10px 0; font-size: 16px;">Status: <span style="font-weight: 800;" class="font-weight-bold" id="status">Idle</span></p>
                 <p class="value_span9" style="font-size: 16px;">Code: <strong id="code">-</strong></p>
 
-                <a href="#" class="btn btn-sm value_span6-1 value_span2 value_span4" onclick="requestSmsOrder(); return false;">Request Verification Number</a>
+                <a id="get-number-btn" href="#" class="btn btn-sm value_span6-1 value_span2 value_span4">Request Verification Number</a>
             </div>
             <div style="display:inline-block;" id="instruction">
                 <p class="value_span9">
@@ -29,51 +29,91 @@
     </div>
     <!--right_panel-->
 <script>
-	async function requestSmsOrder() {
-		const res = await fetch('/api/sms-orders', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({
-				service: 'Instagram',
-				country: 'US'
-			})
-		});
+	let currentPollInterval = null;
 
-		const data = await res.json();
+	document.getElementById('get-number-btn').addEventListener('click', async function () {
+		const button = this;
+		const country = document.getElementById('country').value;
 
-		if (!res.ok) {
-			throw new Error(data.message || 'Failed to create SMS order');
+		button.disabled = true;
+		document.getElementById('phone-number').textContent = '-';
+		document.getElementById('code').textContent = '-';
+		document.getElementById('status').textContent = 'Requesting verification number...';
+
+		if (currentPollInterval) {
+			clearInterval(currentPollInterval);
+			currentPollInterval = null;
 		}
 
-		document.getElementById('phone-number').textContent = data.phone_number || 'Number unavailable';
-		document.getElementById('status').textContent = 'Waiting for verification code...';
+		try {
+			const response = await fetch('/api/sms-orders', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'Accept': 'application/json',
+				},
+				body: JSON.stringify({
+					service: 'Instagram / Threads',
+					country: country
+				})
+			});
 
-		pollSmsOrder(data.id);
-	}
+			const data = await response.json();
 
-	function pollSmsOrder(orderId) {
-		const interval = setInterval(async () => {
-			const res = await fetch(`/api/sms-orders/${orderId}`);
-			const data = await res.json();
-
-			if (!res.ok) {
-				clearInterval(interval);
-				document.getElementById('status').textContent = 'There was a problem checking the order.';
-				return;
+			if (!response.ok) {
+				throw new Error(data.message || 'Unable to create SMS order.');
 			}
 
-			if (data.status === 'received' && data.code) {
-				clearInterval(interval);
-				document.getElementById('status').textContent = 'Code received';
-				document.getElementById('code').textContent = data.code;
-				return;
-			}
+			document.getElementById('phone-number').textContent = data.number || '-';
+			document.getElementById('status').textContent = 'Waiting for verification code...';
 
-			if (data.status !== 'pending') {
-				clearInterval(interval);
+			startPolling(data.id);
+		} catch (error) {
+			document.getElementById('status').textContent = error.message;
+		} finally {
+			button.disabled = false;
+		}
+	});
+
+	function startPolling(orderId) {
+		currentPollInterval = setInterval(async () => {
+			try {
+				const response = await fetch(`/api/sms-orders/${orderId}`, {
+					headers: {
+						'Accept': 'application/json',
+					}
+				});
+
+				const data = await response.json();
+
+				if (!response.ok) {
+					throw new Error(data.message || 'Error checking order.');
+				}
+
+				if (data.phone_number) {
+					document.getElementById('phone-number').textContent = data.phone_number;
+				}
+
+				if (data.status === 'received' && data.code) {
+					document.getElementById('status').textContent = 'Code received';
+					document.getElementById('code').textContent = data.code;
+					clearInterval(currentPollInterval);
+					currentPollInterval = null;
+					return;
+				}
+
+				if (data.status === 'pending') {
+					document.getElementById('status').textContent = 'Waiting for verification code...';
+					return;
+				}
+
 				document.getElementById('status').textContent = `Status: ${data.status}`;
+				clearInterval(currentPollInterval);
+				currentPollInterval = null;
+			} catch (error) {
+				document.getElementById('status').textContent = error.message;
+				clearInterval(currentPollInterval);
+				currentPollInterval = null;
 			}
 		}, 4000);
 	}
