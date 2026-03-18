@@ -6,13 +6,24 @@
             <div class = "heading_holder">
                 <span class = "lft value_span9">Verification</span>
             </div>
-            <div class = "white_box value_span8">
-
+            <div style="margin-bottom: 20px;" class = "white_box value_span8">
+                <div style="margin-bottom: 12px;">
+                    <label class="value_span9" for="country">Country: </label>
+                    <select style="border-radius: 5px;" class="input-sm" id="country">
+                        <option value="NL" selected>NL - Netherlands</option>
+                    </select>
+                </div>
                 <p class="value_span9" style="font-size: 16px;">Phone number: <span id="phone-number">-</span></p>
                 <p class="value_span9" style="margin: 10px 0; font-size: 16px;">Status: <span style="font-weight: 800;" class="font-weight-bold" id="status">Idle</span></p>
                 <p class="value_span9" style="font-size: 16px;">Code: <strong id="code">-</strong></p>
 
-                <a href="#" class="btn btn-sm value_span6-1 value_span2 value_span4" onclick="requestSmsOrder(); return false;">Get Verification Number</a>
+                <a href="#" class="btn btn-sm value_span6-1 value_span2 value_span4" onclick="requestSmsOrder(); return false;">Request Verification Number</a>
+            </div>
+            <div style="display:inline-block;" id="instruction">
+                <p class="value_span9">
+                    Choose a country and click the button above to request a phone number.
+                </p>
+                <p class="value_span9">Enter this phone number into Instagram, then wait for the verification code to appear here.</p>
             </div>
         </div>
     </div>

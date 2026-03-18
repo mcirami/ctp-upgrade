@@ -18,6 +18,7 @@ class SmsOrder extends Model
 		'code',
 		'full_sms',
 		'received_at',
+		'last_checked_at',
 		'raw_order_response',
 		'raw_last_check_response',
 		'raw_webhook_payload',
@@ -26,6 +27,7 @@ class SmsOrder extends Model
 
 	protected $casts = [
 		'received_at' => 'datetime',
+		'last_checked_at' => 'datetime',
 		'expires_at' => 'datetime',
 		'raw_order_response' => 'array',
 		'raw_last_check_response' => 'array',

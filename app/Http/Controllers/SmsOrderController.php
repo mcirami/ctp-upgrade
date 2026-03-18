@@ -70,8 +70,37 @@ class SmsOrderController extends Controller
 		}
 	}
 
-	public function showOrder(SmsOrder $smsOrder): JsonResponse
+	public function showOrder(SmsOrder $smsOrder, SmsPoolService $smsPool): JsonResponse
 	{
+		if (
+			$smsOrder->status === 'pending' &&
+			(
+				! $smsOrder->last_checked_at ||
+				$smsOrder->last_checked_at->lt(now()->subSeconds(10))
+			)
+		) {
+			try {
+				$result = $smsPool->checkSms($smsOrder->smspool_order_id);
+
+				$smsOrder->raw_last_check_response = $result;
+				$smsOrder->last_checked_at = now();
+
+				$sms = $result['sms'] ?? null;
+				$fullSms = $result['full_sms'] ?? null;
+
+				if (! empty($sms)) {
+					$smsOrder->status = 'received';
+					$smsOrder->code = (string) $sms;
+					$smsOrder->full_sms = $fullSms;
+					$smsOrder->received_at = now();
+				}
+
+				$smsOrder->save();
+			} catch (\Throwable $e) {
+				report($e);
+			}
+		}
+
 		return response()->json([
 			'id' => $smsOrder->id,
 			'smspool_order_id' => $smsOrder->smspool_order_id,
@@ -80,6 +109,7 @@ class SmsOrderController extends Controller
 			'code' => $smsOrder->code,
 			'full_sms' => $smsOrder->full_sms,
 			'received_at' => optional($smsOrder->received_at)->toISOString(),
+			'last_checked_at' => optional($smsOrder->last_checked_at)->toISOString(),
 			'expires_at' => optional($smsOrder->expires_at)->toISOString(),
 		]);
 	}
