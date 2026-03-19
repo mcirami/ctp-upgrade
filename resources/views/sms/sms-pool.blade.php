@@ -31,16 +31,16 @@
                 </div>
                 <div style="display:flex; gap:8px; align-items:center;">
                     <p class="value_span9" style="font-size: 16px;">Phone number:</p>
-                    <span id="phone-number">-</span>
-                    <a href="#" id="copy-phone-btn" style="display: none; font-size: 12px; text-decoration: underline;">Copy</a>
+                    <span class="value_span9" id="phone-number">-</span>
+                    <a class="value_span9" href="#" id="copy-phone-btn" style="display: none; font-size: 12px; text-decoration: underline;">Copy</a>
                 </div>
                 <p class="value_span9" style="margin: 10px 0; font-size: 16px;">Status:
                     <span style="font-weight: 800;" class="font-weight-bold" id="status">Idle</span>
                 </p>
                 <div style="display:flex; gap:8px; align-items:center; margin-top:4px;">
                     <p class="value_span9" style="font-size: 16px;">Code:</p>
-                    <strong id="code">-</strong>
-                    <a  href="#" id="copy-code-btn" style="display: none; font-size: 16px; text-decoration: underline;">Copy</a>
+                    <strong class="value_span9" id="code">-</strong>
+                    <a class="value_span9" href="#" id="copy-code-btn" style="display: none; font-size: 16px; text-decoration: underline;">Copy</a>
                 </div>
 
                 <a id="get-number-btn" href="#" class="btn btn-sm value_span6-1 value_span2 value_span4">Request Verification Number</a>
