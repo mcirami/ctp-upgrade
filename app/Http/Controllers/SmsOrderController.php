@@ -64,14 +64,22 @@ class SmsOrderController extends Controller
 			report($e);
 
 			return response()->json([
-				'message' => 'Unable to create SMS order.',
-				'error' => $e->getMessage(),
-			], 500);
+				'message' => $e->getMessage() ?: 'Unable to create SMS order.',
+			], 422);
 		}
 	}
 
 	public function showOrder(SmsOrder $smsOrder, SmsPoolService $smsPool): JsonResponse
 	{
+		if (
+			$smsOrder->status === 'pending' &&
+			$smsOrder->expires_at &&
+			$smsOrder->expires_at->isPast()
+		) {
+			$smsOrder->status = 'expired';
+			$smsOrder->save();
+		}
+
 		if (
 			$smsOrder->status === 'pending' &&
 			(
@@ -98,7 +106,19 @@ class SmsOrderController extends Controller
 				$smsOrder->save();
 			} catch (\Throwable $e) {
 				report($e);
+
+				$smsOrder->last_checked_at = now();
+				$smsOrder->save();
 			}
+		}
+
+		if (
+			$smsOrder->status === 'pending' &&
+			$smsOrder->expires_at &&
+			$smsOrder->expires_at->isPast()
+		) {
+			$smsOrder->status = 'expired';
+			$smsOrder->save();
 		}
 
 		return response()->json([
@@ -111,6 +131,9 @@ class SmsOrderController extends Controller
 			'received_at' => optional($smsOrder->received_at)->toISOString(),
 			'last_checked_at' => optional($smsOrder->last_checked_at)->toISOString(),
 			'expires_at' => optional($smsOrder->expires_at)->toISOString(),
+			'message' => $smsOrder->status === 'expired'
+				? 'This verification number has expired. Please request a new one.'
+				: null,
 		]);
 	}
 
