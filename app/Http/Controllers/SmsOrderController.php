@@ -7,6 +7,7 @@ use App\Services\SmsPoolService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use LeadMax\TrackYourStats\System\Session;
 use Throwable;
 
 class SmsOrderController extends Controller
@@ -19,6 +20,13 @@ class SmsOrderController extends Controller
 			'pool' => ['nullable', 'string', 'max:255'],
 			'client_reference' => ['nullable', 'string', 'max:255'],
 		]);
+
+		$repId = Session::userID();
+		if (! $repId) {
+			return response()->json([
+				'message' => 'Unauthorized: rep not found in session.',
+			], 401);
+		}
 
 		try {
 			$result = $smsPool->orderSms(
@@ -42,6 +50,7 @@ class SmsOrderController extends Controller
 			}
 
 			$order = SmsOrder::create([
+				'rep_id' => $repId,
 				'client_reference' => $data['client_reference'] ?? null,
 				'smspool_order_id' => (string) $smspoolOrderId,
 				'phone_number' => $phoneNumber ? (string) $phoneNumber : null,

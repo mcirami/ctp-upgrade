@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class SmsOrder extends Model
 {
 	protected $fillable = [
+		'rep_id',
 		'client_reference',
 		'smspool_order_id',
 		'phone_number',
@@ -33,4 +34,9 @@ class SmsOrder extends Model
 		'raw_last_check_response' => 'array',
 		'raw_webhook_payload' => 'array',
 	];
+
+	public function rep()
+	{
+		return $this->belongsTo(\App\User::class, 'rep_id', 'idrep');
+	}
 }
