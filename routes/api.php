@@ -22,5 +22,5 @@ use App\Http\Controllers\SmsPoolWebhookController;
 Route::middleware('auth:api')->get('/user', 'UserController@AuthRouteAPI');
 
 Route::post('/sms-orders', [SmsOrderController::class, 'store']);
-Route::get('/sms-orders/{smsOrder}', [SmsOrderController::class, 'show']);
+Route::get('/sms-orders/{smsOrder}', [SmsOrderController::class, 'showOrder']);
 Route::post('/webhooks/smspool', [SmsPoolWebhookController::class, 'handle']);

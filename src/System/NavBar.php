@@ -162,6 +162,8 @@ class NavBar
 
 //            "SMS Chat" => ['url' => '/sms', 'required_user_types' => [\App\Privilege::ROLE_AFFILIATE], 'required_permissions' => [Permissions::SMS_CHAT]],
 
+            "Verification" => ['url' => '/verification', 'required_user_types' => [\App\Privilege::ROLE_GOD, \App\Privilege::ROLE_AFFILIATE], 'required_permissions' => [Permissions::SMS_CHAT]],
+
 //            "Email Pools" => ['url' => '/email/pools', 'required_permissions' => [Permissions::EMAIL_POOLS]],
 
 //            "Assign SMS" => ['url' => '/sms/client/add', 'required_user_types' => [\App\Privilege::ROLE_GOD]],

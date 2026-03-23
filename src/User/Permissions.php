@@ -44,13 +44,13 @@ class Permissions
     const APPROVE_OFFER_REQUESTS = "approve_offer_requests";
     const APPROVE_AFFILIATE_SIGN_UPS = "approve_affiliate_sign_ups";
     const EDIT_AFFILIATES = "edit_affiliates";
+	const SMS_CHAT = "sms_chat";
     const EDIT_REPORT_PERMISSIONS = "edit_report_permissions";
 	const VIEW_ADV_REPORTS = "view_adv_reports";
 	const VIEW_PAYOUTS = "view_payouts";
     const ADJUST_SALES = "adjust_sales";
     const BAN_USERS = "ban_users";
     const EMAIL_POOLS = 'email_pools';
-    const SMS_CHAT = 'sms_chat';
     const ACCOUNT_TYPE = ACCOUNT_TYPE;
 
     public static $permissionsArray = [
@@ -71,6 +71,11 @@ class Permissions
             "description" => "Can Edit Agent Accounts",
             /*"required_permissions" => [self::CREATE_AFFILIATES],*/
             "allowed_user_types" => [\App\Privilege::ROLE_GOD, \App\Privilege::ROLE_ADMIN, Privilege::ROLE_MANAGER, Privilege::ROLE_AFFILIATE],
+        ],
+
+        self::SMS_CHAT => [
+	        'description' => 'Can use SMS Verification',
+	        'allowed_user_types' => [Privilege::ROLE_AFFILIATE]
         ],
 
         self::VIEW_ALL_USERS => [

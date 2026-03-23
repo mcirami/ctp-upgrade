@@ -7,6 +7,7 @@ use App\Services\SmsPoolService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use LeadMax\TrackYourStats\System\Session;
 use Throwable;
 
 class SmsOrderController extends Controller
@@ -19,6 +20,13 @@ class SmsOrderController extends Controller
 			'pool' => ['nullable', 'string', 'max:255'],
 			'client_reference' => ['nullable', 'string', 'max:255'],
 		]);
+
+		$repId = Session::userID();
+		if (! $repId) {
+			return response()->json([
+				'message' => 'Unauthorized: rep not found in session.',
+			], 401);
+		}
 
 		try {
 			$result = $smsPool->orderSms(
@@ -42,6 +50,7 @@ class SmsOrderController extends Controller
 			}
 
 			$order = SmsOrder::create([
+				'rep_id' => $repId,
 				'client_reference' => $data['client_reference'] ?? null,
 				'smspool_order_id' => (string) $smspoolOrderId,
 				'phone_number' => $phoneNumber ? (string) $phoneNumber : null,
@@ -64,14 +73,63 @@ class SmsOrderController extends Controller
 			report($e);
 
 			return response()->json([
-				'message' => 'Unable to create SMS order.',
-				'error' => $e->getMessage(),
-			], 500);
+				'message' => $e->getMessage() ?: 'Unable to create SMS order.',
+			], 422);
 		}
 	}
 
-	public function show(SmsOrder $smsOrder): JsonResponse
+	public function showOrder(SmsOrder $smsOrder, SmsPoolService $smsPool): JsonResponse
 	{
+		if (
+			$smsOrder->status === 'pending' &&
+			$smsOrder->expires_at &&
+			$smsOrder->expires_at->isPast()
+		) {
+			$smsOrder->status = 'expired';
+			$smsOrder->save();
+		}
+
+		if (
+			$smsOrder->status === 'pending' &&
+			(
+				! $smsOrder->last_checked_at ||
+				$smsOrder->last_checked_at->lt(now()->subSeconds(10))
+			)
+		) {
+			try {
+				$result = $smsPool->checkSms($smsOrder->smspool_order_id);
+
+				$smsOrder->raw_last_check_response = $result;
+				$smsOrder->last_checked_at = now();
+
+				$sms = $result['sms'] ?? null;
+				$fullSms = $result['full_sms'] ?? null;
+
+				if (! empty($sms)) {
+					$smsOrder->status = 'received';
+					$smsOrder->code = (string) $sms;
+					$smsOrder->full_sms = $fullSms;
+					$smsOrder->received_at = now();
+				}
+
+				$smsOrder->save();
+			} catch (\Throwable $e) {
+				report($e);
+
+				$smsOrder->last_checked_at = now();
+				$smsOrder->save();
+			}
+		}
+
+		if (
+			$smsOrder->status === 'pending' &&
+			$smsOrder->expires_at &&
+			$smsOrder->expires_at->isPast()
+		) {
+			$smsOrder->status = 'expired';
+			$smsOrder->save();
+		}
+
 		return response()->json([
 			'id' => $smsOrder->id,
 			'smspool_order_id' => $smsOrder->smspool_order_id,
@@ -80,7 +138,16 @@ class SmsOrderController extends Controller
 			'code' => $smsOrder->code,
 			'full_sms' => $smsOrder->full_sms,
 			'received_at' => optional($smsOrder->received_at)->toISOString(),
+			'last_checked_at' => optional($smsOrder->last_checked_at)->toISOString(),
 			'expires_at' => optional($smsOrder->expires_at)->toISOString(),
+			'message' => $smsOrder->status === 'expired'
+				? 'This verification number has expired. Please request a new one.'
+				: null,
 		]);
+	}
+
+	public function show() {
+
+		return view('sms.sms-pool');
 	}
 }

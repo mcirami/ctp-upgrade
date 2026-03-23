@@ -40,6 +40,7 @@ use App\Http\Controllers\Sms\SmsController;
 use App\Http\Controllers\Sms\SmsClientController;
 use App\Http\Controllers\ChatLogController;
 use App\Http\Controllers\Report\ConversionReportController;
+use App\Http\Controllers\SmsOrderController;
 
 Route::get('/', [IndexController::class, 'index']);
 Route::post('/', [IndexController::class, 'index']);
@@ -51,6 +52,10 @@ Route::post('email/incoming', [RelevanceReactorController::class, 'incomingEmail
 Route::post('email/incoming/distribute', [RelevanceReactorController::class, 'distributeEmail']);
 Route::group(['middleware' => 'legacy.auth'], function () {
     Route::get('dashboard', [DashboardController::class, 'home']);
+	Route::get('verification', [SmsOrderController::class, 'show'])->middleware(
+		'role:0,3',
+		'permissions:' . Permissions::SMS_CHAT
+	);
     Route::group(['prefix' => 'user'], function () {
         Route::get('manage', [UserController::class, 'viewManageUsers'])->middleware(['role:0,1,2']);
         Route::get('{id}/affiliates', [UserController::class, 'viewManagersAffiliates'])->middleware([

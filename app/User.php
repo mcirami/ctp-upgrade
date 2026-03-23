@@ -210,5 +210,9 @@ class User extends Authenticatable
         return $this->hasOne(Salary::class, 'user_id', 'idrep');
     }
 
+	public function smsOrders()
+	{
+		return $this->hasMany(\App\SmsOrder::class, 'rep_id', 'idrep');
+	}
 
 }
