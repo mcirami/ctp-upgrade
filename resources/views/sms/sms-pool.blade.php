@@ -46,9 +46,8 @@
 
                 <a id="get-number-btn" href="#" class="btn btn-sm value_span6-1 value_span2 value_span4">Request Verification Number</a>
             </div>
-            <div id="error-box" style="display:none; margin-bottom: 16px; padding: 10px; border-radius: 6px; background:#ffe5e5; color:#900;"></div>
             <div style="display:inline-block;" id="instruction">
-                <div id="error-box" style="display:none; margin-bottom: 16px; padding: 10px; border-radius: 6px; background:#ffe5e5; color:#900;"></div>
+                <div id="error-box" style="display:none; margin-bottom: 16px; padding: 10px; border-radius: 6px; background:#ffe5e5; color:#900;">Enter this phone number into Instagram, then wait for the verification code to appear here</div>
                 <p class="value_span9">
                     Choose a country and click the button above to request a phone number.
                 </p>
