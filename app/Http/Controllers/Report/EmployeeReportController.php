@@ -18,31 +18,49 @@ class EmployeeReportController extends ReportController
     private function report(Repository $repository, Request $request)
     {
         $repository->SHOW_AFF_TYPE = $request->query('role', 3);
+        $isGodUser = Session::userType() === Privilege::ROLE_GOD;
 
         $reporter = new \LeadMax\TrackYourStats\Report\Reporter($repository);
 
+        $totals = [
+            'Clicks',
+            'UniqueClicks',
+            'FreeSignUps',
+            'PendingConversions',
+            'Conversions',
+            'Revenue',
+            'BonusRevenue',
+            'ReferralRevenue',
+            'TOTAL'
+        ];
+
+        if ($isGodUser) {
+            $totals[] = 'Codes';
+        } else {
+            $totals[] = 'Deductions';
+        }
+
+        $currencyColumns = [
+            'EPC',
+            'Revenue',
+            'BonusRevenue',
+            'ReferralRevenue',
+            'TOTAL'
+        ];
+
+        if (!$isGodUser) {
+            $currencyColumns[] = 'Deductions';
+        }
+
         $reporter
             ->addFilter(new Filters\DeductionColumnFilter())
-            ->addFilter(new Filters\Total([
-                'Clicks',
-                'UniqueClicks',
-                'FreeSignUps',
-                'PendingConversions',
-                'Conversions',
-                'Revenue',
-                'Deductions',
-                'BonusRevenue',
-                'ReferralRevenue',
-                'TOTAL'], ['Revenue', 'Deductions', 'BonusRevenue', 'ReferralRevenue']))
+            ->addFilter(new Filters\Total(
+                $totals,
+                ['Revenue', 'Deductions', 'BonusRevenue', 'ReferralRevenue']
+            ))
             ->addFilter(new Filters\EarningPerClick())
-            ->addFilter(new Filters\DollarSign([
-                'EPC',
-                'Revenue',
-                'Deductions',
-                'BonusRevenue',
-                'ReferralRevenue',
-                'TOTAL'
-            ]))->addFilter(new Filters\UserToolTip())->addFilter(function ($data) {
+            ->addFilter(new Filters\DollarSign($currencyColumns))
+            ->addFilter(new Filters\UserToolTip())->addFilter(function ($data) {
                 foreach ($data as $key => &$row) {
                     if (isset($row['Clicks']) && is_numeric($row['idrep'])) {
                         $queryString = http_build_query(request()->query());
