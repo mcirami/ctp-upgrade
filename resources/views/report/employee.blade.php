@@ -63,7 +63,11 @@
                 (Session::userType() == Privilege::ROLE_ADMIN && Session::permissions()->can("view_payouts") )
             )
                 <th class="value_span9  headers ">Sales Revenue</th>
-                <th class="value_span9  ">Deductions</th>
+                @if(Session::userType() == Privilege::ROLE_GOD)
+                    <th class="value_span9  ">Codes</th>
+                @else
+                    <th class="value_span9  ">Deductions</th>
+                @endif
                 <th class="value_span9">EPC</th>
                 <th class="value_span9">Bonus Revenue</th>
                 <th class="value_span9">Referral Revenue</th>
@@ -84,7 +88,7 @@
                     'PendingConversions',
                     'Conversions',
                     'Revenue',
-                    'Deductions',
+                    Session::userType() == Privilege::ROLE_GOD ? 'Codes' : 'Deductions',
                     'EPC',
                     'BonusRevenue',
                     'ReferralRevenue',

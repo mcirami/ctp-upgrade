@@ -20,6 +20,7 @@ class GodEmployeeRepository extends Repository
     public function between($dateFrom, $dateTo): array
     {
         $report = $this->mergeReport($this->getClicks($dateFrom, $dateTo), $this->getConversions($dateFrom, $dateTo));
+        $report = $this->mergeReport($report, $this->getCodes($dateFrom, $dateTo));
 
 
         $report = $this->mergeReport($report, $this->getBonusesRevenue($dateFrom, $dateTo));
@@ -37,6 +38,7 @@ class GodEmployeeRepository extends Repository
                 'Conversions' => 0,
                 'Revenue' => 0,
                 'Deductions' => 0,
+                'Codes' => 0,
                 'EPC' => 0,
                 'BonusRevenue' => 0,
                 'ReferralRevenue' => 0,
@@ -84,6 +86,7 @@ class GodEmployeeRepository extends Repository
         $output["Conversions"] += $initial["Conversions"];
         $output["Revenue"] += $initial["Revenue"];
         $output["Deductions"] += $initial["Deductions"];
+        $output["Codes"] += $initial["Codes"];
         $output["FreeSignUps"] += $initial["FreeSignUps"];
         $output["BonusRevenue"] += $initial["BonusRevenue"];
         $output["ReferralRevenue"] += $initial["ReferralRevenue"];
@@ -99,6 +102,7 @@ class GodEmployeeRepository extends Repository
         $array["Conversions"] = 0;
         $array["Revenue"] = 0;
         $array["Deductions"] = 0;
+        $array["Codes"] = 0;
         $array["FreeSignUps"] = 0;
         $array["BonusRevenue"] = 0;
         $array["ReferralRevenue"] = 0;
@@ -291,6 +295,46 @@ class GodEmployeeRepository extends Repository
 
         $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         
+        return $result;
+    }
+
+    private function getCodes($dateFrom, $dateTo)
+    {
+        $db = $this->getDB();
+        $sql = "
+				SELECT
+					rep.idrep,
+					rep.user_name,
+					count(sms_orders.id) Codes,
+					rep.lft,
+					rep.rgt
+				FROM
+					rep
+
+				INNER JOIN privileges p on rep.idrep = p.rep_idrep
+
+				LEFT JOIN sms_orders on sms_orders.rep_id = rep.idrep
+
+				WHERE
+					sms_orders.status = 'received'
+					AND sms_orders.created_at BETWEEN :dateFrom AND :dateTo
+
+				GROUP BY rep.idrep
+				ORDER BY Codes DESC
+			";
+
+        $stmt = $db->prepare($sql);
+
+        $stmt->bindParam(":dateFrom", $dateFrom);
+        $stmt->bindParam(":dateTo", $dateTo);
+        $stmt->execute();
+
+        $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        foreach ($result as &$row) {
+            $row['Codes'] = (int) $row['Codes'];
+        }
+
         return $result;
     }
 
