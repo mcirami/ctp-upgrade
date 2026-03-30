@@ -59,15 +59,21 @@
             <th class="value_span9">Free Sign Ups</th>
             <th class="value_span9">Pending Conversions</th>
             <th class="value_span9">Conversions</th>
+
             @if(Session::userType() == Privilege::ROLE_GOD ||
                 (Session::userType() == Privilege::ROLE_ADMIN && Session::permissions()->can("view_payouts") )
             )
                 <th class="value_span9  headers ">Sales Revenue</th>
-                @if(Session::userType() == Privilege::ROLE_GOD)
-                    <th class="value_span9  ">Codes</th>
-                @else
+            @endif
+            @if( Session::userType() == Privilege::ROLE_ADMIN && Session::permissions()->can("view_payouts") && !Session::permissions()->can('view_sms_stats') )
                     <th class="value_span9  ">Deductions</th>
-                @endif
+            @endif
+            @if(Session::userType() == Privilege::ROLE_GOD || Session::permissions()->can('view_sms_stats'))
+                <th class="value_span9  ">Codes</th>
+            @endif
+            @if(Session::userType() == Privilege::ROLE_GOD ||
+               (Session::userType() == Privilege::ROLE_ADMIN && Session::permissions()->can("view_payouts") )
+           )
                 <th class="value_span9">EPC</th>
                 <th class="value_span9">Bonus Revenue</th>
                 <th class="value_span9">Referral Revenue</th>
@@ -88,7 +94,7 @@
                     'PendingConversions',
                     'Conversions',
                     'Revenue',
-                    Session::userType() == Privilege::ROLE_GOD ? 'Codes' : 'Deductions',
+                    Session::userType() == Privilege::ROLE_GOD || Session::permissions()->can('view_sms_stats') ? 'Codes' : 'Deductions',
                     'EPC',
                     'BonusRevenue',
                     'ReferralRevenue',
@@ -104,7 +110,12 @@
                     'PendingConversions',
                     'Conversions',
                 ];
+
+				if (Session::userType() == Privilege::ROLE_GOD || Session::permissions()->can('view_sms_stats') ) {
+					$array[] = 'Codes';
+				}
             }
+
             $reporter->between($dates['startDate'], $dates['endDate'],
             new \LeadMax\TrackYourStats\Report\Formats\HTML(true, $array));
         @endphp
