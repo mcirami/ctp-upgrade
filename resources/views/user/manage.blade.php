@@ -87,7 +87,7 @@
 								html += "<a class='btn btn-default btn-sm value_span5-1 ' data-toggle='tooltip' title='Login into this user'" +
 									" href='#' onclick='adminLogin(" + user['idrep'] +")'>Login</a>";
                             }
-							if(CREATE_MANAGERS && role == 2) {
+							if(CREATE_MANAGERS && parseInt(role) === 2) {
 								html += "<a class='btn btn-sm btn-default value_span5-1 ' data-toggle='tooltip' title='View Agents'" +
 									" href='/user/" + user['idrep'] + "/affiliates'>View Agents</a>";
                             }

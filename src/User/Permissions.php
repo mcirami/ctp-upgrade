@@ -45,6 +45,7 @@ class Permissions
     const APPROVE_AFFILIATE_SIGN_UPS = "approve_affiliate_sign_ups";
     const EDIT_AFFILIATES = "edit_affiliates";
 	const SMS_CHAT = "sms_chat";
+	const VIEW_SMS_STATS = "sms_stats";
     const EDIT_REPORT_PERMISSIONS = "edit_report_permissions";
 	const VIEW_ADV_REPORTS = "view_adv_reports";
 	const VIEW_PAYOUTS = "view_payouts";
@@ -79,7 +80,12 @@ class Permissions
 			'allowed_user_types' => [Privilege::ROLE_AFFILIATE]
         ],
 
-	    self::VIEW_ALL_USERS => [
+        self::VIEW_SMS_STATS => [
+	        'description' => 'Can View SMS Stats',
+	        'allowed_user_types' => [\App\Privilege::ROLE_GOD, \App\Privilege::ROLE_ADMIN, Privilege::ROLE_MANAGER, Privilege::ROLE_AFFILIATE]
+        ],
+
+        self::VIEW_ALL_USERS => [
 			"description" => "Can View All Users",
 		    "allowed_user_types" => [\App\Privilege::ROLE_GOD, \App\Privilege::ROLE_ADMIN]
 	    ],
