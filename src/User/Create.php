@@ -232,7 +232,11 @@ class Create
         $new_replist->user_id = Session::userID();
 
         if (Session::userType() == \App\Privilege::ROLE_ADMIN) {
-            $this->assignTos = $new_replist->selectOwnedManagers()->fetchALL(PDO::FETCH_ASSOC);;
+			if(Session::permissions()->can("view_all_users")) {
+				$this->assignTos = $new_replist->selectAssignablesManager();
+			} else {
+				$this->assignTos = $new_replist->selectOwnedManagers()->fetchALL(PDO::FETCH_ASSOC);
+			}
         } else {
             $this->assignTos = $new_replist->selectAssignablesManager();
         }
