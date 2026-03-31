@@ -109,11 +109,11 @@
                         'PendingConversions',
                         'Conversions',
                     ];
-                }
 
-			    if ( Session::userType() != Privilege::ROLE_GOD && Session::permissions()->can('view_sms_stats') && !Session::permissions()->can("view_payouts") ) {
-					$array[] = 'Codes';
-				}
+					if (Session::userType() == Privilege::ROLE_GOD || Session::permissions()->can('view_sms_stats') ) {
+					    $array[] = 'Codes';
+					}
+                }
 
                 $reporter->between($dates['startDate'], $dates['endDate'],
                 new HTML(true, $array));
