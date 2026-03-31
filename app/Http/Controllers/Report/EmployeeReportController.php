@@ -19,6 +19,7 @@ class EmployeeReportController extends ReportController
     {
         $repository->SHOW_AFF_TYPE = $request->query('role', 3);
         $isGodUser = Session::userType() === Privilege::ROLE_GOD;
+	    $SmsStatsPermission = Session::permissions()->can('view_sms_stats');
 
         $reporter = new \LeadMax\TrackYourStats\Report\Reporter($repository);
 
@@ -34,7 +35,7 @@ class EmployeeReportController extends ReportController
             'TOTAL'
         ];
 
-        if ($isGodUser) {
+        if ($isGodUser || $SmsStatsPermission) {
             $totals[] = 'Codes';
         } else {
             $totals[] = 'Deductions';
@@ -48,7 +49,7 @@ class EmployeeReportController extends ReportController
             'TOTAL'
         ];
 
-        if (!$isGodUser) {
+        if (!$isGodUser && !$SmsStatsPermission) {
             $currencyColumns[] = 'Deductions';
         }
 

@@ -15,7 +15,7 @@ class ManagerEmployeeRepository extends Repository
     public function between($dateFrom, $dateTo): array
     {
         $report = $this->mergeReport($this->getClicks($dateFrom, $dateTo), $this->getConversions($dateFrom, $dateTo));
-
+	    $report = $this->mergeReport($report, $this->getCodes($dateFrom, $dateTo));
         $report = $this->mergeReport($report, $this->getBonusesRevenue($dateFrom, $dateTo));
 
 
@@ -31,6 +31,7 @@ class ManagerEmployeeRepository extends Repository
                 'Conversions' => 0,
                 'Revenue' => 0,
                 'Deductions' => 0,
+                'Codes' => 0,
                 'EPC' => 0,
                 'BonusRevenue' => 0,
                 'ReferralRevenue' => 0,
@@ -228,7 +229,45 @@ class ManagerEmployeeRepository extends Repository
         return $result;
     }
 
+	private function getCodes($dateFrom, $dateTo)
+	{
+		$db = $this->getDB();
+		$sql = "
+				SELECT
+					rep.idrep,
+					rep.user_name,
+					count(sms_orders.id) Codes,
+					rep.lft,
+					rep.rgt
+				FROM
+					rep
 
+				INNER JOIN privileges p on rep.idrep = p.rep_idrep
+
+				LEFT JOIN sms_orders on sms_orders.rep_id = rep.idrep
+
+				WHERE
+					sms_orders.status = 'received'
+					AND sms_orders.created_at BETWEEN :dateFrom AND :dateTo
+
+				GROUP BY rep.idrep
+				ORDER BY Codes DESC
+			";
+
+		$stmt = $db->prepare($sql);
+
+		$stmt->bindParam(":dateFrom", $dateFrom);
+		$stmt->bindParam(":dateTo", $dateTo);
+		$stmt->execute();
+
+		$result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+		foreach ($result as &$row) {
+			$row['Codes'] = (int) $row['Codes'];
+		}
+
+		return $result;
+	}
     public function query($dateFrom, $dateTo): \PDOStatement
     {
         // TODO: Implement query() method.
