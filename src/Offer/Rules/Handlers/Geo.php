@@ -31,6 +31,8 @@ class Geo
 
     public $deny = 0;
 
+    public $isActive = 1;
+
 
     function __construct($args)
     {
@@ -55,6 +57,10 @@ class Geo
                 $this->deny = 1;
             } else {
                 $this->deny = 0;
+            }
+
+            if (isset($args[4])) {
+                $this->isActive = filter_var($args[4], FILTER_VALIDATE_BOOLEAN) ? 1 : 0;
             }
         }
 
@@ -216,7 +222,7 @@ class Geo
 
             $db->beginTransaction();
 
-            $sql = "INSERT INTO rule (name, offer_idoffer, type, redirect_offer, deny) VALUES(:name, :offerID, :type, :redirect_offer, :deny)";
+            $sql = "INSERT INTO rule (name, offer_idoffer, type, redirect_offer, deny, is_active) VALUES(:name, :offerID, :type, :redirect_offer, :deny, :is_active)";
 
             $prep = $db->prepare($sql);
 
@@ -226,6 +232,7 @@ class Geo
             $prep->bindParam(":type", $this->type);
             $prep->bindParam(":redirect_offer", $this->redirectOffer);
             $prep->bindParam(":deny", $this->deny);
+            $prep->bindParam(":is_active", $this->isActive);
             $prep->execute();
 
             $ruleID = $db->lastInsertId();
@@ -269,7 +276,7 @@ class Geo
         } catch (\Exception $e) {
             $db->rollBack();
             Log::info("Error: " . print_r($e, true));
-            die($e);
+            throw $e;
         }
 
 

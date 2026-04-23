@@ -63,6 +63,20 @@ foreach ($rules->rules as $rule) {
 				</div>
 				<div class = "modal-body ">
 					<div class = "row">
+						<div class = "col-md-12">
+							<div class = "form-group">
+								<label for = "geoPredefinedRule">Load Predefined Rule:</label>
+								<div>
+									<select id = "geoPredefinedRule" class = "form-control" style = "width:75%;display:inline-block;">
+										<option value = "">Select a predefined rule...</option>
+										<?php \LeadMax\TrackYourStats\Offer\Rules\Handlers\PredefinedGeo::printOptionsForUser(\LeadMax\TrackYourStats\System\Session::userID()); ?>
+									</select>
+									<button id = "geoLoadPredefinedRule" type = "button" class = "btn btn-default btn-sm" style = "margin-left:10px;">
+										Load
+									</button>
+								</div>
+							</div>
+						</div>
 						
 						<div class = "col-md-6 ">
 							<label class = "control-label">Country List:</label>
@@ -135,6 +149,17 @@ foreach ($rules->rules as $rule) {
 						<div class = "form-group">
 							<label style = "margin-top:10px;" for = "geoRedirectOffer">Redirect Offer:</label>
 							<?php $offerView->printToSelectBox("geoRedirectOffer"); ?>
+						</div>
+						<div id = "geoPredefinedRuleCreateWrap">
+							<div class = "form-group">
+								<input id = "geoCreatePredefinedRule" type = "checkbox"
+									   style = "width:15px;height:15px;">
+								<span id = "geoPredefinedRuleActionText">Create Predefined Rule</span>
+							</div>
+							<div class = "form-group" id = "geoPredefinedRuleNameWrap" style = "display:none;">
+								<label for = "geoPredefinedRuleName">Predefined Rule Name:</label>
+								<input type = "text" id = "geoPredefinedRuleName">
+							</div>
 						</div>
 					</div>
 				</div>
@@ -363,10 +388,15 @@ foreach ($rules->rules as $rule) {
 	
 	<script type = "text/javascript">
 		
+		var geoRequestInFlight = false;
 		
 		$("#searchCountryList").on('propertychange change keyup paste input', function () {
 			searchCountryList($("#searchCountryList").val());
 			
+		});
+
+		$("#geoCreatePredefinedRule").change(function () {
+			toggleGeoPredefinedRuleName();
 		});
 		
 		
@@ -390,6 +420,127 @@ foreach ($rules->rules as $rule) {
 				}
 			}
 		}
+
+		function toggleGeoPredefinedRuleName() {
+			if ($("#geoCreatePredefinedRule").is(":checked"))
+				$("#geoPredefinedRuleNameWrap").show();
+			else {
+				$("#geoPredefinedRuleNameWrap").hide();
+				$("#geoPredefinedRuleName").val("");
+			}
+		}
+
+		function setGeoPredefinedRuleMode(mode) {
+			var actionText = mode === "edit" ? "Save as Predefined Rule" : "Create Predefined Rule";
+			$("#geoPredefinedRuleActionText").text(actionText);
+		}
+
+		function resetGeoPredefinedRuleForm(mode) {
+			$("#geoCreatePredefinedRule").prop("checked", false);
+			$("#geoPredefinedRuleName").val("");
+			$("#geoPredefinedRuleCreateWrap").show();
+			setGeoPredefinedRuleMode(mode || "create");
+			toggleGeoPredefinedRuleName();
+		}
+
+		function setGeoSubmissionState(isSubmitting) {
+			geoRequestInFlight = isSubmitting;
+			$("#geoCreateButton").prop("disabled", isSubmitting);
+			$("#geoUpdateButton").prop("disabled", isSubmitting);
+			$("#geoLoadPredefinedRule").prop("disabled", isSubmitting);
+		}
+
+		function validateGeoRuleSubmission() {
+			var rows = $('#toAdd > tbody > tr');
+			
+			if (rows.length === 0) {
+				alert("Add at least one country before saving a geo rule.");
+				return false;
+			}
+			
+			if ($("#geoCreatePredefinedRule").is(":checked") && $("#geoPredefinedRuleName").val().trim() === "") {
+				alert("Enter a predefined rule name or uncheck the predefined rule option.");
+				return false;
+			}
+			
+			return true;
+		}
+
+		function getGeoPredefinedRuleRequestData() {
+			return {
+				saveAsPredefinedRule: $("#geoCreatePredefinedRule").is(":checked") ? 1 : 0,
+				predefinedRuleName: $("#geoPredefinedRuleName").val().trim()
+			};
+		}
+
+		function clearSelectedGeoCountries() {
+			var rows = $('#toAdd > tbody > tr');
+			
+			for (var i = 0; i < rows.length; i++) {
+				if (rows[i].lastChild) {
+					rows[i].lastChild.remove();
+				}
+				
+				$("#countryListBody").append(rows[i]);
+				
+				$("#_" + rows[i].id).attr("onclick", "addCountry(\"" + rows[i].id + "\")");
+				
+				$("#" + rows[i].id + "_img").attr("src", "images/icons/add.png");
+			}
+			
+			sortCountries("a", "asc");
+		}
+
+		function applyPredefinedGeoRule(predefinedRule) {
+			clearSelectedGeoCountries();
+			
+			$("#geoRedirectOffer").val(predefinedRule["redirectOffer"] || "");
+			$("#geoIsAllowed").prop("checked", parseInt(predefinedRule["deny"], 10) === 1 || predefinedRule["deny"] === true);
+			$("#geoIsActive").prop("checked", parseInt(predefinedRule["is_active"], 10) === 1 || predefinedRule["is_active"] === true);
+			
+			for (var i = 0; i < predefinedRule["countries"].length; i++) {
+				addCountry(
+					predefinedRule["countries"][i]["country_code"],
+					parseInt(predefinedRule["countries"][i]["cap_status"], 10) || 0,
+					parseInt(predefinedRule["countries"][i]["cap"], 10) || 0,
+					false
+				);
+			}
+			
+			sortTable($('#toAdd'), 'asc');
+		}
+
+		$("#geoLoadPredefinedRule").click(function () {
+			if (geoRequestInFlight) {
+				return;
+			}
+
+			var predefinedRuleID = $("#geoPredefinedRule").val();
+			
+			if (predefinedRuleID === "") {
+				alert("Select a predefined rule first.");
+				return;
+			}
+
+			setGeoSubmissionState(true);
+			
+			$.ajax({
+				type: "GET",
+				url: "/scripts/offer/rules/geo/predefined.php",
+				data: {presetID: predefinedRuleID},
+				dataType: "json",
+				cache: false,
+				success: function (result) {
+					applyPredefinedGeoRule(result);
+				},
+				error: function (result) {
+					alert((result.responseJSON && result.responseJSON.message) || result.responseText || "Unable to load predefined rule.");
+				},
+				complete: function () {
+					setGeoSubmissionState(false);
+				}
+			});
+		});
 		
 		function editRule(ruleID, ruleType) {
 			switch (ruleType) {
@@ -415,18 +566,48 @@ foreach ($rules->rules as $rule) {
 		
 		
 		$("#geoCreateButton").click(function () {
+			if (geoRequestInFlight) {
+				return;
+			}
+
+			if (!validateGeoRuleSubmission()) {
+				return;
+			}
+
+			setGeoSubmissionState(true);
+
+			var predefinedRuleData = getGeoPredefinedRuleRequestData();
 
 			$.ajax({
 				type: "POST",
 				url: "/scripts/offer/rules/geo/addGeo.php",
-				data: {data: parseCountries("toAdd")},
+				dataType: "json",
+				data: {
+					data: parseCountries("toAdd"),
+					saveAsPredefinedRule: predefinedRuleData.saveAsPredefinedRule,
+					predefinedRuleName: predefinedRuleData.predefinedRuleName
+				},
 				cache: false,
 				success: function (result) {
+					if (result && result["status"] === "error") {
+						alert(result["message"] || "Unable to create geo rule.");
+						return;
+					}
+					
+					if (result && result["status"] === "partial" && result["message"]) {
+						alert(result["message"]);
+					}
 					
 					$("#geoModal").modal("hide");
 					location.reload();
 					
 					
+				},
+				error: function (result) {
+					alert((result.responseJSON && result.responseJSON.message) || result.responseText || "Unable to create geo rule.");
+				},
+				complete: function () {
+					setGeoSubmissionState(false);
 				}
 				
 			});
@@ -484,46 +665,27 @@ foreach ($rules->rules as $rule) {
 		function resetGeoModal() {
 			
 			
-			var rows = $('#toAdd > tbody > tr');
-			
 			$("#geoRuleName").val("");
 			$("#geoRuleID").val("");
 			$("#geoRedirectOffer").val("");
+			$("#geoPredefinedRule").val("");
 			$("#geoRuleTitle").text("New Geo Rule");
-			$("#geoIsAllowed").attr("checked", false);
-			$("#geoIsActive").attr("checked", true);
-			
-			$("#geoCancelButton").click(function () {
-				resetGeoModal()
-			});
-
-			$("#geoModal").click(function() {
-				resetGeoModal();
-			});
-
-			$("button.close").click(function() {
-				resetGeoModal();
-			});
+			$("#geoIsAllowed").prop("checked", false);
+			$("#geoIsActive").prop("checked", true);
+			resetGeoPredefinedRuleForm("create");
+			setGeoSubmissionState(false);
 			
 			$("#geoCreateButton").show();
+			$("#geoUpdateButton").off("click");
 			$("#geoUpdateButton").hide();
-
-			for (var i = 0; i < rows.length; i++) {
-				rows[i].lastChild.remove();
-				$("#countryListBody").append(rows[i]);
-				
-				$("#_" + rows[i].id).attr("onclick", "addCountry(\"" + rows[i].id + "\")");
-				
-				$("#" + rows[i].id + "_img").attr("src", "images/icons/add.png");
-			}
 			
-			sortCountries("a", "asc");
+			clearSelectedGeoCountries();
 			
 			
 		}
 		
-		$("#geoCancelButton").click(function () {
-			resetGeoModal()
+		$('#geoModal').on('hidden.bs.modal', function () {
+			resetGeoModal();
 		});
 		
 		$("#deviceCancelButton").click(function () {
@@ -599,9 +761,11 @@ foreach ($rules->rules as $rule) {
 			
 			var countriesNotAllowed = document.getElementById("geoIsAllowed").checked;
 			
+			var geoIsActive = document.getElementById("geoIsActive").checked;
+			
 			var parsed = [];
 			if (!onlyCountries)
-				parsed = [offerID, geoRuleName, redirectOffer, countriesNotAllowed];
+				parsed = [offerID, geoRuleName, redirectOffer, countriesNotAllowed, geoIsActive];
 			
 			for (var i = 0; i < rows.length; i++) {
 				parsed.push([
