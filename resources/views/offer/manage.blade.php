@@ -87,7 +87,7 @@
 						@elseif(Session::permissions()->can("edit_affiliates") &&
                                 Session::userType() != \App\Privilege::ROLE_AFFILIATE &&
                                 Session::userType() != \App\Privilege::ROLE_MANAGER)
-							<th class="value_span9">Affiliate Access</th>
+							<th class="value_span9">GEO Rules</th>
 						@endif
 
 						@if (Session::userType() !== \App\Privilege::ROLE_AFFILIATE &&
@@ -285,8 +285,7 @@ Session::userType() !== \App\Privilege::ROLE_ADMIN
 						if (permissions.permissions.edit_affiliates &&
                             (parseInt(userType) === 0 || parseInt(userType) === 1)) {
 							html += `<td class='value_span10'>` +
-									`<a target='_blank' class='btn btn-sm btn-default value_span5-1' href='/offer_access.php?id=` +
-									offer['idoffer'] + `'>Affiliate Access</a>` +
+									(offer['geo_rule_names'] || 'N/A') +
 									`</td>`;
 						}
 
@@ -418,4 +417,3 @@ Session::userType() !== \App\Privilege::ROLE_ADMIN
 		});
 	</script>
 @endsection
-

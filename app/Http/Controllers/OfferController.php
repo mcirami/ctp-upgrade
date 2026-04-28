@@ -101,8 +101,25 @@ class OfferController extends Controller
 			$offers = $offers->get();
 		}
 
+		$offerIds = $offers->pluck('idoffer')->filter()->unique()->values()->all();
+		$geoRuleNames = collect();
+
+		if (!empty($offerIds)) {
+			$geoRuleNames = DB::table('rule')
+			                  ->select('offer_idoffer', 'name')
+			                  ->whereIn('offer_idoffer', $offerIds)
+			                  ->where('type', '=', 'geo')
+			                  ->orderBy('name')
+			                  ->get()
+			                  ->groupBy('offer_idoffer')
+			                  ->map(function ($rules) {
+				                  return $rules->pluck('name')->filter()->implode(', ');
+			                  });
+		}
+
 		foreach ($offers as $offer) {
-			$offer["offer_name"] = htmlspecialchars($offer["offer_name"]);
+			$offer["offer_name"] = htmlspecialchars($offer["offer_name"], ENT_QUOTES, 'UTF-8');
+			$offer["geo_rule_names"] = htmlspecialchars($geoRuleNames->get($offer["idoffer"], 'N/A'), ENT_QUOTES, 'UTF-8');
 		}
 
 		$data = array_merge(compact('offers'), $data);
