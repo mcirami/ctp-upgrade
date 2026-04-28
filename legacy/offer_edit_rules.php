@@ -50,6 +50,34 @@ foreach ($rules->rules as $rule) {
 
 ?>
 	
+	<style>
+		#geoModal .geo-section {
+			margin-bottom: 20px;
+		}
+
+		#geoModal .geo-section .control-label {
+			display: block;
+			margin-bottom: 12px;
+		}
+
+		#geoModal .geo-table-scroll {
+			max-height: 320px;
+			overflow-y: auto;
+			overflow-x: hidden;
+		}
+
+		#geoModal #searchCountryList {
+			width: 100%;
+			margin-bottom: 12px;
+		}
+
+		#geoModal #countryList,
+		#geoModal #toAdd {
+			margin-bottom: 0;
+			width: 100%;
+		}
+	</style>
+	
 	
 	<!-- Geo Modal -->
 	<div class = "modal " id = "geoModal" tabindex = "-1" role = "dialog" aria-labelledby = "geoModalLabel">
@@ -78,48 +106,48 @@ foreach ($rules->rules as $rule) {
 							</div>
 						</div>
 						
-						<div class = "col-md-6 ">
-							<label class = "control-label">Country List:</label>
-							
-							<table id = countryList"
-								   class = "table table-sm table-bordered table-responsive table-striped form-control  "
-								   style = "height:250px;  min-width:0 !important;">
-								<thead>
-								<tr>
-									<th>Country</th>
-									<th>Action</th>
-								</tr>
-								</thead>
-								<tbody id = "countryListBody">
-								<?php \LeadMax\TrackYourStats\Offer\Rules\Geo::printCountriesAsTable(); ?>
-								
-								</tbody>
-							
-							</table>
-							<input type = "text" id = "searchCountryList" placeholder = "Search countries..." style = "width:100%;">
+						<div class = "col-md-12">
+							<div class = "geo-section">
+								<label class = "control-label">Country List:</label>
+								<input type = "text" id = "searchCountryList" placeholder = "Search countries...">
+								<div class = "geo-table-scroll">
+									<table id = "countryList"
+										   class = "table table-sm table-bordered table-responsive table-striped form-control">
+										<thead>
+										<tr>
+											<th>Country</th>
+											<th>Action</th>
+										</tr>
+										</thead>
+										<tbody id = "countryListBody">
+										<?php \LeadMax\TrackYourStats\Offer\Rules\Geo::printCountriesAsTable(); ?>
+										
+										</tbody>
+									
+									</table>
+								</div>
+							</div>
 						</div>
 						
 						
-						<div class = "col-md-6 ">
-							<label class = "control-label">Items:</label>
-							
-							<table id = "toAdd"
-								   class = "table table-sm table-bordered table-responsive table-striped form-control  "
-								   style = "height:250px;  min-width:0 !important; ">
-								<thead>
-								<tr>
-									<th>Country</th>
-									<th>Action</th>
-									<th>Caps</th>
-								</tr>
-								</thead>
-								<tbody>
+						<div class = "col-md-12">
+							<div class = "geo-section">
+								<label class = "control-label">Items:</label>
+								<table id = "toAdd"
+									   class = "table table-sm table-bordered table-responsive table-striped form-control">
+									<thead>
+									<tr>
+										<th>Country</th>
+										<th>Action</th>
+										<th>Caps</th>
+									</tr>
+									</thead>
+									<tbody>
+									
+									</tbody>
 								
-								</tbody>
-							
-							</table>
-						
-						
+								</table>
+							</div>
 						</div>
 					
 					</div>
@@ -494,6 +522,7 @@ foreach ($rules->rules as $rule) {
 		function applyPredefinedGeoRule(predefinedRule) {
 			clearSelectedGeoCountries();
 			
+			$("#geoRuleName").val(predefinedRule["name"] || "");
 			$("#geoRedirectOffer").val(predefinedRule["redirectOffer"] || "");
 			$("#geoIsAllowed").prop("checked", parseInt(predefinedRule["deny"], 10) === 1 || predefinedRule["deny"] === true);
 			$("#geoIsActive").prop("checked", parseInt(predefinedRule["is_active"], 10) === 1 || predefinedRule["is_active"] === true);
@@ -669,6 +698,8 @@ foreach ($rules->rules as $rule) {
 			$("#geoRuleID").val("");
 			$("#geoRedirectOffer").val("");
 			$("#geoPredefinedRule").val("");
+			$("#searchCountryList").val("");
+			searchCountryList("");
 			$("#geoRuleTitle").text("New Geo Rule");
 			$("#geoIsAllowed").prop("checked", false);
 			$("#geoIsActive").prop("checked", true);
@@ -697,7 +728,7 @@ foreach ($rules->rules as $rule) {
 			var selectedDeviceTR = $("#" + deviceName);
 			
 			
-			$("#deviceList tbody").remove(selectedDeviceTR);
+			selectedDeviceTR.remove();
 			
 			$("#deviceToAdd tbody").append(selectedDeviceTR);
 			
@@ -813,7 +844,7 @@ foreach ($rules->rules as $rule) {
 
 			var c = $("#" + countryName);
 			
-			$("#countryList tbody").remove(c);
+			c.remove();
 		
 			if(!document.getElementById(countryName + '_capIsActive')) {
 				const html =
