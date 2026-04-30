@@ -37,10 +37,21 @@ class NoneUnique
     public function save()
     {
         $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+
+        $existingRuleID = $this->findExistingRuleId($db);
+        if ($existingRuleID > 0) {
+            $this->idrule = $existingRuleID;
+            $this->name = trim($this->name);
+
+            return $this->update();
+        }
+
         $sql = "INSERT INTO rule(name, offer_idoffer, type, redirect_offer, is_active, deny) VALUES (:name, :offer_id, :type, :redirect_offer, :is_active, :deny)";
         $prep = $db->prepare($sql);
 
-        $prep->bindParam(":name", $this->name);
+        $name = trim($this->name);
+
+        $prep->bindParam(":name", $name);
         $prep->bindParam(":offer_id", $this->offer_idoffer);
         $prep->bindParam(":type", $this->type);
         $prep->bindParam(":redirect_offer", $this->redirect_offer);
@@ -56,7 +67,9 @@ class NoneUnique
         $sql = "UPDATE rule SET name = :name, offer_idoffer = :offer_id, type = :type, redirect_offer = :redirect_offer,  is_active = :is_active, deny = :deny WHERE idrule = :id";
         $prep = $db->prepare($sql);
 
-        $prep->bindParam(":name", $this->name);
+        $name = trim($this->name);
+
+        $prep->bindParam(":name", $name);
         $prep->bindParam(":offer_id", $this->offer_idoffer);
         $prep->bindParam(":type", $this->type);
         $prep->bindParam(":redirect_offer", $this->redirect_offer);
@@ -65,6 +78,28 @@ class NoneUnique
         $prep->bindParam(":id", $this->idrule);
 
         return $prep->execute();
+    }
+
+    private function findExistingRuleId($db)
+    {
+        $name = trim($this->name);
+
+        $sql = "SELECT idrule
+                FROM rule
+                WHERE offer_idoffer = :offer_id
+                    AND type = :type
+                    AND TRIM(name) = :name
+                LIMIT 1";
+
+        $prep = $db->prepare($sql);
+        $prep->bindParam(":offer_id", $this->offer_idoffer);
+        $prep->bindParam(":type", $this->type);
+        $prep->bindParam(":name", $name);
+        $prep->execute();
+
+        $ruleID = $prep->fetchColumn();
+
+        return $ruleID ? (int) $ruleID : 0;
     }
 
 

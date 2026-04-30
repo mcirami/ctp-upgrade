@@ -31,7 +31,6 @@ class Geo
 
     public $deny = 0;
 
-
     function __construct($args)
     {
         // if we're editing a geo rule
@@ -46,7 +45,7 @@ class Geo
 
             $this->offerID = $args[0];
 
-            $this->ruleName = $args[1];
+            $this->ruleName = trim($args[1]);
 
             $this->redirectOffer = $args[2];
 
@@ -216,28 +215,49 @@ class Geo
 
             $db->beginTransaction();
 
-            $sql = "INSERT INTO rule (name, offer_idoffer, type, redirect_offer, deny) VALUES(:name, :offerID, :type, :redirect_offer, :deny)";
+            $ruleID = $this->findExistingRuleID($db);
 
+            if ($ruleID > 0) {
+                $sql = "UPDATE rule
+                        SET name = :name, redirect_offer = :redirect_offer, deny = :deny
+                        WHERE idrule = :ruleID";
+
+                $prep = $db->prepare($sql);
+                $prep->bindParam(":name", $this->ruleName);
+                $prep->bindParam(":redirect_offer", $this->redirectOffer);
+                $prep->bindParam(":deny", $this->deny);
+                $prep->bindParam(":ruleID", $ruleID);
+                $prep->execute();
+            } else {
+                $sql = "INSERT INTO rule (name, offer_idoffer, type, redirect_offer, deny) VALUES(:name, :offerID, :type, :redirect_offer, :deny)";
+
+                $prep = $db->prepare($sql);
+                $prep->bindParam(":name", $this->ruleName);
+                $prep->bindParam(":offerID", $this->offerID);
+                $prep->bindParam(":type", $this->type);
+                $prep->bindParam(":redirect_offer", $this->redirectOffer);
+                $prep->bindParam(":deny", $this->deny);
+                $prep->execute();
+
+                $ruleID = (int) $db->lastInsertId();
+            }
+
+            $geoRuleID = $this->findGeoRuleID($db, $ruleID);
+
+            if ($geoRuleID === 0) {
+                $sql = "INSERT INTO geo_rule (rule_idrule) VALUES(:ruleID)";
+
+                $prep = $db->prepare($sql);
+                $prep->bindParam(":ruleID", $ruleID);
+                $prep->execute();
+
+                $geoRuleID = (int) $db->lastInsertId();
+            }
+
+            $sql = "DELETE FROM country_list WHERE geo_rule_idgeo_rule = :geoRuleID";
             $prep = $db->prepare($sql);
-
-
-            $prep->bindParam(":name", $this->ruleName);
-            $prep->bindParam(":offerID", $this->offerID);
-            $prep->bindParam(":type", $this->type);
-            $prep->bindParam(":redirect_offer", $this->redirectOffer);
-            $prep->bindParam(":deny", $this->deny);
+            $prep->bindParam(":geoRuleID", $geoRuleID);
             $prep->execute();
-
-            $ruleID = $db->lastInsertId();
-
-            $sql = "INSERT INTO geo_rule (rule_idrule) VALUES(:ruleID)";
-
-            $prep = $db->prepare($sql);
-
-            $prep->bindParam(":ruleID", $ruleID);
-            $prep->execute();
-
-            $geoRuleID = $db->lastInsertId();
 
 
             $insertValues = array();
@@ -275,5 +295,40 @@ class Geo
 
     }
 
+    private function findExistingRuleID($db)
+    {
+        $sql = "SELECT idrule
+                FROM rule
+                WHERE offer_idoffer = :offerID
+                    AND type = :type
+                    AND TRIM(name) = :name
+                LIMIT 1";
+
+        $prep = $db->prepare($sql);
+        $prep->bindParam(":offerID", $this->offerID);
+        $prep->bindParam(":type", $this->type);
+        $prep->bindParam(":name", $this->ruleName);
+        $prep->execute();
+
+        $ruleID = $prep->fetchColumn();
+
+        return $ruleID ? (int) $ruleID : 0;
+    }
+
+    private function findGeoRuleID($db, $ruleID)
+    {
+        $sql = "SELECT idgeo_rule
+                FROM geo_rule
+                WHERE rule_idrule = :ruleID
+                LIMIT 1";
+
+        $prep = $db->prepare($sql);
+        $prep->bindParam(":ruleID", $ruleID);
+        $prep->execute();
+
+        $geoRuleID = $prep->fetchColumn();
+
+        return $geoRuleID ? (int) $geoRuleID : 0;
+    }
 
 }
