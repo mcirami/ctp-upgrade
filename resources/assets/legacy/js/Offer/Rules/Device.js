@@ -28,6 +28,12 @@ class deviceEdit {
 
 
     updateRule() {
+        if (
+            typeof confirm === "function" &&
+            !confirm("Do you want to overwrite the existing rule you dipshit?")
+        ) {
+            return;
+        }
 
         var ruleData = {
             name: $("#deviceRuleName").val(),

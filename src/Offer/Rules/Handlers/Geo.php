@@ -48,7 +48,7 @@ class Geo
 
             $this->offerID = $args[0];
 
-            $this->ruleName = $args[1];
+            $this->ruleName = trim($args[1]);
 
             $this->redirectOffer = $args[2];
 
@@ -72,6 +72,7 @@ class Geo
     {
 
         $ruleData->ruleID = (int)$ruleData->ruleID;
+        $ruleData->name = trim($ruleData->name);
         $ruleData->is_active = (int)$ruleData->is_active;
         $ruleData->deny = (int)$ruleData->deny;
         $ruleData->redirectOffer = (int)$ruleData->redirectOffer;
@@ -81,59 +82,22 @@ class Geo
 
             $db->beginTransaction();
 
-            //Update rule and geo_rule
-            $sql = "UPDATE rule
-                    SET rule.name = :name, rule.redirect_offer = :redirect_offer,  rule.is_active = :is_active, rule.deny = :deny 
-                    
-                    WHERE rule.idrule = :ruleID  ";
+            $relatedRuleIDs = $this->findRelatedRuleIDsForUpdate($db, $ruleData->ruleID);
 
+            foreach ($relatedRuleIDs as $relatedRuleID) {
+                $this->updateBaseRule($db, $relatedRuleID, $ruleData);
 
-            $prep = $db->prepare($sql);
-            $prep->bindParam(":name", $ruleData->name);
-            $prep->bindParam(":redirect_offer", $ruleData->redirectOffer);
-            $prep->bindParam(":is_active", $ruleData->is_active);
-            $prep->bindParam(":deny", $ruleData->deny);
-            $prep->bindParam(":ruleID", $ruleData->ruleID);
-            $prep->execute();
-
-
-            // Get geo_rule ID (we need this for country_list)
-            $sql = "SELECT idgeo_rule FROM geo_rule WHERE rule_idrule = :ruleID";
-            $prep = $db->prepare($sql);
-
-            $prep->bindParam(":ruleID", $ruleData->ruleID);
-            $prep->execute();
-
-            $geoRuleID = $prep->fetch(PDO::FETCH_NUM)[0];
-
-            // Delete old countries tied to the geo rule
-            $sql = "DELETE FROM country_list WHERE geo_rule_idgeo_rule = :ruleID";
-            $prep = $db->prepare($sql);
-            $prep->bindParam(":ruleID", $geoRuleID);
-
-            $prep->execute();
-
-            $insertValues = array();
-            //start at two because thats where country arrays are
-            for ($i = 0; $i < count($countryList); $i++) {
-
-                if (is_array($countryList[$i])) {
-                    $questionMarks[] = "(?,?,?,?,?)";
-                    $vals = array_values($countryList[$i]);
-                    $vals[] = $geoRuleID;
-
-                    $insertValues = array_merge($insertValues, $vals);
+                $geoRuleID = $this->findGeoRuleID($db, $relatedRuleID);
+                if ($geoRuleID === 0) {
+                    $sql = "INSERT INTO geo_rule (rule_idrule) VALUES(:ruleID)";
+                    $prep = $db->prepare($sql);
+                    $prep->bindParam(":ruleID", $relatedRuleID);
+                    $prep->execute();
+                    $geoRuleID = (int) $db->lastInsertId();
                 }
 
-
+                $this->replaceCountryList($db, $geoRuleID, $countryList);
             }
-
-            $sql = 'INSERT INTO country_list (country_code, country_name, cap_status, cap, geo_rule_idgeo_rule) VALUES '.implode(',',
-                    $questionMarks);
-
-            $prep = $db->prepare($sql);
-
-            $prep->execute($insertValues);
 
 
             $db->commit();
@@ -143,6 +107,56 @@ class Geo
         }
 
 
+    }
+
+    private function updateBaseRule($db, $ruleID, $ruleData)
+    {
+        $sql = "UPDATE rule
+                SET rule.name = :name, rule.redirect_offer = :redirect_offer, rule.is_active = :is_active, rule.deny = :deny
+                WHERE rule.idrule = :ruleID";
+
+        $prep = $db->prepare($sql);
+        $prep->bindParam(":name", $ruleData->name);
+        $prep->bindParam(":redirect_offer", $ruleData->redirectOffer);
+        $prep->bindParam(":is_active", $ruleData->is_active);
+        $prep->bindParam(":deny", $ruleData->deny);
+        $prep->bindParam(":ruleID", $ruleID);
+        $prep->execute();
+    }
+
+    private function replaceCountryList($db, $geoRuleID, $countryList)
+    {
+        $sql = "DELETE FROM country_list WHERE geo_rule_idgeo_rule = :geoRuleID";
+        $prep = $db->prepare($sql);
+        $prep->bindParam(":geoRuleID", $geoRuleID);
+        $prep->execute();
+
+        $questionMarks = array();
+        $insertValues = array();
+
+        for ($i = 0; $i < count($countryList); $i++) {
+            if (is_object($countryList[$i])) {
+                $countryList[$i] = (array) $countryList[$i];
+            }
+
+            if (is_array($countryList[$i])) {
+                $questionMarks[] = "(?,?,?,?,?)";
+                $vals = array_values($countryList[$i]);
+                $vals[] = $geoRuleID;
+
+                $insertValues = array_merge($insertValues, $vals);
+            }
+        }
+
+        if (empty($questionMarks)) {
+            return;
+        }
+
+        $sql = 'INSERT INTO country_list (country_code, country_name, cap_status, cap, geo_rule_idgeo_rule) VALUES ' . implode(',',
+                $questionMarks);
+
+        $prep = $db->prepare($sql);
+        $prep->execute($insertValues);
     }
 
 
@@ -222,29 +236,51 @@ class Geo
 
             $db->beginTransaction();
 
-            $sql = "INSERT INTO rule (name, offer_idoffer, type, redirect_offer, deny, is_active) VALUES(:name, :offerID, :type, :redirect_offer, :deny, :is_active)";
+            $ruleID = $this->findExistingRuleID($db);
 
+            if ($ruleID > 0) {
+                $sql = "UPDATE rule
+                        SET name = :name, redirect_offer = :redirect_offer, deny = :deny, is_active = :is_active
+                        WHERE idrule = :ruleID";
+
+                $prep = $db->prepare($sql);
+                $prep->bindParam(":name", $this->ruleName);
+                $prep->bindParam(":redirect_offer", $this->redirectOffer);
+                $prep->bindParam(":deny", $this->deny);
+                $prep->bindParam(":is_active", $this->isActive);
+                $prep->bindParam(":ruleID", $ruleID);
+                $prep->execute();
+            } else {
+                $sql = "INSERT INTO rule (name, offer_idoffer, type, redirect_offer, deny, is_active) VALUES(:name, :offerID, :type, :redirect_offer, :deny, :is_active)";
+
+                $prep = $db->prepare($sql);
+                $prep->bindParam(":name", $this->ruleName);
+                $prep->bindParam(":offerID", $this->offerID);
+                $prep->bindParam(":type", $this->type);
+                $prep->bindParam(":redirect_offer", $this->redirectOffer);
+                $prep->bindParam(":deny", $this->deny);
+                $prep->bindParam(":is_active", $this->isActive);
+                $prep->execute();
+
+                $ruleID = (int) $db->lastInsertId();
+            }
+
+            $geoRuleID = $this->findGeoRuleID($db, $ruleID);
+
+            if ($geoRuleID === 0) {
+                $sql = "INSERT INTO geo_rule (rule_idrule) VALUES(:ruleID)";
+
+                $prep = $db->prepare($sql);
+                $prep->bindParam(":ruleID", $ruleID);
+                $prep->execute();
+
+                $geoRuleID = (int) $db->lastInsertId();
+            }
+
+            $sql = "DELETE FROM country_list WHERE geo_rule_idgeo_rule = :geoRuleID";
             $prep = $db->prepare($sql);
-
-
-            $prep->bindParam(":name", $this->ruleName);
-            $prep->bindParam(":offerID", $this->offerID);
-            $prep->bindParam(":type", $this->type);
-            $prep->bindParam(":redirect_offer", $this->redirectOffer);
-            $prep->bindParam(":deny", $this->deny);
-            $prep->bindParam(":is_active", $this->isActive);
+            $prep->bindParam(":geoRuleID", $geoRuleID);
             $prep->execute();
-
-            $ruleID = $db->lastInsertId();
-
-            $sql = "INSERT INTO geo_rule (rule_idrule) VALUES(:ruleID)";
-
-            $prep = $db->prepare($sql);
-
-            $prep->bindParam(":ruleID", $ruleID);
-            $prep->execute();
-
-            $geoRuleID = $db->lastInsertId();
 
 
             $insertValues = array();
@@ -280,6 +316,85 @@ class Geo
         }
 
 
+    }
+
+    private function findExistingRuleID($db)
+    {
+        $sql = "SELECT idrule
+                FROM rule
+                WHERE offer_idoffer = :offerID
+                    AND type = :type
+                    AND TRIM(name) = :name
+                LIMIT 1";
+
+        $prep = $db->prepare($sql);
+        $prep->bindParam(":offerID", $this->offerID);
+        $prep->bindParam(":type", $this->type);
+        $prep->bindParam(":name", $this->ruleName);
+        $prep->execute();
+
+        $ruleID = $prep->fetchColumn();
+
+        return $ruleID ? (int) $ruleID : 0;
+    }
+
+    private function findGeoRuleID($db, $ruleID)
+    {
+        $sql = "SELECT idgeo_rule
+                FROM geo_rule
+                WHERE rule_idrule = :ruleID
+                LIMIT 1";
+
+        $prep = $db->prepare($sql);
+        $prep->bindParam(":ruleID", $ruleID);
+        $prep->execute();
+
+        $geoRuleID = $prep->fetchColumn();
+
+        return $geoRuleID ? (int) $geoRuleID : 0;
+    }
+
+    private function findRelatedRuleIDsForUpdate($db, $ruleID)
+    {
+        $currentRuleName = $this->findRuleNameByID($db, $ruleID);
+
+        if ($currentRuleName === "") {
+            return [$ruleID];
+        }
+
+        $sql = "SELECT idrule
+                FROM rule
+                WHERE type = :type
+                    AND TRIM(name) = :name";
+
+        $prep = $db->prepare($sql);
+        $prep->bindParam(":type", $this->type);
+        $prep->bindParam(":name", $currentRuleName);
+        $prep->execute();
+
+        $ruleIDs = $prep->fetchAll(PDO::FETCH_COLUMN);
+
+        if (empty($ruleIDs)) {
+            return [$ruleID];
+        }
+
+        return array_map("intval", $ruleIDs);
+    }
+
+    private function findRuleNameByID($db, $ruleID)
+    {
+        $sql = "SELECT TRIM(name)
+                FROM rule
+                WHERE idrule = :ruleID
+                LIMIT 1";
+
+        $prep = $db->prepare($sql);
+        $prep->bindParam(":ruleID", $ruleID);
+        $prep->execute();
+
+        $name = $prep->fetchColumn();
+
+        return $name ? trim($name) : "";
     }
 
 

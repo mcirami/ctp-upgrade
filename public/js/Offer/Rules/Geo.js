@@ -65,6 +65,13 @@ class geoEdit {
             return;
         }
 
+        if (
+            typeof confirm === "function" &&
+            !confirm("Do you want to overwrite the existing rule you dipshit?")
+        ) {
+            return;
+        }
+
         var ruleData = {
             name: $("#geoRuleName").val(),
             ruleID: $("#geoRuleID").val(),

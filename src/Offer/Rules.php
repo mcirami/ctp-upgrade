@@ -292,7 +292,9 @@ class Rules
 
 
         foreach ($this->rules as $key => $val) {
-            echo "<tr>";
+            $type = htmlspecialchars($val["type"], ENT_QUOTES, "UTF-8");
+            $name = htmlspecialchars(trim($val["name"]), ENT_QUOTES, "UTF-8");
+            echo "<tr data-rule-type=\"{$type}\" data-rule-name=\"{$name}\">";
 
 
             echo "<td id='{$val["idrule"]}'>{$val["name"]}</td>";

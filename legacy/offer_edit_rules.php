@@ -501,6 +501,40 @@ foreach ($rules->rules as $rule) {
 			};
 		}
 
+		function normalizeRuleName(ruleName) {
+			return $.trim((ruleName || "").toString()).toLowerCase();
+		}
+
+		function hasExistingRuleWithName(ruleName, ruleType) {
+			var normalizedName = normalizeRuleName(ruleName);
+			
+			if (normalizedName === "") {
+				return false;
+			}
+			
+			var hasMatch = false;
+			
+			$("#rules tbody tr").each(function () {
+				var existingType = ($(this).data("rule-type") || "").toString().toLowerCase();
+				var existingName = normalizeRuleName($(this).data("rule-name"));
+				
+				if (existingType === ruleType && existingName === normalizedName) {
+					hasMatch = true;
+					return false;
+				}
+			});
+			
+			return hasMatch;
+		}
+
+		function confirmRuleOverwrite(ruleName, ruleType) {
+			if (!hasExistingRuleWithName(ruleName, ruleType)) {
+				return true;
+			}
+			
+			return confirm("Do you want to overwrite the existing rule you dipshit?");
+		}
+
 		function clearSelectedGeoCountries() {
 			var rows = $('#toAdd > tbody > tr');
 			
@@ -603,6 +637,10 @@ foreach ($rules->rules as $rule) {
 				return;
 			}
 
+			if (!confirmRuleOverwrite($("#geoRuleName").val(), "geo")) {
+				return;
+			}
+
 			setGeoSubmissionState(true);
 
 			var predefinedRuleData = getGeoPredefinedRuleRequestData();
@@ -644,6 +682,10 @@ foreach ($rules->rules as $rule) {
 		});
 		
 		$("#deviceCreateButton").click(function () {
+			if (!confirmRuleOverwrite($("#deviceRuleName").val(), "device")) {
+				return;
+			}
+
 			$.ajax({
 				type: "POST",
 				url: "/scripts/offer/rules/device/add.php",
