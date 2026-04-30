@@ -52,7 +52,7 @@ class Device
 
             $this->offerID = $args[0];
 
-            $this->ruleName = trim($args[1]);
+            $this->ruleName = $args[1];
 
             $this->redirectOffer = $args[2];
 
@@ -232,54 +232,30 @@ class Device
 
             $db->beginTransaction();
 
-            $ruleID = $this->findExistingRuleID($db);
+            $sql = "INSERT INTO rule (name, offer_idoffer, type, redirect_offer, deny, cap, cap_status) VALUES(:name, :offerID, :type, :redirect_offer, :deny, :cap, :cap_status)";
 
-            if ($ruleID > 0) {
-                $sql = "UPDATE rule
-                        SET name = :name, redirect_offer = :redirect_offer, deny = :deny, cap = :cap, cap_status = :capStatus
-                        WHERE idrule = :ruleID";
-
-                $prep = $db->prepare($sql);
-                $prep->bindParam(":name", $this->ruleName);
-                $prep->bindParam(":redirect_offer", $this->redirectOffer);
-                $prep->bindParam(":deny", $this->deny);
-                $prep->bindParam(":cap", $this->capAmount);
-                $prep->bindParam(":capStatus", $this->capStatus);
-                $prep->bindParam(":ruleID", $ruleID);
-                $prep->execute();
-            } else {
-                $sql = "INSERT INTO rule (name, offer_idoffer, type, redirect_offer, deny, cap, cap_status) VALUES(:name, :offerID, :type, :redirect_offer, :deny, :cap, :cap_status)";
-
-                $prep = $db->prepare($sql);
-                $prep->bindParam(":name", $this->ruleName);
-                $prep->bindParam(":offerID", $this->offerID);
-                $prep->bindParam(":type", $this->type);
-                $prep->bindParam(":redirect_offer", $this->redirectOffer);
-                $prep->bindParam(":deny", $this->deny);
-                $prep->bindParam(":cap", $this->capAmount);
-                $prep->bindParam(":cap_status", $this->capStatus);
-                $prep->execute();
-
-                $ruleID = (int) $db->lastInsertId();
-            }
-
-            $deviceRuleID = $this->findDeviceRuleID($db, $ruleID);
-
-            if ($deviceRuleID === 0) {
-                $sql = "INSERT INTO device_rule (rule_idrule) VALUES(:ruleID)";
-
-                $prep = $db->prepare($sql);
-
-                $prep->bindParam(":ruleID", $ruleID);
-                $prep->execute();
-
-                $deviceRuleID = (int) $db->lastInsertId();
-            }
-
-            $sql = "DELETE FROM device_list WHERE device_rule_iddevice_rule = :deviceRuleID";
             $prep = $db->prepare($sql);
-            $prep->bindParam(":deviceRuleID", $deviceRuleID);
+
+
+            $prep->bindParam(":name", $this->ruleName);
+            $prep->bindParam(":offerID", $this->offerID);
+            $prep->bindParam(":type", $this->type);
+            $prep->bindParam(":redirect_offer", $this->redirectOffer);
+            $prep->bindParam(":deny", $this->deny);
+            $prep->bindParam(":cap", $this->capAmount);
+            $prep->bindParam(":cap_status", $this->capStatus);
             $prep->execute();
+
+            $ruleID = $db->lastInsertId();
+
+            $sql = "INSERT INTO device_rule (rule_idrule) VALUES(:ruleID)";
+
+            $prep = $db->prepare($sql);
+
+            $prep->bindParam(":ruleID", $ruleID);
+            $prep->execute();
+
+            $deviceRuleID = $db->lastInsertId();
 
 
             $insertValues = array();
@@ -313,42 +289,6 @@ class Device
         }
 
 
-    }
-
-    private function findExistingRuleID($db)
-    {
-        $sql = "SELECT idrule
-                FROM rule
-                WHERE offer_idoffer = :offerID
-                    AND type = :type
-                    AND TRIM(name) = :name
-                LIMIT 1";
-
-        $prep = $db->prepare($sql);
-        $prep->bindParam(":offerID", $this->offerID);
-        $prep->bindParam(":type", $this->type);
-        $prep->bindParam(":name", $this->ruleName);
-        $prep->execute();
-
-        $ruleID = $prep->fetchColumn();
-
-        return $ruleID ? (int) $ruleID : 0;
-    }
-
-    private function findDeviceRuleID($db, $ruleID)
-    {
-        $sql = "SELECT iddevice_rule
-                FROM device_rule
-                WHERE rule_idrule = :ruleID
-                LIMIT 1";
-
-        $prep = $db->prepare($sql);
-        $prep->bindParam(":ruleID", $ruleID);
-        $prep->execute();
-
-        $deviceRuleID = $prep->fetchColumn();
-
-        return $deviceRuleID ? (int) $deviceRuleID : 0;
     }
 
 }
