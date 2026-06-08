@@ -24,6 +24,18 @@ class ClickReportController extends ReportController
 
 	use ClickTraits;
 
+	private function findReportUser(int $userId): User
+	{
+		if (
+			Session::userType() === Privilege::ROLE_GOD ||
+			Session::permissions()->can(Permissions::VIEW_ALL_USERS)
+		) {
+			return User::findOrFail($userId);
+		}
+
+		return User::myUsers()->findOrFail($userId);
+	}
+
     /**
      * Shows an offers clicks, and affiliates with those clicks.
      * Shows only affiliates assigned to the current logged in user
@@ -94,7 +106,7 @@ class ClickReportController extends ReportController
 		['startDate' => $startDate, 'endDate' => $endDate, 'dateSelect' => $dateSelect] = $this->reportDateContext($dates);
 		$selectedRole = (int) request()->query('role', Privilege::ROLE_AFFILIATE);
 
-        $user = User::myUsers()->findOrFail($userId);
+        $user = $this->findReportUser($userId);
 
 		$reportCollection = Click::query()
 			->userClicksReportByRole($userId, $dates['startDate'], $dates['endDate'], $selectedRole)
@@ -123,7 +135,7 @@ class ClickReportController extends ReportController
 		['startDate' => $startDate, 'endDate' => $endDate, 'dateSelect' => $dateSelect] = $this->reportDateContext($dates);
 		$selectedRole = (int) request()->query('role', Privilege::ROLE_AFFILIATE);
 
-		$user = User::myUsers()->findOrFail($userId);
+		$user = $this->findReportUser($userId);
 
 		$ipsMissingGeo = Click::missingCountryCodeIps(
 			$dates['startDate'],
