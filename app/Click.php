@@ -73,14 +73,40 @@ class Click extends Model
 		});
 	}
 
-	public static function missingCountryCodeIps(string $startDate, string $endDate): Collection
+	public static function missingCountryCodeIps(
+		string $startDate,
+		string $endDate,
+		?int $userId = null,
+		?int $role = null
+	): Collection
 	{
 		return static::query()
 		             ->whereBetween('first_timestamp', [$startDate, $endDate])
 		             ->where('click_type', '!=', self::TYPE_BLACKLISTED)
+		             ->when(!is_null($userId), fn (Builder $builder) => $builder->forUserReportRole($userId, $role))
 		             ->whereNull('country_code')
 		             ->distinct()
 		             ->pluck('ip_address');
+	}
+
+	public function scopeForUserReportRole(
+		Builder $query,
+		int $userId,
+		?int $role = Privilege::ROLE_AFFILIATE,
+		string $column = 'rep_idrep'
+	): Builder {
+		if (in_array($role, [Privilege::ROLE_GOD, Privilege::ROLE_ADMIN, Privilege::ROLE_MANAGER], true)) {
+			return $query->whereIn($column, function ($subQuery) use ($userId) {
+				$subQuery->from('rep as child')
+					->select('child.idrep')
+					->join('privileges as p', 'p.rep_idrep', '=', 'child.idrep')
+					->where('p.is_rep', '=', 1)
+					->whereRaw('child.lft > (SELECT lft FROM rep WHERE idrep = ?)', [$userId])
+					->whereRaw('child.rgt < (SELECT rgt FROM rep WHERE idrep = ?)', [$userId]);
+			});
+		}
+
+		return $query->where($column, '=', $userId);
 	}
 
 	public function scopeUserClicksReport(
@@ -120,18 +146,7 @@ class Click extends Model
 		string $endDate,
 		int $role
 	): Builder {
-		if (in_array($role, [Privilege::ROLE_GOD, Privilege::ROLE_ADMIN, Privilege::ROLE_MANAGER], true)) {
-			$query->whereIn('rep_idrep', function ($subQuery) use ($userId) {
-				$subQuery->from('rep as child')
-					->select('child.idrep')
-					->join('privileges as p', 'p.rep_idrep', '=', 'child.idrep')
-					->where('p.is_rep', '=', 1)
-					->whereRaw('child.lft > (SELECT lft FROM rep WHERE idrep = ?)', [$userId])
-					->whereRaw('child.rgt < (SELECT rgt FROM rep WHERE idrep = ?)', [$userId]);
-			});
-		} else {
-			$query->where('rep_idrep', '=', $userId);
-		}
+		$query->forUserReportRole($userId, $role);
 
 		return $query
 			->where('clicks.click_type', '!=', self::TYPE_BLACKLISTED)
@@ -222,14 +237,15 @@ class Click extends Model
 		string $startDate,
 		string $endDate,
 		?int $repId = null,
-		?int $offerId = null
+		?int $offerId = null,
+		?int $role = null
 	): Builder {
 		$geoCountryCode = self::GEO_COUNTRY_CODE_SQL;
 
 		return $query
 			->whereBetween('first_timestamp', [$startDate, $endDate])
 			->where('clicks.click_type', '!=', self::TYPE_BLACKLISTED)
-			->when(!is_null($repId), fn (Builder $builder) => $builder->where('rep_idrep', '=', $repId))
+			->when(!is_null($repId), fn (Builder $builder) => $builder->forUserReportRole($repId, $role, 'clicks.rep_idrep'))
 			->when(!is_null($offerId), fn (Builder $builder) => $builder->where('offer_idoffer', '=', $offerId))
 			->leftJoin('click_geo_cache as geo', 'geo.ip_address', '=', 'clicks.ip_address')
 			->select(

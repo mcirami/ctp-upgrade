@@ -78,6 +78,7 @@ Route::group(['middleware' => 'legacy.auth'], function () {
                 Route::get('showUpdate', [SalaryController::class, 'showUpdate'])->name('salary.show.update');
                 Route::post('update', [SalaryController::class, 'update'])->name('salary.update');
             });
+        Route::get('{id}/clicks-by-country', [ClickReportController::class, 'showUserClicksByCountry'])->middleware('role:0,1,2')->name('userClicksByCountry');
         Route::get('{id}/clicks', [ClickReportController::class, 'showUsersClicks'])->middleware('role:0,1,2')->name('userClicks');
         Route::get('{id}/clicks/export', [ExportDataController::class, 'exportUsersClicks'])->middleware('role:0,1')->name('exportUserClicks');
         Route::get('{id}/search-clicks', [ClickReportController::class, 'searchClicks'])->middleware('role:0')->name('clicks.search');

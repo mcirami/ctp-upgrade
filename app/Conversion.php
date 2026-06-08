@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use App\Privilege;
 
 /**
  * App\Conversion
@@ -38,6 +39,26 @@ class Conversion extends Model
 		return ConversionFactory::new();
 	}
 
+	public function scopeForUserReportRole(
+		Builder $query,
+		int $userId,
+		?int $role = Privilege::ROLE_AFFILIATE,
+		string $column = 'user_id'
+	): Builder {
+		if (in_array($role, [Privilege::ROLE_GOD, Privilege::ROLE_ADMIN, Privilege::ROLE_MANAGER], true)) {
+			return $query->whereIn($column, function ($subQuery) use ($userId) {
+				$subQuery->from('rep as child')
+					->select('child.idrep')
+					->join('privileges as p', 'p.rep_idrep', '=', 'child.idrep')
+					->where('p.is_rep', '=', 1)
+					->whereRaw('child.lft > (SELECT lft FROM rep WHERE idrep = ?)', [$userId])
+					->whereRaw('child.rgt < (SELECT rgt FROM rep WHERE idrep = ?)', [$userId]);
+			});
+		}
+
+		return $query->where($column, '=', $userId);
+	}
+
 	public function scopeCountryConversionsByOfferInGeo(
 		Builder $query,
 		string $startDate,
@@ -66,7 +87,8 @@ class Conversion extends Model
 		string $startDate,
 		string $endDate,
 		?int $userId = null,
-		?int $offerId = null
+		?int $offerId = null,
+		?int $role = null
 	): Builder {
 		$geoCountryCode = Click::GEO_COUNTRY_CODE_SQL;
 
@@ -74,7 +96,7 @@ class Conversion extends Model
 			->whereBetween('timestamp', [$startDate, $endDate])
 			->leftJoin('clicks', 'clicks.idclicks', '=', 'conversions.click_id')
 			->leftJoin('click_geo_cache as geo', 'geo.ip_address', '=', 'clicks.ip_address')
-			->when(!is_null($userId), fn (Builder $builder) => $builder->where('user_id', '=', $userId))
+			->when(!is_null($userId), fn (Builder $builder) => $builder->forUserReportRole($userId, $role, 'conversions.user_id'))
 			->when(!is_null($offerId), fn (Builder $builder) => $builder->where('clicks.offer_idoffer', '=', $offerId))
 			->select(
 				'clicks.ip_address',
