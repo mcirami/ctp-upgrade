@@ -104,7 +104,8 @@
 					<th class="value_span9">Sub 3</th>
 					{{-- <th class="value_span9">Sub 4</th>
 					<th class="value_span9">Sub 5</th> --}}
-					<th class="value_span9">Affiliate</th>
+					<th class="value_span9">Aff ID</th>
+                        <th class="value_span9">Username</th>
 					<th class="value_span9">Offer</th>
 					<th class="value_span9">Referer Url</th>
 					@if ( Session::permissions()->can("view_fraud_data"))
@@ -143,6 +144,7 @@
 							<td>{{$row['sub' . $i]}}</td>
 						@endfor
 						<td>{{$row['affiliate_id']}}</td>
+                            <td>{{$row['rep_username']}}</td>
 						<td>{{$row['offer_id']}}</td>
 						<td>{{$row['referer']}}</td>
 						@if ( Session::permissions()->can("view_fraud_data"))
