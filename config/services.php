@@ -44,4 +44,9 @@ return [
 	    'base_url' => env('SMSPOOL_BASE_URL', 'https://api.smspool.net'),
     ],
 
+    'postback_value_sale' => [
+	    'value' => env('POSTBACK_VALUE_SALE_VALUE', 35),
+	    'offer_id' => env('POSTBACK_VALUE_SALE_OFFER_ID'),
+    ],
+
 ];
