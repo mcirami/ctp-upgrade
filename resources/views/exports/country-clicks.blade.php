@@ -2,7 +2,7 @@
     <thead>
     <tr>
         <th>Click ID</th>
-        <th>Timestamp</th>
+        <th>Click Timestamp</th>
         <th>Conversion Timestamp</th>
         <th>Paid</th>
         <th>Sub 1</th>

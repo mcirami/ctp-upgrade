@@ -53,7 +53,7 @@ $result = $clickSearcher->clickData()->fetchAll(PDO::FETCH_ASSOC);
 				
 				<tr>
 					<td>ClickId</td>
-					<td>Timestamp</td>
+					<td>Click Timestamp</td>
 					<td>UserId</td>
 					<td>OfferId</td>
 					<td>Ip</td>
@@ -193,7 +193,6 @@ $result = $clickSearcher->clickData()->fetchAll(PDO::FETCH_ASSOC);
 </script>
 
 <?php include 'footer.php'; ?>
-
 
 
 
