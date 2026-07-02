@@ -9,6 +9,7 @@
 namespace LeadMax\TrackYourStats\User;
 
 use LeadMax\TrackYourStats\Database\DatabaseConnection;
+use LeadMax\TrackYourStats\System\IPWhitelist;
 use LeadMax\TrackYourStats\System\Session;
 use PDO;
 
@@ -85,7 +86,7 @@ class Login
 					$whiteListIPs  = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
 			        if(Session::userType() == \App\Privilege::ROLE_GOD &&
-			           !in_array($_SERVER['REMOTE_ADDR'], $whiteListIPs) && $_SERVER['REMOTE_ADDR'] != '127.0.0.1'
+			           !IPWhitelist::contains($_SERVER['REMOTE_ADDR'], $whiteListIPs) && $_SERVER['REMOTE_ADDR'] != '127.0.0.1'
 			        ) {
 				        return self::RESULT_BANNED;
 			        }
