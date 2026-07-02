@@ -20,12 +20,20 @@
         </tr>
     </thead>
     <tbody>
+        @php $myReport = new LeadMax\TrackYourStats\Table\Date; @endphp
         @foreach ($clicks as $click)
+        @php
+            $timestamp = $myReport->convertToEST($click->timestamp);
+            $conversionTimeStamp = "";
+            if ($click->conversion_timestamp) {
+                $conversionTimeStamp = $myReport->convertToEST($click->conversion_timestamp);
+            }
+        @endphp
         <tr>
             <td>{{ $click->idclicks }}</td>
-            <td>{{ $click->timestamp }}</td>
+            <td>{{ $timestamp }}</td>
             <td>{{ $click->offer_name }}</td>
-            <td>{{ $click->conversion_timestamp }}</td>
+            <td>{{ $conversionTimeStamp }}</td>
             <td>{{ $click->paid }}</td>
             <td>{{ $click->sub1 }}</td>
             <td>{{ $click->sub2 }}</td>
