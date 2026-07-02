@@ -92,7 +92,7 @@
 					@if ( Session::permissions()->can("view_fraud_data"))
 						<th class="value_span9">Click ID</th>
 					@endif
-					<th class="value_span9"><br>Timestamp</th>
+					<th class="value_span9">Click Timestamp</th>
 					<th class="value_span9">Conversion Timestamp</th>
 					@if(Session::userType() == Privilege::ROLE_GOD ||
 							(Session::userType() == Privilege::ROLE_ADMIN && Session::permissions()->can("view_payouts") )

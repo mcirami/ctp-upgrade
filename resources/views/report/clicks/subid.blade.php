@@ -38,7 +38,7 @@
 				@if ($canViewFraudData)
 					<th class="value_span9">Click ID</th>
 				@endif
-				<th class="value_span9">Timestamp</th>
+				<th class="value_span9">Click Timestamp</th>
 				<th class="value_span9">Conversion Timestamp</th>
 				@if ($canViewFraudData || (Session::userType() == Privilege::ROLE_ADMIN && Session::permissions()->can("view_payouts") ))
 					<th class="value_span9">Paid</th>

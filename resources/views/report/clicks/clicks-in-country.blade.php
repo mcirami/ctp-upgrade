@@ -36,7 +36,7 @@
             <thead>
             <tr>
                 <th class="value_span9">Click ID</th>
-                <th class="value_span9">Timestamp</th>
+                <th class="value_span9">Click Timestamp</th>
                 <th class="value_span9">Conversion Timestamp</th>
                 <th class="value_span9">Paid</th>
                 <th class="value_span9">Sub 1</th>
