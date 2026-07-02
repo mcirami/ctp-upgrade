@@ -23,13 +23,14 @@
         </tr>
         </thead>
         <tbody>
+        @php $myReport = new LeadMax\TrackYourStats\Table\Date; @endphp
         @foreach($subReport as $row)
             <tr>
                 <td>
                     @php echo $row->offer_name @endphp
                 </td>
                 <td>
-                    @php echo $row->timestamp @endphp
+                    @php echo $myReport->convertToEST($row->timestamp) @endphp
                 </td>
                 @if (Session::userType() == \App\Privilege::ROLE_GOD)
                     <td>

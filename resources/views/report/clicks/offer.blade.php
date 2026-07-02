@@ -134,7 +134,7 @@
 						@if ( Session::permissions()->can("view_fraud_data"))
 							<td>{{$row['id']}}</td>
 						@endif
-						<td>{{$row['timestamp']}}</td>
+						<td>{{$timestamp}}</td>
 						<td>{{$conversionTimeStamp}}</td>
 						@if ( Session::permissions()->can("view_fraud_data") ||
 							(Session::userType() == Privilege::ROLE_ADMIN && Session::permissions()->can("view_payouts") ))
