@@ -51,6 +51,21 @@ class geoEdit {
         }
     }
 
+    buildUpdateRequest()
+    {
+        return {
+            ruleData: {
+                name: $("#geoRuleName").val(),
+                ruleID: this.ruleID || $("#geoRuleID").val(),
+                redirectOffer: $("#geoRedirectOffer").val(),
+                deny: document.getElementById("geoIsAllowed").checked,
+                is_active: document.getElementById("geoIsActive").checked
+            },
+            countryData: parseCountries("toAdd", true),
+            predefinedRuleData: this.buildPredefinedRulePayload()
+        };
+    }
+
     updateRule()
     {
         if (typeof geoRequestInFlight !== "undefined" && geoRequestInFlight === true) {
@@ -60,19 +75,29 @@ class geoEdit {
         if (!this.validateSubmission()) {
             return;
         }
+        var self = this;
+        var updateRequest = this.buildUpdateRequest();
 
-        if (typeof confirm === "function" && !confirm("Do you want to overwrite the existing rule you dipshit?")) {
+        if (typeof promptGeoRuleUpdateDecision === "function") {
+            promptGeoRuleUpdateDecision(function (updateScope) {
+                if (!updateScope) {
+                    return;
+                }
+
+                self.submitUpdate(updateScope, updateRequest);
+            });
             return;
         }
 
-        var ruleData = {
-            name: $("#geoRuleName").val(),
-            ruleID: $("#geoRuleID").val(),
-            redirectOffer: $("#geoRedirectOffer").val(),
-            deny: document.getElementById("geoIsAllowed").checked,
-            is_active: document.getElementById("geoIsActive").checked
-        };
-        var predefinedRuleData = this.buildPredefinedRulePayload();
+        this.submitUpdate("shared", updateRequest);
+    }
+
+    submitUpdate(updateScope, updateRequest)
+    {
+        updateRequest = updateRequest || this.buildUpdateRequest();
+
+        var ruleData = updateRequest.ruleData;
+        var predefinedRuleData = updateRequest.predefinedRuleData;
         var self = this;
 
         this.setSubmissionState(true);
@@ -82,9 +107,10 @@ class geoEdit {
             url: "/scripts/offer/rules/geo/editGeo.php",
             dataType: "json",
             data: {
-                data: parseCountries("toAdd", true),
+                data: updateRequest.countryData,
                 ruleData: JSON.stringify(ruleData),
                 ruleID: ruleData["ruleID"],
+                updateScope: updateScope,
                 saveAsPredefinedRule: predefinedRuleData.saveAsPredefinedRule,
                 predefinedRuleName: predefinedRuleData.predefinedRuleName
             },
@@ -125,6 +151,8 @@ class geoEdit {
                 var ruleIsActive = parseInt(parsed["is_active"], 10) === 1 || parsed["is_active"] === true;
 
                 $("#geoRuleName").val(parsed["name"]);
+                $("#geoOriginalRuleName").val(parsed["name"]);
+                $("#geoPredefinedRuleName").val(parsed["name"]);
                 $('#geoRedirectOffer option[value="'+parsed["redirectOffer"]+'"]').prop('selected', true);
                 $("#geoIsAllowed").prop("checked", denyIsActive);
                 $("#geoIsActive").prop("checked", ruleIsActive);

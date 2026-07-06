@@ -76,7 +76,45 @@ foreach ($rules->rules as $rule) {
 			margin-bottom: 0;
 			width: 100%;
 		}
+
+		#geoUpdateConfirmModal .modal-body p:last-child {
+			margin-bottom: 0;
+		}
+
+		#geoUpdateConfirmModal {
+			z-index: 1080;
+		}
 	</style>
+	
+	<div class = "modal fade" id = "geoUpdateConfirmModal" tabindex = "-1" role = "dialog" aria-labelledby = "geoUpdateConfirmModalLabel">
+		<div class = "modal-dialog modal-sm" role = "document">
+			<div class = "modal-content">
+				<div class = "modal-header">
+					<button type = "button" class = "close" onclick = "resolveGeoRuleUpdateDecision(null);" aria-label = "Close">
+						<span aria-hidden = "true">&times;</span>
+					</button>
+					<h4 class = "modal-title" id = "geoUpdateConfirmModalLabel">Update Shared Rule</h4>
+				</div>
+				<div class = "modal-body">
+					<p id = "geoUpdateConfirmMessage">Choose how you want to save this rule.</p>
+					<p class = "text-muted" id = "geoUpdateConfirmHelp" style = "margin-top:10px;">
+						Choose Save Only This Offer to keep the other offers unchanged.
+					</p>
+				</div>
+				<div class = "modal-footer" style = "position:unset;">
+					<button type = "button" class = "btn btn-default" onclick = "resolveGeoRuleUpdateDecision(null);">
+						Cancel
+					</button>
+					<button type = "button" class = "btn btn-default" onclick = "resolveGeoRuleUpdateDecision('single');">
+						Save Only This Offer
+					</button>
+					<button type = "button" class = "btn btn-primary" onclick = "resolveGeoRuleUpdateDecision('shared');">
+						Overwrite Shared Rule
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
 	
 	
 	<!-- Geo Modal -->
@@ -167,6 +205,7 @@ foreach ($rules->rules as $rule) {
 						</div>
 						<input type = "hidden" id = "offerID" value = "<?= $offid ?>">
 						<input type = "hidden" id = "geoRuleID" value = "">
+						<input type = "hidden" id = "geoOriginalRuleName" value = "">
 						
 						
 						<div class = "form-group">
@@ -462,7 +501,7 @@ foreach ($rules->rules as $rule) {
 			var actionText = mode === "edit" ? "Save as Predefined Rule" : "Create Predefined Rule";
 			$("#geoPredefinedRuleActionText").text(actionText);
 		}
-
+		
 		function resetGeoPredefinedRuleForm(mode) {
 			$("#geoCreatePredefinedRule").prop("checked", false);
 			$("#geoPredefinedRuleName").val("");
@@ -557,6 +596,7 @@ foreach ($rules->rules as $rule) {
 			clearSelectedGeoCountries();
 			
 			$("#geoRuleName").val(predefinedRule["name"] || "");
+			$("#geoPredefinedRuleName").val(predefinedRule["name"] || "");
 			$("#geoRedirectOffer").val(predefinedRule["redirectOffer"] || "");
 			$("#geoIsAllowed").prop("checked", parseInt(predefinedRule["deny"], 10) === 1 || predefinedRule["deny"] === true);
 			$("#geoIsActive").prop("checked", parseInt(predefinedRule["is_active"], 10) === 1 || predefinedRule["is_active"] === true);
@@ -603,6 +643,59 @@ foreach ($rules->rules as $rule) {
 					setGeoSubmissionState(false);
 				}
 			});
+		});
+
+		var geoRuleUpdateDecisionCallback = null;
+
+		function promptGeoRuleUpdateDecision(onChoice) {
+			var ruleName = $("#geoRuleName").val().trim();
+			var helpMessage = "Choose Save Only This Offer to keep the other offers unchanged.";
+
+			if ($("#geoCreatePredefinedRule").is(":checked")) {
+				helpMessage += " If you keep Save as Predefined Rule checked, this version will also be saved to that predefined rule name.";
+			}
+
+			helpMessage += " If you want this offer to stay separate, use a unique Rule Name.";
+
+			$("#geoUpdateConfirmMessage").text(
+				ruleName === ""
+					? "How would you like to save this rule?"
+					: "How would you like to save \"" + ruleName + "\"?"
+			);
+			$("#geoUpdateConfirmHelp").text(helpMessage);
+
+			geoRuleUpdateDecisionCallback = onChoice;
+			$("#geoUpdateConfirmModal").modal({
+				backdrop: "static",
+				keyboard: false
+			});
+		}
+
+		function resolveGeoRuleUpdateDecision(choice) {
+			var callback = geoRuleUpdateDecisionCallback;
+
+			geoRuleUpdateDecisionCallback = null;
+			$("#geoUpdateConfirmModal").modal("hide");
+
+			if (typeof callback === "function") {
+				callback(choice);
+			}
+		}
+
+		$('#geoUpdateConfirmModal').on('show.bs.modal', function () {
+			var zIndex = 1080;
+
+			$(this).css('z-index', zIndex);
+
+			window.setTimeout(function () {
+				$('.modal-backdrop').not('.geo-update-confirm-backdrop').last().css('z-index', zIndex - 10).addClass('geo-update-confirm-backdrop');
+				$('body').addClass('modal-open');
+			}, 0);
+		});
+
+		$('#geoUpdateConfirmModal').on('hidden.bs.modal', function () {
+			$('body').addClass('modal-open');
+			$('.geo-update-confirm-backdrop').removeClass('geo-update-confirm-backdrop');
 		});
 		
 		function editRule(ruleID, ruleType) {
@@ -738,6 +831,7 @@ foreach ($rules->rules as $rule) {
 			
 			$("#geoRuleName").val("");
 			$("#geoRuleID").val("");
+			$("#geoOriginalRuleName").val("");
 			$("#geoRedirectOffer").val("");
 			$("#geoPredefinedRule").val("");
 			$("#searchCountryList").val("");

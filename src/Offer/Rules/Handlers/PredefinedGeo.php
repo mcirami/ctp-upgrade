@@ -104,36 +104,42 @@ class PredefinedGeo
         $db->beginTransaction();
 
         try {
-            $sql = "INSERT INTO predefined_geo_rules (rep_idrep, name, redirect_offer, deny, is_active, created_at, updated_at)
-                    VALUES (:userID, :name, :redirectOffer, :deny, :isActive, NOW(), NOW())";
+            $presetID = self::findExistingPresetID($db, $userID, $trimmedName);
 
-            $prep = $db->prepare($sql);
-            $prep->bindParam(":userID", $userID);
-            $prep->bindParam(":name", $trimmedName);
-            $prep->bindParam(":redirectOffer", $redirectOffer);
-            $prep->bindParam(":deny", $deny);
-            $prep->bindParam(":isActive", $isActive);
-            $prep->execute();
+            if ($presetID > 0) {
+                $sql = "UPDATE predefined_geo_rules
+                        SET name = :name,
+                            redirect_offer = :redirectOffer,
+                            deny = :deny,
+                            is_active = :isActive,
+                            updated_at = NOW()
+                        WHERE id = :presetID
+                            AND rep_idrep = :userID";
 
-            $presetID = (int) $db->lastInsertId();
+                $prep = $db->prepare($sql);
+                $prep->bindParam(":name", $trimmedName);
+                $prep->bindParam(":redirectOffer", $redirectOffer);
+                $prep->bindParam(":deny", $deny);
+                $prep->bindParam(":isActive", $isActive);
+                $prep->bindParam(":presetID", $presetID);
+                $prep->bindParam(":userID", $userID);
+                $prep->execute();
+            } else {
+                $sql = "INSERT INTO predefined_geo_rules (rep_idrep, name, redirect_offer, deny, is_active, created_at, updated_at)
+                        VALUES (:userID, :name, :redirectOffer, :deny, :isActive, NOW(), NOW())";
 
-            $questionMarks = [];
-            $values = [];
+                $prep = $db->prepare($sql);
+                $prep->bindParam(":userID", $userID);
+                $prep->bindParam(":name", $trimmedName);
+                $prep->bindParam(":redirectOffer", $redirectOffer);
+                $prep->bindParam(":deny", $deny);
+                $prep->bindParam(":isActive", $isActive);
+                $prep->execute();
 
-            foreach ($countries as $country) {
-                $questionMarks[] = "(?,?,?,?,?,NOW(),NOW())";
-                $values[] = $presetID;
-                $values[] = $country["country_code"];
-                $values[] = $country["country_name"];
-                $values[] = $country["cap_status"];
-                $values[] = $country["cap"];
+                $presetID = (int) $db->lastInsertId();
             }
 
-            $countrySql = "INSERT INTO predefined_geo_rule_countries (predefined_geo_rule_id, country_code, country_name, cap_status, cap, created_at, updated_at)
-                           VALUES " . implode(",", $questionMarks);
-
-            $countryPrep = $db->prepare($countrySql);
-            $countryPrep->execute($values);
+            self::replaceCountries($db, $presetID, $countries);
 
             $db->commit();
 
@@ -165,6 +171,56 @@ class PredefinedGeo
         }
 
         return self::createFromGeoPostData($userID, $name, $payload);
+    }
+
+    private static function findExistingPresetID($db, int $userID, string $name): int
+    {
+        $sql = "SELECT id
+                FROM predefined_geo_rules
+                WHERE rep_idrep = :userID
+                    AND TRIM(name) = :name
+                LIMIT 1";
+
+        $prep = $db->prepare($sql);
+        $prep->bindParam(":userID", $userID);
+        $prep->bindParam(":name", $name);
+        $prep->execute();
+
+        $presetID = $prep->fetchColumn();
+
+        return $presetID ? (int) $presetID : 0;
+    }
+
+    private static function replaceCountries($db, int $presetID, array $countries): void
+    {
+        $deleteSql = "DELETE FROM predefined_geo_rule_countries
+                      WHERE predefined_geo_rule_id = :presetID";
+
+        $deletePrep = $db->prepare($deleteSql);
+        $deletePrep->bindParam(":presetID", $presetID);
+        $deletePrep->execute();
+
+        if (empty($countries)) {
+            return;
+        }
+
+        $questionMarks = [];
+        $values = [];
+
+        foreach ($countries as $country) {
+            $questionMarks[] = "(?,?,?,?,?,NOW(),NOW())";
+            $values[] = $presetID;
+            $values[] = $country["country_code"];
+            $values[] = $country["country_name"];
+            $values[] = $country["cap_status"];
+            $values[] = $country["cap"];
+        }
+
+        $countrySql = "INSERT INTO predefined_geo_rule_countries (predefined_geo_rule_id, country_code, country_name, cap_status, cap, created_at, updated_at)
+                       VALUES " . implode(",", $questionMarks);
+
+        $countryPrep = $db->prepare($countrySql);
+        $countryPrep->execute($values);
     }
 
     private static function parseCountries(array $geoPostData): array

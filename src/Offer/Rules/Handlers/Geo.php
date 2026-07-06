@@ -37,9 +37,14 @@ class Geo
     function __construct($args)
     {
         // if we're editing a geo rule
-        if (is_string($args)) {
-            $this->ruleID = $args;
+        if (!is_array($args)) {
+            $this->ruleID = (int) $args;
             $this->getRules();
+
+            if (empty($this->rules)) {
+                throw new \RuntimeException("Rule not found.");
+            }
+
             $this->offerID = $this->rules[0]["offer_idoffer"];
         } else  // if we're creating a new geo rule
         {
@@ -68,7 +73,7 @@ class Geo
     }
 
 
-    public function updateRule($ruleData, $countryList)
+    public function updateRule($ruleData, $countryList, $updateScope = "shared")
     {
 
         $ruleData->ruleID = (int)$ruleData->ruleID;
@@ -76,13 +81,19 @@ class Geo
         $ruleData->is_active = (int)$ruleData->is_active;
         $ruleData->deny = (int)$ruleData->deny;
         $ruleData->redirectOffer = (int)$ruleData->redirectOffer;
+        $updateScope = $updateScope === "single" ? "single" : "shared";
 
         $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
         try {
 
             $db->beginTransaction();
 
-            $relatedRuleIDs = $this->findRelatedRuleIDsForUpdate($db, $ruleData->ruleID);
+            if ($updateScope === "single") {
+                $this->assertSingleRuleNameIsUnique($db, $ruleData->ruleID, $ruleData->name);
+                $relatedRuleIDs = [$ruleData->ruleID];
+            } else {
+                $relatedRuleIDs = $this->findRelatedRuleIDsForUpdate($db, $ruleData->ruleID);
+            }
 
             foreach ($relatedRuleIDs as $relatedRuleID) {
                 $this->updateBaseRule($db, $relatedRuleID, $ruleData);
@@ -101,9 +112,9 @@ class Geo
 
 
             $db->commit();
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $db->rollBack();
-            die($e);
+            throw $e;
         }
 
 
@@ -352,6 +363,30 @@ class Geo
         $geoRuleID = $prep->fetchColumn();
 
         return $geoRuleID ? (int) $geoRuleID : 0;
+    }
+
+    private function assertSingleRuleNameIsUnique($db, $ruleID, $ruleName)
+    {
+        if ($ruleName === "") {
+            throw new \RuntimeException("Rule name is required.");
+        }
+
+        $sql = "SELECT idrule
+                FROM rule
+                WHERE type = :type
+                    AND TRIM(name) = :name
+                    AND idrule <> :ruleID
+                LIMIT 1";
+
+        $prep = $db->prepare($sql);
+        $prep->bindParam(":type", $this->type);
+        $prep->bindParam(":name", $ruleName);
+        $prep->bindParam(":ruleID", $ruleID);
+        $prep->execute();
+
+        if ($prep->fetchColumn()) {
+            throw new \RuntimeException("Use a unique rule name to save this offer separately from the shared rule.");
+        }
     }
 
     private function findRelatedRuleIDsForUpdate($db, $ruleID)

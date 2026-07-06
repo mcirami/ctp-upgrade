@@ -28,7 +28,9 @@ if(isset($_POST["ruleData"]))
     header("Content-Type: application/json");
 
     try {
-        $edit->updateRule($ruleData, $countryList);
+        $updateScope = $_POST["updateScope"] ?? "shared";
+
+        $edit->updateRule($ruleData, $countryList, $updateScope);
 
         $response = [
             "status" => "ok"
@@ -58,7 +60,7 @@ if(isset($_POST["ruleData"]))
         http_response_code(500);
         echo json_encode([
             "status" => "error",
-            "message" => "Unable to update geo rule."
+            "message" => $e->getMessage() ?: "Unable to update geo rule."
         ]);
     }
 
