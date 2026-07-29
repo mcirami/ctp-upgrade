@@ -337,12 +337,76 @@ class Rules
 
 
             if ($val["type"] == "none_unique") {
-                echo "<td><a href='/edit_none_unique.php?id={$val["idrule"]}'><img src='images/icons/pencil.png' alt='Edit'></a></td>";
+                echo "<td><span class='rule-actions'><a href='/edit_none_unique.php?id={$val["idrule"]}'><img src='images/icons/pencil.png' alt='Edit'></a>";
             } else {
-                echo "<td><a onclick=\"editRule({$val["idrule"]},'{$val["type"]}')\" href='javascript:void(0);'><img src='images/icons/pencil.png' alt='Edit'></a></td>";
+                echo "<td><span class='rule-actions'><a onclick=\"editRule({$val["idrule"]},'{$val["type"]}')\" href='javascript:void(0);'><img src='images/icons/pencil.png' alt='Edit'></a>";
             }
 
+            echo "<a class='delete-rule-action' title='Delete rule' aria-label='Delete rule' onclick='promptDeleteRule({$val["idrule"]}, this);' href='javascript:void(0);'><i class='fas fa-trash-alt' aria-hidden='true'></i><span class='sr-only'>Delete</span></a></span></td>";
+
             echo "</tr>";
+        }
+    }
+
+    public static function deleteRule($ruleID, $offerID)
+    {
+        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db->beginTransaction();
+
+        try {
+            $ruleQuery = $db->prepare(
+                "SELECT idrule
+                 FROM rule
+                 WHERE idrule = :ruleID AND offer_idoffer = :offerID
+                 FOR UPDATE"
+            );
+            $ruleQuery->execute([
+                ":ruleID" => $ruleID,
+                ":offerID" => $offerID,
+            ]);
+
+            if (!$ruleQuery->fetchColumn()) {
+                $db->rollBack();
+                return false;
+            }
+
+            $deleteCountryList = $db->prepare(
+                "DELETE country_list
+                 FROM country_list
+                 INNER JOIN geo_rule ON geo_rule.idgeo_rule = country_list.geo_rule_idgeo_rule
+                 WHERE geo_rule.rule_idrule = :ruleID"
+            );
+            $deleteCountryList->execute([":ruleID" => $ruleID]);
+
+            $deleteDeviceList = $db->prepare(
+                "DELETE device_list
+                 FROM device_list
+                 INNER JOIN device_rule ON device_rule.iddevice_rule = device_list.device_rule_iddevice_rule
+                 WHERE device_rule.rule_idrule = :ruleID"
+            );
+            $deleteDeviceList->execute([":ruleID" => $ruleID]);
+
+            foreach (["geo_rule", "device_rule"] as $childTable) {
+                $deleteChild = $db->prepare("DELETE FROM {$childTable} WHERE rule_idrule = :ruleID");
+                $deleteChild->execute([":ruleID" => $ruleID]);
+            }
+
+            $deleteRule = $db->prepare(
+                "DELETE FROM rule WHERE idrule = :ruleID AND offer_idoffer = :offerID"
+            );
+            $deleteRule->execute([
+                ":ruleID" => $ruleID,
+                ":offerID" => $offerID,
+            ]);
+
+            $db->commit();
+            return $deleteRule->rowCount() === 1;
+        } catch (\Throwable $e) {
+            if ($db->inTransaction()) {
+                $db->rollBack();
+            }
+
+            throw $e;
         }
     }
 

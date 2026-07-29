@@ -84,6 +84,43 @@ foreach ($rules->rules as $rule) {
 		#geoUpdateConfirmModal {
 			z-index: 1080;
 		}
+
+		.rule-actions {
+			display: inline-flex;
+			align-items: center;
+			gap: 18px;
+			white-space: nowrap;
+		}
+
+		.rule-actions > a {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			padding: 4px;
+			width: 24px;
+		}
+
+		.delete-rule-action {
+			width: auto;
+			min-width: 0;
+			height: auto;
+			margin: 0;
+			border: 0;
+			background: transparent;
+			box-shadow: none;
+			color: #d9534f;
+			font-size: 16px;
+			line-height: 1;
+			text-decoration: none;
+			vertical-align: middle;
+		}
+
+		.delete-rule-action:hover,
+		.delete-rule-action:focus {
+			background: transparent;
+			color: #c9302c;
+			text-decoration: none;
+		}
 	</style>
 	
 	<div class = "modal fade" id = "geoUpdateConfirmModal" tabindex = "-1" role = "dialog" aria-labelledby = "geoUpdateConfirmModalLabel">
@@ -111,6 +148,26 @@ foreach ($rules->rules as $rule) {
 					<button type = "button" class = "btn btn-primary" onclick = "resolveGeoRuleUpdateDecision('shared');">
 						Overwrite Shared Rule
 					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class = "modal fade" id = "deleteRuleConfirmModal" tabindex = "-1" role = "dialog" aria-labelledby = "deleteRuleConfirmModalLabel">
+		<div class = "modal-dialog modal-sm" role = "document">
+			<div class = "modal-content">
+				<div class = "modal-header">
+					<button type = "button" class = "close" data-dismiss = "modal" aria-label = "Close">
+						<span aria-hidden = "true">&times;</span>
+					</button>
+					<h4 class = "modal-title" id = "deleteRuleConfirmModalLabel">Delete Rule</h4>
+				</div>
+				<div class = "modal-body">
+					<p>Are you sure you want to delete?</p>
+				</div>
+				<div class = "modal-footer" style = "position:unset;">
+					<button type = "button" class = "btn btn-default" data-dismiss = "modal">No</button>
+					<button type = "button" class = "btn btn-danger" id = "confirmDeleteRuleButton">Yes</button>
 				</div>
 			</div>
 		</div>
@@ -456,6 +513,53 @@ foreach ($rules->rules as $rule) {
 	<script type = "text/javascript">
 		
 		var geoRequestInFlight = false;
+		var rulePendingDeletion = null;
+
+		function promptDeleteRule(ruleID, trigger) {
+			rulePendingDeletion = {
+				id: ruleID,
+				row: $(trigger).closest("tr")
+			};
+
+			$("#deleteRuleConfirmModal").modal("show");
+		}
+
+		$("#deleteRuleConfirmModal").on("hidden.bs.modal", function () {
+			if (!$("#confirmDeleteRuleButton").prop("disabled")) {
+				rulePendingDeletion = null;
+			}
+		});
+
+		$("#confirmDeleteRuleButton").click(function () {
+			if (!rulePendingDeletion) {
+				return;
+			}
+
+			var pendingDeletion = rulePendingDeletion;
+			var deleteButton = $(this);
+			deleteButton.prop("disabled", true);
+
+			$.ajax({
+				type: "POST",
+				url: "/scripts/offer/rules/delete.php",
+				dataType: "json",
+				data: {
+					ruleID: pendingDeletion.id,
+					offerID: $("#offerID").val()
+				},
+				success: function () {
+					pendingDeletion.row.remove();
+					rulePendingDeletion = null;
+					$("#deleteRuleConfirmModal").modal("hide");
+				},
+				error: function (result) {
+					alert((result.responseJSON && result.responseJSON.message) || "Unable to delete the rule.");
+				},
+				complete: function () {
+					deleteButton.prop("disabled", false);
+				}
+			});
+		});
 		
 		$("#searchCountryList").on('propertychange change keyup paste input', function () {
 			searchCountryList($("#searchCountryList").val());
