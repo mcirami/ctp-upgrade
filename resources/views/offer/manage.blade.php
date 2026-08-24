@@ -240,7 +240,7 @@
 					let permissions = '<?php echo json_encode( Session::permissions()); ?>'
 					permissions = JSON.parse(permissions);
 					const sessionUser = '<?php echo Session::userID(); ?>';
-					const adminLoginQuery = '<?php echo request()->has('adminLogin') ? '&adminLogin' : ''; ?>';
+					const isAdminLogin = <?php echo request()->has('adminLogin') ? 'true' : 'false'; ?>;
 					pageItems.forEach((offer) => {
 						html += `<tr id='offer_row'>` +
 								`<td>` + offer['idoffer'] + `</td>` +
@@ -294,9 +294,15 @@
 
 
 						if (parseInt(userType) === 3) {
+							const postbackUrl = new URL('/offer_edit_pb.php', window.location.origin);
+							postbackUrl.searchParams.set('offid', offer['idoffer']);
+							if (isAdminLogin) {
+								postbackUrl.searchParams.set('adminLogin', '1');
+							}
+
 							html += `<td class='value_span10'>` +
 									`<a class='btn btn-default value_span6-1 value_span4' data-toggle='tooltip' title='Offer PostBack Options' ` +
-									`href='/offer_edit_pb.php?offid='` + offer['idoffer'] + adminLoginQuery + `'>` +
+									`href='` + postbackUrl.pathname + postbackUrl.search + `'>` +
 									`Edit Post Back</a>` +
 									`</td>`;
 						}
