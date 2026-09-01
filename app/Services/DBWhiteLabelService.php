@@ -26,7 +26,7 @@ class DBWhiteLabelService
 
     public function changeDatabaseHostWithSubDomain()
     {
-        Config::set('database.connections.mysql.database', $this->subDomain);
+        Config::set('database.connections.mysql.database', $this->subDomain ?: self::configuredDatabase());
 
 
         //If you want to use query builder without having to specify the connection
@@ -35,11 +35,22 @@ class DBWhiteLabelService
     }
 
 
-    public static function getSubDomain()
+    public static function getSubDomain(?string $host = null): string
     {
-        $sub = explode(".", request()->getHttpHost());
+        $host = strtolower(rtrim(trim($host ?? request()->getHost()), '.'));
+        $host = preg_replace('/:\d+$/', '', $host);
 
-        return $sub[0];
+        if ($host === '' || $host === 'localhost' || filter_var($host, FILTER_VALIDATE_IP)) {
+            return self::configuredDatabase();
+        }
+
+        $subDomain = explode('.', $host)[0] ?? '';
+
+        if ($subDomain === 'www' || !preg_match('/^[a-z0-9_-]+$/', $subDomain)) {
+            return self::configuredDatabase();
+        }
+
+        return $subDomain;
     }
 
 
@@ -59,7 +70,10 @@ class DBWhiteLabelService
 
         // if it was none of those, default that its a company install e.g. xyz.trackyourstats.com
 
-        $this->subDomain = self::getSubDomain();
+        $candidate = self::getSubDomain($url);
+        $this->subDomain = Company::where('subDomain', $candidate)->exists()
+            ? $candidate
+            : self::configuredDatabase();
 
 
         // checks if its on live test server (test.trackyourstats.com)
@@ -107,10 +121,15 @@ class DBWhiteLabelService
 
     private function checkAndSetIfStagingServer()
     {
-        if (self::getSubDomain() == 'test') {
+        if ($this->subDomain === 'test') {
             $this->subDomain = 'debug';
         }
 
+    }
+
+    private static function configuredDatabase(): string
+    {
+        return (string) Config::get('database.connections.mysql.database', 'forge');
     }
 
 
