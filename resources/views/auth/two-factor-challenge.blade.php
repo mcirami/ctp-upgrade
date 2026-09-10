@@ -14,7 +14,6 @@
     <section class="rl-login-card">
         <h1>Verify it’s you</h1>
         @if($configured)
-            <p>This God account is signing in from an IP address that is not on the whitelist.</p>
             <form method="post" action="{{ route('two-factor.verify') }}">
                 @csrf
                 @if($errors->has('code'))<div role="alert" class="rl-note" style="color:#c84242;margin:0 0 18px">{{ $errors->first('code') }}</div>@endif
