@@ -41,11 +41,27 @@ class LegacyLoginController extends Controller
 			$result = $user->login($username, $username, $password);
 
 			if ($result == Login::RESULT_SUCCESS) {
+				$request->session()->forget([
+					'two_factor_pending_user_id',
+					'two_factor_pending_ip',
+					'two_factor_pending_until',
+					'two_factor_redirect',
+				]);
 				if ($request->has('redirectUri')) {
 					return redirect(urldecode($request->get('redirectUri')));
 				}
 
 				return redirect('dashboard');
+			} elseif ($result == Login::RESULT_TWO_FACTOR_REQUIRED) {
+				$request->session()->regenerate();
+				$request->session()->put([
+					'two_factor_pending_user_id' => $user->twoFactorUserId,
+					'two_factor_pending_ip' => $request->ip(),
+					'two_factor_pending_until' => now()->addMinutes(5)->timestamp,
+					'two_factor_redirect' => $request->input('redirectUri', '/dashboard'),
+				]);
+
+				return redirect()->route('two-factor.challenge');
 			} elseif ($result == Login::RESULT_PENDING) {
 				return redirect('signup_success.php?pending=1');
 			} else {

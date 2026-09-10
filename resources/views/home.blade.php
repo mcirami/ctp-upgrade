@@ -17,10 +17,14 @@
                     <p><span class = "lft value_span9">E-mail:</span><span class = "rt "><a href = "mailto:{{$email}}">{{$email}}</a></span></p>
                     <p><span class = "lft value_span9">Password</span><span class = "rt value_span10"><a href = "{{$webroot . "aff_update.php?idrep=" . $userId}}">Change Password</a></span></p>
 
+                    @if ((int) $userType === 0)
+                        <p><span class = "lft value_span9">Google Authenticator</span><span class = "rt value_span10"><a href = "{{ route('two-factor.setup') }}">Manage</a></span></p>
+                    @endif
+
                     @if ($canViewPostback)
                         <p><span class = "lft value_span9">PostBack URL:</span>
                         <p>
-                            <span id = "pb1" class = "rt blue_txt\">{{$postBackURL}}</span>
+                            <span id = "pb1" class = "rt blue_txt">{{$postBackURL}}</span>
                             <button onclick = "copyToClipboard(getElementById('pb1'));" class = 'copy_text value_span6 value_span5'>Click To Copy Link</button>
                         </p>
                     @endif
@@ -28,7 +32,7 @@
                     @if ($userType == 2)
                         <p><span class = "lft value_span9">Your Signup Link:</span>
                         <p>
-                            <span id = "pb1" class = "rt blue_txt\">{{ $domain . $userId}}</span>
+                            <span id = "pb1" class = "rt blue_txt">{{ $domain . $userId}}</span>
                             <button onclick = "copyToClipboard(getElementById('pb1'));" class = 'copy_text value_span6 value_span5'>Click To Copy Link</button>
                         </p>
                     @endif
