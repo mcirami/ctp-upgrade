@@ -31,6 +31,9 @@ class Login
     const RESULT_UNKNOWN_USER = 2;
 
 	const RESULT_PENDING = 3;
+	const RESULT_TWO_FACTOR_REQUIRED = 4;
+
+	public $twoFactorUserId;
 
     //Logins
     public function login($user_name, $email, $password)
@@ -53,64 +56,14 @@ class Login
 	        if ( $user_row["status"] ) {
 
 		        if ( password_verify( $password, $user_row['password'] ) ) {
-			        //            if (($password = $user_row['password'])) {
-			        $_SESSION['user_session'] = $user_row['user_name'];
-			        $_SESSION['email']        = $user_row['email'];
-			        $_SESSION['repid']        = $user_row['idrep'];
+			        $userType = Privileges::findUserType((int) $user_row['idrep']);
 
-
-			        $new_privileges = new Privileges();
-
-
-			        $user = new User();
-
-			        $_SESSION["userData"] = serialize( User::SelectOne( $_SESSION["repid"] ) );
-
-
-			        $_SESSION["usr"] = serialize( $new_privileges->SelectOneRepId( $_SESSION["repid"] ) );
-
-
-			        $_SESSION["userType"] = $this->findUserType( unserialize( $_SESSION["usr"] ) );
-
-
-			        $per                     = new Permissions( $user_row["idrep"] );
-			        $_SESSION["permissions"] = serialize( $per );
-
-
-			        $user  = $_SESSION['user_session'];
-			        $repid = $_SESSION['repid'];
-
-			        $db = DatabaseConnection::getInstance();
-			        $sql = "SELECT ip_address FROM ip_whitelist";
-			        $stmt = $db->prepare($sql);
-			        $stmt->execute();
-			        $whiteListIPs  = $stmt->fetchAll(PDO::FETCH_COLUMN);
-
-					//$clientIP = $this->getClientIPv4();
-			        //Log::info("Login attempt from IP: " . $clientIP);
-			        if(Session::userType() == \App\Privilege::ROLE_GOD &&
-			           !IPWhitelist::contains($_SERVER["REMOTE_ADDR"], $whiteListIPs)
-			           && $_SERVER['REMOTE_ADDR'] != '127.0.0.1'
-			           && $repid != 1708
-			           && $repid != 1507
-			        ) {
-				        return self::RESULT_BANNED;
+			        if ($userType === \App\Privilege::ROLE_GOD && !$this->isCurrentIpWhitelisted()) {
+				        $this->twoFactorUserId = (int) $user_row['idrep'];
+				        return self::RESULT_TWO_FACTOR_REQUIRED;
 			        }
 
-			        setcookie( "user_name", "$user", "0", "/" );
-			        setcookie( "repid", "$repid", "0", "/" );
-
-			        $_SESSION["salt"] = $this->generateSalt( 32 );
-
-			        if ( Session::userType() != \App\Privilege::ROLE_GOD ) {
-				        $this->clearPreviousLoginAttempts( $user_row["user_name"] );
-			        }
-
-
-			        $this->createLoginSession( $user_row['idrep'], $_POST["txt_uname_email"], 1 );
-
-
-			        return self::RESULT_SUCCESS;
+			        return $this->completeAuthenticatedLogin($user_row, $userType, $user_name);
 
 
 		        } else {
@@ -122,6 +75,65 @@ class Login
 	        }
         }
     }
+
+	public function completeTwoFactorLogin(int $userId): bool
+	{
+		$db = DatabaseConnection::getInstance();
+		$stmt = $db->prepare("SELECT * FROM rep WHERE idrep = :id AND status = 1 LIMIT 1");
+		$stmt->bindValue(':id', $userId, PDO::PARAM_INT);
+		$stmt->execute();
+		$userRow = $stmt->fetch(PDO::FETCH_ASSOC);
+
+		if (!$userRow || Privileges::findUserType($userId) !== \App\Privilege::ROLE_GOD) {
+			return false;
+		}
+
+		return $this->completeAuthenticatedLogin(
+			$userRow,
+			\App\Privilege::ROLE_GOD,
+			$userRow['user_name']
+		) === self::RESULT_SUCCESS;
+	}
+
+	private function isCurrentIpWhitelisted(): bool
+	{
+		$remoteAddress = $_SERVER['REMOTE_ADDR'] ?? '';
+
+		if (in_array($remoteAddress, ['127.0.0.1', '::1'], true)) {
+			return true;
+		}
+
+		$db = DatabaseConnection::getInstance();
+		$stmt = $db->prepare("SELECT ip_address FROM ip_whitelist");
+		$stmt->execute();
+
+		return IPWhitelist::contains($remoteAddress, $stmt->fetchAll(PDO::FETCH_COLUMN));
+	}
+
+	private function completeAuthenticatedLogin(array $userRow, int $userType, string $loginName): int
+	{
+		$_SESSION['user_session'] = $userRow['user_name'];
+		$_SESSION['email'] = $userRow['email'];
+		$_SESSION['repid'] = $userRow['idrep'];
+
+		$newPrivileges = new Privileges();
+		$_SESSION['userData'] = serialize(User::SelectOne((int) $userRow['idrep']));
+		$_SESSION['usr'] = serialize($newPrivileges->SelectOneRepId((int) $userRow['idrep']));
+		$_SESSION['userType'] = $userType;
+		$_SESSION['permissions'] = serialize(new Permissions((int) $userRow['idrep']));
+		$_SESSION['salt'] = $this->generateSalt(32);
+
+		setcookie('user_name', $userRow['user_name'], 0, '/');
+		setcookie('repid', (string) $userRow['idrep'], 0, '/');
+
+		if ($userType !== \App\Privilege::ROLE_GOD) {
+			$this->clearPreviousLoginAttempts($userRow['user_name']);
+		}
+
+		$this->createLoginSession((int) $userRow['idrep'], $loginName, 1);
+
+		return self::RESULT_SUCCESS;
+	}
 
     public function adminLogin($affid)
     {

@@ -41,16 +41,30 @@ use App\Http\Controllers\Sms\SmsClientController;
 use App\Http\Controllers\ChatLogController;
 use App\Http\Controllers\Report\ConversionReportController;
 use App\Http\Controllers\SmsOrderController;
+use App\Http\Controllers\GodTwoFactorController;
 
 Route::get('/', [IndexController::class, 'index']);
 Route::post('/', [IndexController::class, 'index']);
 Route::get('/login', [LegacyLoginController::class, 'showLoginForm']);
 Route::post('/login', [LegacyLoginController::class, 'login']);
+Route::get('/two-factor/challenge', [GodTwoFactorController::class, 'challenge'])->name('two-factor.challenge');
+Route::post('/two-factor/challenge', [GodTwoFactorController::class, 'verifyChallenge'])
+    ->middleware('throttle:6,1')
+    ->name('two-factor.verify');
 Route::any('/resources/landers/{subDomain}/{asset}', [LanderController::class, 'getAsset'])->where('asset', '.*');
 Route::get('/logout', [LegacyLoginController::class, 'logout']);
 Route::post('email/incoming', [RelevanceReactorController::class, 'incomingEmail']);
 Route::post('email/incoming/distribute', [RelevanceReactorController::class, 'distributeEmail']);
 Route::group(['middleware' => 'legacy.auth'], function () {
+    Route::middleware('role:0')->group(function () {
+        Route::get('/security/two-factor', [GodTwoFactorController::class, 'setup'])->name('two-factor.setup');
+        Route::post('/security/two-factor', [GodTwoFactorController::class, 'confirm'])
+            ->middleware('throttle:6,1')
+            ->name('two-factor.confirm');
+        Route::delete('/security/two-factor', [GodTwoFactorController::class, 'disable'])
+            ->middleware('throttle:6,1')
+            ->name('two-factor.disable');
+    });
     Route::get('dashboard', [DashboardController::class, 'home']);
 	Route::get('verification', [SmsOrderController::class, 'show'])->middleware(
 		'role:0,3',
