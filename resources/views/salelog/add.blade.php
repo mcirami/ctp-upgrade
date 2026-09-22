@@ -2,7 +2,7 @@
 @section('content')
 
     <!--right_panel-->
-    <div class="right_panel" id="root">
+    <div class="right_panel" id="manualSale">
         <div class="white_box_outer">
             <div class="heading_holder value_span9"><span class="lft">Add Sale</span></div>
             <div class="white_box value_span8">
@@ -14,51 +14,48 @@
                     <div class="left_con01">
                         <p>
                             <label class="value_span9">Affiliate</label>
-                            <select name="affiliate" v-model="selectedAffiliate" @change="handleAffiliateChange()"
-                                    :disabled="affiliates.length === 0">
-                                <option v-for="affiliate in affiliatesSorted" :value="affiliate.id"
-                                        v-text="affiliate.name + ' - ' + affiliate.id">
-                                </option>
+                            <select name="affiliate" id="affiliateSelect" required disabled data-selected="{{ old('affiliate') }}">
+                                <option value="">Loading affiliates...</option>
                             </select>
-                            <input type="text" v-model="affiliateSearchFilter" placeholder="Search affiliates..."
+                            <input type="text" id="affiliateSearch" placeholder="Search affiliates..."
                                    style="margin-top:10px;">
+                            <span id="affiliateStatus" role="status"></span>
                         </p>
 
 
                         <p>
                             <label class="value_span9">Date</label>
-                            <input type="text" name="date" id="date" value="<?= date("Y-m-d H:i:s"); ?>">
+                            <input type="text" name="date" id="date" value="{{ old('date', gmdate('Y-m-d H:i:s')) }}" required>
                             <span class="small_txt value_span10">timestamps stored in utc</span>
                         </p>
 
 
                         <span class="btn_yellow"> <input type="submit" name="button"
                                                          class="value_span6-2 value_span2 value_span1-2"
-                                                         value="Create Sale"/></span>
+                                                         value="Create Sale" id="createSale" disabled/></span>
 
                     </div>
 
                     <div class="right_con01">
                         <p>
                             <label class="value_span9">Offer</label>
-                            <select name="offer" id="offerSelect" :disabled="offers.length === 0">
-                                <option v-for="offer in offersSorted" :value="offer.id"
-                                        v-text="offer.name + ' - ' + offer.id">
-                                </option>
+                            <select name="offer" id="offerSelect" required disabled data-selected="{{ old('offer') }}">
+                                <option value="">Select an affiliate first</option>
                             </select>
-                            <input type="text" v-model="offerSearchFilter" placeholder="Search offers..."
+                            <input type="text" id="offerSearch" placeholder="Search offers..."
                                    style="margin-top:10px;">
+                            <span id="offerStatus" role="status"></span>
                         </p>
 
                         <p>
                             <label class="value_span9">
                                 <input type="checkbox" class="fixCheckBox" id="customPayoutCheckBox"
-                                       v-model="customPayoutEnabled">Custom
+                                       {{ old('customPayout') !== null ? 'checked' : '' }}>Custom
                                 Payout</label>
-                            <input :disabled="!customPayoutEnabled"
+                            <input {{ old('customPayout') === null ? 'disabled' : '' }}
                                    type="number" name="customPayout" id="customPayout"
-                                   step="0.10"
-                                   value="0.00">
+                                   step="0.01" min="0"
+                                   value="{{ old('customPayout', '0.00') }}">
                         </p>
                     </div>
                 </form>
@@ -66,64 +63,9 @@
         </div>
 
 
-        @endsection
+    </div>
+@endsection
 
-
-        @section('footer')
-            <script type="text/javascript">
-
-                $(document).ready(function () {
-                    $('#date').datetimepicker({dateFormat: 'yy-mm-dd', timeFormat: 'hh:mm:ss'});
-                });
-
-            </script>
-
-            <script>
-                new Vue({
-                    el: '#root',
-
-                    data: {
-                        selectedAffiliate: 0,
-                        affiliates: [],
-                        offers: [],
-                        affiliateSearchFilter: '',
-                        offerSearchFilter: '',
-
-                        customPayoutEnabled: false,
-
-                    },
-
-                    mounted() {
-                        axios.get('/sales/affiliates').then(result => {
-                            this.affiliates = result.data;
-                        });
-                    },
-
-                    computed: {
-
-                        affiliatesSorted() {
-                            return this.affiliates.filter(item => {
-                                return item.name.toLowerCase().indexOf(this.affiliateSearchFilter.toLowerCase()) !== -1 || item.id.toString().indexOf(this.affiliateSearchFilter) !== -1;
-                            });
-                        },
-
-                        offersSorted() {
-                            return this.offers.filter(item => {
-                                return item.name.toLowerCase().indexOf(this.offerSearchFilter.toLowerCase()) !== -1 || item.id.toString().indexOf(this.offerSearchFilter) !== -1;
-                            });
-                        },
-
-                    },
-
-                    methods: {
-                        handleAffiliateChange() {
-                            this.offers = [];
-                            axios.get('/sales/affiliate-offers/' + this.selectedAffiliate).then(result => {
-                                this.offers = result.data;
-                            });
-                        },
-                    },
-
-                });
-            </script>
+@section('footer')
+    <script src="{{ asset('js/manual-sale.js') }}"></script>
 @endsection

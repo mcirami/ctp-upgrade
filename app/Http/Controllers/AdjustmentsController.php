@@ -2,15 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Privilege;
+use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use LeadMax\TrackYourStats\Clicks\Click;
 use LeadMax\TrackYourStats\Clicks\Conversion;
 use LeadMax\TrackYourStats\Offer\AdjustmentsLog;
-use LeadMax\TrackYourStats\Offer\Offer;
 use LeadMax\TrackYourStats\System\Session;
-use LeadMax\TrackYourStats\User\Permissions;
-use LeadMax\TrackYourStats\User\User;
 
 class AdjustmentsController extends Controller
 {
@@ -23,36 +21,50 @@ class AdjustmentsController extends Controller
 
     public function getAffiliates()
     {
-        return Session::user()
-            ->users()
-            ->withRole(Privilege::ROLE_AFFILIATE)
+        return $this->affiliates()
             ->select('idrep as id', 'user_name as name')
-            ->where('rep.status', '=', 1)
             ->orderBy('name', 'ASC')
             ->get();
     }
 
     public function getAffiliatesOffers($id)
     {
-        $user = \App\User::myUsers()->where('idrep', '=', $id)->first();
+        $user = $this->affiliates()->where('rep.idrep', '=', $id)->firstOrFail();
 
 
         return $user->offers()->select('idoffer as id', 'offer_name as name')->where('offer.status', '=',
             1)->orderBy('idoffer', 'DESC')->get();
     }
 
+    private function affiliates()
+    {
+        return User::myUsers()
+            ->whereHas('role', function ($query) {
+                $query->where('is_rep', 1);
+            })
+            ->where('rep.status', 1);
+    }
+
     public function createSale(Request $request)
     {
 
         $request->validate([
-            'affiliate' => 'required|numeric',
-            'offer' => 'required|numeric',
-            'date' => 'required',
-            'customPayout' => 'numeric',
+            'affiliate' => 'required|integer',
+            'offer' => 'required|integer',
+            'date' => 'required|date_format:Y-m-d H:i:s',
+            'customPayout' => 'nullable|numeric|min:0',
         ]);
 
 
 
+
+        $affiliate = $this->affiliates()->where('rep.idrep', $request->input('affiliate'))->first();
+        if (!$affiliate) {
+            throw ValidationException::withMessages(['affiliate' => 'Select an active affiliate you manage.']);
+        }
+        if (!$affiliate->offers()->where('offer.idoffer', $request->input('offer'))->where('offer.status', 1)->exists()) {
+            throw ValidationException::withMessages(['offer' => 'Select an active offer assigned to this affiliate.']);
+        }
 
         $click = new Click();
         $click->rep_idrep = $request->get('affiliate');
@@ -64,12 +76,12 @@ class AdjustmentsController extends Controller
         $click->save();
 
 
-        $customPayout = $request->get('customPayout') !== null ? $request->get('customPayout') : false;
+        $customPayout = $request->get('customPayout');
         $conversion = new Conversion();
         $conversion->timestamp = $request->date;
         $conversion->click_id = $click->id;
 
-        if ($customPayout) {
+        if ($customPayout !== null) {
             $conversion->paid = $customPayout;
         }
 
