@@ -37,7 +37,13 @@
 					<td>{{$report->user_name}}</td>
 					<td>{{$report->clicks}}</td>
 					<td>{{$report->unique_clicks}}</td>
-					<td>{{$report->conversions}}</td>
+					<td>
+						@if($report->conversions > 0)
+							<a href="{{route('userOfferConversionsByCountry', array_merge(request()->only(['d_from', 'd_to', 'dateSelect']), ['user' => $report->user_id, 'offer' => $offer->idoffer]))}}">{{$report->conversions}}</a>
+						@else
+							{{$report->conversions}}
+						@endif
+					</td>
 				</tr>
 			@endforeach
 		@endif
