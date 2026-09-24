@@ -5,6 +5,10 @@
 
     <div class = "right_panel member_home">
 
+        @if((string) $userType === (string) \App\Privilege::ROLE_AFFILIATE)
+            @include('announcements.partials.feed')
+        @endif
+
         <div class = "white_box_outer">
             <div class = "heading_holder">
                 <span class = "lft value_span9">My Account</span>

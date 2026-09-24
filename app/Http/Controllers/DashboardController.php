@@ -14,6 +14,9 @@ class DashboardController extends Controller
     {
 
         $with = [
+            'announcements' => (string) Session::userType() === (string) \App\Privilege::ROLE_AFFILIATE
+                ? \App\Announcement::query()->orderByDesc('is_pinned')->orderByDesc('created_at')->orderByDesc('id')->get()
+                : collect(),
             'canViewPostback' => Session::permissions()->can(Permissions::VIEW_POSTBACK),
             'postBackURL' => getWebRoot()."?uid=".Company::loadFromSession()->getUID()."&clickid=",
             'userId' => Session::userID(),

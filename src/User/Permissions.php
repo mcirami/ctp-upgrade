@@ -29,6 +29,7 @@ class Permissions
     const CREATE_MANAGERS = "create_managers";
     const CREATE_AFFILIATES = "create_affiliates";
 	const VIEW_ALL_USERS = "view_all_users";
+    const CREATE_ANNOUNCEMENTS = "create_announcements";
     const CREATE_OFFERS = "create_offers";
     const EDIT_OFFER_RULES = "edit_offer_rules";
     const VIEW_POSTBACK = "view_postback";
@@ -89,6 +90,8 @@ class Permissions
 			"description" => "Can View All Users",
 		    "allowed_user_types" => [\App\Privilege::ROLE_GOD, \App\Privilege::ROLE_ADMIN]
 	    ],
+
+        self::CREATE_ANNOUNCEMENTS => ["description" => "Can Create Announcements", "allowed_user_types" => [Privilege::ROLE_GOD, Privilege::ROLE_ADMIN]],
 
         self::CREATE_OFFERS => ["description" => "Can Create Offers", "allowed_user_types" => [\App\Privilege::ROLE_GOD]],
 
@@ -204,6 +207,23 @@ class Permissions
 
     private function canPrintPermission($permission, $userType)
     {
+
+        // Notifications are retired from the user permission form.
+        if ($permission === self::CREATE_NOTIFICATIONS) {
+            return false;
+        }
+
+        if ($permission === self::CREATE_ANNOUNCEMENTS) {
+            $adminRoles = [Privilege::ROLE_GOD, Privilege::ROLE_ADMIN];
+            if (!in_array($userType, $adminRoles) || !in_array(Session::userType(), $adminRoles)) {
+                return false;
+            }
+
+            // Do not hide the new option because an existing session or target row
+            // predates this permission. God can always grant announcement access.
+            return (string) Session::userType() === (string) Privilege::ROLE_GOD
+                || Session::permissions()->can(self::CREATE_ANNOUNCEMENTS);
+        }
 
         if(in_array($permission, $this->affiliateOnlyPermissions)) {
             return true;

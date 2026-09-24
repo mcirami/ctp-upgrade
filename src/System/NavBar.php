@@ -161,6 +161,7 @@ class NavBar
         "Account" => [
             "css" => "fas fa-building",
 
+
             "My Account" => ['url' => '/dashboard'],
 
             "Verification" => ['url' => '/verification', 'required_user_types' => [\App\Privilege::ROLE_GOD, \App\Privilege::ROLE_AFFILIATE], 'required_permissions' => [Permissions::SMS_CHAT]],
@@ -175,7 +176,7 @@ class NavBar
 
             "IP Blacklist" => ['url' => '/ip_black_list.php', "required_user_types" => [\App\Privilege::ROLE_GOD]],
 
-            "Notifications" => ['url' => '/notifications.php'],
+            "Announcements" => ['url' => '/announcements', 'required_user_types' => [\App\Privilege::ROLE_GOD, \App\Privilege::ROLE_ADMIN], 'required_permissions' => [Permissions::CREATE_ANNOUNCEMENTS]],
 
 //            "Salaries" => ["url" => "/salaries.php", "possible_permissions" => ["pay_salaries"]],
 
@@ -314,6 +315,9 @@ class NavBar
     {
         if (isset($menuArray["required_permissions"])) {
             foreach ($menuArray["required_permissions"] as $permission) {
+                if ($permission === Permissions::CREATE_ANNOUNCEMENTS && (string) $this->userType === (string) \App\Privilege::ROLE_GOD) {
+                    continue;
+                }
                 if (!$this->permissions->can($permission)) {
                     return false;
                 }

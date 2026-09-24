@@ -12,6 +12,7 @@
 */
 
 use App\Privilege;
+use App\Http\Controllers\AnnouncementController;
 use Illuminate\Support\Facades\Route;
 use LeadMax\TrackYourStats\User\Permissions;
 use App\Http\Controllers\IndexController;
@@ -64,6 +65,17 @@ Route::group(['middleware' => 'legacy.auth'], function () {
         Route::delete('/security/two-factor', [GodTwoFactorController::class, 'disable'])
             ->middleware('throttle:6,1')
             ->name('two-factor.disable');
+    });
+    Route::prefix('announcements')->name('announcements.')->group(function () {
+        Route::get('{announcement}/attachment', [AnnouncementController::class, 'download'])->name('attachment');
+        Route::middleware(['role:0,1', 'permissions:' . Permissions::CREATE_ANNOUNCEMENTS])->group(function () {
+            Route::get('/', [AnnouncementController::class, 'index'])->name('index');
+            Route::get('create', [AnnouncementController::class, 'create'])->name('create');
+            Route::post('/', [AnnouncementController::class, 'store'])->name('store');
+            Route::get('{announcement}/edit', [AnnouncementController::class, 'edit'])->name('edit');
+            Route::put('{announcement}', [AnnouncementController::class, 'update'])->name('update');
+            Route::delete('{announcement}', [AnnouncementController::class, 'destroy'])->name('destroy');
+        });
     });
     Route::get('dashboard', [DashboardController::class, 'home']);
 	Route::get('verification', [SmsOrderController::class, 'show'])->middleware(
