@@ -64,6 +64,11 @@ class Handler extends ExceptionHandler
 	 * @throws Throwable
 	 */
 	public function render($request, Throwable $exception): Response {
+        // A stale form can fail CSRF before the authentication middleware runs.
+        if ($exception instanceof \Illuminate\Session\TokenMismatchException && !$request->expectsJson()) {
+            return redirect('/login');
+        }
+
 		return parent::render($request, $exception);
 	}
 

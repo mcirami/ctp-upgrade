@@ -192,16 +192,16 @@ class Login
     public function verify_login_session($logoutOnFailure = true)
     {
 
+        // Expired PHP sessions have no credentials; do not query or dereference them.
+        if (empty($_SESSION['salt']) || empty($_SESSION['repid'])) {
+            return false;
+        }
 
         $db = DatabaseConnection::getInstance();
 
         $sql = "SELECT * FROM logins WHERE session_id= :sesh AND repid = :repid";
 
         $prep = $db->prepare($sql);
-
-        if (!isset($_SESSION["salt"])) {
-            return false;
-        }
 
         $oof = hash("sha256", $_SESSION["salt"]);
 
@@ -213,7 +213,7 @@ class Login
         $loginResult = $prep->fetchAll(\PDO::FETCH_ASSOC);
 
 
-        if ($prep->rowCount() > 0) {
+        if (count($loginResult) > 0) {
 
             //checks if there is more than one active login session
             foreach ($loginResult as $row => $key) {
@@ -228,7 +228,7 @@ class Login
             }
 
 
-            if (date("U") - $loginResult[0]["last_action_time"] < 86400) {
+            if (time() - $loginResult[0]["last_action_time"] < max(1, (int) config('session.lifetime', 1440)) * 60) {
                 $sql = "UPDATE logins SET last_action_time = :date WHERE ip = :ip AND session_id = :sesh";
 
 
@@ -244,44 +244,49 @@ class Login
 
                 return true;
             }
-        } else {
-            return false;
         }
 
+        if ($logoutOnFailure) {
+            $this->logout();
+        }
 
+        return false;
     }
 
     public function logout()
     {
 
 
-        $db = DatabaseConnection::getInstance();
-        $salt = hash("sha256", $_SESSION["salt"]);
+        if (!empty($_SESSION['salt']) && !empty($_SESSION['repid'])) {
+            $db = DatabaseConnection::getInstance();
+            $salt = hash("sha256", $_SESSION["salt"]);
 
 
-        $deleteSQL = "UPDATE logins SET success = 2, session_id = :hashUpdate WHERE ip = :ip AND repid = :repid AND session_id = :salt";
+            $deleteSQL = "UPDATE logins SET success = 2, session_id = :hashUpdate WHERE ip = :ip AND repid = :repid AND session_id = :salt";
 
-        $salt2 = "($salt)";
+            $salt2 = "($salt)";
 
 
-        $oof = $db->prepare($deleteSQL);
-        $oof->bindParam(":ip", $_SERVER["REMOTE_ADDR"], \PDO::PARAM_STR);
-        $oof->bindParam(":repid", $_SESSION["repid"], \PDO::PARAM_INT);
-        $oof->bindParam(":salt", $salt, \PDO::PARAM_STR);
-        $oof->bindParam(":hashUpdate", $salt2, \PDO::PARAM_STR);
+            $oof = $db->prepare($deleteSQL);
+            $oof->bindParam(":ip", $_SERVER["REMOTE_ADDR"], \PDO::PARAM_STR);
+            $oof->bindParam(":repid", $_SESSION["repid"], \PDO::PARAM_INT);
+            $oof->bindParam(":salt", $salt, \PDO::PARAM_STR);
+            $oof->bindParam(":hashUpdate", $salt2, \PDO::PARAM_STR);
 
-        $oof->execute();
+            $oof->execute();
+        }
 
         unset($_SESSION['user_session']);
         unset($_SESSION['email']);
         unset($_SESSION['repid']);
         unset($_SESSION['permissions']);
         unset($_SESSION["colors"]);
+        unset($_SESSION['salt'], $_SESSION['userData'], $_SESSION['usr'], $_SESSION['userType'], $_SESSION['adminLogin']);
 
 
         if (isset($_SESSION["admin_id"])) {
             $this->adminLogin($_SESSION["admin_id"]);
-        } else {
+        } elseif (session_status() === PHP_SESSION_ACTIVE) {
             session_destroy();
         }
 

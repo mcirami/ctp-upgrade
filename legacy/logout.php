@@ -2,7 +2,7 @@
 
 use LeadMax\TrackYourStats\User\User;
 
-if(isset($_GET["adminLogin"]))
+if(isset($_GET["adminLogin"], $_SESSION["adminLogin"], $_SESSION["repid"]))
 {
     unset($_SESSION["adminLogin"]);
 ?>

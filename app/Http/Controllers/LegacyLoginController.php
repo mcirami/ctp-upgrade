@@ -101,7 +101,7 @@ class LegacyLoginController extends Controller
 	}
     public function logout()
     {
-        if (isset($_GET["adminLogin"])) {
+        if (isset($_GET["adminLogin"], $_SESSION["adminLogin"], $_SESSION["repid"])) {
             unset($_SESSION["adminLogin"]);
 
             return '<script type="text/javascript">window.close();</script>';

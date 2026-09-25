@@ -20,6 +20,9 @@ $dotEnv->load();
 
     }
 
+    // Native PHP authentication and Laravel must use the same idle timeout (minutes).
+    $sessionLifetime = max(1, (int) env('SESSION_LIFETIME', 1440)) * 60;
+    ini_set('session.gc_maxlifetime', (string) $sessionLifetime);
     session_start();
 
 
