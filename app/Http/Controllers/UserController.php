@@ -35,13 +35,14 @@ class UserController extends Controller
     {
 		$userType = Session::userType();
 		$canViewUsers = Session::permissions()->can('view_all_users');
+		$canViewAdmins = ($userType == Privilege::ROLE_ADMIN && $canViewUsers) || $userType == Privilege::ROLE_GOD;
 
         $this->validate(request(), [
             'showInactive' => 'numeric|min:0|max:1'
         ]);
 
         $users =
-	        ($userType == Privilege::ROLE_ADMIN && $canViewUsers) || $userType == Privilege::ROLE_GOD ?
+	        $canViewAdmins ?
 		        User::withRole(request('role', Privilege::ROLE_AFFILIATE))->with('referrer')
 		        :
 		        User::myUsers()->withRole(request('role', Privilege::ROLE_AFFILIATE))->with('referrer');
@@ -62,7 +63,7 @@ class UserController extends Controller
 		$users = $this->getDiffForHumans($users);
 
 		//dd($users);
-        return view('user.manage', compact('users'));
+        return view('user.manage', compact('users', 'canViewAdmins'));
     }
 
 	public function AuthRouteAPI(Request $request){

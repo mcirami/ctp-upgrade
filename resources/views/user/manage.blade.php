@@ -92,7 +92,7 @@
 									" href='/user/" + user['idrep'] + "/affiliates'>View Agents</a>";
                             }
                     html +=    "</td>" +
-                        "<td>" + user['referrer']['user_name'] +
+                        "<td>" + (user['referrer'] ? user['referrer']['user_name'] : '') + "</td>" +
 						"<td>" + user['rep_timestamp'] + "</td>" +
                         "</tr>";
 				})
@@ -108,4 +108,3 @@
         });
     </script>
 @endsection
-
