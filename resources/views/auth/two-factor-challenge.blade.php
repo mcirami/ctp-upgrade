@@ -3,10 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    @include('layouts.partials.network-theme-init')
     <title>Authenticator verification · {{ config('app.network_name', 'Rising Limitless') }}</title>
-    <link rel="stylesheet" href="/css/font-awesome/css/all.css">
-    <link rel="stylesheet" href="/css/network.css?v={{ filemtime(public_path('css/network.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/two-factor-challenge.css') }}">
 </head>
 <body class="rl-auth">
 <main class="rl-login">
