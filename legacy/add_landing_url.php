@@ -14,13 +14,13 @@ $urlValue = trim($_POST['url'] ?? '');
 $statusValue = $_POST['status'] ?? '1';
 
 if (isset($_POST['submit'])) {
-    if (!\LeadMax\TrackYourStats\Offer\LandingLink::isValidBaseUrl($urlValue)) {
-        $error = 'Enter a root http or https URL without a path or query.';
+    if (!\LeadMax\TrackYourStats\Offer\LandingLink::isValidLandingUrl($urlValue)) {
+        $error = 'Enter an http or https URL without a query or fragment.';
     } elseif (!in_array($statusValue, ['0', '1'], true)) {
         $error = 'Select a valid status.';
     } else {
         $company->landingUrls()->create([
-            'url' => rtrim($urlValue, '/'),
+            'url' => $urlValue,
             'status' => (int) $statusValue,
             'timestamp' => date('Y-m-d H:i:s'),
         ]);

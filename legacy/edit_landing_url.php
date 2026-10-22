@@ -15,12 +15,12 @@ $urlValue = trim($_POST['url'] ?? $landingUrl->url);
 $statusValue = $_POST['status'] ?? (string) $landingUrl->status;
 
 if (isset($_POST['submit'])) {
-    if (!\LeadMax\TrackYourStats\Offer\LandingLink::isValidBaseUrl($urlValue)) {
-        $error = 'Enter a root http or https URL without a path or query.';
+    if (!\LeadMax\TrackYourStats\Offer\LandingLink::isValidLandingUrl($urlValue)) {
+        $error = 'Enter an http or https URL without a query or fragment.';
     } elseif (!in_array($statusValue, ['0', '1'], true)) {
         $error = 'Select a valid status.';
     } else {
-        $landingUrl->url = rtrim($urlValue, '/');
+        $landingUrl->url = $urlValue;
         $landingUrl->status = (int) $statusValue;
         $landingUrl->save();
         send_to('landing_urls.php');

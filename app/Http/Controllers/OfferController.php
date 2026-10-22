@@ -129,7 +129,6 @@ class OfferController extends Controller
 			if ($user->getRole() === Privilege::ROLE_AFFILIATE && $data['selectedLandingUrl']) {
 				$offer['landing_link'] = \LeadMax\TrackYourStats\Offer\LandingLink::build(
 					$data['selectedLandingUrl']->url,
-					request()->getHost(),
 					$user->idrep,
 					$offer['idoffer']
 				);
