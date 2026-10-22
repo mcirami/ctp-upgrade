@@ -20,10 +20,14 @@ $assign->setGlobals();
 
 $affiliate = \LeadMax\TrackYourStats\User\User::SelectOne($id);
 
-if ($affiliate->status == 1 || $affiliate->lft != 0 || $affiliate->rgt != 0)
+if (!$affiliate || (int) $affiliate->status !== \LeadMax\TrackYourStats\User\User::STATUS_IN_ACTIVE)
 {
-	\LeadMax\TrackYourStats\System\Notify::info("User already activated", "!", 3);
-	send_to("home.php");
+	$message = $affiliate ? 'This user is not pending activation.' : 'User not found.';
+	echo '<div class="right_panel"><div class="white_box_outer"><div class="white_box value_span8">'
+		. $message . ' <a href="view_pending_affiliates.php">View pending agents</a>.'
+		. '</div></div></div>';
+	include 'footer.php';
+	exit;
 }
 
 
@@ -45,7 +49,7 @@ $create->dumpPermissionsToJavascript();
 		
 		<div class = "white_box value_span8">
 			
-			<form action = "<?php htmlspecialchars($_SERVER['PHP_SELF']) . "?id={$id}"; ?>" method = "post" id = "form"
+			<form action = "activate_affiliate.php?id=<?= (int) $id ?>" method = "post" id = "form"
 				  class = "form-horizontal" enctype = "multipart/form-data">
 				
 				<div class = "left_con01">

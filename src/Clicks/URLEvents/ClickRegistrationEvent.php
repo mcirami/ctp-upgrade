@@ -103,7 +103,7 @@ class ClickRegistrationEvent extends URLEvent
             $click->ip_address = $this->ip; //$_SERVER["REMOTE_ADDR"];
             //$click->country_code = $geo;
             $click->referer = array_key_exists("HTTP_REFERER", $_SERVER) ? $_SERVER["HTTP_REFERER"] : null;
-            $click->browser_agent = $_SERVER["HTTP_USER_AGENT"];
+            $click->browser_agent = $_SERVER["HTTP_USER_AGENT"] ?? '';
 
             $click->rep_idrep = $this->userId;
             $click->offer_idoffer = $this->offerId;
