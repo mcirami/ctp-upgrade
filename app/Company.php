@@ -69,6 +69,11 @@ class Company extends Model
         return $this->hasMany(OfferURL::class);
     }
 
+    public function landingUrls()
+    {
+        return $this->hasMany(LandingURL::class);
+    }
+
     public function colors(): array
     {
         return explode(';', $this->colors);

@@ -85,6 +85,12 @@ class OfferController extends Controller
 		}
 		$urls = $urls->pluck('url')->toArray();
 		$data['urls'] = $urls;
+		$data['selectedOfferUrl'] = $urls[request('url', 0)] ?? $urls[0];
+		$data['landingUrls'] = $company->landingUrls()->where('status', 1)->orderBy('id')->get();
+		$data['selectedLandingUrl'] = $data['landingUrls']->firstWhere('id', (int) request('lander'));
+		if (!$data['selectedLandingUrl']) {
+			$data['selectedLandingUrl'] = $data['landingUrls']->first();
+		}
 
 
 		$status = request('showInactive', 0) == 1 ? 0 : 1;
@@ -120,6 +126,14 @@ class OfferController extends Controller
 		foreach ($offers as $offer) {
 			$offer["offer_name"] = htmlspecialchars($offer["offer_name"], ENT_QUOTES, 'UTF-8');
 			$offer["geo_rule_names"] = htmlspecialchars($geoRuleNames->get($offer["idoffer"], 'N/A'), ENT_QUOTES, 'UTF-8');
+			if ($user->getRole() === Privilege::ROLE_AFFILIATE && $data['selectedLandingUrl']) {
+				$offer['landing_link'] = \LeadMax\TrackYourStats\Offer\LandingLink::build(
+					$data['selectedLandingUrl']->url,
+					request()->getHost(),
+					$user->idrep,
+					$offer['idoffer']
+				);
+			}
 		}
 
 		$data = array_merge(compact('offers'), $data);

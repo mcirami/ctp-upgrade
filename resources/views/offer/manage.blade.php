@@ -29,17 +29,17 @@
 
 			<script type="text/javascript">
 				function handleSelect(elm) {
-					window.location = '/{{request()->path()}}?url=' + elm.value
-					<?= request( 'adminLogin',
-							null ) ? " + '&adminLogin'" : "" ?>;
+					const url = new URL(window.location.href);
+					url.searchParams.set(elm.id === 'offer_url' ? 'url' : 'lander', elm.value);
+					window.location = url.toString();
 				}
 			</script>
 
 
-			<div style="margin:0 0 1px 0; padding:5px; width:250px;">
+			<div style="display:flex; flex-wrap:wrap; gap:10px; margin:0 0 1px 0; padding:5px;">
 
 				@if(Session::userType() == \App\Privilege::ROLE_AFFILIATE)
-
+					<div style="width:250px;">
 					<label class="value_span9">Offer URLS: </label>
 					<select onchange='handleSelect(this);' class="form-control input-sm " id="offer_url"
 							name="offer_url">
@@ -47,7 +47,6 @@
 
 						@for ($i = 0; $i < count($urls); $i++)
 							@if (request('url',0) == $i)
-								{
 								<option selected value='{{$i}}'> {{$urls[$i]}}</option>
 							@else
 								<option value='{{$i}}'> {{$urls[$i]}}</option>
@@ -55,6 +54,19 @@
 						@endfor
 
 					</select>
+					</div>
+					<div style="width:250px;">
+						<label class="value_span9" for="lander_url">Lander URLs:</label>
+						<select onchange="handleSelect(this);" class="form-control input-sm" id="lander_url" name="lander_url" @if($landingUrls->isEmpty()) disabled @endif>
+							@if($landingUrls->isEmpty())
+								<option>No active Lander URLs</option>
+							@else
+								@foreach($landingUrls as $landingUrl)
+									<option value="{{ $landingUrl->id }}" @if($selectedLandingUrl->id == $landingUrl->id) selected @endif>{{ $landingUrl->url }}</option>
+								@endforeach
+							@endif
+					</select>
+					</div>
 
 				@endif
 			</div>
@@ -214,8 +226,7 @@ Session::userType() !== \App\Privilege::ROLE_ADMIN
 			});
 
 			let itemsPerPage = 20;
-			let offersCollection = '<?php echo $offers; ?>';
-			let offers = JSON.parse(offersCollection);
+			let offers = @json($offers);
 
 			const paginationContainer = "#pagination";
 
@@ -244,7 +255,7 @@ Session::userType() !== \App\Privilege::ROLE_ADMIN
 					let html = "";
 					let userType = '<?php echo Session::userType(); ?>';
 
-					let url = '<?php echo $urls[ request( 'url', 0 ) ]; ?>';
+					let url = @json($selectedOfferUrl);
 					let permissions = '<?php echo json_encode( Session::permissions() ); ?>'
 					permissions = JSON.parse(permissions);
 					const sessionUser = '<?php echo Session::userID(); ?>';
@@ -258,6 +269,10 @@ Session::userType() !== \App\Privilege::ROLE_ADMIN
 								`<span class='offer_link'>https://` + url +
 								`/?repid=` + sessionUser +
 								`&offerid=` + offer['idoffer'] + `&sub1=</span>`;
+							if (offer['landing_link']) {
+								html += `<br/><span class='link_label'>Lander URL:</span><br /> ` +
+									`<span class='offer_link'>` + $('<div>').text(offer['landing_link']).html() + `</span>`;
+							}
 						}
 
 						html += `</td>`;

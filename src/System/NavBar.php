@@ -174,6 +174,8 @@ class NavBar
 
             "Offer URLs" => ['url' => '/offer_urls.php', 'required_permissions' => ['edit_offer_urls']],
 
+            "Landing URLs" => ['url' => '/landing_urls.php', 'required_user_types' => [\App\Privilege::ROLE_GOD]],
+
             "IP Blacklist" => ['url' => '/ip_black_list.php', "required_user_types" => [\App\Privilege::ROLE_GOD]],
 
             "Announcements" => ['url' => '/announcements', 'required_user_types' => [\App\Privilege::ROLE_GOD, \App\Privilege::ROLE_ADMIN], 'required_permissions' => [Permissions::CREATE_ANNOUNCEMENTS]],
