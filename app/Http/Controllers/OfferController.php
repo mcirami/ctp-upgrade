@@ -65,6 +65,13 @@ class OfferController extends Controller
 		}
 		$urls = $urls->pluck('url')->toArray();
 		$data['urls'] = $urls;
+        $data['landerUrls'] = collect();
+        $user = \LeadMax\TrackYourStats\System\Session::user();
+        if ($user->getRole() === Privilege::ROLE_AFFILIATE && $user->hasLanderAccess()) {
+            $data['landerUrls'] = \App\LanderUrl::where('status', 1)->orderBy('id')->get();
+        }
+        $data['selectedLander'] = $data['landerUrls']->firstWhere('id', request('lander'))
+            ?: $data['landerUrls']->first();
 
 
 		$status = request('showInactive', 0) == 1 ? 0 : 1;

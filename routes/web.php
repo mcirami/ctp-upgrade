@@ -56,6 +56,13 @@ Route::get('/logout', [LegacyLoginController::class, 'logout']);
 Route::post('email/incoming', [RelevanceReactorController::class, 'incomingEmail']);
 Route::post('email/incoming/distribute', [RelevanceReactorController::class, 'distributeEmail']);
 Route::group(['middleware' => 'legacy.auth'], function () {
+    Route::middleware('role:0')->prefix('lander/urls')->group(function () {
+        Route::get('/', [\App\Http\Controllers\LanderUrlController::class, 'index']);
+        Route::get('/create', [\App\Http\Controllers\LanderUrlController::class, 'create']);
+        Route::post('/', [\App\Http\Controllers\LanderUrlController::class, 'store']);
+        Route::get('/{id}/edit', [\App\Http\Controllers\LanderUrlController::class, 'edit']);
+        Route::put('/{id}', [\App\Http\Controllers\LanderUrlController::class, 'update']);
+    });
     Route::middleware('role:0')->group(function () {
         Route::get('/security/two-factor', [GodTwoFactorController::class, 'setup'])->name('two-factor.setup');
         Route::post('/security/two-factor', [GodTwoFactorController::class, 'confirm'])

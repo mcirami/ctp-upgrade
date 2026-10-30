@@ -170,6 +170,8 @@ class NavBar
 
             "Add Sale" => ['url' => '/sales/add', 'required_permissions' => [Permissions::ADJUST_SALES]],
 
+            "Lander URLs" => ['url' => '/lander/urls', 'required_user_types' => [\App\Privilege::ROLE_GOD]],
+
             "Offer URLs" => ['url' => '/offer_urls.php', 'required_permissions' => ['edit_offer_urls']],
 
             "IP Blacklist" => ['url' => '/ip_black_list.php', "required_user_types" => [\App\Privilege::ROLE_GOD]],

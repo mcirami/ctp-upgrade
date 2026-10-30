@@ -29,14 +29,15 @@
 
 
 			<script type="text/javascript">
-				function handleSelect(elm) {
-					window.location = '/{{request()->path()}}?url=' + elm.value <?= request('adminLogin',
-							null) ? " + '&adminLogin'" : ""?>;
-				}
+                function handleSelect(elm) {
+                    const target = new URL(window.location.href);
+                    target.searchParams.set(elm.id === 'lander_url' ? 'lander' : 'url', elm.value);
+                    window.location = target.toString();
+                }
 			</script>
 
 
-			<div style="margin:0 0 1px 0; padding:5px; width:250px;">
+			<div style="margin:0 0 1px 0; padding:5px; width:250px; display:inline-block;">
 
 				@if( Session::userType() == \App\Privilege::ROLE_AFFILIATE)
 
@@ -57,6 +58,17 @@
 
 				@endif
 			</div>
+
+            @if($selectedLander)
+                <div style="padding:5px; width:250px; display:inline-block;">
+                    <label class="value_span9" for="lander_url">Lander URLs:</label>
+                    <select onchange="handleSelect(this)" class="form-control input-sm" id="lander_url" name="lander_url">
+                        @foreach($landerUrls as $lander)
+                            <option value="{{ $lander->id }}" @selected($selectedLander->id === $lander->id)>{{ $lander->url }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            @endif
 
 
 			<div class="form-group searchDiv">
@@ -236,7 +248,8 @@
 
 					let html = "";
 					let userType = '<?php echo Session::userType(); ?>';
-					let url = '<?php echo $urls[request('url',0)]; ?>';
+					let url = @json($urls[filter_var(request('url', 0), FILTER_VALIDATE_INT)] ?? $urls[0]);
+                    const landerBase = @json($selectedLander ? $selectedLander->url : null);
 					let permissions = '<?php echo json_encode( Session::permissions()); ?>'
 					permissions = JSON.parse(permissions);
 					const sessionUser = '<?php echo Session::userID(); ?>';
@@ -251,6 +264,17 @@
 								`<span class='offer_link'>https://` + url +
 								`/?repid=` + sessionUser +
 								`&offerid=` + offer['idoffer'] + `&sub1=</span>`;
+                            if (landerBase) {
+                                const lander = new URL(landerBase);
+                                lander.searchParams.set('a', sessionUser);
+                                lander.searchParams.set('o', offer.idoffer);
+                                lander.searchParams.delete('n');
+                                lander.searchParams.append('n', '');
+                                const text = document.createElement('span');
+                                text.textContent = lander.toString();
+                                html += `<br/><span class="link_label">Lander URL:</span><br/>` +
+                                    `<span class="lander_link">` + text.innerHTML + `</span>`;
+                            }
 						}
 
 						html += `</td>` +

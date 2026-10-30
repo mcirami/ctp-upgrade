@@ -114,6 +114,31 @@ class User extends Authenticatable
         return $query;
     }
 
+    public function hasLanderAccess(): bool
+    {
+        // Read current grants and exceptions so changes apply without another login.
+        $permission = \Illuminate\Support\Facades\DB::table('permissions')
+            ->where('aff_id', $this->idrep)->first();
+        if ($this->getRole() === Privilege::ROLE_AFFILIATE && !empty($permission->lander_access_denied)) {
+            return false;
+        }
+
+        return !empty($permission->lander_access) || $this->hasInheritedLanderAccess();
+    }
+
+    public function hasInheritedLanderAccess(): bool
+    {
+        return \Illuminate\Support\Facades\DB::table('permissions')
+            ->join('rep', 'rep.idrep', '=', 'permissions.aff_id')
+            ->join('privileges', 'privileges.rep_idrep', '=', 'rep.idrep')
+            ->where('permissions.lander_access', 1)
+            ->where('rep.lft', '<', $this->lft)
+            ->where('rep.rgt', '>', $this->rgt)
+            ->where(function ($roles) {
+                $roles->where('privileges.is_admin', 1)->orWhere('privileges.is_manager', 1);
+            })->exists();
+    }
+
     public function referrer()
     {
         return $this->belongsTo(User::class, 'referrer_repid', 'idrep');

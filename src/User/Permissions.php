@@ -40,6 +40,7 @@ class Permissions
     const ASSIGN_BONUSES = "assign_bonuses";
     const EDIT_SALARIES = "edit_salaries";
     const PAY_SALARIES = "pay_salaries";
+    const LANDER_ACCESS = "lander_access";
     const EDIT_OFFER_URLS = "edit_offer_urls";
     const APPROVE_OFFER_REQUESTS = "approve_offer_requests";
     const APPROVE_AFFILIATE_SIGN_UPS = "approve_affiliate_sign_ups";
@@ -141,6 +142,11 @@ class Permissions
             "allowed_user_types" => [\App\Privilege::ROLE_GOD],
         ],
 
+        self::LANDER_ACCESS => [
+            "description" => "Allow Lander URLs (also applies to agents under this account)",
+            "allowed_user_types" => [Privilege::ROLE_GOD, Privilege::ROLE_ADMIN, Privilege::ROLE_MANAGER, Privilege::ROLE_AFFILIATE],
+        ],
+
         self::EDIT_OFFER_URLS => [
             "description" => "Can Edit or Create Offer URLs",
             "allowed_user_types" => [\App\Privilege::ROLE_GOD],
@@ -204,6 +210,11 @@ class Permissions
 
     private function canPrintPermission($permission, $userType)
     {
+
+        if ($permission === self::LANDER_ACCESS) {
+            return Session::userType() === Privilege::ROLE_GOD
+                && in_array($userType, [Privilege::ROLE_ADMIN, Privilege::ROLE_MANAGER, Privilege::ROLE_AFFILIATE]);
+        }
 
         if(in_array($permission, $this->affiliateOnlyPermissions)) {
             return true;
@@ -306,7 +317,7 @@ class Permissions
         foreach (self::$permissionsArray as $permission => $val) {
             if ($permission != "aff_id") {
                 if ($this->canPrintPermission($permission, Privilege::ROLE_AFFILIATE)) {
-                    $this->printPermission($permission, $checkCheckBoxes);
+                    $this->printPermission($permission, $checkCheckBoxes, Privilege::ROLE_AFFILIATE);
                 }
             }
         }
@@ -315,16 +326,25 @@ class Permissions
     }
 
 
-    private function printPermission($permission, $checked = false)
+    private function printPermission($permission, $checked = false, $userType = null)
     {
+
+        $description = self::$permissionsArray[$permission]["description"];
+        if ($permission === self::LANDER_ACCESS && $userType === Privilege::ROLE_AFFILIATE) {
+            $description = "Allow Lander URLs";
+        }
 
         $isChecked = "";
         if ($checked) {
-            $isChecked = $this->can($permission) ? ", 'checked':'checked'" : "";
+            $allowed = $this->can($permission);
+            if ($permission === self::LANDER_ACCESS && $userType === Privilege::ROLE_AFFILIATE && $this->repID) {
+                $allowed = \App\User::find($this->repID)?->hasLanderAccess() ?? false;
+            }
+            $isChecked = $allowed ? ", 'checked':'checked'" : "";
         }
 
         echo " $('<input/>').attr({type:'checkbox',name:'permissions[]', class:'fixCheckBox', value:'{$permission}' {$isChecked} }).appendTo('#permissionsP');
-         p.append(\"".self::$permissionsArray[$permission]["description"]." <br/>\");";
+         p.append(\"".$description." <br/>\");";
     }
 
 
@@ -406,6 +426,10 @@ class Permissions
         // if the permission wasn't assigned (wasn't checked in update page)
         // then set to zero
         $list = $this->setZeros($list);
+        // Hidden controls are not authorization: preserve God's grant on other users' edits.
+        if (Session::userType() !== Privilege::ROLE_GOD) {
+            unset($list[self::LANDER_ACCESS]);
+        }
 
 
         // makes sure the key names are a permission
@@ -413,6 +437,18 @@ class Permissions
             return false;
         }
 
+
+        if (Session::userType() === Privilege::ROLE_GOD) {
+            $user = \App\User::find($affid);
+            if ($user && $user->getRole() === Privilege::ROLE_AFFILIATE) {
+                $allowed = !empty($list[self::LANDER_ACCESS]);
+                $list['lander_access_denied'] = $allowed ? 0 : 1;
+                // Saving a checked inherited grant must not turn it into a permanent direct grant.
+                $directGrant = \Illuminate\Support\Facades\DB::table('permissions')
+                    ->where('aff_id', $affid)->value(self::LANDER_ACCESS);
+                $list[self::LANDER_ACCESS] = $allowed && ($directGrant || !$user->hasInheritedLanderAccess()) ? 1 : 0;
+            }
+        }
 
         $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
         $sql = "UPDATE permissions SET ";
@@ -497,6 +533,10 @@ class Permissions
 
     public function createPermissions($list)
     {
+        if (Session::userType() !== Privilege::ROLE_GOD) {
+            unset($list[self::LANDER_ACCESS]);
+        }
+
 
 
         // makes sure the key names are a permission
