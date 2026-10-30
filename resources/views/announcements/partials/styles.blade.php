@@ -52,4 +52,8 @@
 .announcement-form #announcement-text-help{font-size:13px;margin-top:8px}
 .announcement-form #announcement-text-error{color:#b42318;margin-top:8px}
 .announcement-form [hidden]{display:none!important}
+.announcement-body img,.announcement-form .ql-editor img{max-width:100%;height:auto;vertical-align:middle}
+.announcement-gif-controls{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin:10px 0;font-size:13px}
+.announcement-form #announcement-insert-gif{width:auto;height:auto;padding:8px 12px;border:1px solid #dce1eb;border-radius:4px;background:#fff;color:#434957;font:inherit;cursor:pointer}
+.announcement-form #announcement-insert-gif:disabled{opacity:.6;cursor:wait}
 </style>

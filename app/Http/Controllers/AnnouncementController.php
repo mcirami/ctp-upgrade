@@ -133,6 +133,36 @@ class AnnouncementController extends Controller
         );
     }
 
+    public function uploadGif(Request $request)
+    {
+        $request->validate(['gif' => ['required', 'file', 'mimetypes:image/gif', 'max:10240']]);
+        $file = $request->file('gif');
+        $dimensions = @getimagesize($file->getRealPath());
+        if (!$dimensions || $dimensions[2] !== IMAGETYPE_GIF) {
+            throw \Illuminate\Validation\ValidationException::withMessages(['gif' => 'Please choose a valid GIF image.']);
+        }
+        $filename = Str::uuid().'.gif';
+        // Store the original bytes so animated GIFs retain all frames.
+        $path = $file->storeAs('announcements/media', $filename, 'local');
+        abort_unless($path, 500, 'The GIF could not be uploaded. Please try again.');
+
+        return response()->json(['url' => route('announcements.gif', ['filename' => $filename], false)], 201);
+    }
+
+    public function gif(string $filename): StreamedResponse
+    {
+        abort_unless(preg_match('/^[a-f0-9-]{36}\.gif$/D', $filename), 404);
+        $disk = Storage::disk('local');
+        $path = 'announcements/media/'.$filename;
+        abort_unless($disk->exists($path), 404);
+
+        return $disk->response($path, $filename, [
+            'Content-Type' => 'image/gif',
+            'X-Content-Type-Options' => 'nosniff',
+            'Cache-Control' => 'private, max-age=86400',
+        ], 'inline');
+    }
+
     private function validateAnnouncement(Request $request, bool $editing = false): array
     {
         return $request->validate([
@@ -144,10 +174,10 @@ class AnnouncementController extends Controller
                     $fail('The announcement is too large. Reduce its text or formatting.');
                     return;
                 }
-                $text = $request->input('body_format') === 'html'
-                    ? \App\Support\AnnouncementText::plain(\App\Support\AnnouncementText::sanitize($value))
-                    : $value;
-                if (preg_match('/^[\s\p{Z}\x{200B}\x{FEFF}]*$/u', $text)) {
+                $html = $request->input('body_format') === 'html'
+                    ? \App\Support\AnnouncementText::sanitize($value) : '';
+                $text = $html !== '' ? \App\Support\AnnouncementText::plain($html) : ($request->input('body_format') === 'html' ? '' : $value);
+                if (preg_match('/^[\s\p{Z}\x{200B}\x{FEFF}]*$/u', $text) && !str_contains($html, '<img ')) {
                     $fail('The announcement text is required.');
                 }
                 if (mb_strlen($text) > 10000) {

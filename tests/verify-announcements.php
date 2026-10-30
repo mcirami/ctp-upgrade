@@ -145,6 +145,43 @@ foreach (['strong', 'b', 'em', 'i', 'u', 's', 'span'] as $tag) {
     verifyAnnouncement(App\Support\AnnouncementText::sanitize($announcement->body)===$announcement->body, 'Repeated sanitization changed combined formatting');
 }
 
+// Inline GIFs retain their original frames and use authenticated local URLs.
+$gifBytes=hex2bin('47494638396101000100800000000000ffffff'.'21ff0b4e45545343415045322e300301000000'.str_repeat('21f904000a0000002c0000000001000100000202440100',2).'3b');
+file_put_contents($temp.'/animated.gif',$gifBytes);
+$gifRequest=Request::create('/announcements/media','POST',[],[],['gif'=>new UploadedFile($temp.'/animated.gif','animated.gif','image/gif',null,true)]);
+$gifRequest->setLaravelSession($session);$app->instance('request',$gifRequest);
+$gifResponse=$controller->uploadGif($gifRequest);
+$gifUrl=$gifResponse->getData(true)['url'];$gifFilename=basename($gifUrl);
+verifyAnnouncement($gifResponse->getStatusCode()===201 && str_starts_with($gifUrl,'/announcements/media/'),'GIF upload failed');
+verifyAnnouncement(Storage::disk('local')->get('announcements/media/'.$gifFilename)===$gifBytes,'GIF upload changed animation bytes');
+$inlineResponse=$controller->gif($gifFilename);
+verifyAnnouncement($inlineResponse->headers->get('content-type')==='image/gif' && str_starts_with($inlineResponse->headers->get('content-disposition'),'inline') && $inlineResponse->headers->get('x-content-type-options')==='nosniff','GIF response headers incorrect');
+$gifBody='<p><img src="'.$gifUrl.'" alt="Celebration"></p>';
+$gifSave=Request::create('/announcements/'.$announcement->id,'PUT',['title'=>'GIF announcement','type'=>'info','body'=>$gifBody,'body_format'=>'html']);
+$gifSave->setLaravelSession($session);$app->instance('request',$gifSave);$controller->update($gifSave,$announcement);$announcement->refresh();
+$gifFeed=view('announcements.partials.feed',['announcements'=>collect([$announcement])])->render();
+verifyAnnouncement(str_contains($announcement->body,$gifUrl) && str_contains($gifFeed,'src="'.$gifUrl.'"'),'GIF-only announcement failed to save or render');
+$gifForm=view('announcements.partials.form',['announcement'=>$announcement,'action'=>route('announcements.update',$announcement),'submitLabel'=>'Save','errors'=>new Illuminate\Support\ViewErrorBag()])->render();
+verifyAnnouncement(str_contains($gifForm,$gifFilename) && str_contains($gifForm,'announcement-insert-gif'),'Edit form did not preserve the GIF');
+foreach (['https://example.com/tracking.gif','data:image/gif;base64,AAAA','javascript:alert(1)','//example.com/a.gif','/announcements/media/../../private.gif'] as $src) {
+    verifyAnnouncement(!str_contains(App\Support\AnnouncementText::sanitize('<p><img src="'.$src.'"></p>'),'<img'),'Untrusted inline image survived sanitization');
+}
+file_put_contents($temp.'/fake.gif','not an image');
+foreach (['fake.gif','oversized.gif'] as $invalidGif) {
+    if ($invalidGif==='oversized.gif') file_put_contents($temp.'/'.$invalidGif,$gifBytes.str_repeat('x',10240*1024));
+    $badUpload=Request::create('/announcements/media','POST',[],[],['gif'=>new UploadedFile($temp.'/'.$invalidGif,$invalidGif,'image/gif',null,true)]);
+    try{$controller->uploadGif($badUpload);verifyAnnouncement(false,'Invalid GIF upload accepted');}catch(Illuminate\Validation\ValidationException $e){verifyAnnouncement(isset($e->errors()['gif']),'GIF validation targeted incorrect field');}
+    unlink($temp.'/'.$invalidGif);
+}
+foreach (['../source.pdf', '00000000-0000-0000-0000-000000000000.gif'] as $missingGif) {
+    try{$controller->gif($missingGif);verifyAnnouncement(false,'Invalid GIF download accepted');}catch(Symfony\Component\HttpKernel\Exception\HttpException $e){verifyAnnouncement($e->getStatusCode()===404,'Invalid GIF URL did not return 404');}
+}
+$uploadRoute=app('router')->getRoutes()->match(Request::create('/announcements/media','POST'));
+foreach (['legacy.auth','role:0,1','permissions:'.Permissions::CREATE_ANNOUNCEMENTS,'throttle:20,1'] as $guard) verifyAnnouncement(in_array($guard,$uploadRoute->gatherMiddleware()),'GIF upload missing '.$guard);
+$mediaRoute=app('router')->getRoutes()->match(Request::create($gifUrl,'GET'));
+verifyAnnouncement(in_array('legacy.auth',$mediaRoute->gatherMiddleware()),'GIF media route is public');
+unlink($temp.'/animated.gif');
+
 // Rich text keeps supported formatting and removes executable or embedded content.
 $richBody = '<p><span style="font-family: Georgia; font-size: 24px; color: #ff0000; background-color: #ffff00" onclick="alert(1)">Colorful text</span> <strong>Bold</strong></p><script>alert(1)</script><img src=x onerror="alert(1)"><iframe src="https://example.com"></iframe>';
 $richRequest=Request::create('/announcements/'.$announcement->id,'PUT',['title'=>'Formatted','type'=>'info','body'=>$richBody,'body_format'=>'html']);

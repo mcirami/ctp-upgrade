@@ -15,8 +15,16 @@
 
     var editor = new Quill('#announcement-editor-input', {
         theme: 'snow',
-        modules: { toolbar: '#announcement-toolbar' },
-        formats: ['font', 'size', 'color', 'background', 'bold', 'italic', 'underline', 'strike']
+        modules: {
+            toolbar: '#announcement-toolbar',
+            // All images must go through the validated GIF upload endpoint.
+            uploader: { mimetypes: [] }
+        },
+        formats: ['font', 'size', 'color', 'background', 'bold', 'italic', 'underline', 'strike', 'image']
+    });
+    editor.clipboard.addMatcher('IMG', function (node, delta) {
+        return /^\/announcements\/media\/[a-f0-9-]{36}\.gif$/.test(node.getAttribute('src') || '')
+            ? delta : new (Quill.import('delta'))();
     });
     if (format.value === 'html') {
         editor.setContents(editor.clipboard.convert({ html: textarea.value }), 'silent');
@@ -41,15 +49,65 @@
         }
     });
 
+    var gifButton = document.getElementById('announcement-insert-gif');
+    var gifInput = document.getElementById('announcement-gif-file');
+    var gifStatus = document.getElementById('announcement-gif-status');
+    var uploading = false;
+    var insertionIndex = 0;
+    gifButton.addEventListener('click', function () {
+        var selection = editor.getSelection();
+        insertionIndex = selection ? selection.index : editor.getLength() - 1;
+        gifInput.click();
+    });
+    gifInput.addEventListener('change', async function () {
+        var file = gifInput.files[0];
+        if (!file) return;
+        gifInput.value = '';
+        if (file.size > 10 * 1024 * 1024) {
+            gifStatus.textContent = 'Please choose a GIF smaller than 10 MB.';
+            return;
+        }
+        uploading = true;
+        gifButton.disabled = true;
+        editor.enable(false);
+        gifStatus.textContent = 'Uploading GIF…';
+        try {
+            var data = new FormData();
+            data.append('gif', file);
+            var response = await fetch(gifButton.dataset.uploadUrl, {
+                method: 'POST', credentials: 'same-origin',
+                headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': textarea.form.querySelector('[name="_token"]').value },
+                body: data
+            });
+            var result = await response.json();
+            if (!response.ok) throw new Error(result.errors && result.errors.gif ? result.errors.gif[0] : 'The GIF could not be uploaded. Please try again.');
+            editor.enable(true);
+            editor.insertEmbed(insertionIndex, 'image', result.url, 'user');
+            editor.setSelection(insertionIndex + 1, 0, 'silent');
+            gifStatus.textContent = 'GIF inserted. Save the announcement to publish it.';
+        } catch (uploadError) {
+            gifStatus.textContent = uploadError instanceof SyntaxError ? 'Upload failed. Refresh the page and try again.' : uploadError.message;
+        } finally {
+            uploading = false;
+            gifButton.disabled = false;
+            editor.enable(true);
+        }
+    });
+
     editor.on('text-change', function () {
         error.hidden = true;
         editor.root.removeAttribute('aria-invalid');
     });
     textarea.form.addEventListener('submit', function (event) {
+        if (uploading) {
+            event.preventDefault();
+            gifStatus.textContent = 'Please wait for the GIF upload to finish before saving.';
+            return;
+        }
         var text = editor.getText().replace(/\n$/, '');
         var html = editor.root.innerHTML;
         var message = '';
-        if (!text.replace(/[\s\u200B\uFEFF]/g, '')) message = 'Please enter announcement text.';
+        if (!text.replace(/[\s\u200B\uFEFF]/g, '') && !editor.root.querySelector('img')) message = 'Please enter announcement text.';
         else if (Array.from(text).length > 10000) message = 'Announcement text may not exceed 10,000 characters.';
         else if (new TextEncoder().encode(html).length > 60000) message = 'This announcement has too much formatting. Clear some formatting and try again.';
         if (message) {
