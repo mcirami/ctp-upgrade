@@ -3,7 +3,7 @@
 .announcement-card{padding:20px 0;border-bottom:1px solid #dce1eb;overflow-wrap:anywhere}
 .announcement-card:first-child{padding-top:0}.announcement-card:last-child{border-bottom:0;padding-bottom:0}
 .announcement-meta{display:flex;gap:12px;flex-wrap:wrap;font-size:13px}.announcement-meta time{margin-left:auto}
-.announcement-card h3{font-size:20px;margin:12px 0}.announcement-body{white-space:pre-wrap;overflow-wrap:anywhere}
+.announcement-card h3{font-size:20px;margin:12px 0}.announcement-body{white-space:normal;overflow-wrap:anywhere}
 /* Shared type colors keep the picker and published badges consistent. */
 .announcement-type--new_offer{--announcement-type-color:#129c63;--announcement-type-bg:#e2f3eb}
 .announcement-type--bonus{--announcement-type-color:#bc7400;--announcement-type-bg:#fff3db}
@@ -40,4 +40,16 @@
 @media(max-width:600px){.announcement-editor .announcement-form-card{padding:20px}.announcement-type-choice{padding:9px 12px}.announcement-meta time{width:100%;margin-left:0}}
 .announcement-actions{display:flex;gap:15px;align-items:center;flex-wrap:wrap;margin-top:20px}
 .announcement-actions form{margin:0}.announcement-heading{display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap;margin-bottom:20px}
+.announcement-body,.announcement-form .ql-editor{font-size:16px;line-height:1.5}
+.announcement-body p{margin:0;min-height:1.5em}
+.announcement-form .ql-editor{min-height:200px;max-height:500px;overflow-y:auto;color:#434957;background:#fff}
+.announcement-form .ql-toolbar{border-radius:6px 6px 0 0;background:#fff}
+.announcement-form .ql-container{border-radius:0 0 6px 6px}
+.announcement-form .ql-editor:focus{outline:2px solid #129c63;outline-offset:-2px}
+.announcement-form .ql-picker.ql-font{width:155px}
+.announcement-form .ql-picker.ql-font .ql-picker-label::before,.announcement-form .ql-picker.ql-font .ql-picker-item::before,
+.announcement-form .ql-picker.ql-size .ql-picker-label::before,.announcement-form .ql-picker.ql-size .ql-picker-item::before{content:attr(data-label)}
+.announcement-form #announcement-text-help{font-size:13px;margin-top:8px}
+.announcement-form #announcement-text-error{color:#b42318;margin-top:8px}
+.announcement-form [hidden]{display:none!important}
 </style>

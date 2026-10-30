@@ -16,8 +16,10 @@
         </div>
     </fieldset>
     <div class="form-group">
-        <label for="announcement-body">Announcement Text *</label>
-        <textarea class="form-control" id="announcement-body" name="body" rows="7" maxlength="10000" required>{{ old('body', $announcement->body ?? '') }}</textarea>
+        <label id="announcement-body-label" for="announcement-body">Announcement Text *</label>
+        <textarea class="form-control" id="announcement-body" name="body" rows="7" required>{{ old('body', $announcement->body ?? '') }}</textarea>
+        <input type="hidden" name="body_format" id="announcement-body-format" value="{{ old('body_format', $announcement->body_format ?? 'plain') }}">
+        @include('announcements.partials.editor')
     </div>
     <div class="form-group">
         <label for="announcement-attachment">Attachment (optional, maximum 10 MB)</label>

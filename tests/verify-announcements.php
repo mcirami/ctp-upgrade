@@ -25,6 +25,8 @@ DB::table('permissions')->insert([['aff_id'=>1],['aff_id'=>2]]);
 DB::table('privileges')->insert([['rep_idrep'=>1,'is_god'=>1,'is_admin'=>0,'is_manager'=>0,'is_rep'=>0],['rep_idrep'=>2,'is_god'=>0,'is_admin'=>1,'is_manager'=>0,'is_rep'=>0]]);
 require __DIR__.'/../database/migrations/2026_09_24_000001_create_announcements_table_and_permission.php';
 $migration = new CreateAnnouncementsTableAndPermission(); $migration->up();
+$formatMigration = require __DIR__.'/../database/migrations/2026_10_30_000001_add_body_format_to_announcements.php';
+$formatMigration->up();
 $checks=0;
 function verifyAnnouncement($ok,$message){global $checks;if(!$ok)throw new RuntimeException($message);$checks++;}
 verifyAnnouncement($schema->hasTable('announcements'),'Announcements migration missing table');
@@ -130,6 +132,38 @@ verifyAnnouncement(str_contains($empty,'No announcements yet.'),'Empty feed mess
 $form=view('announcements.partials.form',['action'=>route('announcements.store'),'submitLabel'=>'Post Announcement','errors'=>new Illuminate\Support\ViewErrorBag()])->render();
 verifyAnnouncement(str_contains($form,'enctype="multipart/form-data"') && str_contains($form,'name="_token"') && substr_count($form,'name="type"')===5,'Create form contract incorrect');
 
+// Quill combines inline styles with bold/italic/underline/strike on the same tag.
+foreach (['strong', 'b', 'em', 'i', 'u', 's', 'span'] as $tag) {
+    $combinedBody='<p><'.$tag.' style="font-family:Verdana;font-size:32px;color:#333333;background-color:#ffff00;position:fixed" onclick="alert(1)">Formatted first line</'.$tag.'></p>';
+    $combinedRequest=Request::create('/announcements/'.$announcement->id,'PUT',['title'=>'Combined formatting','type'=>'info','body'=>$combinedBody,'body_format'=>'html']);
+    $combinedRequest->setLaravelSession($session);$app->instance('request',$combinedRequest);$controller->update($combinedRequest,$announcement);$announcement->refresh();
+    $combinedHtml=view('announcements.partials.feed',['announcements'=>collect([$announcement])])->render();
+    foreach (['font-family:Verdana', 'font-size:32px', 'color:#333333', 'background-color:#ffff00'] as $style) {
+        verifyAnnouncement(str_contains($announcement->body,$style) && str_contains($combinedHtml,$style), 'Combined '.$tag.' formatting lost '.$style.' during save or feed rendering');
+    }
+    verifyAnnouncement(!str_contains($combinedHtml,'position:fixed') && !str_contains($combinedHtml,'onclick='), 'Unsafe attributes survived combined formatting');
+    verifyAnnouncement(App\Support\AnnouncementText::sanitize($announcement->body)===$announcement->body, 'Repeated sanitization changed combined formatting');
+}
+
+// Rich text keeps supported formatting and removes executable or embedded content.
+$richBody = '<p><span style="font-family: Georgia; font-size: 24px; color: #ff0000; background-color: #ffff00" onclick="alert(1)">Colorful text</span> <strong>Bold</strong></p><script>alert(1)</script><img src=x onerror="alert(1)"><iframe src="https://example.com"></iframe>';
+$richRequest=Request::create('/announcements/'.$announcement->id,'PUT',['title'=>'Formatted','type'=>'info','body'=>$richBody,'body_format'=>'html']);
+$richRequest->setLaravelSession($session);$app->instance('request',$richRequest);$controller->update($richRequest,$announcement);$announcement->refresh();
+verifyAnnouncement($announcement->body_format==='html' && str_contains($announcement->body,'font-family:Georgia') && str_contains($announcement->body,'font-size:24px') && str_contains($announcement->body,'color:#ff0000'),'Font, size or color did not survive saving');
+verifyAnnouncement(!preg_match('/<script|<img|<iframe|onclick|onerror/', $announcement->body),'Unsafe rich text was saved');
+$html=view('announcements.partials.feed',['announcements'=>collect([$announcement])])->render();
+verifyAnnouncement(str_contains($html,'<strong>Bold</strong>') && str_contains($html,'background-color:#ffff00'),'Feed did not render formatting');
+$editForm=view('announcements.partials.form',['announcement'=>$announcement,'action'=>route('announcements.update',$announcement),'submitLabel'=>'Save','errors'=>new Illuminate\Support\ViewErrorBag()])->render();
+verifyAnnouncement(str_contains($editForm,'value="html"') && str_contains($editForm,'Colorful text') && str_contains($editForm,'announcement-editor.js'),'Edit form lost rich text');
+foreach (['<p><br></p>', '<p>&nbsp; </p>', '<script>alert(1)</script>', '<p>'.str_repeat('a',10001).'</p>'] as $invalidBody) {
+    $invalidRich=Request::create('/announcements','POST',['title'=>'Invalid','type'=>'info','body'=>$invalidBody,'body_format'=>'html']);
+    try{$controller->store($invalidRich);verifyAnnouncement(false,'Invalid rich text accepted');}catch(Illuminate\Validation\ValidationException $e){verifyAnnouncement(isset($e->errors()['body']),'Rich text validation did not target body');}
+}
+$legacy = new Announcement(['body'=>"Literal <strong>text</strong>\nNext line",'body_format'=>'plain']);
+verifyAnnouncement(str_contains($legacy->bodyHtml(),'&lt;strong&gt;text&lt;/strong&gt;') && str_contains($legacy->bodyHtml(),'<br'),'Legacy text was interpreted as HTML or lost line breaks');
+$unsafe = new Announcement(['body'=>'<p style="position:fixed">Safe<span style="color:red;background-image:url(javascript:alert(1))" onmouseover="alert(1)"> text</span></p><svg onload="alert(1)"></svg>','body_format'=>'html']);
+verifyAnnouncement(!preg_match('/position:|background-image|onmouseover|<svg|javascript:/', $unsafe->bodyHtml()),'Render-time sanitization failed');
+
 $removeRequest=Request::create('/announcements/'.$announcement->id,'PUT',['title'=>'No attachment','type'=>'other','body'=>'Updated','remove_attachment'=>'1']);
 $removeRequest->setLaravelSession($session);$app->instance('request',$removeRequest);$controller->update($removeRequest,$announcement);$announcement->refresh();
 verifyAnnouncement(!$announcement->hasAttachment() && !Storage::disk('local')->exists($replacementPath),'Explicit attachment removal failed');
@@ -140,5 +174,6 @@ $deleteResponse=$controller->destroy($announcement);
 verifyAnnouncement($deleteResponse->isRedirect()&&Announcement::query()->count()===0,'Announcement deletion failed');
 verifyAnnouncement(!Storage::disk('local')->exists($replacementPath),'Deleted announcement attachment was not cleaned up');
 Storage::disk('local')->deleteDirectory('announcements');unlink($temp.'/source.pdf');unlink($temp.'/replacement.txt');rmdir($temp);
+$formatMigration->down();verifyAnnouncement(!$schema->hasColumn('announcements','body_format'),'Format migration rollback failed');
 $migration->down();verifyAnnouncement(!$schema->hasTable('announcements')&&!$schema->hasColumn('permissions',Permissions::CREATE_ANNOUNCEMENTS),'Migration rollback incomplete');
 echo "Passed {$checks} announcement assertions (isolated SQLite and private storage).\n";

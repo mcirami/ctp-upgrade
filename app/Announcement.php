@@ -9,7 +9,7 @@ class Announcement extends Model
     public const TYPES = ['new_offer', 'bonus', 'info', 'payments', 'other'];
 
     protected $fillable = [
-        'author_id', 'title', 'type', 'body', 'attachment_disk', 'attachment_path',
+        'author_id', 'title', 'type', 'body', 'body_format', 'attachment_disk', 'attachment_path',
         'attachment_name', 'attachment_mime', 'attachment_size', 'is_pinned',
     ];
 
@@ -17,6 +17,13 @@ class Announcement extends Model
         'is_pinned' => 'boolean',
         'attachment_size' => 'integer',
     ];
+
+    public function bodyHtml(): string
+    {
+        return $this->body_format === 'html'
+            ? \App\Support\AnnouncementText::sanitize($this->body)
+            : nl2br(e($this->body));
+    }
 
     public function author()
     {

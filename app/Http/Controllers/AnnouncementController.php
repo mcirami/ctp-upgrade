@@ -138,7 +138,22 @@ class AnnouncementController extends Controller
         return $request->validate([
             'title' => ['required', 'string', 'max:150'],
             'type' => ['required', Rule::in(Announcement::TYPES)],
-            'body' => ['required', 'string', 'max:10000'],
+            'body_format' => ['nullable', Rule::in(['plain', 'html'])],
+            'body' => ['bail', 'required', 'string', 'max:60000', function ($attribute, $value, $fail) use ($request) {
+                if (strlen($value) > 60000) {
+                    $fail('The announcement is too large. Reduce its text or formatting.');
+                    return;
+                }
+                $text = $request->input('body_format') === 'html'
+                    ? \App\Support\AnnouncementText::plain(\App\Support\AnnouncementText::sanitize($value))
+                    : $value;
+                if (preg_match('/^[\s\p{Z}\x{200B}\x{FEFF}]*$/u', $text)) {
+                    $fail('The announcement text is required.');
+                }
+                if (mb_strlen($text) > 10000) {
+                    $fail('The announcement text may not exceed 10,000 characters.');
+                }
+            }],
             'attachment' => ['nullable', 'file', 'max:10240'],
             'is_pinned' => ['nullable', 'boolean'],
             'remove_attachment' => [$editing ? 'nullable' : 'prohibited', 'boolean'],
@@ -150,7 +165,9 @@ class AnnouncementController extends Controller
         return [
             'title' => $data['title'],
             'type' => $data['type'],
-            'body' => $data['body'],
+            'body' => ($data['body_format'] ?? 'plain') === 'html'
+                ? \App\Support\AnnouncementText::sanitize($data['body']) : $data['body'],
+            'body_format' => $data['body_format'] ?? 'plain',
             'is_pinned' => $request->boolean('is_pinned'),
         ];
     }

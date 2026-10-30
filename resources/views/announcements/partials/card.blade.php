@@ -5,7 +5,7 @@
         <time datetime="{{ $announcement->created_at->toIso8601String() }}">{{ $announcement->created_at->format('M j, Y g:i A') }}</time>
     </div>
     <h3 class="value_span9">{{ $announcement->title }}</h3>
-    <p class="announcement-body">{{ $announcement->body }}</p>
+    <div class="announcement-body">{!! $announcement->bodyHtml() !!}</div>
     @if($announcement->hasAttachment())
         <p><a href="{{ route('announcements.attachment', $announcement) }}"><i class="fas fa-paperclip" aria-hidden="true"></i> Download {{ $announcement->attachment_name }}</a></p>
     @endif
