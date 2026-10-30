@@ -67,7 +67,7 @@ Route::group(['middleware' => 'legacy.auth'], function () {
             ->name('two-factor.disable');
     });
     Route::prefix('announcements')->name('announcements.')->group(function () {
-        Route::get('media/{filename}', [AnnouncementController::class, 'gif'])->where('filename', '[a-f0-9-]{36}\.gif')->name('gif');
+        Route::get('media/{filename}', [AnnouncementController::class, 'gif'])->where('filename', '[a-f0-9-]{36}\.(?:gif|jpg|png|webp)')->name('gif');
         Route::get('{announcement}/attachment', [AnnouncementController::class, 'download'])->name('attachment');
         Route::middleware(['role:0,1', 'permissions:' . Permissions::CREATE_ANNOUNCEMENTS])->group(function () {
             Route::get('/', [AnnouncementController::class, 'index'])->name('index');

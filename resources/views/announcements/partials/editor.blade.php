@@ -32,13 +32,13 @@
         </span>
     </div>
     <div class="announcement-gif-controls">
-        <button type="button" id="announcement-insert-gif" data-upload-url="{{ route('announcements.upload-gif') }}">Insert GIF</button>
-        <input type="file" id="announcement-gif-file" accept="image/gif,.gif" hidden>
-        <span id="announcement-gif-status" role="status" aria-live="polite">GIF files up to 10 MB.</span>
+        <button type="button" id="announcement-insert-gif" data-upload-url="{{ route('announcements.upload-gif') }}">Insert Image / GIF</button>
+        <input type="file" id="announcement-gif-file" accept="image/gif,image/jpeg,image/png,image/webp,.gif,.jpg,.jpeg,.png,.webp" hidden>
+        <span id="announcement-gif-status" role="status" aria-live="polite">GIF, JPEG, PNG, or WebP files up to 10 MB.</span>
     </div>
     <div id="announcement-editor-input"></div>
     <p id="announcement-text-help">Select text to change its font, size, or color. Maximum 10,000 characters.</p>
     <p id="announcement-text-error" role="alert" hidden></p>
 </div>
 <script src="{{ asset('vendor/quill/quill.js') }}"></script>
-<script src="{{ asset('js/announcement-editor.js').'?v=2' }}"></script>
+<script src="{{ asset('js/announcement-editor.js').'?v=3' }}"></script>

@@ -17,13 +17,13 @@
         theme: 'snow',
         modules: {
             toolbar: '#announcement-toolbar',
-            // All images must go through the validated GIF upload endpoint.
+            // All images must go through the validated image upload endpoint.
             uploader: { mimetypes: [] }
         },
         formats: ['font', 'size', 'color', 'background', 'bold', 'italic', 'underline', 'strike', 'image']
     });
     editor.clipboard.addMatcher('IMG', function (node, delta) {
-        return /^\/announcements\/media\/[a-f0-9-]{36}\.gif$/.test(node.getAttribute('src') || '')
+        return /^\/announcements\/media\/[a-f0-9-]{36}\.(?:gif|jpg|png|webp)$/.test(node.getAttribute('src') || '')
             ? delta : new (Quill.import('delta'))();
     });
     if (format.value === 'html') {
@@ -49,13 +49,33 @@
         }
     });
 
+    // Toolbar controls should not collapse the editor's native selection when
+    // clicked. Keep a range for keyboard users who move focus into the toolbar.
+    var savedSelection = null;
+    editor.on('selection-change', function (range) {
+        if (range) savedSelection = { index: range.index, length: range.length };
+    });
+    var toolbar = document.getElementById('announcement-toolbar');
+    toolbar.addEventListener('mousedown', function (event) {
+        if (event.target.closest('button, .ql-picker-label, .ql-picker-item')) {
+            event.preventDefault();
+        }
+    });
+    function restoreSelection() {
+        if (savedSelection) editor.setSelection(savedSelection.index, savedSelection.length, 'silent');
+    }
+    toolbar.addEventListener('change', restoreSelection, true);
+    toolbar.addEventListener('click', function (event) {
+        if (event.target.closest('button, .ql-picker-item')) restoreSelection();
+    }, true);
+
     var gifButton = document.getElementById('announcement-insert-gif');
     var gifInput = document.getElementById('announcement-gif-file');
     var gifStatus = document.getElementById('announcement-gif-status');
     var uploading = false;
     var insertionIndex = 0;
     gifButton.addEventListener('click', function () {
-        var selection = editor.getSelection();
+        var selection = editor.getSelection() || savedSelection;
         insertionIndex = selection ? selection.index : editor.getLength() - 1;
         gifInput.click();
     });
@@ -64,13 +84,13 @@
         if (!file) return;
         gifInput.value = '';
         if (file.size > 10 * 1024 * 1024) {
-            gifStatus.textContent = 'Please choose a GIF smaller than 10 MB.';
+            gifStatus.textContent = 'Please choose an image smaller than 10 MB.';
             return;
         }
         uploading = true;
         gifButton.disabled = true;
         editor.enable(false);
-        gifStatus.textContent = 'Uploading GIF…';
+        gifStatus.textContent = 'Uploading image…';
         try {
             var data = new FormData();
             data.append('gif', file);
@@ -80,11 +100,11 @@
                 body: data
             });
             var result = await response.json();
-            if (!response.ok) throw new Error(result.errors && result.errors.gif ? result.errors.gif[0] : 'The GIF could not be uploaded. Please try again.');
+            if (!response.ok) throw new Error(result.errors && result.errors.gif ? result.errors.gif[0] : 'The image could not be uploaded. Please try again.');
             editor.enable(true);
             editor.insertEmbed(insertionIndex, 'image', result.url, 'user');
             editor.setSelection(insertionIndex + 1, 0, 'silent');
-            gifStatus.textContent = 'GIF inserted. Save the announcement to publish it.';
+            gifStatus.textContent = 'Image inserted. Save the announcement to publish it.';
         } catch (uploadError) {
             gifStatus.textContent = uploadError instanceof SyntaxError ? 'Upload failed. Refresh the page and try again.' : uploadError.message;
         } finally {
@@ -101,7 +121,7 @@
     textarea.form.addEventListener('submit', function (event) {
         if (uploading) {
             event.preventDefault();
-            gifStatus.textContent = 'Please wait for the GIF upload to finish before saving.';
+            gifStatus.textContent = 'Please wait for the image upload to finish before saving.';
             return;
         }
         var text = editor.getText().replace(/\n$/, '');

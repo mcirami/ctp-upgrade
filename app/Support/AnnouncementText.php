@@ -18,10 +18,10 @@ class AnnouncementText
         }
 
         $clean = $purifier->purify($html);
-        // Only our authenticated GIF endpoint may be embedded; no external tracking
+        // Only our authenticated image endpoint may be embedded; no external tracking
         // images, data URLs, or arbitrary local endpoints.
         return preg_replace_callback('/<img\b[^>]*>/i', function ($match) {
-            if (preg_match('~\bsrc="(/announcements/media/[a-f0-9-]{36}\.gif)"~', $match[0])) {
+            if (preg_match('~\bsrc="(/announcements/media/[a-f0-9-]{36}\.(?:gif|jpg|png|webp))"~', $match[0])) {
                 return $match[0];
             }
             return '';

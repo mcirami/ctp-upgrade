@@ -135,29 +135,31 @@ class AnnouncementController extends Controller
 
     public function uploadGif(Request $request)
     {
-        $request->validate(['gif' => ['required', 'file', 'mimetypes:image/gif', 'max:10240']]);
+        // Keep the original field name compatible with already-open editor pages.
+        $request->validate(['gif' => ['required', 'file', 'mimetypes:image/gif,image/jpeg,image/png,image/webp', 'max:10240']]);
         $file = $request->file('gif');
         $dimensions = @getimagesize($file->getRealPath());
-        if (!$dimensions || $dimensions[2] !== IMAGETYPE_GIF) {
-            throw \Illuminate\Validation\ValidationException::withMessages(['gif' => 'Please choose a valid GIF image.']);
+        $extensions = [IMAGETYPE_GIF => 'gif', IMAGETYPE_JPEG => 'jpg', IMAGETYPE_PNG => 'png', IMAGETYPE_WEBP => 'webp'];
+        if (!$dimensions || !isset($extensions[$dimensions[2]])) {
+            throw \Illuminate\Validation\ValidationException::withMessages(['gif' => 'Please choose a valid GIF, JPEG, PNG, or WebP image.']);
         }
-        $filename = Str::uuid().'.gif';
+        $filename = Str::uuid().'.'.$extensions[$dimensions[2]];
         // Store the original bytes so animated GIFs retain all frames.
         $path = $file->storeAs('announcements/media', $filename, 'local');
-        abort_unless($path, 500, 'The GIF could not be uploaded. Please try again.');
+        abort_unless($path, 500, 'The image could not be uploaded. Please try again.');
 
         return response()->json(['url' => route('announcements.gif', ['filename' => $filename], false)], 201);
     }
 
     public function gif(string $filename): StreamedResponse
     {
-        abort_unless(preg_match('/^[a-f0-9-]{36}\.gif$/D', $filename), 404);
+        abort_unless(preg_match('/^[a-f0-9-]{36}\.(gif|jpg|png|webp)$/D', $filename), 404);
         $disk = Storage::disk('local');
         $path = 'announcements/media/'.$filename;
         abort_unless($disk->exists($path), 404);
 
         return $disk->response($path, $filename, [
-            'Content-Type' => 'image/gif',
+            'Content-Type' => ['gif' => 'image/gif', 'jpg' => 'image/jpeg', 'png' => 'image/png', 'webp' => 'image/webp'][pathinfo($filename, PATHINFO_EXTENSION)],
             'X-Content-Type-Options' => 'nosniff',
             'Cache-Control' => 'private, max-age=86400',
         ], 'inline');

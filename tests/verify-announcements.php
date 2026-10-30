@@ -166,6 +166,29 @@ verifyAnnouncement(str_contains($gifForm,$gifFilename) && str_contains($gifForm,
 foreach (['https://example.com/tracking.gif','data:image/gif;base64,AAAA','javascript:alert(1)','//example.com/a.gif','/announcements/media/../../private.gif'] as $src) {
     verifyAnnouncement(!str_contains(App\Support\AnnouncementText::sanitize('<p><img src="'.$src.'"></p>'),'<img'),'Untrusted inline image survived sanitization');
 }
+// Still images use the same upload/save/render path without trusting extensions.
+foreach (['png'=>'image/png', 'jpg'=>'image/jpeg', 'webp'=>'image/webp'] as $extension=>$mime) {
+    $fixture=imagecreatetruecolor(2,2);
+    $fixturePath=$temp.'/still.'.$extension;
+    if ($extension==='png') imagepng($fixture,$fixturePath);
+    elseif ($extension==='jpg') imagejpeg($fixture,$fixturePath);
+    else imagewebp($fixture,$fixturePath);
+    $imageRequest=Request::create('/announcements/media','POST',[],[],['gif'=>new UploadedFile($fixturePath,'misleading.gif',$mime,null,true)]);
+    $imageRequest->setLaravelSession($session);$app->instance('request',$imageRequest);
+    $imageResponse=$controller->uploadGif($imageRequest);$imageUrl=$imageResponse->getData(true)['url'];
+    verifyAnnouncement(str_ends_with($imageUrl,'.'.$extension),'Image extension did not match content');
+    verifyAnnouncement($controller->gif(basename($imageUrl))->headers->get('content-type')===$mime,'Incorrect still-image MIME type');
+    verifyAnnouncement(Storage::disk('local')->get('announcements/media/'.basename($imageUrl))===file_get_contents($fixturePath),'Still image bytes changed');
+    $imageBody='<p><img src="'.$imageUrl.'" alt="Example"></p>';
+    $imageSave=Request::create('/announcements/'.$announcement->id,'PUT',['title'=>'Image announcement','type'=>'info','body'=>$imageBody,'body_format'=>'html']);
+    $imageSave->setLaravelSession($session);$app->instance('request',$imageSave);$controller->update($imageSave,$announcement);$announcement->refresh();
+    verifyAnnouncement(str_contains($announcement->bodyHtml(),$imageUrl),'Still image lost on save/render');
+    $imageForm=view('announcements.partials.form',['announcement'=>$announcement,'action'=>route('announcements.update',$announcement),'submitLabel'=>'Save','errors'=>new Illuminate\Support\ViewErrorBag()])->render();
+    verifyAnnouncement(str_contains($imageForm,$imageUrl),'Still image lost in edit form');
+    $imageRoute=app('router')->getRoutes()->match(Request::create($imageUrl,'GET'));
+    verifyAnnouncement(in_array('legacy.auth',$imageRoute->gatherMiddleware()),'Still image route is public');
+    unlink($fixturePath);
+}
 file_put_contents($temp.'/fake.gif','not an image');
 foreach (['fake.gif','oversized.gif'] as $invalidGif) {
     if ($invalidGif==='oversized.gif') file_put_contents($temp.'/'.$invalidGif,$gifBytes.str_repeat('x',10240*1024));
