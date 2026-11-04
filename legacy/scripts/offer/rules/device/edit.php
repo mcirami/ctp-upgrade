@@ -23,7 +23,16 @@ if(isset($_POST["ruleData"]))
 
     $edit = new \LeadMax\TrackYourStats\Offer\Rules\Handlers\Device($ruleData->ruleID);
     
-    $edit->updateRule($ruleData, $deviceList);
+    if (!\LeadMax\TrackYourStats\Offer\RepHasOffer::noneRepOwnOffer($edit->offerID, \LeadMax\TrackYourStats\System\Session::userID())) {
+        http_response_code(403);
+        exit("doesn't own offer");
+    }
+    try {
+        $edit->updateRule($ruleData, $deviceList);
+    } catch (InvalidArgumentException $e) {
+        http_response_code(422);
+        exit($e->getMessage());
+    }
     die("SUCCESS");
 }
 

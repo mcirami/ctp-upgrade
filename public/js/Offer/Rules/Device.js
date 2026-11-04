@@ -1,109 +1,44 @@
 class deviceEdit {
     constructor(ruleID) {
-        this.ruleID = ruleID;
+        this.ruleID = String(ruleID);
     }
 
     loadRule() {
-        this.loadDevices();
-
-        this.getDeviceRuleInfo();
-
         $("#deviceRuleTitle").text("Edit Rule");
-
         $("#deviceRuleID").val(this.ruleID);
         $("#deviceCreateButton").hide();
-        $("#deviceUpdateButton").show();
+        const update = $("#deviceUpdateButton").show().prop("disabled", true);
+        update.off("click").on("click", () => this.updateRule());
 
-        $("#deviceUpdateButton").click(function () {
-            var geo = new deviceEdit(this.ruleID);
-            geo.updateRule();
-        });
+        $.getJSON("/scripts/offer/rules/device/edit.php", {ruleID: this.ruleID, ruleInfo: 1})
+            .done(rule => {
+                if ($("#deviceRuleID").val() !== this.ruleID) return;
+                rule.devices.forEach(addDevice);
+                $("#deviceRuleName").val(rule.name);
+                $("#deviceRedirectOffer").val(rule.redirectOffer);
+                $("#deviceIsAllowed").prop("checked", Number(rule.deny) === 1);
+                $("#deviceIsActive").prop("checked", Number(rule.is_active) === 1);
+                $("#capIsActive").prop("checked", Number(rule.capStatus) === 1);
+                $("#deviceCap").val(rule.capAmount);
+                update.prop("disabled", false);
+            })
+            .fail(() => alert("Could not load the device rule."));
     }
 
     updateRule() {
-        if (
-            typeof confirm === "function" &&
-            !confirm("Do you want to overwrite the existing rule you dipshit?")
-        ) {
-            return;
-        }
-
-        var ruleData = {
+        if (!hasSelectedDevices() || !confirm("Overwrite the existing device rule?")) return;
+        const ruleData = {
             name: $("#deviceRuleName").val(),
-            ruleID: $("#deviceRuleID").val(),
+            ruleID: this.ruleID,
             redirectOffer: $("#deviceRedirectOffer").val(),
-            deny: document.getElementById("deviceIsAllowed").checked,
-            is_active: document.getElementById("deviceIsActive").checked,
-            capAmount: document.getElementById("deviceCap").value,
-            capStatus: document.getElementById("capIsActive").checked,
+            deny: $("#deviceIsAllowed").is(":checked"),
+            is_active: $("#deviceIsActive").is(":checked"),
+            capAmount: $("#deviceCap").val(),
+            capStatus: $("#capIsActive").is(":checked")
         };
-        //console.log(ruleData);
-        $.ajax({
-            type: "POST",
-            url: "/scripts/offer/rules/device/edit.php",
-            data: {
-                data: parseDevices("deviceToAdd", true),
-                ruleData: JSON.stringify(ruleData),
-                ruleID: ruleData["ruleID"],
-            },
-            cache: false,
-            traditional: true,
-            success: function (result) {
-                //console.log(result);
-                $("#deviceModal").modal("hide");
-                location.reload();
-            },
-            error: function (result) {
-                alert(result);
-            },
-        });
-    }
-
-    loadDevices() {
-        $.ajax({
-            type: "GET",
-            url: "/scripts/offer/rules/device/edit.php",
-            data: "&ruleID=" + this.ruleID + "&getDevices=1",
-            cache: false,
-
-            success: function (result) {
-                var parsed = JSON.parse(result);
-
-                console.log("Devices:" + parsed);
-
-                for (var i = 0; i < parsed.length; i++) addDevice(parsed[i]);
-            },
-        });
-    }
-
-    getDeviceRuleInfo() {
-        $.ajax({
-            type: "GET",
-            url: "/scripts/offer/rules/device/edit.php",
-            data: "&ruleID=" + this.ruleID + "&ruleInfo=1",
-            cache: false,
-
-            success: function (result) {
-                console.log(result);
-                var parsed = JSON.parse(result);
-
-                $("#deviceRuleName").val(parsed["name"]);
-
-                $(
-                    '#deviceRedirectOffer option[value="' +
-                        parsed["redirectOffer"] +
-                        '"]'
-                ).prop("selected", true);
-                console.log(parsed);
-
-                if (parsed["deny"] === 1)
-                    $("#deviceIsAllowed").attr("checked", true);
-                else $("#deviceIsAllowed").attr("checked", false);
-
-                if (parsed["is_active"] === 1)
-                    $("#deviceIsActive").attr("checked", true);
-                else $("#deviceIsActive").attr("checked", false);
-            },
-        });
+        $.post("/scripts/offer/rules/device/edit.php", {
+            data: parseDevices("deviceToAdd", true),
+            ruleData: JSON.stringify(ruleData)
+        }).done(() => location.reload()).fail(xhr => alert(xhr.responseText || "Could not save the device rule."));
     }
 }

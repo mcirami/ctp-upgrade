@@ -10,7 +10,9 @@ namespace LeadMax\TrackYourStats\Offer\Rules;
 
 
 use GeoIp2\Database\Reader;
-use MaxMind\Db\Reader\InvalidDatabaseException;
+use GeoIp2\ProviderInterface;
+use Carbon\CarbonImmutable;
+use Illuminate\Support\Facades\DB;
 
 class Geo implements Rule
 {
@@ -259,40 +261,25 @@ class Geo implements Rule
     );
 
 
-    // place to store the MaxMind db reader we instantiate in the constructor
-    private $geoReader;
-
-    // used to store the found record based on the IP Address of incoming click
-    private $record;
-
-    // When we find our record, we getISOCode() and store into here
-    private $countryISO;
-
-    // rules that were passed from the Rules class, which that class finds them based on the offerid passed to the Rules class..
-    private $rules = array();
-
-
-    private $filteredRules = array();
-
+    private $ip;
+    private $reader;
+    private $filteredRules = [];
     public $redirectOffer = 0;
 
-
-	/**
-	 * @throws InvalidDatabaseException
-	 */
-	function __construct($rules)
+    public function __construct($rows, $ip = null, ?ProviderInterface $reader = null)
     {
-        // passed rules from Rules class..
-        $this->rules = $rules;
-
-        // instantiate our new MaxMind db Reader
-        $this->geoReader = new Reader(env("GEO_IP_DATABASE"));
-
-        // find ISO Code with current incoming click traffic
-        $this->getISOCode();
-
-        $this->processRules();
-
+        $this->ip = $ip;
+        $this->reader = $reader;
+        foreach ($rows as $row) {
+            if ($row['type'] !== 'geo' || !$row['is_active']) {
+                continue;
+            }
+            $id = $row['idrule'];
+            $this->filteredRules[$id]['rule'] = $row;
+            $this->filteredRules[$id]['countries'][$row['country_code'] ?? ''] =
+                $row['cap_status'] ? (int) $row['cap'] : null;
+        }
+        ksort($this->filteredRules, SORT_NUMERIC);
     }
 
     public function getRedirectOffer()
@@ -302,113 +289,66 @@ class Geo implements Rule
 
     public function checkRules()
     {
-        return $this->checkGeoRules();
+        if (!$this->filteredRules) {
+            return true;
+        }
+
+        $this->reader ??= new Reader(env('GEO_IP_DATABASE'));
+        $country = $this->countryForIp($this->ip);
+
+        $conversionCount = null;
+        foreach ($this->filteredRules as $entry) {
+            $rule = $entry['rule'];
+            $matches = array_key_exists($country, $entry['countries']);
+            if ($rule['deny'] ? $matches : !$matches) {
+                $this->redirectOffer = $rule['redirect_offer'];
+                return false;
+            }
+            $cap = $entry['countries'][$country] ?? null;
+            if ($cap !== null) {
+                $conversionCount ??= $this->dailyConversions($rule['offer_idoffer'], $country);
+                if ($conversionCount >= $cap) {
+                    $this->redirectOffer = $rule['redirect_offer'];
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
-
-    private function getISOCode()
+    private function dailyConversions($offerId, $country): int
     {
+        $today = CarbonImmutable::today('America/New_York');
+        $conversions = DB::table('conversions')
+            ->join('clicks', 'clicks.idclicks', '=', 'conversions.click_id')
+            ->where('clicks.offer_idoffer', $offerId)
+            ->where('conversions.timestamp', '>=', $today->utc())
+            ->where('conversions.timestamp', '<', $today->addDay()->utc())
+            ->selectRaw('clicks.country_code, clicks.ip_address, COUNT(*) AS total')
+            ->groupBy('clicks.country_code', 'clicks.ip_address')
+            ->get();
 
-	    if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-		    $ip = $_SERVER['HTTP_CLIENT_IP'];
-		    if ( str_contains( $ip, ',' ) ) {
-			    $ip = substr($ip, 0, strpos($ip, ","));
-		    }
-	    } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-		    $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-		    if ( str_contains( $ip, ',' ) ) {
-			    $ip = substr($ip, 0, strpos($ip, ","));
-		    }
-	    } else {
-		    $ip = $_SERVER['REMOTE_ADDR'];
-		    if ( str_contains( $ip, ',' ) ) {
-			    $ip = substr($ip, 0, strpos($ip, ","));
-		    }
-	    }
+        $count = 0;
+        foreach ($conversions as $group) {
+            $code = $group->country_code;
+            if (!$code || $code === 'UNKNOWN') {
+                $code = $this->countryForIp($group->ip_address);
+            }
+            if ($code === $country) {
+                $count += $group->total;
+            }
+        }
+        return $count;
+    }
 
+    private function countryForIp($ip): string
+    {
         try {
-            //trys to get their iso code and postal
-            $this->record = $this->geoReader->city($ip);
-            $this->countryISO = $this->record->country->isoCode;
-
-        } catch (\Exception $e) // if their ip wasn't in the db, set default values
-        {
-            $this->countryISO = "UNKNOWN";
+            return $this->reader->city((string) $ip)->country->isoCode ?: 'UNKNOWN';
+        } catch (\Exception $e) {
+            return 'UNKNOWN';
         }
     }
-
-
-    private function checkGeoRules()
-    {
-
-        if (empty($this->filteredRules)) {
-			return true;
-        }
-
-        foreach ($this->filteredRules as $rule) {
-
-            // if the rule is to not allow these countries
-            if ($rule["deny"] == 1) {
-                foreach ($rule["country_list"] as $country_code) {
-
-                    if ($this->countryISO == $country_code) {
-                        $this->redirectOffer = $rule["redirect_offer"];
-
-	                    return false;
-                    }
-                }
-
-                // not in list
-	            return true;
-            } else {
-                foreach ($rule["country_list"] as $country_code) {
-                    if ($this->countryISO == $country_code) {
-	                    return true;
-                    }
-                }
-
-                //if the country wasn't in the allowed list...
-                $this->redirectOffer = $rule["redirect_offer"];
-
-	            return false;
-            }
-
-        }
-
-	    return true;
-
-    }
-
-
-    private function processRules()
-    {
-
-
-        // loops through rules and finds allowed and not allowed countries.
-        foreach ($this->rules as $key => $val) {
-            //is it a geo rule and active?
-            if ($val["type"] == "geo" && $val["is_active"] == 1) {
-
-                if (!isset($this->filteredRules[$val["idrule"]])) {
-                    $this->filteredRules[$val["idrule"]] = array();
-                    $this->filteredRules[$val["idrule"]]["country_list"] = [$val["country_code"]];
-                    $this->filteredRules[$val["idrule"]]["redirect_offer"] = $val["redirect_offer"];
-                    $this->filteredRules[$val["idrule"]]["deny"] = $val["deny"];
-
-                } else {
-                    if (!in_array($val["country_code"], $this->filteredRules[$val["idrule"]]["country_list"])) {
-                        $this->filteredRules[$val["idrule"]]["country_list"][] = $val["country_code"];
-                    }
-
-                }
-
-
-            }
-        }
-
-
-    }
-
 
 //prints all countries as a select box, going to add another to print as table for editing and updating offers..
     static

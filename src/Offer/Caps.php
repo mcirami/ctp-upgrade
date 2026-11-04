@@ -13,6 +13,7 @@ use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use PDO;
 use Detection\MobileDetect;
+use LeadMax\TrackYourStats\Offer\Rules\Device;
 
 class Caps
 {
@@ -437,10 +438,9 @@ class Caps
         $active = $rule["cap_status"];
         $cap = $rule["cap"];
         $offerId = intval($this->offerID);
-        $type = $rule["device_type"];
 
         if ($active) {
-            $this->cap_rules["time_interval"] = self::daily;
+            $this->cap_rules = ["time_interval" => self::daily, "type" => self::conversions];
             $time = $this->calculateTimeInterval();
 
             $mobileDetect = new MobileDetect();
@@ -452,14 +452,11 @@ class Caps
 
             $count = 0;
             foreach ($deviceConversionsToday as $conversion) {
-                if ($type == "mobile") {
-                    if ($mobileDetect->isMobile($conversion->browser_agent)) {
-                        $count++;
-                    }
-                } else {
-                    if (!$mobileDetect->isMobile($conversion->browser_agent)) {
-                        $count++;
-                    }
+                $agent = (string) $conversion->browser_agent;
+                $mobileDetect->setHttpHeaders(['HTTP_USER_AGENT' => $agent]);
+                $mobileDetect->setUserAgent($agent);
+                if (array_intersect(Device::categories($mobileDetect), $rule['devices'])) {
+                    $count++;
                 }
             }
 

@@ -8,14 +8,10 @@
 
 namespace LeadMax\TrackYourStats\Offer;
 
-use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use LeadMax\TrackYourStats\Offer\Rules\Device;
 use LeadMax\TrackYourStats\Offer\Rules\Geo;
 use LeadMax\TrackYourStats\Offer\Rules\NoneUnique;
 use PDO;
-use LeadMax\TrackYourStats\Clicks\ClickGeo;
 
 class Rules
 {
@@ -162,70 +158,27 @@ class Rules
     }
 
 
-    public function checkAllRules()
+    public function checkAllRules(array $visitedOffers = [])
     {
 
         if (empty($this->rules)) {
             return true;
         }
 
-        /*foreach($this->rules as $rule) {
-            if ($rule['cap_status']) {
-                $cap = $rule['cap'];
-                $countryRule = $rule['country_code'];
-                $offerId = $rule['offer_idoffer'];
-
-                $tz = 'America/New_York';
-                $timeNow = \Illuminate\Support\Carbon::today($tz)->format('Y-m-d');
-                $from = $timeNow . " 00:00:00";
-                $to = $timeNow . " 23:59:59";
-
-                $carbonFrom = Carbon::createFromFormat('Y-m-d H:i:s', $from, $tz);
-                $carbonTo = Carbon::createFromFormat('Y-m-d H:i:s', $to, $tz);
-                $dateFrom = $carbonFrom->setTimezone("UTC");
-                $dateTo = $carbonTo->setTimezone("UTC");
-
-                $conversions = DB::table('conversions')
-                ->whereBetween('first_timestamp', [$dateFrom, $dateTo ])
-                ->join('clicks', 'clicks.idclicks', '=', 'conversions.click_id')
-                ->where('clicks.offer_idoffer', '=', $offerId)
-				->select('ip_address', 'country_code')->get();
-
-                if (count($conversions) > 0) {
-
-                    $count = 0;
-                    foreach($conversions as $conversion) {
-                        if ($conversion->country_code) {
-                            if ($conversion->country_code != "UNKNOWN" &&
-                                $conversion->country_code == $countryRule &&
-                                $clickCountry == $conversion->country_code) {
-                                ++$count;
-                            }
-                        } else {
-                            $geo = preg_replace('/[^a-zA-Z]/', '', ClickGeo::findGeo($conversion['ip_address']));
-                            if ($geo['isoCode'] == $countryRule && $clickCountry == $geo['isoCode']) {
-                                ++$count;
-                            }
-                        }
-                    }
-
-                    if ($count >= $cap) {
-                        $url = $this->buildRedirectUrl($rule['redirect_offer']);
-                        send_to($url); 
-                    };
-                }
-            }
-        }*/
-
+        $visitedOffers[$this->offid] = true;
         foreach ($this->ruleObjs as $key => $rule) {
 
 			$ruleCheck = $rule->checkRules();
             if (!$ruleCheck) {
+                if (!$rule->redirectOffer || isset($visitedOffers[$rule->redirectOffer])) {
+                    return false;
+                }
                 $newRules = new Rules($rule->redirectOffer, $this->ip);
-                if ($newRules->checkAllRules()) {
+                if ($newRules->checkAllRules($visitedOffers)) {
                     $url = $this->buildRedirectUrl($rule->redirectOffer);
                     send_to($url);
                 }
+                return false;
             }
         }
 
@@ -235,14 +188,10 @@ class Rules
 
     private function addAllRules()
     {
-        // none unique
-        $this->addToList(new NoneUnique($this->rules));
-
-        // geo
-        $this->addToList(new Geo($this->rules));
-
-        // device
+        // Eligibility rules choose a fallback before repeat-click rotation.
         $this->addToList(new Device($this->rules));
+        $this->addToList(new Geo($this->rules, $this->ip));
+        $this->addToList(new NoneUnique($this->rules));
     }
 
 
@@ -415,7 +364,9 @@ class Rules
     function getRulesQuery()
     {
         $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
-        $sql = "SELECT * FROM rule
+        $sql = "SELECT rule.*, geo_rule.*, country_list.*, device_rule.*, device_list.*,
+                       rule.cap AS device_cap, rule.cap_status AS device_cap_status
+                FROM rule
 
                 LEFT JOIN geo_rule on geo_rule.rule_idrule = rule.idrule
                 LEFT OUTER JOIN country_list ON country_list.geo_rule_idgeo_rule = geo_rule.idgeo_rule
@@ -460,32 +411,9 @@ class Rules
 
     private function buildRedirectUrl($offid)
     {
-        $url = "http://".$_SERVER["HTTP_HOST"];
-
-        $url .= "/?";
-
-        $first = true;
-        foreach ($_GET as $key => $val) {
-
-            if ($key == "offerid") {
-                if ($first) {
-                    $url .= "{$key}={$offid}";
-                } else {
-                    $url .= "&{$key}={$offid}";
-                }
-            } else {
-                if ($first) {
-                    $url .= "{$key}={$val}";
-                } else {
-                    $url .= "&{$key}={$val}";
-                }
-
-            }
-
-            $first = false;
-        }
-
-        return $url;
+        $query = $_GET;
+        $query['offerid'] = $offid;
+        return '/?' . http_build_query($query, '', '&', PHP_QUERY_RFC3986);
 
     }
 

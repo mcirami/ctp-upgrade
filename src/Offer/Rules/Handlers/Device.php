@@ -8,6 +8,7 @@
  */
 
 use PDO;
+use LeadMax\TrackYourStats\Offer\Rules\Device as DeviceRule;
 
 class Device
 {
@@ -58,9 +59,9 @@ class Device
 
             $this->deny = $args[3];
 
-            $this->capAmount = $args[4];
+            $this->capAmount = (int) $args[4];
 
-            $this->capStatus = $args[5];
+            $this->capStatus = (int) $args[5];
             
 
             for ($i = 6; $i < count($args); $i++) {
@@ -78,7 +79,7 @@ class Device
     }
 
 
-    public function updateRule($ruleData, $countryList)
+    public function updateRule($ruleData, $deviceList)
     {
         $ruleData->ruleID = (int)$ruleData->ruleID;
         $ruleData->name = trim($ruleData->name);
@@ -107,14 +108,14 @@ class Device
                     $deviceRuleID = (int) $db->lastInsertId();
                 }
 
-                $this->replaceDeviceList($db, $deviceRuleID, $countryList);
+                $this->replaceDeviceList($db, $deviceRuleID, $deviceList);
             }
 
 
             $db->commit();
         } catch (\Exception $e) {
             $db->rollBack();
-            die($e);
+            throw $e;
         }
 
 
@@ -123,7 +124,7 @@ class Device
     private function updateBaseRule($db, $ruleID, $ruleData)
     {
         $sql = "UPDATE rule
-                SET rule.name = :name, rule.redirect_offer = :redirect_offer, rule.is_active = :is_active, rule.deny = :deny, rule.cap = :cap, rule.cap_status = :capStatus
+                SET name = :name, redirect_offer = :redirect_offer, is_active = :is_active, deny = :deny, cap = :cap, cap_status = :capStatus
                 WHERE rule.idrule = :ruleID";
 
         $prep = $db->prepare($sql);
@@ -139,6 +140,9 @@ class Device
 
     private function replaceDeviceList($db, $deviceRuleID, $deviceList)
     {
+        if (!$deviceList || !is_array($deviceList)) {
+            throw new \InvalidArgumentException('Select at least one device.');
+        }
         $sql = "DELETE FROM device_list WHERE device_rule_iddevice_rule = :deviceRuleID";
         $prep = $db->prepare($sql);
         $prep->bindParam(":deviceRuleID", $deviceRuleID);
@@ -156,16 +160,15 @@ class Device
                 $deviceList[$i] = reset($deviceList[$i]);
             }
 
+            if (!is_string($deviceList[$i]) || !isset(DeviceRule::OPTIONS[$deviceList[$i]])) {
+                throw new \InvalidArgumentException('Unknown device selection.');
+            }
             $questionMarks[] = "(?,?)";
             $vals = array();
             $vals[] = $deviceList[$i];
             $vals[] = $deviceRuleID;
 
             $insertValues = array_merge($insertValues, $vals);
-        }
-
-        if (empty($questionMarks)) {
-            return;
         }
 
         $sql = 'INSERT INTO device_list (device_type,  device_rule_iddevice_rule) VALUES ' . implode(',',
@@ -197,6 +200,7 @@ class Device
             'redirectOffer' => $rule["redirect_offer"],
             'is_active'     => $rule["is_active"],
             'deny'          => $rule["deny"],
+            'devices'       => array_values(array_filter(array_column($this->rules, "device_type"))),
             'capAmount'     => $rule["cap"],
             'capStatus'     => $rule["cap_status"]
         ];
@@ -239,7 +243,7 @@ class Device
     }
 
 
-    public function createRule()
+    public function createRule($isActive = 1)
     {
 
         $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
@@ -251,19 +255,20 @@ class Device
 
             if ($ruleID > 0) {
                 $sql = "UPDATE rule
-                        SET name = :name, redirect_offer = :redirect_offer, deny = :deny, cap = :cap, cap_status = :capStatus
+                        SET name = :name, redirect_offer = :redirect_offer, deny = :deny, cap = :cap, cap_status = :capStatus, is_active = :is_active
                         WHERE idrule = :ruleID";
 
                 $prep = $db->prepare($sql);
+                $prep->bindValue(":is_active", (int) $isActive);
                 $prep->bindParam(":name", $this->ruleName);
                 $prep->bindParam(":redirect_offer", $this->redirectOffer);
                 $prep->bindParam(":deny", $this->deny);
-                $prep->bindParam(":cap", $this->capAmount);
-                $prep->bindParam(":capStatus", $this->capStatus);
+                $prep->bindValue(":cap", $this->capAmount, PDO::PARAM_INT);
+                $prep->bindValue(":capStatus", $this->capStatus, PDO::PARAM_INT);
                 $prep->bindParam(":ruleID", $ruleID);
                 $prep->execute();
             } else {
-                $sql = "INSERT INTO rule (name, offer_idoffer, type, redirect_offer, deny, cap, cap_status) VALUES(:name, :offerID, :type, :redirect_offer, :deny, :cap, :cap_status)";
+                $sql = "INSERT INTO rule (name, offer_idoffer, type, redirect_offer, deny, cap, cap_status, is_active) VALUES(:name, :offerID, :type, :redirect_offer, :deny, :cap, :cap_status, :is_active)";
 
                 $prep = $db->prepare($sql);
                 $prep->bindParam(":name", $this->ruleName);
@@ -271,8 +276,9 @@ class Device
                 $prep->bindParam(":type", $this->type);
                 $prep->bindParam(":redirect_offer", $this->redirectOffer);
                 $prep->bindParam(":deny", $this->deny);
-                $prep->bindParam(":cap", $this->capAmount);
-                $prep->bindParam(":cap_status", $this->capStatus);
+                $prep->bindValue(":cap", $this->capAmount, PDO::PARAM_INT);
+                $prep->bindValue(":cap_status", $this->capStatus, PDO::PARAM_INT);
+                $prep->bindValue(":is_active", (int) $isActive);
                 $prep->execute();
 
                 $ruleID = (int) $db->lastInsertId();
@@ -291,40 +297,12 @@ class Device
                 $deviceRuleID = (int) $db->lastInsertId();
             }
 
-            $sql = "DELETE FROM device_list WHERE device_rule_iddevice_rule = :deviceRuleID";
-            $prep = $db->prepare($sql);
-            $prep->bindParam(":deviceRuleID", $deviceRuleID);
-            $prep->execute();
-
-
-            $insertValues = array();
-            //start at two because thats where country arrays are
-            for ($i = 0; $i < count($this->deviceList); $i++) {
-
-
-                $questionMarks[] = "(?,?)";
-                $vals = array();
-                $vals[] = $this->deviceList[$i];
-                $vals[] = $deviceRuleID;
-
-                $insertValues = array_merge($insertValues, $vals);
-
-
-            }
-
-
-            $sql = 'INSERT INTO device_list (device_type, device_rule_iddevice_rule) VALUES '.implode(',',
-                    $questionMarks);
-
-            $prep = $db->prepare($sql);
-
-            $prep->execute($insertValues);
-
+            $this->replaceDeviceList($db, $deviceRuleID, $this->deviceList);
 
             $db->commit();
         } catch (\Exception $e) {
             $db->rollBack();
-            die($e);
+            throw $e;
         }
 
 

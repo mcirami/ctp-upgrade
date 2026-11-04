@@ -41,7 +41,10 @@ class NoneUnique implements Rule
     {
 
 
-        $offerLogCookie = new Cookie($_GET["repid"], $_GET["offerid"]);
+        if (!$this->filteredRules) {
+            return true;
+        }
+        $offerLogCookie = new Cookie($_GET["repid"], reset($this->filteredRules)["offer_id"]);
 
         if ($offerLogCookie->isUnique()) {
             return true;

@@ -23,7 +23,12 @@ if (!\LeadMax\TrackYourStats\Offer\RepHasOffer::noneRepOwnOffer($handler->offerI
 }
 
 
-$handler->createRule();
+try {
+    $handler->createRule($_POST['isActive'] ?? 1);
+} catch (InvalidArgumentException $e) {
+    http_response_code(422);
+    exit($e->getMessage());
+}
 
 
 

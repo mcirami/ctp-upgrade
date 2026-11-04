@@ -37,17 +37,6 @@ $rules = new \LeadMax\TrackYourStats\Offer\Rules($offid);
 
 $offerView = new \LeadMax\TrackYourStats\Offer\View(\LeadMax\TrackYourStats\System\Session::userType());
 
-$activeCap = false;
-$capAmount = 0;
-
-foreach ($rules->rules as $rule) {
-
-	if ($rule["type"] == "device") {
-		$activeCap = $rule["cap_status"];
-		$capAmount = $rule["cap"];
-	}
-}
-
 ?>
 	
 	<style>
@@ -326,7 +315,7 @@ foreach ($rules->rules as $rule) {
 						<div class = "col-md-6 ">
 							<label class = "control-label">Device List:</label>
 							
-							<table id = deviceList"
+							<table id = "deviceList"
 								   class = "table table-sm table-bordered table-responsive table-striped form-control  "
 								   style = "height:250px;  min-width:0 !important; ">
 								<thead>
@@ -338,15 +327,12 @@ foreach ($rules->rules as $rule) {
 								</thead>
 								<tbody id = "deviceListBody">
 								
-								<tr id = "desktop">
-									<td>Desktop</td>
-									<td><a id = "_desktop" onclick = "addDevice('desktop');" href = "javascript:void(0);"><img id = "desktop_img" src = "images/icons/add.png"></a></td>
+								<?php foreach (\LeadMax\TrackYourStats\Offer\Rules\Device::OPTIONS as $device => $label): ?>
+								<tr id="<?= $device ?>">
+									<td><?= $label ?></td>
+									<td><a id="_<?= $device ?>" onclick="addDevice('<?= $device ?>')" href="javascript:void(0);"><img id="<?= $device ?>_img" alt="Add <?= $label ?>" src="images/icons/add.png"></a></td>
 								</tr>
-								
-								<tr id = "mobile">
-									<td>Mobile</td>
-									<td><a id = "_mobile" onclick = "addDevice('mobile');" href = "javascript:void(0);"><img id = "mobile_img" src = "images/icons/add.png"></a></td>
-								</tr>
+								<?php endforeach; ?>
 								
 								
 								</tbody>
@@ -383,7 +369,7 @@ foreach ($rules->rules as $rule) {
 						
 						<div class = "form-group">
 							<input id = "deviceIsAllowed" type = "checkbox" style = "width:15px;height:15px;">
-							<span>Devices in <b>Items</b> list will <b>NOT</b> be allowed.</span>
+							<span>Deny selected devices. Leave unchecked to allow only selected devices.</span>
 						
 						</div>
 						<div class = "form-group">
@@ -405,13 +391,13 @@ foreach ($rules->rules as $rule) {
 							<?php $offerView->printToSelectBox("deviceRedirectOffer"); ?>
 						</div>
 						<div class = "form-group">
-							<input <?php if ($activeCap) { echo "checked"; } ?> id = "capIsActive" type = "checkbox"
+							<input id = "capIsActive" type = "checkbox"
 									style = "width:15px;height:15px;">
 								<span>Enable Cap</span>
 						</div>
 						<div class = "form-group">
 							<label for = "deviceCap">Cap:</label>
-							<input type = "text" id = "deviceCap" value=<?php echo $capAmount; ?>>
+							<input type = "text" id = "deviceCap" value="0">
 						</div>
 					
 					</div>
@@ -675,7 +661,7 @@ foreach ($rules->rules as $rule) {
 				return true;
 			}
 			
-			return confirm("Do you want to overwrite the existing rule you dipshit?");
+			return confirm("Overwrite the existing rule?");
 		}
 
 		function clearSelectedGeoCountries() {
@@ -879,23 +865,21 @@ foreach ($rules->rules as $rule) {
 		});
 		
 		$("#deviceCreateButton").click(function () {
-			if (!confirmRuleOverwrite($("#deviceRuleName").val(), "device")) {
+			if (!hasSelectedDevices() || !confirmRuleOverwrite($("#deviceRuleName").val(), "device")) {
 				return;
 			}
 
 			$.ajax({
 				type: "POST",
 				url: "/scripts/offer/rules/device/add.php",
-				data: {data: parseDevices("deviceToAdd")},
+				data: {data: parseDevices("deviceToAdd"), isActive: $("#deviceIsActive").is(":checked") ? 1 : 0},
 				cache: false,
-				success: function (result) {
-					
-					$("#deviceModal").modal("hide");
+				success: function () {
 					location.reload();
-					
+				},
+				error: function (xhr) {
+					alert(xhr.responseText || "Could not save the device rule.");
 				}
-				
-				
 			});
 			
 		});
@@ -906,14 +890,13 @@ foreach ($rules->rules as $rule) {
 			
 			$("#deviceRuleName").val("");
 			$("#deviceRuleID").val("");
-			$("#deviceRedirectOffer").val("");
+			$("#deviceRedirectOffer").prop("selectedIndex", 0);
 			$("#deviceRuleTitle").text("New Device Rule");
-			$("#deviceIsAllowed").attr("checked", false);
-			$("#deviceIsActive").attr("checked", true);
+			$("#deviceIsAllowed").prop("checked", false);
+			$("#deviceIsActive").prop("checked", true);
 			
-			$("#deviceCancelButton").click(function () {
-				resetDeviceModal()
-			});
+			$("#deviceCap").val(0);
+			$("#capIsActive").prop("checked", false);
 			
 			$("#deviceCreateButton").show();
 			$("#deviceUpdateButton").hide();
@@ -959,7 +942,7 @@ foreach ($rules->rules as $rule) {
 			resetGeoModal();
 		});
 		
-		$("#deviceCancelButton").click(function () {
+		$("#deviceModal").on("hidden.bs.modal", function () {
 			resetDeviceModal()
 		});
 		
@@ -994,7 +977,13 @@ foreach ($rules->rules as $rule) {
 			$("#" + deviceName + "_img").attr("src", "images/icons/add.png");
 		}
 		
-		function parseDevices(tableName, onlyCountries = false) {
+		function hasSelectedDevices() {
+			if ($("#deviceToAdd tbody tr").length) return true;
+			alert("Select at least one device.");
+			return false;
+		}
+
+		function parseDevices(tableName, onlyDevices = false) {
 			var rows = $('#' + tableName + ' > tbody > tr');
 			
 			var offerID = $("#offerID").val();
@@ -1003,13 +992,13 @@ foreach ($rules->rules as $rule) {
 			
 			var ruleName = $("#deviceRuleName").val();
 			
-			var notAllowed = document.getElementById("geoIsAllowed").checked;
+			var notAllowed = document.getElementById("deviceIsAllowed").checked;
 
 			var capAmount = $("#deviceCap").val();
 			var capStatus = $("#capIsActive").is(":checked");
 			
 			var parsed = [];
-			if (!onlyCountries)
+			if (!onlyDevices)
 				parsed = [offerID, ruleName, redirectOffer, notAllowed, capAmount, capStatus];
 			
 			for (var i = 0; i < rows.length; i++)

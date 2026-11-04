@@ -1,42 +1,64 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: dean
- * Date: 8/16/2017
- * Time: 10:30 AM
- */
 
 namespace LeadMax\TrackYourStats\Offer\Rules;
-
 
 use Detection\MobileDetect;
 use LeadMax\TrackYourStats\Offer\Caps;
 
 class Device implements Rule
 {
+    public const OPTIONS = [
+        'windows_desktop' => 'Windows Desktop',
+        'apple_desktop' => 'Apple Desktop',
+        'desktop' => 'All Desktop',
+        'ios_mobile' => 'iOS Mobile',
+        'android_mobile' => 'Android Mobile',
+        'mobile' => 'All Mobile',
+    ];
 
-    // rules passed from Rules class that was associated with passed offer id
-    private $rules = array();
-
-
-    private $filteredRules = array();
-
-    // gets instatiacted to mobile detect obj
-    private $detect;
-
+    private $rules = [];
     public $redirectOffer = 0;
 
-    function __construct($rules)
+    public function __construct($rows)
     {
-        // sets rules from Rules class
-        $this->rules = $rules;
+        foreach ($rows as $row) {
+            if ($row['type'] !== 'device' || !$row['is_active']) {
+                continue;
+            }
+            $id = $row['idrule'];
+            if (!isset($this->rules[$id])) {
+                $this->rules[$id] = $row;
+                $this->rules[$id]['cap'] = $row['device_cap'] ?? $row['cap'];
+                $this->rules[$id]['cap_status'] = $row['device_cap_status'] ?? $row['cap_status'];
+                $this->rules[$id]['devices'] = [];
+            }
+            $this->rules[$id]['devices'][] = $row['device_type'];
+        }
+        ksort($this->rules, SORT_NUMERIC);
+    }
 
-        // finds device rules and sets allowedDeviceType
-        $this->processRules();
-
-        // instantiate mobile detect
-        $this->detect = new MobileDetect();
-
+    public static function categories(MobileDetect $detect): array
+    {
+        $agent = $detect->getUserAgent() ?? '';
+        if ($agent !== '' && $detect->isMobile()) {
+            if ($detect->isWindowsPhoneOS()) {
+                return ['mobile'];
+            }
+            if ($detect->isAndroidOS()) {
+                return ['mobile', 'android_mobile'];
+            }
+            if ($detect->isiOS() || $detect->isiPadOS()) {
+                return ['mobile', 'ios_mobile'];
+            }
+            return ['mobile'];
+        }
+        if (stripos($agent, 'Windows NT') !== false) {
+            return ['desktop', 'windows_desktop'];
+        }
+        if (stripos($agent, 'Macintosh') !== false) {
+            return ['desktop', 'apple_desktop'];
+        }
+        return ['desktop'];
     }
 
     public function getRedirectOffer()
@@ -44,73 +66,23 @@ class Device implements Rule
         return $this->redirectOffer;
     }
 
-
-    // checks device rules
     public function checkRules()
     {
-
-        if (empty($this->filteredRules)) {
+        if (!$this->rules) {
             return true;
         }
-
-        foreach ($this->filteredRules as $rule) {
-
-            $this->redirectOffer = $rule["redirect_offer"];
-
-            switch ($rule["device_type"]) {
-                case "desktop":
-                    if ($rule["deny"] == 1) {
-                        return $this->detect->isMobile();
-                    } else {
-                        if(!$this->detect->isMobile()) {
-                            $deviceCap = new Caps($rule["offer_idoffer"]);
-                            return $deviceCap->checkDeviceCap($rule);
-                        }
-                        return !$this->detect->isMobile();
-                    }
-                    break;
-
-                case "mobile":
-                    if ($rule["deny"] == 1) {
-                        return !$this->detect->isMobile();
-                    } else {
-                        if ($this->detect->isMobile()) {
-                            $deviceCap = new Caps($rule["offer_idoffer"]);
-                            return $deviceCap->checkDeviceCap($rule);
-                        }
-                        return false;
-                    }
-                    break;
-
+        $categories = self::categories(new MobileDetect());
+        foreach ($this->rules as $rule) {
+            $matches = (bool) array_intersect($categories, $rule['devices']);
+            if ($rule['deny'] ? $matches : !$matches) {
+                $this->redirectOffer = $rule['redirect_offer'];
+                return false;
             }
-
-
-        }
-
-        return false;
-    }
-
-    private function processRules()
-    {
-
-        // loops through rules and finds if its a device type
-        foreach ($this->rules as $key => $val) {
-
-            if ($val["type"] == "device" && $val["is_active"] == 1) // if it is, added the allowed device type to our var
-            {
-                if (!isset($this->filteredRules[$val["idrule"]])) {
-                    $this->filteredRules[$val["idrule"]] = array();
-                    $this->filteredRules[$val["idrule"]]["device_type"] = $val["device_type"];
-                    $this->filteredRules[$val["idrule"]]["redirect_offer"] = $val["redirect_offer"];
-                    $this->filteredRules[$val["idrule"]]["deny"] = $val["deny"];
-                    $this->filteredRules[$val["idrule"]]["offer_idoffer"] = $val["offer_idoffer"];
-                    $this->filteredRules[$val["idrule"]]["cap"] = $val["cap"];
-                    $this->filteredRules[$val["idrule"]]["cap_status"] = $val["cap_status"];
-
-                }
-
+            if (!$rule['deny'] && $rule['cap_status'] && !(new Caps($rule['offer_idoffer']))->checkDeviceCap($rule)) {
+                $this->redirectOffer = $rule['redirect_offer'];
+                return false;
             }
-
         }
+        return true;
     }
 }
