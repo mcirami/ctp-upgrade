@@ -154,7 +154,7 @@ $mid = (isset($_GET["mid"]) && $_GET["mid"] != "") ? $_GET["mid"] : "";
 					
 					<p>
 						
-						<label for = "tys_skype">Skype:</label>
+						<label for = "tys_skype">Telegram:</label>
 						<input type = "text" name = "tys_skype">
 					
 					</p>
