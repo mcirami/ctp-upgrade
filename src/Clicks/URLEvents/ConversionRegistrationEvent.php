@@ -6,6 +6,8 @@ use App\Exceptions\RegistrationEventExceptions\ClickConvertedException;
 use App\Exceptions\RegistrationEventExceptions\ConversionAlreadyPendingException;
 use App\Exceptions\RegistrationEventExceptions\InvalidClickException;
 use App\Offer;
+use Illuminate\Support\Facades\Log;
+use LeadMax\TrackYourStats\Clicks\ConversionPostbackPolicy;
 use LeadMax\TrackYourStats\Clicks\Conversion;
 use LeadMax\TrackYourStats\Clicks\PendingConversion;
 use LeadMax\TrackYourStats\User\PostBackURLs\ConversionPostBackURL;
@@ -39,7 +41,17 @@ class ConversionRegistrationEvent extends URLEvent
 
                 return response()->json(['status' => 500, 'message' => 'Unknown error.']);
             }
+        } catch (\DomainException $e) {
+            Log::channel('postbacks')->warning('conversion.rejected', [
+                'click_id' => $this->clickId,
+                'reason' => $e->getMessage(),
+            ]);
+            return response()->json(['status' => 422, 'message' => $e->getMessage()], 422);
         } catch (\Exception $e) {
+            Log::channel('postbacks')->warning('conversion.failed', [
+                'click_id' => $this->clickId,
+                'exception_type' => get_class($e),
+            ]);
             return response()->json(['status' => 500, 'message' => $e->getMessage()], 500);
         }
     }
@@ -57,11 +69,16 @@ class ConversionRegistrationEvent extends URLEvent
         }
 
 
+        $offer = Offer::find($conversion->clickData->offer_idoffer);
+        ConversionPostbackPolicy::validate(
+            $offer,
+            $conversion->clickData,
+            (int) config('postbacks.max_click_age_days', 90)
+        );
         if (Conversion::isClickConverted($this->clickId)) {
             throw new ClickConvertedException($this->clickId);
         }
 
-        $offer = Offer::find($conversion->clickData->offer_idoffer);
         if ($offer->offer_type === \LeadMax\TrackYourStats\Offer\Offer::TYPE_PENDING_CONVERSION) {
             if (PendingConversion::isClickIdAlreadyRegistered($this->clickId)) {
 
@@ -93,12 +110,16 @@ class ConversionRegistrationEvent extends URLEvent
         $urlProcessor->processURL();
 
 
-        $urlProcessor->curlURL();
+        Log::channel('postbacks')->info('conversion.registered', [
+            'click_id' => $this->clickId,
+            'offer_id' => $offer_id,
+            'affiliate_id' => $user_id,
+        ]);
+        $urlProcessor->curlURL(false, ['click_id' => $this->clickId]);
 
         return response()->json([
             'status' => 200,
             'message' => 'Conversion registered.',
-            'post_back_url' => $urlProcessor->url,
         ], 200);
     }
 

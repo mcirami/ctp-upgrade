@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use LeadMax\TrackYourStats\Clicks\UID;
 use LeadMax\TrackYourStats\Clicks\PostBackURLEventHandler;
 use LeadMax\TrackYourStats\Clicks\URLEvents\ClickRegistrationEvent;
 use LeadMax\TrackYourStats\System\Company;
@@ -50,6 +52,32 @@ class IndexController extends Controller
 
 
     public function postBackRegistration(Request $request)
+    {
+        // Deliberately exclude UID, full URLs, headers, and response bodies.
+        $rawClickId = $request->query('clickid');
+        $decoded = is_string($rawClickId) && strlen($rawClickId) <= 64
+            ? UID::decode($rawClickId) : '';
+        $context = [
+            'request_id' => bin2hex(random_bytes(16)),
+            'host' => $request->getHost(),
+            'source_ip' => $request->ip(),
+            'peer_ip' => $request->server('REMOTE_ADDR'),
+            'method' => $request->method(),
+            'click_id' => ctype_digit($decoded) ? $decoded : null,
+        ];
+        Log::channel('postbacks')->info('postback.received', $context);
+        $response = null;
+        try {
+            $response = $this->processPostBackRegistration($request);
+            return $response;
+        } finally {
+            Log::channel('postbacks')->info('postback.completed', $context + [
+                'http_status' => $response ? $response->getStatusCode() : 500,
+            ]);
+        }
+    }
+
+    private function processPostBackRegistration(Request $request)
     {
         if ($request->get('uid')) {
 

@@ -33,6 +33,12 @@ return [
 	*/
 
 	'channels' => [
+        'postbacks' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/postbacks.log'),
+            'level' => 'info',
+            'days' => 30,
+        ],
 		'stack' => [
 			'driver' => 'stack',
 			'channels' => ['single'],

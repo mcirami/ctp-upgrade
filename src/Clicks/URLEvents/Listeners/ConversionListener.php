@@ -13,6 +13,11 @@ class ConversionListener extends Listener
 
     public function dispatch()
     {
+        $rawClickId = $_GET['clickid'] ?? null;
+        if (!is_string($rawClickId) || strlen($rawClickId) > 20
+            || !ctype_digit(UID::decode($rawClickId))) {
+            return response()->json(['status' => 422, 'message' => 'Invalid click ID.'], 422);
+        }
         $customPayout = (isset($_GET["price"]) ? $_GET["price"] : false);
         $clickId      = UID::decode($_GET["clickid"]);
         $register     = new ConversionRegistrationEvent($clickId, $customPayout);

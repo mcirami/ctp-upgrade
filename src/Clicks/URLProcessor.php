@@ -42,9 +42,19 @@ class URLProcessor
         send_to($this->url);
     }
 
-    public function curlURL($dumpResult = false)
+    public function curlURL($dumpResult = false, ?array $auditContext = null)
     {
+        if ($auditContext !== null && !$this->url) {
+            \Illuminate\Support\Facades\Log::channel('postbacks')->info('postback.outgoing_skipped', $auditContext + [
+                'reason' => 'No callback configured.',
+            ]);
+            return;
+        }
         $ch = curl_init();
+        if ($auditContext !== null) {
+            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+        }
 
 
         // set url
@@ -55,6 +65,14 @@ class URLProcessor
 
         // $output contains the output string
         $output = curl_exec($ch);
+
+        if ($auditContext !== null) {
+            \Illuminate\Support\Facades\Log::channel('postbacks')->info('postback.outgoing_result', $auditContext + [
+                'destination_host' => parse_url($this->url, PHP_URL_HOST),
+                'http_status' => curl_getinfo($ch, CURLINFO_HTTP_CODE),
+                'curl_errno' => curl_errno($ch),
+            ]);
+        }
 
         // close curl resource to free up system resources
         curl_close($ch);
