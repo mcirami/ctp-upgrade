@@ -100,7 +100,7 @@ class AffiliateSignUp
 
         $firstName = $this->getP("tys_first_name");
         $lastName = $this->getP("tys_last_name");
-        $skype = $this->getP("tys_skype");
+        $telegram = $this->getP("tys_telegram");
         $company_name = $this->getP("tys_company_name");
 
 		if ($this->getP("mid") != "") {
@@ -116,7 +116,7 @@ class AffiliateSignUp
         $timestamp = date("Y-m-d H:i:s");
 
         $sql = "
-INSERT INTO rep (first_name, last_name, email, user_name, password, status, referrer_repid, rep_timestamp, lft,rgt, skype, company_name) VALUES(:first_name, :last_name, :email, :user_name, :password, :status, :mid, :date, 0,0, :skype, :company_name);
+INSERT INTO rep (first_name, last_name, email, user_name, password, status, referrer_repid, rep_timestamp, lft,rgt, telegram, company_name) VALUES(:first_name, :last_name, :email, :user_name, :password, :status, :mid, :date, 0,0, :telegram, :company_name);
 ";
 
         $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
@@ -132,7 +132,7 @@ INSERT INTO rep (first_name, last_name, email, user_name, password, status, refe
         $prep->bindParam(":status", $status);
         $prep->bindParam(":mid", $mid);
         $prep->bindParam(":date", $timestamp);
-        $prep->bindParam(":skype", $skype);
+        $prep->bindParam(":telegram", $telegram);
         $prep->bindParam(":company_name", $company_name);
 	    
 

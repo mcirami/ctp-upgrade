@@ -72,6 +72,7 @@ class OfferController extends Controller
         }
         $data['selectedLander'] = $data['landerUrls']->firstWhere('id', request('lander'))
             ?: $data['landerUrls']->first();
+        $data['telegram'] = ltrim(trim((string) $user->telegram), '@');
 
 
 		$status = request('showInactive', 0) == 1 ? 0 : 1;
@@ -95,6 +96,22 @@ class OfferController extends Controller
 		$data = array_merge(compact('offers'), $data);
 		return view('offer.manage', $data)->with(['data' => $data]);
 	}
+
+    public function saveLanderTelegram(Request $request)
+    {
+        $user = \LeadMax\TrackYourStats\System\Session::user();
+        abort_unless($user && $user->getRole() === Privilege::ROLE_AFFILIATE && $user->hasLanderAccess(), 403);
+
+        $data = $request->validate([
+            'telegram' => ['present', 'nullable', 'string', 'regex:/^@?[A-Za-z0-9_]{5,32}$/D'],
+        ]);
+        $user->telegram = ltrim(trim((string) ($data['telegram'] ?? '')), '@');
+        $user->save();
+
+        $query = http_build_query($request->only(['url', 'lander', 'adminLogin']));
+        return redirect('/offer/manage'.($query ? '?'.$query : ''))
+            ->with('telegram_saved', true);
+    }
 
 	public function showCreate()
 	{

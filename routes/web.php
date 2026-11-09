@@ -155,6 +155,7 @@ Route::group(['middleware' => 'legacy.auth'], function () {
     });
     Route::group(['prefix' => 'offer'], function () {
         Route::get('manage', [OfferController::class, 'showManage']);
+        Route::post('manage/telegram', [OfferController::class, 'saveLanderTelegram'])->middleware('role:3');
         Route::get('{id}/request', [OfferController::class, 'requestOffer'])->middleware('role:3');
         Route::group(['middleware' => 'role:0'], function () {
             Route::get('{id}/dupe', [OfferController::class, 'dupe']);

@@ -118,13 +118,13 @@ switch ($result)
 											 id = "cell_phone"/>
 									</p>
 									<p>
-									  <label class = "value_span9">Skype</label>
+									  <label class = "value_span9">Telegram</label>
 
 						-- TODO Link Referrer Payout --
 
-									  <input type = "text" class = "form-control" name = "skype" minlength = "5" maxlength = "255"
+									  <input type = "text" class = "form-control" name = "telegram" minlength = "5" maxlength = "255"
 											 placeholder = "(Optional)"
-											 value = "" id = "skype"/>
+											 value = "" id = "telegram"/>
 									</p>
 
 

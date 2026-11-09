@@ -543,12 +543,12 @@ class User extends Login
                     $password = post('password');
                     $status = filter_var(post('status'), FILTER_SANITIZE_STRING);
                     $referrer_repid = filter_var(post('referrer_repid'), FILTER_SANITIZE_STRING);
-                    $skype = filter_var(post('skype'), FILTER_SANITIZE_STRING);
+                    $telegram = filter_var(post('telegram'), FILTER_SANITIZE_STRING);
                     $company_name = filter_var(post('company_name'), FILTER_SANITIZE_STRING);
                     $rep_timestamp = date('Y-m-d H:i:s');
                     $new_password = password_hash($password, PASSWORD_DEFAULT);
                     $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
-                    $sql = "INSERT INTO rep(first_name,last_name,cell_phone,email,user_name,password,status,referrer_repid,rep_timestamp, skype, company_name) VALUES(:first_name,:last_name,:cell_phone,:email,:user_name,:password,:status,:referrer_repid,:rep_timestamp, :skype,
+                    $sql = "INSERT INTO rep(first_name,last_name,cell_phone,email,user_name,password,status,referrer_repid,rep_timestamp, telegram, company_name) VALUES(:first_name,:last_name,:cell_phone,:email,:user_name,:password,:status,:referrer_repid,:rep_timestamp, :telegram,
 :company_name)";
                     $stmt = $db->prepare($sql);
 
@@ -561,7 +561,7 @@ class User extends Login
                     $stmt->bindparam(":status", $status);
                     $stmt->bindparam(":referrer_repid", $referrer_repid);
                     $stmt->bindparam(":rep_timestamp", $rep_timestamp);
-                    $stmt->bindparam(":skype", $skype);
+                    $stmt->bindparam(":telegram", $telegram);
                     $stmt->bindparam(":company_name", $company_name);
                     $stmt->execute();
 
@@ -799,7 +799,7 @@ class User extends Login
         $referrer_repid = filter_var(post('referrer_repid'), FILTER_SANITIZE_STRING);
         $email = filter_var(post('email'), FILTER_SANITIZE_EMAIL);
 
-        $skype = filter_var(post('skype'), FILTER_SANITIZE_EMAIL);
+        $telegram = filter_var(post('telegram'), FILTER_SANITIZE_EMAIL);
         $company_name = filter_var(post('company_name'), FILTER_SANITIZE_EMAIL);
 
 
@@ -821,10 +821,10 @@ class User extends Login
 
             $passwordChange = false;
             if (post("password") != "" && post("confirmpassword") != "" && post("password") == post("confirmpassword")) {
-                $sql = " UPDATE rep SET  first_name =:first_name,last_name =:last_name,cell_phone =:cell_phone,user_name =:user_name,password =:password,status =:status,email = :email, skype=:skype, company_name=:company_name ";
+                $sql = " UPDATE rep SET  first_name =:first_name,last_name =:last_name,cell_phone =:cell_phone,user_name =:user_name,password =:password,status =:status,email = :email, telegram=:telegram, company_name=:company_name ";
                 $passwordChange = true;
             } else {
-                $sql = " UPDATE rep SET  first_name =:first_name,last_name =:last_name,cell_phone =:cell_phone,user_name =:user_name,status =:status, email = :email, skype = :skype, company_name = :company_name ";
+                $sql = " UPDATE rep SET  first_name =:first_name,last_name =:last_name,cell_phone =:cell_phone,user_name =:user_name,status =:status, email = :email, telegram = :telegram, company_name = :company_name ";
             }
 
             if (Session::userType() == \App\Privilege::ROLE_GOD || Session::userType() == \App\Privilege::ROLE_ADMIN) {
@@ -844,7 +844,7 @@ class User extends Login
             $stmt->bindParam(':cell_phone', $cell_phone);
             $stmt->bindParam(':user_name', $user_name);
             $stmt->bindParam(':email', $email);
-            $stmt->bindParam(':skype', $skype);
+            $stmt->bindParam(':telegram', $telegram);
             $stmt->bindParam(':company_name', $company_name);
 
             $stmt->bindParam(':status', $status);

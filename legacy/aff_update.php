@@ -161,10 +161,10 @@ $update->dumpPermissionsToJavascript();
 									       v value = "<?php echo $update->selectedUser->company_name; ?>" id = "company_name"/>
 								</p>
 								<p>
-									<label class = "value_span9">Skype</label>
+									<label class = "value_span9">Telegram</label>
 									<!-- TODO Link Referrer Payout -->
-									<input type = "text" class = "form-control" name = "skype" minlength = "5" maxlength = "255"
-									       placeholder = "(Optional)" value = "<?php echo $update->selectedUser->skype; ?>" id = "skype"/>
+									<input type = "text" class = "form-control" name = "telegram" minlength = "5" maxlength = "255"
+									       placeholder = "(Optional)" value = "<?php echo e($update->selectedUser->telegram); ?>" id = "telegram"/>
 								</p>
 
 

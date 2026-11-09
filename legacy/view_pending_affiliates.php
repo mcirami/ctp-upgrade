@@ -38,7 +38,7 @@ $users = \LeadMax\TrackYourStats\User\AffiliateSignUp::queryFetchPendingAffiliat
 					<th class = "value_span9">First Name</th>
 					<th class = "value_span9">Last Name</th>
 					<th class = "value_span9">Email</th>
-					<th class = "value_span9">Skype</th>
+					<th class = "value_span9">Telegram</th>
 					<th class = "value_span9">Company Name</th>
 					<th class = "value_span9">Timestamp</th>
 					<th class = "value_span9">Actions</th>
@@ -55,7 +55,7 @@ $users = \LeadMax\TrackYourStats\User\AffiliateSignUp::queryFetchPendingAffiliat
 					echo "<td>{$user->first_name}</td>";
 					echo "<td>{$user->last_name}</td>";
 					echo "<td>{$user->email}</td>";
-					echo "<td>{$user->skype}</td>";
+					echo "<td>".e($user->telegram)."</td>";
 					echo "<td>{$user->company_name}</td>";
 					echo "<td>{$user->rep_timestamp}</td>";
 					echo "<td><a target='_blank' class='btn btn-sm value_span5-1 value_span2 value_span4' href='activate_affiliate.php?id={$user->idrep}'>Activate</a></td>";

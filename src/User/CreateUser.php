@@ -26,7 +26,7 @@ class CreateUser
     public $rep_timestamp;
     public $lft;
     public $rgt;
-    public $skype;
+    public $telegram;
     public $company_name;
 
 
@@ -38,8 +38,8 @@ class CreateUser
     private function insertIntoTableRep()
     {
         $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
-        $sql = "INSERT INTO rep(first_name, last_name, cell_phone, email, user_name, password, status, referrer_repid, rep_timestamp, lft, rgt, skype, company_name)
-				VALUES(:first_name, :last_name, :cell_phone, :email, :user_name, :password,:status, :referrer_repid, :rep_timestamp, :lft, :rgt, :skype, :company_name)";
+        $sql = "INSERT INTO rep(first_name, last_name, cell_phone, email, user_name, password, status, referrer_repid, rep_timestamp, lft, rgt, telegram, company_name)
+				VALUES(:first_name, :last_name, :cell_phone, :email, :user_name, :password,:status, :referrer_repid, :rep_timestamp, :lft, :rgt, :telegram, :company_name)";
 
         $prep = $db->prepare($sql);
         $prep->bindParam(":first_name", $this->first_name);
@@ -55,7 +55,7 @@ class CreateUser
         $prep->bindParam(":lft", $this->lft);
         $prep->bindParam(":rgt", $this->rgt);
 
-        $prep->bindParam(":skype", $this->skype);
+        $prep->bindParam(":telegram", $this->telegram);
         $prep->bindParam(":company_name", $this->company_name);
 
 
@@ -140,8 +140,8 @@ class CreateUser
     {
         $this->generateTimestampIfNotSet();
 
-        if (isset($this->skype) == false) {
-            $this->skype = "";
+        if (isset($this->telegram) == false) {
+            $this->telegram = "";
         }
 
         if (isset($this->company_name) == false) {

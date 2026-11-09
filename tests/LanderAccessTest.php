@@ -4,7 +4,6 @@ require_once __DIR__.'/../vendor/autoload.php';
 
 use App\User;
 use App\Privilege;
-use Illuminate\Container\Container;
 use Illuminate\Database\Capsule\Manager as Capsule;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Facade;
@@ -18,7 +17,7 @@ class LanderAccessTest extends TestCase
 
     protected function setUp(): void
     {
-        $container = new Container();
+        $container = new \Illuminate\Foundation\Application(dirname(__DIR__));
         $this->db = new Capsule($container);
         $this->db->addConnection(['driver' => 'sqlite', 'database' => ':memory:']);
         $this->db->setAsGlobal();
@@ -32,7 +31,10 @@ class LanderAccessTest extends TestCase
             $table->integer('idrep')->primary();
             $table->integer('lft');
             $table->integer('rgt');
+            $table->string('skype')->nullable();
         });
+        $telegramMigration = require __DIR__.'/../database/migrations/2026_11_09_000000_rename_rep_skype_to_telegram.php';
+        $telegramMigration->up();
         $schema->create('privileges', function (Blueprint $table) {
             $table->integer('rep_idrep');
             foreach (['god', 'admin', 'manager', 'rep'] as $role) {
@@ -67,6 +69,94 @@ class LanderAccessTest extends TestCase
     private function grant(int $id, bool $value = true): void
     {
         $this->db->table('permissions')->where('aff_id', $id)->update(['lander_access'=>$value]);
+    }
+
+    private function telegramController(): App\Http\Controllers\OfferController
+    {
+        $container = Facade::getFacadeApplication();
+        $translator = new \Illuminate\Translation\Translator(new \Illuminate\Translation\ArrayLoader(), 'en');
+        $factory = new \Illuminate\Validation\Factory($translator);
+        \Illuminate\Http\Request::macro('validate', function ($rules) use ($factory) {
+            return $factory->make($this->all(), $rules)->validate();
+        });
+        $session = new \Illuminate\Session\Store('test', new \Illuminate\Session\ArraySessionHandler(120));
+        $redirector = new \Illuminate\Routing\Redirector(new \Illuminate\Routing\UrlGenerator(
+            new \Illuminate\Routing\RouteCollection(), \Illuminate\Http\Request::create('https://example.com')
+        ));
+        $redirector->setSession($session);
+        $container->instance('redirect', $redirector);
+        return new App\Http\Controllers\OfferController();
+    }
+
+    public function testTelegramRenamePreservesValuesAndRollsBack(): void
+    {
+        $migration = require __DIR__.'/../database/migrations/2026_11_09_000000_rename_rep_skype_to_telegram.php';
+        $migration->down();
+        $this->db->table('rep')->where('idrep', 4)->update(['skype' => '@agent_name']);
+        $migration->up();
+        self::assertFalse($this->db->schema()->hasColumn('rep', 'skype'));
+        self::assertSame('@agent_name', User::find(4)->telegram);
+        self::assertNull(User::find(6)->telegram);
+        $migration->down();
+        self::assertSame('@agent_name', $this->db->table('rep')->where('idrep', 4)->value('skype'));
+        self::assertFalse($this->db->schema()->hasColumn('rep', 'telegram'));
+    }
+
+    public function testAgentCanSaveAndClearOnlyTheirOwnTelegram(): void
+    {
+        $controller = $this->telegramController();
+        $_SESSION['repid'] = 4;
+        $this->grant(2); // Inherited lander access is sufficient.
+        $response = $controller->saveLanderTelegram(\Illuminate\Http\Request::create('/', 'POST', [
+            'telegram' => '@Agent_name', 'repid' => 6, 'url' => 2, 'lander' => 7,
+        ]));
+        self::assertSame('Agent_name', User::find(4)->telegram);
+        self::assertNull(User::find(6)->telegram);
+        self::assertSame('https://example.com/offer/manage?url=2&lander=7', $response->getTargetUrl());
+        $controller->saveLanderTelegram(\Illuminate\Http\Request::create('/', 'POST', ['telegram' => '']));
+        self::assertSame('', User::find(4)->telegram);
+    }
+
+    public function testTelegramSaveRespectsImpersonatedAgent(): void
+    {
+        $controller = $this->telegramController();
+        $_SESSION['repid'] = 1;
+        $_SESSION['adminLogin'] = ['repid' => 4];
+        $_GET['adminLogin'] = 1;
+        $this->grant(4);
+        $response = $controller->saveLanderTelegram(\Illuminate\Http\Request::create('/', 'POST', [
+            'telegram' => 'agent_name', 'adminLogin' => 1,
+        ]));
+        self::assertSame('agent_name', User::find(4)->telegram);
+        self::assertNull(User::find(1)->telegram);
+        self::assertSame('https://example.com/offer/manage?adminLogin=1', $response->getTargetUrl());
+    }
+
+    public function testTelegramSaveRejectsInvalidInputAndMissingAccess(): void
+    {
+        $controller = $this->telegramController();
+        $_SESSION['repid'] = 4;
+        $this->grant(4);
+        foreach (['https://t.me/agent', 'agent&other=1', 'abcd', str_repeat('a', 33), ['agent_name']] as $value) {
+            try {
+                $controller->saveLanderTelegram(\Illuminate\Http\Request::create('/', 'POST', ['telegram' => $value]));
+                self::fail('Invalid username accepted');
+            } catch (\Illuminate\Validation\ValidationException $exception) {
+                self::assertArrayHasKey('telegram', $exception->errors());
+            }
+            self::assertNull(User::find(4)->telegram);
+        }
+        $this->grant(4, false);
+        foreach ([4, 3, 2, 1] as $id) {
+            $_SESSION['repid'] = $id;
+            try {
+                $controller->saveLanderTelegram(\Illuminate\Http\Request::create('/', 'POST', ['telegram' => 'agent_name']));
+                self::fail('Unauthorized update accepted');
+            } catch (\Symfony\Component\HttpKernel\Exception\HttpException $exception) {
+                self::assertSame(403, $exception->getStatusCode());
+            }
+            self::assertNull(User::find($id)->telegram);
+        }
     }
 
     public function testInheritanceIsolationAndImmediateRevocation(): void
@@ -163,6 +253,9 @@ class LanderAccessTest extends TestCase
             class_alias(\Illuminate\Support\Facades\Route::class, 'Route');
         }
         require __DIR__.'/../routes/web.php';
+        $telegramRoute = $router->getRoutes()->match(\Illuminate\Http\Request::create('/offer/manage/telegram', 'POST'));
+        self::assertContains('legacy.auth', $telegramRoute->middleware());
+        self::assertContains('role:3', $telegramRoute->middleware());
         $count = 0;
         foreach ($router->getRoutes() as $route) {
             if (str_starts_with($route->uri(), 'lander/urls')) {

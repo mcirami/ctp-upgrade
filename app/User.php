@@ -33,7 +33,7 @@ use LeadMax\TrackYourStats\System\Session;
  * @property string|null $rep_timestamp
  * @property int|null $lft
  * @property int|null $rgt
- * @property string|null $skype
+ * @property string|null $telegram
  * @property string $company_name
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereCellPhone($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereCompanyName($value)
@@ -46,7 +46,7 @@ use LeadMax\TrackYourStats\System\Session;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereReferrerRepid($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereRepTimestamp($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereRgt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereSkype($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereTelegram($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereUserName($value)
  * @property-read \App\Salary $salary

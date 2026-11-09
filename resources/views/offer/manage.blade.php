@@ -3,6 +3,23 @@
 
 @section('content')
 
+    <style>
+        .right_panel .offer-url-control {
+            box-sizing: border-box;
+            height: 30px;
+            min-height: 30px;
+            margin: 0;
+            padding: 5px 10px;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .right_panel .offer-url-save {
+            flex: 0 0 auto;
+            width: auto;
+        }
+    </style>
+
 	<!--right_panel-->
 	<div class="right_panel">
 		<div class="white_box_outer large_table">
@@ -37,12 +54,12 @@
 			</script>
 
 
-			<div style="margin:0 0 1px 0; padding:5px; width:250px; display:inline-block;">
+			<div style="margin:0 0 1px 0; padding:5px; width:250px; display:inline-block; vertical-align:top;">
 
 				@if( Session::userType() == \App\Privilege::ROLE_AFFILIATE)
 
 					<label class="value_span9">Offer URLS: </label>
-					<select onchange='handleSelect(this);' class="form-control input-sm " id="offer_url"
+					<select onchange='handleSelect(this);' class="form-control input-sm offer-url-control" id="offer_url"
 							name="offer_url">
 
 
@@ -60,14 +77,32 @@
 			</div>
 
             @if($selectedLander)
-                <div style="padding:5px; width:250px; display:inline-block;">
+                <div style="padding:5px; width:250px; display:inline-block; vertical-align:top;">
                     <label class="value_span9" for="lander_url">Lander URLs:</label>
-                    <select onchange="handleSelect(this)" class="form-control input-sm" id="lander_url" name="lander_url">
+                    <select onchange="handleSelect(this)" class="form-control input-sm offer-url-control" id="lander_url" name="lander_url">
                         @foreach($landerUrls as $lander)
                             <option value="{{ $lander->id }}" @selected($selectedLander->id === $lander->id)>{{ $lander->url }}</option>
                         @endforeach
                     </select>
                 </div>
+                <form method="POST" action="{{ url('/offer/manage/telegram').'?'.http_build_query(request()->only(['url', 'lander', 'adminLogin'])) }}"
+                      style="padding:5px; display:inline-block; vertical-align:top;">
+                    @csrf
+                    <label class="value_span9" for="lander_telegram">Telegram username (optional):</label>
+                    <div style="display:flex; gap:5px;">
+                        <input type="text" class="form-control input-sm offer-url-control" id="lander_telegram" name="telegram"
+                               value="{{ old('telegram', $telegram) }}" placeholder="@username" maxlength="33"
+                               pattern="@?[A-Za-z0-9_]{5,32}" aria-describedby="lander_telegram_help">
+                        <button type="submit" class="btn btn-default btn-sm offer-url-control offer-url-save">Save</button>
+                    </div>
+                    <small id="lander_telegram_help">Save to add your username to lander links. Clear and save to remove it.</small>
+                    @error('telegram')
+                        <div class="text-danger" role="alert">Use 5–32 letters, numbers or underscores, with an optional @.</div>
+                    @enderror
+                    @if(session('telegram_saved'))
+                        <div class="text-success" role="status">Telegram saved. Lander links updated.</div>
+                    @endif
+                </form>
             @endif
 
 
@@ -268,6 +303,11 @@
                                 const lander = new URL(landerBase);
                                 lander.searchParams.set('a', sessionUser);
                                 lander.searchParams.set('o', offer.idoffer);
+                                const telegram = @json($telegram);
+                                lander.searchParams.delete('t');
+                                if (telegram) {
+                                    lander.searchParams.set('t', telegram);
+                                }
                                 lander.searchParams.delete('n');
                                 lander.searchParams.append('n', '');
                                 const text = document.createElement('span');
