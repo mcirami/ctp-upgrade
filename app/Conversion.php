@@ -50,7 +50,7 @@ class Conversion extends Model
 			->whereBetween('conversions.timestamp', [$startDate, $endDate])
 			->join('clicks', 'clicks.idclicks', '=', 'conversions.click_id')
 			->leftJoin('click_geo_cache as geo', 'geo.ip_address', '=', 'clicks.ip_address')
-			->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
+			->leftJoin('report_offers as offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
 			->selectRaw("
 				offer.offer_name,
 				clicks.offer_idoffer AS offer_id,

@@ -50,11 +50,12 @@ class GodOfferRepository extends Repository
 				SELECT
 					offer.idoffer,
 					offer.offer_name,
+                    offer.is_deleted,
 					count(rawClicks.idclicks) Clicks,
 					SUM(CASE WHEN rawClicks.click_type = 0 THEN 1 ELSE 0 END) UniqueClicks,
                     count(pc.id) as PendingConversions
 				FROM
-					offer
+					report_offers AS offer
 					
 				LEFT JOIN clicks rawClicks ON rawClicks.offer_idoffer = offer.idoffer
 				
@@ -90,12 +91,13 @@ class GodOfferRepository extends Repository
 				SELECT
 					offer.idoffer,
 					offer.offer_name,
+                    offer.is_deleted,
 					count(f.id) FreeSignUps,
 					count(conversions.id) Conversions,
 					sum(conversions.paid) Revenue,
 					sum(deducted.paid) Deductions
 				FROM
-					offer
+					report_offers AS offer
 					
 				LEFT JOIN clicks rawClicks ON rawClicks.offer_idoffer = offer.idoffer
 				

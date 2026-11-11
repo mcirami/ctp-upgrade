@@ -65,7 +65,7 @@ class AdjustmentsLogRepository extends Repository
  				FROM	adjustments_log
  				INNER JOIN conversions ON conversions.id = adjustments_log.conversion_id
  				INNER JOIN clicks ON clicks.idclicks = conversions.click_id
- 				INNER JOIN offer ON offer.idoffer = clicks.offer_idoffer
+				INNER JOIN report_offers AS offer ON offer.idoffer = clicks.offer_idoffer
  				LEFT JOIN rep as CreatorUser ON CreatorUser.idrep = adjustments_log.user_id
  				LEFT JOIN rep as Affiliate ON Affiliate.idrep = conversions.user_id
  				

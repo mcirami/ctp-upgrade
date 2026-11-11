@@ -20,9 +20,17 @@
         }
     </style>
 
+    <form id="delete-offer-form" method="POST" hidden>
+        @csrf
+        @method('DELETE')
+    </form>
+
 	<!--right_panel-->
 	<div class="right_panel">
 		<div class="white_box_outer large_table">
+            @if (session('message'))
+                <div class="alert alert-success">{{ session('message') }}</div>
+            @endif
 			<div class="heading_holder">
 				<span class="lft value_span9">Offers</span>
 				@if ( Session::permissions()->can("create_offers"))
@@ -31,9 +39,15 @@
 				@endif
 			</div>
 
-			@if( Session::userType() !== \App\Privilege::ROLE_AFFILIATE)
-				@include('report.options.active')
-			@endif
+            @if ($showArchived)
+                <p class="alert alert-info">These offers were hidden by the old Delete action. Use Delete permanently to remove their settings and preserve their reporting history.</p>
+                <a class="btn btn-default btn-sm" href="/offer/manage">Back to active offers</a>
+            @elseif (Session::userType() !== \App\Privilege::ROLE_AFFILIATE)
+                @include('report.options.active')
+            @endif
+            @if (Session::userType() === \App\Privilege::ROLE_GOD && !$showArchived)
+                <a class="btn btn-default btn-sm" href="/offer/manage?showArchived=1">Previously hidden offers</a>
+            @endif
 
 			@if( Session::userType() == \App\Privilege::ROLE_AFFILIATE)
 				<div class='form-group'>
@@ -245,13 +259,16 @@
 	<script type="text/javascript">
 
 		$(document).ready(function () {
-			document.querySelectorAll('.delete_offer').forEach((offer) => {
-				offer.addEventListener('click', (e) =>{
-					e.preventDefault();
-					const offerID = e.target.dataset.offer;
-					confirmSendTo('Are you sure you want to delete this offer?', "/offer/" + offerID + "/delete");
-				})
-			});
+            // Delegation also handles rows rebuilt by pagination and search.
+            $(document).on('click', '.delete_offer', function (event) {
+                event.preventDefault();
+                const offerID = this.dataset.offer;
+                if (window.confirm('Permanently delete offer #' + offerID + '? Assignments, caps and targeting settings will be removed. Historical reports will remain as Deleted offer #' + offerID + '. Other rules that redirect here will block traffic until a replacement is selected. This cannot be undone.')) {
+                    const form = document.getElementById('delete-offer-form');
+                    form.action = '/offer/' + encodeURIComponent(offerID);
+                    form.submit();
+                }
+            });
 
 			let itemsPerPage = 20;
 			let offersCollection = '<?php echo $offers; ?>';
@@ -399,8 +416,8 @@
 							html +=
 									`<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='Duplicate Offer' ` +
 									`href='/offer/` + offer['idoffer'] + `/dupe'> Duplicate </a>` +
-									`<a class='delete_offer btn btn-default btn-sm value_span11 value_span4' data-toggle='tooltip' data-offer='` + offer['idoffer'] +`' title='Delete Offer' ` +
-									`href='#'>Delete</a>`;
+									`<a class='delete_offer btn btn-default btn-sm value_span11 value_span4' data-toggle='tooltip' data-offer='` + offer['idoffer'] +`' title='Permanently Delete Offer' ` +
+									`href='#'>Delete permanently</a>`;
 						}
 
 						if(parseInt(userType) !== 3) {

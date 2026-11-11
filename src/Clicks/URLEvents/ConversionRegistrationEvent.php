@@ -32,6 +32,11 @@ class ConversionRegistrationEvent extends URLEvent
 
     public function fire()
     {
+        $click = \App\Click::withoutGlobalScopes()->find($this->clickId);
+        if ($click && !Offer::whereKey($click->offer_idoffer)->exists()) {
+            return new JsonResponse(['status' => 410, 'message' => 'This offer has been deleted. No conversion was registered.'], 410);
+        }
+
         try {
             if ($this->registerConversion()) {
                 return $this->firePostBackURL();
@@ -62,6 +67,9 @@ class ConversionRegistrationEvent extends URLEvent
         }
 
         $offer = Offer::find($conversion->clickData->offer_idoffer);
+        if (!$offer) {
+            throw new \RuntimeException('This offer is no longer available.');
+        }
         if ($offer->offer_type === \LeadMax\TrackYourStats\Offer\Offer::TYPE_PENDING_CONVERSION) {
             if (PendingConversion::isClickIdAlreadyRegistered($this->clickId)) {
 

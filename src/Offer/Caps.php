@@ -192,6 +192,9 @@ class Caps
 
     public function sendToRedirectOffer()
     {
+        // A deleted fallback must not disable a cap or redirect back into this offer.
+        abort_unless(!empty($this->cap_rules['redirect_offer']), 410, 'This offer is currently unavailable.');
+
         $url = findProtocol().$_SERVER["HTTP_HOST"];
         $url .= "/?";
 

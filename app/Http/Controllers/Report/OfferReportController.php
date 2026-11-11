@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Report;
 
 use App\Privilege;
-use App\Offer;
+use App\ReportOffer as Offer;
 use App\Services\CountryReportBuilderService;
 use App\Services\Repositories\Offer\OfferAffiliateClicksRepository;
 use Carbon\Carbon;

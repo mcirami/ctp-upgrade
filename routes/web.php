@@ -159,7 +159,7 @@ Route::group(['middleware' => 'legacy.auth'], function () {
         Route::get('{id}/request', [OfferController::class, 'requestOffer'])->middleware('role:3');
         Route::group(['middleware' => 'role:0'], function () {
             Route::get('{id}/dupe', [OfferController::class, 'dupe']);
-            Route::get('{id}/delete', [OfferController::class, 'delete']);
+            Route::delete('{id}', [OfferController::class, 'delete'])->whereNumber('id')->name('offer.destroy');
         });
         Route::get('{id}/clicks', [ClickReportController::class, 'offerClicks'])->middleware('role:0,1,2')->name('offerClicks');
         Route::get('{id}/search-clicks', [ClickReportController::class, 'searchClicks'])->middleware('role:0')->name('offer.clicks.search');

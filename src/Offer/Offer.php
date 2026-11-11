@@ -85,12 +85,10 @@ class Offer
 
     public static function deleteOffer($offer_id)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
-        $sql = "UPDATE offer SET status = 2 WHERE idoffer = :offer_id";
-        $prep = $db->prepare($sql);
-        $prep->bindParam(":offer_id", $offer_id);
+        abort_unless(Session::userType() === \App\Privilege::ROLE_GOD, 403);
+        app(\App\Services\DeleteOffer::class)->delete((int) $offer_id);
 
-        return $prep->execute();
+        return true;
     }
 
     // SELECT getCount
@@ -144,6 +142,7 @@ class Offer
     public static function duplicateOffer($offer_id)
     {
         $dupe = self::selectOneQuery($offer_id)->fetch(PDO::FETCH_OBJ);
+        abort_unless($dupe, 404, 'This offer is no longer available.');
         $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
         $sql = "INSERT INTO offer (offer_name, description, url, payout, status, offer_timestamp, created_by, campaign_id) VALUES(:offer_name, :description, :url, :payout, 0, :timestamp, :created_by, :campaign_id)";
         $prep = $db->prepare($sql);
@@ -305,8 +304,7 @@ class Offer
     // DELETE
     public function Delete($id)
     {
-        $dbc = new \dboptions();
-        $dbc->dbDelete('offer', 'idoffer', $id);
+        return self::deleteOffer($id);
     }
 
 

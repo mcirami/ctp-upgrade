@@ -30,7 +30,7 @@ class AdvertiserRepository extends Repository
           SUM(conversions.paid) AS Revenue 
         FROM campaigns
          
-        INNER JOIN offer ON offer.campaign_id = campaigns.id 
+        INNER JOIN report_offers AS offer ON offer.campaign_id = campaigns.id
         
         INNER JOIN clicks ON clicks.offer_idoffer = offer.idoffer AND clicks.click_type != 2
         
@@ -58,7 +58,7 @@ class AdvertiserRepository extends Repository
 				FROM
 					campaigns
 					
-				INNER JOIN offer o on campaigns.id = o.campaign_id
+				INNER JOIN report_offers o on campaigns.id = o.campaign_id
 					
 				LEFT JOIN clicks c ON c.offer_idoffer = o.idoffer
 				
@@ -92,7 +92,7 @@ class AdvertiserRepository extends Repository
 				FROM
 					campaigns
 					
-                INNER JOIN offer AS o ON o.campaign_id = campaigns.id
+                INNER JOIN report_offers AS o ON o.campaign_id = campaigns.id
 					
 				LEFT JOIN clicks rawClicks ON rawClicks.offer_idoffer = o.idoffer
 				
@@ -135,7 +135,7 @@ class AdvertiserRepository extends Repository
 		$clicksSubquery = Click::query()
 		                       ->whereBetween('first_timestamp', [$dateFrom, $dateTo])
 		                       ->where('clicks.click_type', '!=', Click::TYPE_BLACKLISTED)
-		                       ->join('offer', function ($join) use ($id) {
+		                       ->join('report_offers as offer', function ($join) use ($id) {
 								   $join->on('offer.idoffer', '=', 'clicks.offer_idoffer')
 			                       ->where('offer.campaign_id', '=', $id);
 		                       })
@@ -150,7 +150,7 @@ class AdvertiserRepository extends Repository
 		$conversionsSubquery = Conversion::query()
 		                                 ->whereBetween('timestamp', [$dateFrom, $dateTo])
 		                                 ->join('clicks', 'clicks.idclicks', '=', 'conversions.click_id')
-										->join('offer', function ($join) use ($id) {
+										->join('report_offers as offer', function ($join) use ($id) {
 											$join->on('offer.idoffer', '=', 'clicks.offer_idoffer')
 											     ->where('offer.campaign_id', '=', $id);
 										})

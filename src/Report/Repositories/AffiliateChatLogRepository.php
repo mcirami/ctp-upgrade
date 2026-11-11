@@ -86,7 +86,7 @@ class AffiliateChatLogRepository extends Repository
                 FROM pending_conversions
                     INNER JOIN clicks 
                         ON clicks.idclicks = pending_conversions.click_id
-                    INNER JOIN offer 
+                    INNER JOIN report_offers AS offer
                         ON offer.idoffer = clicks.offer_idoffer
                     LEFT JOIN conversions 
                         ON conversions.click_id = clicks.idclicks

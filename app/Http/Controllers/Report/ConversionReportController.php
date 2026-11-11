@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Report;
 use App\Conversion;
 use App\User;
 use App\Click;
-use App\Offer;
+use App\ReportOffer as Offer;
 use App\Privilege;
 use App\Services\ClickGeoCacheService;
 use App\Services\CountryReportBuilderService;
@@ -27,7 +27,7 @@ class ConversionReportController extends ReportController
 	                ->whereBetween('timestamp', [$dates['startDate'], $dates['endDate']])
 					->leftJoin('clicks', 'clicks.idclicks', '=', 'conversions.click_id')
 	                ->leftJoin('click_vars', 'click_vars.click_id', '=', 'conversions.click_id')
-	                ->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
+	                ->leftJoin('report_offers as offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
 	                ->select(
 						'clicks.idclicks',
 						'offer.offer_name',
@@ -97,7 +97,7 @@ class ConversionReportController extends ReportController
 		$conversionsSubquery
 			->whereBetween('timestamp', [$dates['startDate'], $dates['endDate']])
 			->leftJoin('clicks', 'clicks.idclicks', '=', 'conversions.click_id')
-			->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
+			->leftJoin('report_offers as offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
 			->select('offer.idoffer', DB::raw('COUNT(conversions.id) as conversions'))
 			->groupBy('offer.idoffer');
 
@@ -106,7 +106,7 @@ class ConversionReportController extends ReportController
 			->leftJoinSub($conversionsSubquery, 'conversions', function ($join) {
 				$join->on('clicks.offer_idoffer', '=', 'conversions.idoffer');
 			})
-			->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
+			->leftJoin('report_offers as offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
 			->select(
 				'offer.idoffer',
 				'offer.offer_name',
@@ -267,7 +267,7 @@ class ConversionReportController extends ReportController
 		            ->joinSub($conversionsSubquery, 'conversions', function ($join) {
 			            $join->on('clicks.offer_idoffer', '=', 'conversions.offer_idoffer');
 		            })
-		            ->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
+		            ->leftJoin('report_offers as offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
 		            ->select(
 			            'offer.idoffer',
 			            'offer.offer_name',
