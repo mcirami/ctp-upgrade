@@ -46,7 +46,7 @@ abstract class URLEvent
     {
         $encodedClickId = UID::encode($this->clickId);
 
-        $offer_id = $this->offerData->idoffer;
+        $offer_id = $this->clickData->offer_idoffer;
 
         $subVarReplacer = new SubVariables($this->clickSubVarsArray);
         $tysReplacer = new TYSVariables($this->userData->idrep, $this->userData->user_name, $encodedClickId, $offer_id);

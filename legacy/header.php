@@ -14,6 +14,25 @@ if (!$user->verify_login_session()) {
 }
 
 
+// Old bookmarks and forms can outlive a permanently deleted offer.
+$offerPageKeys = [
+    'offer_update.php' => 'idoffer',
+    'offer_details.php' => 'idoffer',
+    'offer_access.php' => 'id',
+    'offer_edit_rules.php' => 'offid',
+    'offer_edit_pb.php' => 'offid',
+];
+$offerPage = basename(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
+if (isset($offerPageKeys[$offerPage])) {
+    $offerKey = $offerPageKeys[$offerPage];
+    $screenOfferId = $_POST[$offerKey] ?? $_GET[$offerKey] ?? null;
+    if (!$screenOfferId || !\App\Offer::whereKey($screenOfferId)->exists()) {
+        http_response_code(404);
+        echo '<p>This offer is no longer available. It may have been permanently deleted.</p><p><a href="/offer/manage">Back to offers</a></p>';
+        exit;
+    }
+}
+
 $notifications = new \LeadMax\TrackYourStats\System\Notifications(\LeadMax\TrackYourStats\System\Session::userID());
 
 $notifications->fetchUsersNotifications();

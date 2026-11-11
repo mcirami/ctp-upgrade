@@ -121,7 +121,7 @@ class Click extends Model
 			->whereBetween('clicks.first_timestamp', [$startDate, $endDate])
 			->leftJoin('click_vars', 'click_vars.click_id', '=', 'clicks.idclicks')
 			->leftJoin('conversions', 'conversions.click_id', '=', 'clicks.idclicks')
-			->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
+			->leftJoin('report_offers as offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
 			->select(
 				'clicks.idclicks',
 				'clicks.first_timestamp as timestamp',
@@ -153,7 +153,7 @@ class Click extends Model
 			->whereBetween('clicks.first_timestamp', [$startDate, $endDate])
 			->leftJoin('click_vars', 'click_vars.click_id', '=', 'clicks.idclicks')
 			->leftJoin('conversions', 'conversions.click_id', '=', 'clicks.idclicks')
-			->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
+			->leftJoin('report_offers as offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
 			->select(
 				'clicks.idclicks',
 				'clicks.first_timestamp as timestamp',
@@ -182,7 +182,7 @@ class Click extends Model
 			->leftJoin('conversions', 'conversions.click_id', '=', 'clicks.idclicks')
 			->leftJoin('click_geo_cache as geo', 'geo.ip_address', '=', 'clicks.ip_address')
 			->join('rep', 'rep.idrep', '=', 'clicks.rep_idrep')
-			->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
+			->leftJoin('report_offers as offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
 			->whereBetween('first_timestamp', [$startDate, $endDate])
 			->where('clicks.click_type', '!=', self::TYPE_BLACKLISTED)
 			->when($geoCode, function (Builder $builder) use ($geoCode) {
@@ -220,7 +220,7 @@ class Click extends Model
 			->whereBetween('first_timestamp', [$startDate, $endDate])
 			->where('clicks.click_type', '!=', self::TYPE_BLACKLISTED)
 			->leftJoin('click_geo_cache as geo', 'geo.ip_address', '=', 'clicks.ip_address')
-			->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
+			->leftJoin('report_offers as offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
 			->selectRaw("
 				offer.offer_name,
 				clicks.offer_idoffer AS offer_id,

@@ -47,7 +47,7 @@ class AdminOfferRepository extends Repository
 
         $managers = User::where('referrer_repid', Session::user()->idrep)->pluck('idrep')->toArray();
 
-        $result = DB::table('offer')
+        $result = DB::table('report_offers as offer')
             ->leftJoin('clicks as rawClicks', 'rawClicks.offer_idoffer', 'offer.idoffer')
             ->leftJoin('pending_conversions as pc', function ($jc) {
                 /* @var $jc JoinClause */
@@ -60,6 +60,7 @@ class AdminOfferRepository extends Repository
             ->select([
                 'offer.idoffer',
                 'offer.offer_name',
+                'offer.is_deleted',
                 DB::raw('COUNT(rawClicks.idclicks) as Clicks'),
                 DB::raw('SUM(CASE WHEN rawClicks.click_type = 0 THEN 1 ELSE 0 END) as UniqueClicks'),
                 DB::raw('COUNT(pc.id) as PendingConversions')
@@ -72,7 +73,7 @@ class AdminOfferRepository extends Repository
     private function getConversions($dateFrom, $dateTo)
     {
         $managers = User::where('referrer_repid', Session::user()->idrep)->pluck('idrep')->toArray();
-        $result = DB::table('offer')
+        $result = DB::table('report_offers as offer')
             ->leftJoin('clicks as rawClicks', 'rawClicks.offer_idoffer', 'offer.idoffer')
             ->leftJoin('conversions', 'conversions.click_id', 'rawClicks.idclicks')
             ->leftJoin('free_sign_ups as f', 'f.click_id', 'rawClicks.idclicks')
@@ -84,6 +85,7 @@ class AdminOfferRepository extends Repository
             ->select([
                 'offer.idoffer',
                 'offer.offer_name',
+                'offer.is_deleted',
                 DB::raw('COUNT(f.id) as FreeSignUps'),
                 DB::raw('COUNT(conversions.id) as Conversions'),
                 DB::raw('SUM(conversions.paid) as Revenue'),

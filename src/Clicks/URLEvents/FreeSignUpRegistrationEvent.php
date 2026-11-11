@@ -51,7 +51,7 @@ class FreeSignUpRegistrationEvent extends URLEvent
         $this->getAllDataFromDatabase();
         $user_id = $this->userData->idrep;
 
-        $postBackUrl = new FreePostBackURL($user_id, $this->offerData->idoffer);
+        $postBackUrl = new FreePostBackURL($user_id, $this->clickData->offer_idoffer);
 
         $urlProcessor = $this->setUpURLProcessorWithDBData($postBackUrl->getPriorityURL());
 

@@ -32,6 +32,11 @@ class PendingConversion
             return false;
         }
 
+        $click = \App\Click::withoutGlobalScopes()->find($pendingConversion->click_id);
+        if (!$click || !\App\Offer::whereKey($click->offer_idoffer)->exists()) {
+            return false;
+        }
+
         $conversion = new Conversion();
         $conversion->click_id = $pendingConversion->click_id;
         $conversion->paid = $pendingConversion->payout;

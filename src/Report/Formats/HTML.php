@@ -73,7 +73,9 @@ class HTML implements Format
                 foreach ($this->printTheseArrayKeys as $toPrint) {
 
                     if (isset($row[$toPrint])) {
-						if($toPrint == "offer_name") {
+						if ($toPrint == "offer_name" && !empty($row["is_deleted"])) {
+                            echo "<td>".htmlspecialchars($row[$toPrint])."</td>";
+                        } elseif($toPrint == "offer_name") {
 							if (Session::userType() == Privilege::ROLE_ADMIN || Session::userType() == Privilege::ROLE_AFFILIATE) {
 								echo "<td>{$row[$toPrint]}</td>";
 							} else {

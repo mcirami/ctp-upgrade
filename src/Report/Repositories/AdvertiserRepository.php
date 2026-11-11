@@ -26,7 +26,7 @@ class AdvertiserRepository extends Repository
           SUM(conversions.paid) AS Revenue 
         FROM campaigns
          
-        INNER JOIN offer ON offer.campaign_id = campaigns.id 
+        INNER JOIN report_offers AS offer ON offer.campaign_id = campaigns.id
         
         INNER JOIN clicks ON clicks.offer_idoffer = offer.idoffer AND clicks.click_type != 2
         
@@ -54,7 +54,7 @@ class AdvertiserRepository extends Repository
 				FROM
 					campaigns
 					
-				INNER JOIN offer o on campaigns.id = o.campaign_id
+				INNER JOIN report_offers o on campaigns.id = o.campaign_id
 					
 				LEFT JOIN clicks c ON c.offer_idoffer = o.idoffer
 				
@@ -87,7 +87,7 @@ class AdvertiserRepository extends Repository
 				FROM
 					campaigns
 					
-                INNER JOIN offer AS o ON o.campaign_id = campaigns.id
+                INNER JOIN report_offers AS o ON o.campaign_id = campaigns.id
 					
 				LEFT JOIN clicks rawClicks ON rawClicks.offer_idoffer = o.idoffer
 				

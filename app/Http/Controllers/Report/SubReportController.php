@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Report;
 
 use App\Click;
-use App\Offer;
+use App\ReportOffer as Offer;
 use App\Services\CountryReportBuilderService;
 use App\User;
 use App\Conversion;
@@ -48,7 +48,7 @@ class SubReportController extends ReportController
 		  ->orWhere('sub2', '=', $subID)
 		  ->orWhere('sub3', '=', $subID)
 		  ->leftJoin('clicks', 'clicks.idclicks', '=', 'click_vars.click_id')
-		  ->leftJoin('offer', 'clicks.offer_idoffer', '=', 'offer.idoffer')
+		  ->leftJoin('report_offers as offer', 'clicks.offer_idoffer', '=', 'offer.idoffer')
 		  ->join('conversions', function($query) use($dates) {
 			  $query->on('conversions.click_id', '=', 'clicks.idclicks')->whereBetween('conversions.timestamp', [$dates['startDate'], $dates['endDate']]);
 		  })
@@ -105,7 +105,7 @@ class SubReportController extends ReportController
 					})
 					->where('click_vars.sub1', '=', $subId)
 	                ->leftJoin('conversions', 'conversions.click_id', '=', 'clicks.idclicks')
-	                ->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
+	                ->leftJoin('report_offers as offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
 	                ->select(
 						'clicks.idclicks',
 						'clicks.first_timestamp as timestamp',
@@ -260,7 +260,7 @@ class SubReportController extends ReportController
 						});
 					})
 	                ->leftJoin('conversions', 'conversions.click_id', '=', 'clicks.idclicks')
-	                ->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
+	                ->leftJoin('report_offers as offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
 	                ->select(
 						'clicks.idclicks',
 						'clicks.first_timestamp as timestamp',

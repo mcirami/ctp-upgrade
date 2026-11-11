@@ -134,7 +134,7 @@ class OfferAffiliateClicksRepository implements Repository
         return $query
             ->join('rep', $repJoinCallback)
             ->rightJoin('conversions', 'conversions.click_id', '=', 'clicks.idclicks')
-            ->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
+            ->leftJoin('report_offers as offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
             ->select(
                 'rep.idrep as user_id',
                 'rep.user_name',
@@ -154,7 +154,7 @@ class OfferAffiliateClicksRepository implements Repository
 	        ->whereBetween('first_timestamp',[$start, $end])
 	        ->where('clicks.click_type', '!=', Click::TYPE_BLACKLISTED)
 	        ->join('rep', 'idrep', '=', 'clicks.rep_idrep')
-	        ->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
+	        ->leftJoin('report_offers as offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
 		    ->groupBy('rep.user_name', 'rep.idrep', 'offer.idoffer')
 		    ->select(
 	            'rep.idrep as user_id',

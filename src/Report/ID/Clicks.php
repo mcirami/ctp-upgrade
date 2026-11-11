@@ -134,14 +134,14 @@ class Clicks extends ReportBase
                     LEFT JOIN click_vars ON click_vars.click_id = clicks.idclicks
                     LEFT JOIN click_geo ON click_geo.click_id = clicks.idclicks
                      LEFT JOIN conversions ON conversions.click_id = clicks.idclicks  
-                    LEFT JOIN offer ON offer.idoffer = clicks.offer_idoffer
+                    LEFT JOIN report_offers AS offer ON offer.idoffer = clicks.offer_idoffer
                     WHERE clicks.rep_idrep = :repID ";
         } else {
             $sql = "SELECT  clicks.first_timestamp, offer.offer_name, conversions.timestamp,  conversions.paid, click_vars.url,  click_geo.ip, clicks.offer_idoffer  FROM clicks
                     LEFT JOIN click_vars ON click_vars.click_id = clicks.idclicks
                     LEFT JOIN click_geo ON click_geo.click_id = clicks.idclicks
                      LEFT JOIN conversions ON conversions.click_id = clicks.idclicks
-                     LEFT JOIN offer ON offer.idoffer = clicks.offer_idoffer
+                     LEFT JOIN report_offers AS offer ON offer.idoffer = clicks.offer_idoffer
                     WHERE clicks.rep_idrep = :repID ";
         }
 

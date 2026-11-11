@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Report;
 
 use App\Click;
-use App\Offer;
+use App\ReportOffer as Offer;
 use App\Privilege;
 use App\Services\Repositories\Offer\OfferClicksRepository;
 use App\Services\CountryReportBuilderService;
@@ -224,7 +224,7 @@ class ClickReportController extends ReportController
 				]])->whereBetween( 'clicks.first_timestamp', [ $dates['startDate'], $dates['endDate'] ] )
 			       ->leftJoin( 'click_vars', 'click_vars.click_id', '=', 'clicks.idclicks' )
 			       ->leftJoin( 'conversions', 'conversions.click_id', '=', 'clicks.idclicks' )
-			       ->leftJoin( 'offer', 'offer.idoffer', '=', 'clicks.offer_idoffer' )
+			       ->leftJoin( 'report_offers as offer', 'offer.idoffer', '=', 'clicks.offer_idoffer' )
 			       ->select(
 					   'clicks.idclicks',
 				       'clicks.first_timestamp as timestamp',
@@ -253,7 +253,7 @@ class ClickReportController extends ReportController
 				}]])->whereBetween( 'clicks.first_timestamp', [ $dates['startDate'], $dates['endDate'] ] )
 			        ->leftJoin( 'click_vars', 'click_vars.click_id', '=', 'clicks.idclicks' )
 			        ->leftJoin( 'conversions', 'conversions.click_id', '=', 'clicks.idclicks' )
-			        ->leftJoin( 'offer', 'offer.idoffer', '=', 'clicks.offer_idoffer' )
+			        ->leftJoin( 'report_offers as offer', 'offer.idoffer', '=', 'clicks.offer_idoffer' )
 			        ->select(
 						'clicks.idclicks as id',
 				        'clicks.first_timestamp as timestamp',

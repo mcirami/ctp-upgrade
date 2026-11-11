@@ -45,11 +45,12 @@ class ManagerOfferRepository extends Repository
         $sql = "SELECT
 					offer.idoffer,
 					offer.offer_name,
+                    offer.is_deleted,
 					count(rawClicks.idclicks) Clicks,
 					SUM(CASE WHEN rawClicks.click_type = 0 THEN 1 ELSE 0 END) UniqueClicks,
                     count(pending_conversions.id) as PendingConversions
 				FROM
-					offer
+					report_offers AS offer
 					
 				LEFT JOIN rep ON rep.referrer_repid = :referrer_repid
 				
@@ -89,12 +90,13 @@ class ManagerOfferRepository extends Repository
         $sql = "SELECT
 					offer.idoffer,
 					offer.offer_name,
+                    offer.is_deleted,
 					count(f.id) FreeSignUps,
 					count(conversions.id) Conversions,
 					sum(conversions.paid) Revenue,
 					sum(deducted.paid) Deductions
 				FROM
-					offer
+					report_offers AS offer
 					
 				LEFT JOIN rep ON rep.referrer_repid = :referrer_repid
 				

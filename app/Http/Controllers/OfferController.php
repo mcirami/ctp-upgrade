@@ -26,6 +26,7 @@ class OfferController extends Controller
 
 	public function requestOffer($id)
 	{
+        Offer::findOrFail($id);
 		$result = \LeadMax\TrackYourStats\Offer\RepHasOffer::requestOffer($id, \LeadMax\TrackYourStats\System\Session::userID());
 		return response()->json($result);
 	}
@@ -41,11 +42,12 @@ class OfferController extends Controller
 		return back()->with(compact('message'));
 	}
 
-	public function delete($id)
+	public function delete($id, \App\Services\DeleteOffer $deleteOffer)
 	{
-		\LeadMax\TrackYourStats\Offer\Offer::deleteOffer($id);
+		abort_unless(\LeadMax\TrackYourStats\System\Session::userType() === Privilege::ROLE_GOD, 403);
+		$deleteOffer->delete((int) $id);
 
-		return back();
+		return redirect('/offer/manage')->with('message', 'Offer permanently deleted. Historical reports have been preserved.');
 	}
 
 	public function showManage()
@@ -53,7 +55,8 @@ class OfferController extends Controller
 		$data = array();
 
 		$this->validate(request(), [
-			'showInactive' => 'numeric|min:0|max:1'
+			'showInactive' => 'numeric|min:0|max:1',
+            'showArchived' => 'numeric|min:0|max:1'
 		]);
 
 		$urls = \App\Company::instance()->first()->offerUrls()->where('status',1)->get();
@@ -93,7 +96,9 @@ class OfferController extends Controller
 		}
 
 
-		$status = request('showInactive', 0) == 1 ? 0 : 1;
+        $showArchived = request('showArchived', 0) == 1 && \LeadMax\TrackYourStats\System\Session::userType() === Privilege::ROLE_GOD;
+		$status = $showArchived ? 2 : (request('showInactive', 0) == 1 ? 0 : 1);
+        $data['showArchived'] = $showArchived;
 		$offers = \LeadMax\TrackYourStats\System\Session::user()->offers()
 		                                                        ->where('offer.status','=', $status)
 		                                                        ->leftJoin('campaigns', 'offer.campaign_id', '=', 'campaigns.id')
@@ -154,14 +159,14 @@ class OfferController extends Controller
 
 	public function getAssignedUsers($offerId)
 	{
-		$offer = Offer::where('idoffer', '=', $offerId)->first();
+		$offer = Offer::where('idoffer', '=', $offerId)->firstOrFail();
 
 		return $offer->affiliates()->get()->toJson();
 	}
 
 	public function showEdit($id)
 	{
-		$offer = Offer::where('idoffer', '=', $id)->first();
+		$offer = Offer::where('idoffer', '=', $id)->firstOrFail();
 
 
 		return vieW('offer.edit');
@@ -221,7 +226,8 @@ class OfferController extends Controller
 	{
 		$this->validate($request, [
 			'users' => 'required|array',
-			'offers' => 'required|array'
+			'offers' => 'required|array',
+            'offers.*' => 'integer|exists:offer,idoffer'
 		]);
 		\LeadMax\TrackYourStats\Offer\RepHasOffer::massAssignUsers($request->post('users'), $request->post('offers'),
 			request('role', 3));

@@ -251,6 +251,7 @@ class ClickRegistrationEvent extends URLEvent
         $offer_id = $this->offerId;
 
         $this->getOfferDataFromDatabase($offer_id);
+        abort_unless($this->offerData, 410, 'This offer is no longer available.');
         $encodedClickId = UID::encode($this->clickId);
 		$this->updateClickVars($this->clickId, $encodedClickId);
 

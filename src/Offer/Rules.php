@@ -275,7 +275,9 @@ class Rules
             }
 
             $redirectOffer = Offer::selectOneQuery($val["redirect_offer"])->fetch(PDO::FETCH_OBJ);
-            echo "<td>{$val["redirect_offer"]} - {$redirectOffer->offer_name}</td>";
+            echo $redirectOffer
+                ? "<td>{$val["redirect_offer"]} - ".htmlspecialchars($redirectOffer->offer_name)."</td>"
+                : "<td>No redirect offer</td>";
 
 
             if ($val["is_active"] == 1) {

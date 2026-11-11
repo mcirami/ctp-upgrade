@@ -66,7 +66,7 @@ class DeductionRegistrationEvent extends URLEvent
         $this->getAllDataFromDatabase();
         $user_id = $this->userData->idrep;
 
-        $postBackUrl = new DeductionPostBackURL($user_id, $this->offerData->idoffer);
+        $postBackUrl = new DeductionPostBackURL($user_id, $this->clickData->offer_idoffer);
 
         $urlProcessor = $this->setUpURLProcessorWithDBData($postBackUrl->getPriorityURL());
 
