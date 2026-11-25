@@ -3,6 +3,44 @@
 
 @section('content')
 
+    <style>
+        #offers_container .lander-url-heading {
+            display: block;
+            margin-top: 10px;
+			font-size: 13px;
+        }
+        #offers_container button.lander-name-help {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+            min-width: 16px;
+            margin: -15px 0 0 4px;
+            padding: 0;
+            border: 1px solid currentColor;
+            border-radius: 50%;
+            background: transparent;
+            color: inherit;
+            font-size: 12px;
+            line-height: 1;
+            vertical-align: middle;
+            box-shadow: none;
+            cursor: help;
+        }
+        .ui-tooltip.lander-name-tooltip {
+            max-width: min(440px, calc(100vw - 24px));
+            padding: 12px;
+            color: #333;
+            background: #fff;
+            font-size: 14px;
+            line-height: 1.5;
+            overflow-wrap: anywhere;
+        }
+        .lander-name-tooltip p { margin: 0 0 12px; }
+        .lander-name-tooltip p:last-child { margin-bottom: 0; }
+    </style>
+
     <form id="delete-offer-form" method="POST" hidden>
         @csrf
         @method('DELETE')
@@ -231,6 +269,17 @@ Session::userType() !== \App\Privilege::ROLE_ADMIN
 	<script type="text/javascript">
 
 		$(document).ready(function () {
+            // Delegate to include offers rebuilt by search and pagination.
+            // Bootstrap also defines tooltip, so give the jQuery UI widget its own name.
+            $.widget.bridge('landerNameTooltip', $.ui.tooltip);
+            $('#offers_container').landerNameTooltip({
+                items: '.lander-name-help',
+                tooltipClass: 'lander-name-tooltip',
+                content: function () {
+                    return $(this).next('.lander-name-help-content').html();
+                }
+            });
+
             // Delegation also handles rows rebuilt by pagination and search.
             $(document).on('click', '.delete_offer', function (event) {
                 event.preventDefault();
@@ -287,8 +336,17 @@ Session::userType() !== \App\Privilege::ROLE_ADMIN
 								`/?repid=` + sessionUser +
 								`&offerid=` + offer['idoffer'] + `&sub1=</span>`;
 							if (offer['landing_link']) {
-								html += `<br/><span class='link_label'>Lander URL:</span><br /> ` +
-									`<span class='offer_link'>` + $('<div>').text(offer['landing_link']).html() + `</span>`;
+                                const landerUrl = $('<div>').text(offer['landing_link']).html();
+                                const kateUrl = $('<div>').text(offer['landing_link'] + 'Kate').html();
+                                const meganUrl = $('<div>').text(offer['landing_link'] + 'Megan439').html();
+                                html += `<span class="lander-url-heading"><span class='link_label'>Lander URL:</span> (Fill "n=" to change model name)` +
+                                    `<button type="button" class="lander-name-help" aria-label="How to change your model's name">?</button>` +
+                                    `<span class="lander-name-help-content" hidden>` +
+                                    `<p>To change your model's name on the Lander URL add the name you want to use to the end of the link after n=, for example:</p>` +
+                                    `<p>${kateUrl}<br>-This changes the name on your Lander URL to Kate</p>` +
+                                    `<p>${meganUrl}<br>-This changes the name on your Lander URL to Megan439</p>` +
+                                    `<p>Use any name you like after n= to pass the name to the page.</p></span></span>` +
+                                    `<span class='offer_link'>${landerUrl}</span>`;
 							}
 						}
 
