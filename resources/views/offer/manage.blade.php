@@ -39,6 +39,15 @@
         }
         .lander-name-tooltip p { margin: 0 0 12px; }
         .lander-name-tooltip p:last-child { margin-bottom: 0; }
+        #offers_container button.copy-lander {
+            width: auto;
+            margin: 0 0 0 8px;
+            padding: 3px 8px;
+            font-size: 12px;
+            line-height: 1.5;
+            vertical-align: middle;
+            white-space: nowrap;
+        }
     </style>
 
     <form id="delete-offer-form" method="POST" hidden>
@@ -346,7 +355,8 @@ Session::userType() !== \App\Privilege::ROLE_ADMIN
                                     `<p>${kateUrl}<br>-This changes the name on your Lander URL to Kate</p>` +
                                     `<p>${meganUrl}<br>-This changes the name on your Lander URL to Megan439</p>` +
                                     `<p>Use any name you like after n= to pass the name to the page.</p></span></span>` +
-                                    `<span class='offer_link'>${landerUrl}</span>`;
+                                    `<span class='offer_link'>${landerUrl}</span>` +
+                                    `<button type="button" class="copy_button copy-lander btn btn-default btn-xs" data-url="${landerUrl.replace(/"/g, '&quot;')}">Copy My Lander</button>`;
 							}
 						}
 
